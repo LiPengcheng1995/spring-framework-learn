@@ -85,6 +85,7 @@ dependencies {
 	testCompile("com.fasterxml.woodstox:woodstox-core:5.0.3") {
 		exclude group: "stax", module: "stax-api"
 	}
+	compile fileTree(dir:'libs',include: '*.jar')
 }
 
 jar {
@@ -99,3 +100,4 @@ jar {
 		include "org/springframework/objenesis/**"
 	}
 }
+
