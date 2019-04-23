@@ -98,15 +98,19 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	private boolean singletonsCurrentlyInDestruction = false;
 
 	/** Disposable bean instances: bean name --> disposable instance */
+	// 这里面的bean有删除的钩子，需要专门调用一下
 	private final Map<String, Object> disposableBeans = new LinkedHashMap<>();
 
 	/** Map between containing bean names: bean name --> Set of bean names that the bean contains */
+	// key 对应的 bean 里面有变量是用的 value 中的 bean
 	private final Map<String, Set<String>> containedBeanMap = new ConcurrentHashMap<>(16);
 
 	/** Map between dependent bean names: bean name --> Set of dependent bean names */
+	// key 对应的 bean 被 value 中的 bean 依赖，也就是说 value 中的 bean 销毁完 ，key 对应的 bean 才能开始销毁
 	private final Map<String, Set<String>> dependentBeanMap = new ConcurrentHashMap<>(64);
 
 	/** Map between depending bean names: bean name --> Set of bean names for the bean's dependencies */
+	// key 对应的 bean 依赖了 value 中的 bean，也就是说 key 对应的 bean 销毁完，value 中的 bean 才能销毁
 	private final Map<String, Set<String>> dependenciesForBeanMap = new ConcurrentHashMap<>(64);
 
 
@@ -531,6 +535,9 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * @param beanName the name of the bean
 	 * @see #destroyBean
 	 */
+	// 这里可以优化吧，这里算作是树形的递归调用，最开始调用起这个函数时也是用的循环，
+	// 在方法头加一个判断，如果remove发现没有，说明在删除时就提前删完此单例bean了，直接退出
+
 	public void destroySingleton(String beanName) {
 		// Remove a registered singleton of the given name, if any.
 		removeSingleton(beanName);
