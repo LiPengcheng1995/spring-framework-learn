@@ -94,23 +94,27 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 	 * @see org.springframework.beans.factory.FactoryBean#getObject()
 	 */
 	protected Object getObjectFromFactoryBean(FactoryBean<?> factory, String beanName, boolean shouldPostProcess) {
-		if (factory.isSingleton() && containsSingleton(beanName)) {
-			synchronized (getSingletonMutex()) {
+		if (factory.isSingleton() && containsSingleton(beanName)) { // 这个beanName对应的是单例bean
+			synchronized (getSingletonMutex()) { // 防止并发造成的重复初始化
 				Object object = this.factoryBeanObjectCache.get(beanName);
-				if (object == null) {
-					object = doGetObjectFromFactoryBean(factory, beanName);
+				if (object == null) { // 该beanName还没缓存到 cache 中，认为还没构造
+					object = doGetObjectFromFactoryBean(factory, beanName); // 调用factory初始化
 					// Only post-process and store if not put there already during getObject() call above
 					// (e.g. because of circular reference processing triggered by custom getBean calls)
+					// 如果在 cache 中发现了，说明构造完成，直接返回。否则根据入参及构造所处阶段进行构造和缓存。
+					// TODO： 应该是吧
 					Object alreadyThere = this.factoryBeanObjectCache.get(beanName);
 					if (alreadyThere != null) {
 						object = alreadyThere;
 					}
 					else {
+						// TODO： postProcess 是个什么工序？，初步猜测应该是个可以选择的 wrapper
 						if (shouldPostProcess) {
-							if (isSingletonCurrentlyInCreation(beanName)) {
+							if (isSingletonCurrentlyInCreation(beanName)) { // 已经在构建中了，直接返回
 								// Temporarily return non-post-processed object, not storing it yet..
 								return object;
 							}
+							// 构建
 							beforeSingletonCreation(beanName);
 							try {
 								object = postProcessObjectFromFactoryBean(object, beanName);
@@ -123,6 +127,7 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 								afterSingletonCreation(beanName);
 							}
 						}
+						// 把构建的结果缓存起来，表示此 beanName 已经被构建好了
 						if (containsSingleton(beanName)) {
 							this.factoryBeanObjectCache.put(beanName, object);
 						}
