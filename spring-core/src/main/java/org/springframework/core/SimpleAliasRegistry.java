@@ -52,6 +52,7 @@ public class SimpleAliasRegistry implements AliasRegistry {
 		Assert.hasText(name, "'name' must not be empty");
 		Assert.hasText(alias, "'alias' must not be empty");
 		synchronized (this.aliasMap) {
+			// 如果别名就是真实名称，直接去掉缓存即可，没必要通过 SimpleAliasRegistry来走弯路
 			if (alias.equals(name)) {
 				this.aliasMap.remove(alias);
 				if (logger.isDebugEnabled()) {
@@ -98,6 +99,8 @@ public class SimpleAliasRegistry implements AliasRegistry {
 	 * @since 4.2.1
 	 */
 	public boolean hasAlias(String name, String alias) {
+		// 递归函数，从真实名称往上走。
+		// TODO： 这里存疑，为什么不能直接运用map的特点，从alias开始找，这样大大降低了复杂度，还可以用循环代替递归
 		for (Map.Entry<String, String> entry : this.aliasMap.entrySet()) {
 			String registeredName = entry.getValue();
 			if (registeredName.equals(name)) {
@@ -163,26 +166,36 @@ public class SimpleAliasRegistry implements AliasRegistry {
 				String resolvedAlias = valueResolver.resolveStringValue(alias);
 				String resolvedName = valueResolver.resolveStringValue(registeredName);
 				if (resolvedAlias == null || resolvedName == null || resolvedAlias.equals(resolvedName)) {
+					// 解析后的key value不全空，且不相同
 					this.aliasMap.remove(alias);
 				}
 				else if (!resolvedAlias.equals(alias)) {
+					// 解析后key变了，说明 key 之前是有占位符的，现在被解析了
+
 					String existingName = this.aliasMap.get(resolvedAlias);
+					// 解析后的 key 发现已经在map中存在了
 					if (existingName != null) {
 						if (existingName.equals(resolvedName)) {
+							// 解析后的 value 和解析后的 key 映射的是一个值，所以不用专门把解析后的key value放进去了
+							// 直接删了未解析的映射即可
 							// Pointing to existing alias - just remove placeholder
 							this.aliasMap.remove(alias);
 							return;
 						}
+						// 解析后的 key 已经存在，但是指向的 value 不是我们解析出来的 value ，这个坑已经被占了，存在冲突！
 						throw new IllegalStateException(
 								"Cannot register resolved alias '" + resolvedAlias + "' (original: '" + alias +
 								"') for name '" + resolvedName + "': It is already registered for name '" +
 								registeredName + "'.");
 					}
+					// 解析后的 key 在 map 中不存在，看看没有啥循环引用啥的，就把未解析的键值对换成解析后的键值对即可
 					checkForAliasCircle(resolvedName, resolvedAlias);
 					this.aliasMap.remove(alias);
 					this.aliasMap.put(resolvedAlias, resolvedName);
 				}
 				else if (!registeredName.equals(resolvedName)) {
+					// 解析后的 key 不变，但是 value 变了，直接做值覆写即可
+					// TODO：key 不变 value 变了 不用 check 一下循环引用吗？
 					this.aliasMap.put(alias, resolvedName);
 				}
 			});
@@ -211,8 +224,7 @@ public class SimpleAliasRegistry implements AliasRegistry {
 	 * @param name the user-specified name
 	 * @return the transformed name
 	 */
-	// TODO： alias 和 beanId 后面看看区分一下
-
+	// 通过从 map 中反复查找，找到 "name" 对应的 alias 在 map 中最终指向的名字
 	public String canonicalName(String name) {
 		String canonicalName = name;
 		// Handle aliasing...
