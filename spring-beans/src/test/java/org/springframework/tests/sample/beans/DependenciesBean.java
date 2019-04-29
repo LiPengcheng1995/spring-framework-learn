@@ -35,38 +35,37 @@ public class DependenciesBean implements BeanFactoryAware {
 
 	private BeanFactory beanFactory;
 
-
-	public void setAge(int age) {
-		this.age = age;
-	}
-
 	public int getAge() {
 		return age;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setAge(int age) {
+		this.age = age;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public void setSpouse(TestBean spouse) {
-		this.spouse = spouse;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public TestBean getSpouse() {
 		return spouse;
 	}
 
-	@Override
-	public void setBeanFactory(BeanFactory beanFactory) {
-		this.beanFactory = beanFactory;
+	public void setSpouse(TestBean spouse) {
+		this.spouse = spouse;
 	}
 
 	public BeanFactory getBeanFactory() {
 		return beanFactory;
+	}
+
+	@Override
+	public void setBeanFactory(BeanFactory beanFactory) {
+		this.beanFactory = beanFactory;
 	}
 
 }

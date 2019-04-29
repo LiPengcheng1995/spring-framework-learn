@@ -16,10 +16,10 @@
 
 package org.springframework.beans.factory.xml;
 
-import java.io.Serializable;
-
 import org.springframework.tests.sample.beans.IndexedTestBean;
 import org.springframework.tests.sample.beans.TestBean;
+
+import java.io.Serializable;
 
 /**
  * Simple bean used to check constructor dependency checking.
@@ -73,8 +73,16 @@ public class ConstructorDependenciesBean implements Serializable {
 		return age;
 	}
 
+	public void setAge(int age) {
+		this.age = age;
+	}
+
 	public String getName() {
 		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public TestBean getSpouse1() {
@@ -87,14 +95,6 @@ public class ConstructorDependenciesBean implements Serializable {
 
 	public IndexedTestBean getOther() {
 		return other;
-	}
-
-	public void setAge(int age) {
-		this.age = age;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 }

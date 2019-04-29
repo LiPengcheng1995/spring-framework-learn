@@ -16,12 +16,12 @@
 
 package org.springframework.beans.factory.config;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Constructor;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyValues;
 import org.springframework.lang.Nullable;
+
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Constructor;
 
 /**
  * Adapter that implements all methods on {@link SmartInstantiationAwareBeanPostProcessor}

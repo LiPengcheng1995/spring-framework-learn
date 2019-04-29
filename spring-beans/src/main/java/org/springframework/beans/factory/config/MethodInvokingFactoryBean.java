@@ -77,9 +77,9 @@ import org.springframework.lang.Nullable;
  *
  * @author Colin Sampaleanu
  * @author Juergen Hoeller
- * @since 21.11.2003
  * @see MethodInvokingBean
  * @see org.springframework.util.MethodInvoker
+ * @since 21.11.2003
  */
 public class MethodInvokingFactoryBean extends MethodInvokingBean implements FactoryBean<Object> {
 
@@ -87,18 +87,11 @@ public class MethodInvokingFactoryBean extends MethodInvokingBean implements Fac
 
 	private boolean initialized = false;
 
-	/** Method call result in the singleton case */
+	/**
+	 * Method call result in the singleton case
+	 */
 	@Nullable
 	private Object singletonObject;
-
-
-	/**
-	 * Set if a singleton should be created, or a new object on each
-	 * {@link #getObject()} request otherwise. Default is "true".
-	 */
-	public void setSingleton(boolean singleton) {
-		this.singleton = singleton;
-	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -108,7 +101,6 @@ public class MethodInvokingFactoryBean extends MethodInvokingBean implements Fac
 			this.singletonObject = invokeWithTargetException();
 		}
 	}
-
 
 	/**
 	 * Returns the same value each time if the singleton property is set
@@ -124,8 +116,7 @@ public class MethodInvokingFactoryBean extends MethodInvokingBean implements Fac
 			}
 			// Singleton: return shared object.
 			return this.singletonObject;
-		}
-		else {
+		} else {
 			// Prototype: new object on each call.
 			return invokeWithTargetException();
 		}
@@ -147,6 +138,14 @@ public class MethodInvokingFactoryBean extends MethodInvokingBean implements Fac
 	@Override
 	public boolean isSingleton() {
 		return this.singleton;
+	}
+
+	/**
+	 * Set if a singleton should be created, or a new object on each
+	 * {@link #getObject()} request otherwise. Default is "true".
+	 */
+	public void setSingleton(boolean singleton) {
+		this.singleton = singleton;
 	}
 
 }

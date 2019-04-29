@@ -16,11 +16,11 @@
 
 package org.springframework.beans.factory.serviceloader;
 
-import java.util.Iterator;
-import java.util.ServiceLoader;
-
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.lang.Nullable;
+
+import java.util.Iterator;
+import java.util.ServiceLoader;
 
 /**
  * {@link org.springframework.beans.factory.FactoryBean} that exposes the
@@ -28,8 +28,8 @@ import org.springframework.lang.Nullable;
  * the JDK 1.6 {@link java.util.ServiceLoader} facility.
  *
  * @author Juergen Hoeller
- * @since 2.5
  * @see java.util.ServiceLoader
+ * @since 2.5
  */
 public class ServiceFactoryBean extends AbstractServiceLoaderBasedFactoryBean implements BeanClassLoaderAware {
 

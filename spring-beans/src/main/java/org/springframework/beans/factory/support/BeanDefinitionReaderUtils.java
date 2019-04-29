@@ -31,9 +31,9 @@ import org.springframework.util.StringUtils;
  *
  * @author Juergen Hoeller
  * @author Rob Harrop
- * @since 1.1
  * @see PropertiesBeanDefinitionReader
  * @see org.springframework.beans.factory.xml.DefaultBeanDefinitionDocumentReader
+ * @since 1.1
  */
 public class BeanDefinitionReaderUtils {
 
@@ -47,10 +47,11 @@ public class BeanDefinitionReaderUtils {
 	/**
 	 * Create a new GenericBeanDefinition for the given parent name and class name,
 	 * eagerly loading the bean class if a ClassLoader has been specified.
-	 * @param parentName the name of the parent bean, if any
-	 * @param className the name of the bean class, if any
+	 *
+	 * @param parentName  the name of the parent bean, if any
+	 * @param className   the name of the bean class, if any
 	 * @param classLoader the ClassLoader to use for loading bean classes
-	 * (can be {@code null} to just register bean classes by name)
+	 *                    (can be {@code null} to just register bean classes by name)
 	 * @return the bean definition
 	 * @throws ClassNotFoundException if the bean class could not be loaded
 	 */
@@ -62,8 +63,7 @@ public class BeanDefinitionReaderUtils {
 		if (className != null) {
 			if (classLoader != null) {
 				bd.setBeanClass(ClassUtils.forName(className, classLoader));
-			}
-			else {
+			} else {
 				bd.setBeanClassName(className);
 			}
 		}
@@ -73,12 +73,13 @@ public class BeanDefinitionReaderUtils {
 	/**
 	 * Generate a bean name for the given top-level bean definition,
 	 * unique within the given bean factory.
+	 *
 	 * @param beanDefinition the bean definition to generate a bean name for
-	 * @param registry the bean factory that the definition is going to be
-	 * registered with (to check for existing bean names)
+	 * @param registry       the bean factory that the definition is going to be
+	 *                       registered with (to check for existing bean names)
 	 * @return the generated bean name
 	 * @throws BeanDefinitionStoreException if no unique name can be generated
-	 * for the given bean definition
+	 *                                      for the given bean definition
 	 * @see #generateBeanName(BeanDefinition, BeanDefinitionRegistry, boolean)
 	 */
 	public static String generateBeanName(BeanDefinition beanDefinition, BeanDefinitionRegistry registry)
@@ -90,15 +91,16 @@ public class BeanDefinitionReaderUtils {
 	/**
 	 * Generate a bean name for the given bean definition, unique within the
 	 * given bean factory.
-	 * @param definition the bean definition to generate a bean name for
-	 * @param registry the bean factory that the definition is going to be
-	 * registered with (to check for existing bean names)
+	 *
+	 * @param definition  the bean definition to generate a bean name for
+	 * @param registry    the bean factory that the definition is going to be
+	 *                    registered with (to check for existing bean names)
 	 * @param isInnerBean whether the given bean definition will be registered
-	 * as inner bean or as top-level bean (allowing for special name generation
-	 * for inner beans versus top-level beans)
+	 *                    as inner bean or as top-level bean (allowing for special name generation
+	 *                    for inner beans versus top-level beans)
 	 * @return the generated bean name
 	 * @throws BeanDefinitionStoreException if no unique name can be generated
-	 * for the given bean definition
+	 *                                      for the given bean definition
 	 */
 	public static String generateBeanName(
 			BeanDefinition definition, BeanDefinitionRegistry registry, boolean isInnerBean)
@@ -108,8 +110,7 @@ public class BeanDefinitionReaderUtils {
 		if (generatedBeanName == null) {
 			if (definition.getParentName() != null) {
 				generatedBeanName = definition.getParentName() + "$child";
-			}
-			else if (definition.getFactoryBeanName() != null) {
+			} else if (definition.getFactoryBeanName() != null) {
 				generatedBeanName = definition.getFactoryBeanName() + "$created";
 			}
 		}
@@ -122,8 +123,7 @@ public class BeanDefinitionReaderUtils {
 		if (isInnerBean) {
 			// Inner bean: generate identity hashcode suffix.
 			id = generatedBeanName + GENERATED_BEAN_NAME_SEPARATOR + ObjectUtils.getIdentityHexString(definition);
-		}
-		else {
+		} else {
 			// Top-level bean: use plain class name.
 			// Increase counter until the id is unique.
 			int counter = -1;
@@ -137,8 +137,9 @@ public class BeanDefinitionReaderUtils {
 
 	/**
 	 * Register the given bean definition with the given bean factory.
+	 *
 	 * @param definitionHolder the bean definition including name and aliases
-	 * @param registry the bean factory to register with
+	 * @param registry         the bean factory to register with
 	 * @throws BeanDefinitionStoreException if registration failed
 	 */
 	public static void registerBeanDefinition(
@@ -161,11 +162,12 @@ public class BeanDefinitionReaderUtils {
 	/**
 	 * Register the given bean definition with a generated name,
 	 * unique within the given bean factory.
+	 *
 	 * @param definition the bean definition to generate a bean name for
-	 * @param registry the bean factory to register with
+	 * @param registry   the bean factory to register with
 	 * @return the generated bean name
 	 * @throws BeanDefinitionStoreException if no unique name can be generated
-	 * for the given bean definition or the definition cannot be registered
+	 *                                      for the given bean definition or the definition cannot be registered
 	 */
 	public static String registerWithGeneratedName(
 			AbstractBeanDefinition definition, BeanDefinitionRegistry registry)

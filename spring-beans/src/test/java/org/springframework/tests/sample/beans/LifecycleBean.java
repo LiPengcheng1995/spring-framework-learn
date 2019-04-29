@@ -17,11 +17,7 @@
 package org.springframework.tests.sample.beans;
 
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.BeanNameAware;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.*;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 
 /**
@@ -50,22 +46,21 @@ public class LifecycleBean implements BeanNameAware, BeanFactoryAware, Initializ
 
 	protected boolean destroyed;
 
+	public boolean isInitMethodDeclared() {
+		return initMethodDeclared;
+	}
 
 	public void setInitMethodDeclared(boolean initMethodDeclared) {
 		this.initMethodDeclared = initMethodDeclared;
 	}
 
-	public boolean isInitMethodDeclared() {
-		return initMethodDeclared;
+	public String getBeanName() {
+		return beanName;
 	}
 
 	@Override
 	public void setBeanName(String name) {
 		this.beanName = name;
-	}
-
-	public String getBeanName() {
-		return beanName;
 	}
 
 	@Override

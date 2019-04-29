@@ -18,7 +18,6 @@ package org.springframework.beans.factory.annotation;
 
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.tests.sample.beans.TestBean;
@@ -95,8 +94,7 @@ public class LookupAnnotationTests {
 		try {
 			bean.getThreeArguments("name", 1, 2);
 			fail("TestBean does not have a three arg constructor so this should not have worked");
-		}
-		catch (AbstractMethodError ex) {
+		} catch (AbstractMethodError ex) {
 		}
 		assertSame(bean, beanFactory.getBean(BeanConsumer.class).abstractBean);
 	}

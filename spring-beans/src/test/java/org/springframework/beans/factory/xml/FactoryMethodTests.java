@@ -16,17 +16,16 @@
 
 package org.springframework.beans.factory.xml;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
-
 import org.junit.Test;
-
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.tests.sample.beans.TestBean;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
 
 import static org.junit.Assert.*;
 
@@ -79,8 +78,7 @@ public class FactoryMethodTests {
 		try {
 			xbf.getBean("defaultTestBeanWithInvalidDestroyMethod");
 			fail("Should have thrown BeanCreationException");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			// expected
 		}
 	}
@@ -96,8 +94,7 @@ public class FactoryMethodTests {
 		try {
 			xbf.getBean("nullWithProperty");
 			fail("Should have thrown BeanCreationException");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			// expected
 		}
 	}
@@ -252,8 +249,7 @@ public class FactoryMethodTests {
 		try {
 			xbf.getBean("noMatchPrototype");
 			fail("No static method matched");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			// Ok
 		}
 	}
@@ -266,8 +262,7 @@ public class FactoryMethodTests {
 		try {
 			xbf.getBean("invalidPrototype");
 			fail("Should have thrown BeanCreationException");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			assertTrue(ex.getMessage().contains("nonExisting(TestBean)"));
 		}
 	}
@@ -280,8 +275,7 @@ public class FactoryMethodTests {
 		try {
 			xbf.getBean("invalidPrototype", new TestBean());
 			fail("Should have thrown BeanCreationException");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			assertTrue(ex.getMessage().contains("nonExisting(TestBean)"));
 		}
 	}
@@ -394,14 +388,14 @@ class MailSession {
 	private MailSession() {
 	}
 
-	public void setProperties(Properties props) {
-		this.props = props;
-	}
-
 	public static MailSession getDefaultInstance(Properties props) {
 		MailSession session = new MailSession();
 		session.setProperties(props);
 		return session;
+	}
+
+	public void setProperties(Properties props) {
+		this.props = props;
 	}
 
 	public Object getProperty(String key) {

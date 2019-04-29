@@ -34,12 +34,12 @@ public class InstanceFactory {
 		count++;
 	}
 
-	public void setFactoryBeanProperty(String s) {
-		this.factoryBeanProperty = s;
-	}
-
 	public String getFactoryBeanProperty() {
 		return this.factoryBeanProperty;
+	}
+
+	public void setFactoryBeanProperty(String s) {
+		this.factoryBeanProperty = s;
 	}
 
 	public FactoryMethods defaultInstance() {

@@ -16,8 +16,6 @@
 
 package org.springframework.beans.factory.config;
 
-import java.lang.reflect.InvocationTargetException;
-
 import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanFactory;
@@ -26,6 +24,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.support.ArgumentConvertingMethodInvoker;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
+
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Simple method invoker bean: just invoking a target method, not expecting a result
@@ -60,9 +60,9 @@ import org.springframework.util.ClassUtils;
  * &lt;/bean></pre>
  *
  * @author Juergen Hoeller
- * @since 4.0.3
  * @see MethodInvokingFactoryBean
  * @see org.springframework.util.MethodInvoker
+ * @since 4.0.3
  */
 public class MethodInvokingBean extends ArgumentConvertingMethodInvoker
 		implements BeanClassLoaderAware, BeanFactoryAware, InitializingBean {
@@ -94,14 +94,14 @@ public class MethodInvokingBean extends ArgumentConvertingMethodInvoker
 	/**
 	 * Obtain the TypeConverter from the BeanFactory that this bean runs in,
 	 * if possible.
+	 *
 	 * @see ConfigurableBeanFactory#getTypeConverter()
 	 */
 	@Override
 	protected TypeConverter getDefaultTypeConverter() {
 		if (this.beanFactory != null) {
 			return this.beanFactory.getTypeConverter();
-		}
-		else {
+		} else {
 			return super.getDefaultTypeConverter();
 		}
 	}
@@ -121,8 +121,7 @@ public class MethodInvokingBean extends ArgumentConvertingMethodInvoker
 	protected Object invokeWithTargetException() throws Exception {
 		try {
 			return invoke();
-		}
-		catch (InvocationTargetException ex) {
+		} catch (InvocationTargetException ex) {
 			if (ex.getTargetException() instanceof Exception) {
 				throw (Exception) ex.getTargetException();
 			}

@@ -16,19 +16,14 @@
 
 package org.springframework.beans.factory.config;
 
-import java.lang.reflect.Field;
-
-import org.springframework.beans.factory.BeanClassLoaderAware;
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.BeanNameAware;
-import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.FactoryBeanNotInitializedException;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.*;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
+
+import java.lang.reflect.Field;
 
 /**
  * {@link FactoryBean} which retrieves a static or non-static field value.
@@ -51,8 +46,8 @@ import org.springframework.util.StringUtils;
  * <pre class="code">&lt;util:constant static-field="java.sql.Connection.TRANSACTION_SERIALIZABLE"/&gt;</pre>
  *
  * @author Juergen Hoeller
- * @since 1.1
  * @see #setStaticField
+ * @since 1.1
  */
 public class FieldRetrievingFactoryBean
 		implements FactoryBean<Object>, BeanNameAware, BeanClassLoaderAware, InitializingBean {
@@ -79,18 +74,6 @@ public class FieldRetrievingFactoryBean
 	@Nullable
 	private Field fieldObject;
 
-
-	/**
-	 * Set the target class on which the field is defined.
-	 * Only necessary when the target field is static; else,
-	 * a target object needs to be specified anyway.
-	 * @see #setTargetObject
-	 * @see #setTargetField
-	 */
-	public void setTargetClass(@Nullable Class<?> targetClass) {
-		this.targetClass = targetClass;
-	}
-
 	/**
 	 * Return the target class on which the field is defined.
 	 */
@@ -100,14 +83,15 @@ public class FieldRetrievingFactoryBean
 	}
 
 	/**
-	 * Set the target object on which the field is defined.
-	 * Only necessary when the target field is not static;
-	 * else, a target class is sufficient.
-	 * @see #setTargetClass
+	 * Set the target class on which the field is defined.
+	 * Only necessary when the target field is static; else,
+	 * a target object needs to be specified anyway.
+	 *
+	 * @see #setTargetObject
 	 * @see #setTargetField
 	 */
-	public void setTargetObject(@Nullable Object targetObject) {
-		this.targetObject = targetObject;
+	public void setTargetClass(@Nullable Class<?> targetClass) {
+		this.targetClass = targetClass;
 	}
 
 	/**
@@ -119,14 +103,15 @@ public class FieldRetrievingFactoryBean
 	}
 
 	/**
-	 * Set the name of the field to be retrieved.
-	 * Refers to either a static field or a non-static field,
-	 * depending on a target object being set.
+	 * Set the target object on which the field is defined.
+	 * Only necessary when the target field is not static;
+	 * else, a target class is sufficient.
+	 *
 	 * @see #setTargetClass
-	 * @see #setTargetObject
+	 * @see #setTargetField
 	 */
-	public void setTargetField(@Nullable String targetField) {
-		this.targetField = (targetField != null ? StringUtils.trimAllWhitespace(targetField) : null);
+	public void setTargetObject(@Nullable Object targetObject) {
+		this.targetObject = targetObject;
 	}
 
 	/**
@@ -138,9 +123,22 @@ public class FieldRetrievingFactoryBean
 	}
 
 	/**
+	 * Set the name of the field to be retrieved.
+	 * Refers to either a static field or a non-static field,
+	 * depending on a target object being set.
+	 *
+	 * @see #setTargetClass
+	 * @see #setTargetObject
+	 */
+	public void setTargetField(@Nullable String targetField) {
+		this.targetField = (targetField != null ? StringUtils.trimAllWhitespace(targetField) : null);
+	}
+
+	/**
 	 * Set a fully qualified static field name to retrieve,
 	 * e.g. "example.MyExampleClass.MY_EXAMPLE_FIELD".
 	 * Convenient alternative to specifying targetClass and targetField.
+	 *
 	 * @see #setTargetClass
 	 * @see #setTargetField
 	 */
@@ -188,15 +186,13 @@ public class FieldRetrievingFactoryBean
 			if (lastDotIndex == -1 || lastDotIndex == this.staticField.length()) {
 				throw new IllegalArgumentException(
 						"staticField must be a fully qualified class plus static field name: " +
-						"e.g. 'example.MyExampleClass.MY_EXAMPLE_FIELD'");
+								"e.g. 'example.MyExampleClass.MY_EXAMPLE_FIELD'");
 			}
 			String className = this.staticField.substring(0, lastDotIndex);
 			String fieldName = this.staticField.substring(lastDotIndex + 1);
 			this.targetClass = ClassUtils.forName(className, this.beanClassLoader);
 			this.targetField = fieldName;
-		}
-
-		else if (this.targetField == null) {
+		} else if (this.targetField == null) {
 			// Either targetClass or targetObject specified.
 			throw new IllegalArgumentException("targetField is required");
 		}
@@ -217,8 +213,7 @@ public class FieldRetrievingFactoryBean
 		if (this.targetObject != null) {
 			// instance field
 			return this.fieldObject.get(this.targetObject);
-		}
-		else {
+		} else {
 			// class field
 			return this.fieldObject.get(null);
 		}

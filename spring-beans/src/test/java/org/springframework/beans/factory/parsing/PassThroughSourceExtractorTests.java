@@ -18,7 +18,8 @@ package org.springframework.beans.factory.parsing;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
 /**
  * Unit tests for {@link PassThroughSourceExtractor}.
@@ -30,7 +31,7 @@ public class PassThroughSourceExtractorTests {
 
 	@Test
 	public void testPassThroughContract() throws Exception {
-		Object source  = new Object();
+		Object source = new Object();
 		Object extractedSource = new PassThroughSourceExtractor().extractSource(source, null);
 		assertSame("The contract of PassThroughSourceExtractor states that the supplied " +
 				"source object *must* be returned as-is", source, extractedSource);

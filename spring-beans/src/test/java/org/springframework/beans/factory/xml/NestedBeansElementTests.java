@@ -1,15 +1,14 @@
 package org.springframework.beans.factory.xml;
 
 import org.junit.Test;
-
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for new nested beans element support in Spring XML
@@ -18,7 +17,7 @@ import static org.junit.Assert.*;
  */
 public class NestedBeansElementTests {
 	private final Resource XML =
-		new ClassPathResource("NestedBeansElementTests-context.xml", this.getClass());
+			new ClassPathResource("NestedBeansElementTests-context.xml", this.getClass());
 
 	@Test
 	public void getBean_withoutActiveProfile() {

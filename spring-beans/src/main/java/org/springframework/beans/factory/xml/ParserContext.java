@@ -16,9 +16,6 @@
 
 package org.springframework.beans.factory.xml;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.parsing.BeanComponentDefinition;
 import org.springframework.beans.factory.parsing.ComponentDefinition;
@@ -27,6 +24,9 @@ import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.lang.Nullable;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 /**
  * Context that gets passed along a bean definition parsing process,
  * encapsulating all relevant configuration as well as state.
@@ -34,20 +34,18 @@ import org.springframework.lang.Nullable;
  *
  * @author Rob Harrop
  * @author Juergen Hoeller
- * @since 2.0
  * @see XmlReaderContext
  * @see BeanDefinitionParserDelegate
+ * @since 2.0
  */
 public final class ParserContext {
 
 	private final XmlReaderContext readerContext;
 
 	private final BeanDefinitionParserDelegate delegate;
-
+	private final Deque<CompositeComponentDefinition> containingComponents = new ArrayDeque<>();
 	@Nullable
 	private BeanDefinition containingBeanDefinition;
-
-	private final Deque<CompositeComponentDefinition> containingComponents = new ArrayDeque<>();
 
 
 	public ParserContext(XmlReaderContext readerContext, BeanDefinitionParserDelegate delegate) {
@@ -56,7 +54,7 @@ public final class ParserContext {
 	}
 
 	public ParserContext(XmlReaderContext readerContext, BeanDefinitionParserDelegate delegate,
-			@Nullable BeanDefinition containingBeanDefinition) {
+						 @Nullable BeanDefinition containingBeanDefinition) {
 
 		this.readerContext = readerContext;
 		this.delegate = delegate;
@@ -115,8 +113,7 @@ public final class ParserContext {
 		CompositeComponentDefinition containingComponent = getContainingComponent();
 		if (containingComponent != null) {
 			containingComponent.addNestedComponent(component);
-		}
-		else {
+		} else {
 			this.readerContext.fireComponentRegistered(component);
 		}
 	}

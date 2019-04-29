@@ -45,11 +45,11 @@ public interface ITestBean extends AgeHolder {
 
 	Integer[][] getNestedIntegerArray();
 
+	void setNestedIntegerArray(Integer[][] nestedIntegerArray);
+
 	Integer[] getSomeIntegerArray();
 
 	void setSomeIntegerArray(Integer[] someIntegerArray);
-
-	void setNestedIntegerArray(Integer[][] nestedIntegerArray);
 
 	int[] getSomeIntArray();
 
@@ -74,6 +74,7 @@ public interface ITestBean extends AgeHolder {
 
 	/**
 	 * Increment the age by one.
+	 *
 	 * @return the previous age
 	 */
 	int haveBirthday();

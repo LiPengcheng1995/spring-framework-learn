@@ -18,13 +18,7 @@ package org.springframework.beans.factory.wiring;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.BeanCurrentlyInCreationException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.*;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
@@ -38,18 +32,20 @@ import org.springframework.util.ClassUtils;
  * {@link BeanWiringInfoResolver} interface. The default implementation looks for
  * a bean with the same name as the fully-qualified class name. (This is the default
  * name of the bean in a Spring XML file if the '{@code id}' attribute is not used.)
-
+ *
  * @author Rob Harrop
  * @author Rod Johnson
  * @author Juergen Hoeller
  * @author Adrian Colyer
- * @since 2.0
  * @see #setBeanWiringInfoResolver
  * @see ClassNameBeanWiringInfoResolver
+ * @since 2.0
  */
 public class BeanConfigurerSupport implements BeanFactoryAware, InitializingBean, DisposableBean {
 
-	/** Logger available to subclasses */
+	/**
+	 * Logger available to subclasses
+	 */
 	protected final Log logger = LogFactory.getLog(getClass());
 
 	@Nullable
@@ -63,6 +59,7 @@ public class BeanConfigurerSupport implements BeanFactoryAware, InitializingBean
 	 * Set the {@link BeanWiringInfoResolver} to use.
 	 * <p>The default behavior is to look for a bean with the same name as the class.
 	 * As an alternative, consider using annotation-driven bean wiring.
+	 *
 	 * @see ClassNameBeanWiringInfoResolver
 	 * @see org.springframework.beans.factory.annotation.AnnotationBeanWiringInfoResolver
 	 */
@@ -78,7 +75,7 @@ public class BeanConfigurerSupport implements BeanFactoryAware, InitializingBean
 	public void setBeanFactory(BeanFactory beanFactory) {
 		if (!(beanFactory instanceof ConfigurableListableBeanFactory)) {
 			throw new IllegalArgumentException(
-				 "Bean configurer aspect needs to run in a ConfigurableListableBeanFactory: " + beanFactory);
+					"Bean configurer aspect needs to run in a ConfigurableListableBeanFactory: " + beanFactory);
 		}
 		this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
 		if (this.beanWiringInfoResolver == null) {
@@ -90,6 +87,7 @@ public class BeanConfigurerSupport implements BeanFactoryAware, InitializingBean
 	 * Create the default BeanWiringInfoResolver to be used if none was
 	 * specified explicitly.
 	 * <p>The default implementation builds a {@link ClassNameBeanWiringInfoResolver}.
+	 *
 	 * @return the default BeanWiringInfoResolver (never {@code null})
 	 */
 	@Nullable
@@ -120,6 +118,7 @@ public class BeanConfigurerSupport implements BeanFactoryAware, InitializingBean
 	 * Configure the bean instance.
 	 * <p>Subclasses can override this to provide custom configuration logic.
 	 * Typically called by an aspect, for all bean instances matched by a pointcut.
+	 *
 	 * @param beanInstance the bean instance to configure (must <b>not</b> be {@code null})
 	 */
 	public void configureBean(Object beanInstance) {
@@ -150,13 +149,11 @@ public class BeanConfigurerSupport implements BeanFactoryAware, InitializingBean
 				// Perform autowiring (also applying standard factory / post-processor callbacks).
 				beanFactory.autowireBeanProperties(beanInstance, bwi.getAutowireMode(), bwi.getDependencyCheck());
 				beanFactory.initializeBean(beanInstance, (beanName != null ? beanName : ""));
-			}
-			else {
+			} else {
 				// Perform explicit wiring based on the specified bean definition.
 				beanFactory.configureBean(beanInstance, (beanName != null ? beanName : ""));
 			}
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			Throwable rootCause = ex.getMostSpecificCause();
 			if (rootCause instanceof BeanCurrentlyInCreationException) {
 				BeanCreationException bce = (BeanCreationException) rootCause;

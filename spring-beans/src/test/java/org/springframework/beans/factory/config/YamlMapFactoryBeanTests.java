@@ -16,19 +16,19 @@
 
 package org.springframework.beans.factory.config;
 
+import org.junit.Test;
+import org.springframework.core.io.AbstractResource;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.FileSystemResource;
+import org.yaml.snakeyaml.constructor.DuplicateKeyException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.junit.Test;
-import org.yaml.snakeyaml.constructor.DuplicateKeyException;
-
-import org.springframework.core.io.AbstractResource;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.FileSystemResource;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link YamlMapFactoryBean}.
@@ -78,6 +78,7 @@ public class YamlMapFactoryBeanTests {
 			public String getDescription() {
 				return "non-existent";
 			}
+
 			@Override
 			public InputStream getInputStream() throws IOException {
 				throw new IOException("planned");

@@ -16,12 +16,12 @@
 
 package org.springframework.beans.factory.config;
 
-import java.util.Properties;
-
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.CollectionFactory;
 import org.springframework.lang.Nullable;
+
+import java.util.Properties;
 
 /**
  * Factory for {@link java.util.Properties} that reads from a YAML source,
@@ -48,7 +48,7 @@ import org.springframework.lang.Nullable;
  *     url: https://foo.bar.com
  *     name: My Cool App
  * </pre>
- *
+ * <p>
  * is transformed into these properties:
  *
  * <pre class="code">
@@ -57,7 +57,7 @@ import org.springframework.lang.Nullable;
  * environments.prod.url=https://foo.bar.com
  * environments.prod.name=My Cool App
  * </pre>
- *
+ * <p>
  * Lists are split as property keys with <code>[]</code> dereferencers, for
  * example this YAML:
  *
@@ -66,7 +66,7 @@ import org.springframework.lang.Nullable;
  * - dev.bar.com
  * - foo.bar.com
  * </pre>
- *
+ * <p>
  * becomes properties like this:
  *
  * <pre class="code">
@@ -88,6 +88,10 @@ public class YamlPropertiesFactoryBean extends YamlProcessor implements FactoryB
 	@Nullable
 	private Properties properties;
 
+	@Override
+	public boolean isSingleton() {
+		return this.singleton;
+	}
 
 	/**
 	 * Set if a singleton should be created, or a new object on each request
@@ -95,11 +99,6 @@ public class YamlPropertiesFactoryBean extends YamlProcessor implements FactoryB
 	 */
 	public void setSingleton(boolean singleton) {
 		this.singleton = singleton;
-	}
-
-	@Override
-	public boolean isSingleton() {
-		return this.singleton;
 	}
 
 	@Override
@@ -127,6 +126,7 @@ public class YamlPropertiesFactoryBean extends YamlProcessor implements FactoryB
 	 * properties with the content of all resources.
 	 * <p>Invoked lazily the first time {@link #getObject()} is invoked in
 	 * case of a shared singleton; else, on each {@link #getObject()} call.
+	 *
 	 * @return the object returned by this factory
 	 * @see #process(MatchCallback) ()
 	 */

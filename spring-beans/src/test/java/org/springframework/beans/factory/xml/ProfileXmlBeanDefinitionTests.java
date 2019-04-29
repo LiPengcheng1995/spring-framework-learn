@@ -20,15 +20,14 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Test;
-
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.ClassPathResource;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests various combinations of profile declarations against various profile
@@ -58,9 +57,30 @@ public class ProfileXmlBeanDefinitionTests {
 	private static final String NULL_ACTIVE = null;
 	private static final String UNKNOWN_ACTIVE = "unknown";
 	private static final String[] NONE_ACTIVE = new String[0];
-	private static final String[] MULTI_ACTIVE = new String[] { PROD_ACTIVE, DEV_ACTIVE };
+	private static final String[] MULTI_ACTIVE = new String[]{PROD_ACTIVE, DEV_ACTIVE};
 
 	private static final String TARGET_BEAN = "foo";
+
+	private static Matcher<BeanDefinitionRegistry> containsBeanDefinition(final String beanName) {
+		return new TypeSafeMatcher<BeanDefinitionRegistry>() {
+
+			@Override
+			public void describeTo(Description desc) {
+				desc.appendText("a BeanDefinitionRegistry containing bean named ")
+						.appendValue(beanName);
+			}
+
+			@Override
+			public boolean matchesSafely(BeanDefinitionRegistry beanFactory) {
+				return beanFactory.containsBeanDefinition(beanName);
+			}
+
+		};
+	}
+
+	private static Matcher<BeanDefinitionRegistry> containsTargetBean() {
+		return containsBeanDefinition(TARGET_BEAN);
+	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testProfileValidation() {
@@ -177,7 +197,6 @@ public class ProfileXmlBeanDefinitionTests {
 		}
 	}
 
-
 	private BeanDefinitionRegistry beanFactoryFor(String xmlName, String... activeProfiles) {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
@@ -186,27 +205,5 @@ public class ProfileXmlBeanDefinitionTests {
 		reader.setEnvironment(env);
 		reader.loadBeanDefinitions(new ClassPathResource(xmlName, getClass()));
 		return beanFactory;
-	}
-
-
-	private static Matcher<BeanDefinitionRegistry> containsBeanDefinition(final String beanName) {
-		return new TypeSafeMatcher<BeanDefinitionRegistry>() {
-
-			@Override
-			public void describeTo(Description desc) {
-				desc.appendText("a BeanDefinitionRegistry containing bean named ")
-					.appendValue(beanName);
-			}
-
-			@Override
-			public boolean matchesSafely(BeanDefinitionRegistry beanFactory) {
-				return beanFactory.containsBeanDefinition(beanName);
-			}
-
-		};
-	}
-
-	private static Matcher<BeanDefinitionRegistry> containsTargetBean() {
-		return containsBeanDefinition(TARGET_BEAN);
 	}
 }

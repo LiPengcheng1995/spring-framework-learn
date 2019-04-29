@@ -27,6 +27,10 @@ public class CountingFactory implements FactoryBean {
 	private static int factoryBeanInstanceCount = 0;
 
 
+	public CountingFactory() {
+		factoryBeanInstanceCount++;
+	}
+
 	/**
 	 * Clear static state.
 	 */
@@ -36,11 +40,6 @@ public class CountingFactory implements FactoryBean {
 
 	public static int getFactoryBeanInstanceCount() {
 		return factoryBeanInstanceCount;
-	}
-
-
-	public CountingFactory() {
-		factoryBeanInstanceCount++;
 	}
 
 	public void setTestBean(TestBean tb) {

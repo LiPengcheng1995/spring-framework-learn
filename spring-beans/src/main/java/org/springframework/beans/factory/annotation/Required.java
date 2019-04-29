@@ -29,8 +29,8 @@ import java.lang.annotation.Target;
  * class (which, by default, checks for the presence of this annotation).
  *
  * @author Rob Harrop
- * @since 2.0
  * @see RequiredAnnotationBeanPostProcessor
+ * @since 2.0
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

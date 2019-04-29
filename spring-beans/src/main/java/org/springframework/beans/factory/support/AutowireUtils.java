@@ -16,26 +16,18 @@
 
 package org.springframework.beans.factory.support;
 
-import java.beans.PropertyDescriptor;
-import java.io.Serializable;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Proxy;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.util.Arrays;
-import java.util.Set;
-
 import org.springframework.beans.BeanMetadataElement;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.TypedStringValue;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+
+import java.beans.PropertyDescriptor;
+import java.io.Serializable;
+import java.lang.reflect.*;
+import java.util.Arrays;
+import java.util.Set;
 
 /**
  * Utility class that contains various methods useful for the implementation of
@@ -44,8 +36,8 @@ import org.springframework.util.ClassUtils;
  * @author Juergen Hoeller
  * @author Mark Fisher
  * @author Sam Brannen
- * @since 1.1.2
  * @see AbstractAutowireCapableBeanFactory
+ * @since 1.1.2
  */
 abstract class AutowireUtils {
 
@@ -54,19 +46,20 @@ abstract class AutowireUtils {
 	 * a maximum number of arguments. The result will contain public constructors first,
 	 * with decreasing number of arguments, then non-public constructors, again with
 	 * decreasing number of arguments.
+	 *
 	 * @param constructors the constructor array to sort
 	 */
 	public static void sortConstructors(Constructor<?>[] constructors) {
 		Arrays.sort(constructors, (c1, c2) -> {
-            boolean p1 = Modifier.isPublic(c1.getModifiers());
-            boolean p2 = Modifier.isPublic(c2.getModifiers());
-            if (p1 != p2) {
-                return (p1 ? -1 : 1);
-            }
-            int c1pl = c1.getParameterCount();
-            int c2pl = c2.getParameterCount();
-            return (c1pl < c2pl ? 1 : (c1pl > c2pl ? -1 : 0));
-        });
+			boolean p1 = Modifier.isPublic(c1.getModifiers());
+			boolean p2 = Modifier.isPublic(c2.getModifiers());
+			if (p1 != p2) {
+				return (p1 ? -1 : 1);
+			}
+			int c1pl = c1.getParameterCount();
+			int c2pl = c2.getParameterCount();
+			return (c1pl < c2pl ? 1 : (c1pl > c2pl ? -1 : 0));
+		});
 	}
 
 	/**
@@ -74,24 +67,26 @@ abstract class AutowireUtils {
 	 * with a maximum of arguments. The result will contain public methods first,
 	 * with decreasing number of arguments, then non-public methods, again with
 	 * decreasing number of arguments.
+	 *
 	 * @param factoryMethods the factory method array to sort
 	 */
 	public static void sortFactoryMethods(Method[] factoryMethods) {
 		Arrays.sort(factoryMethods, (fm1, fm2) -> {
-            boolean p1 = Modifier.isPublic(fm1.getModifiers());
-            boolean p2 = Modifier.isPublic(fm2.getModifiers());
-            if (p1 != p2) {
-                return (p1 ? -1 : 1);
-            }
-            int c1pl = fm1.getParameterCount();
-            int c2pl = fm2.getParameterCount();
-            return (c1pl < c2pl ? 1 : (c1pl > c2pl ? -1 : 0));
-        });
+			boolean p1 = Modifier.isPublic(fm1.getModifiers());
+			boolean p2 = Modifier.isPublic(fm2.getModifiers());
+			if (p1 != p2) {
+				return (p1 ? -1 : 1);
+			}
+			int c1pl = fm1.getParameterCount();
+			int c2pl = fm2.getParameterCount();
+			return (c1pl < c2pl ? 1 : (c1pl > c2pl ? -1 : 0));
+		});
 	}
 
 	/**
 	 * Determine whether the given bean property is excluded from dependency checks.
 	 * <p>This implementation excludes properties defined by CGLIB.
+	 *
 	 * @param pd the PropertyDescriptor of the bean property
 	 * @return whether the bean property is excluded
 	 */
@@ -113,7 +108,8 @@ abstract class AutowireUtils {
 	/**
 	 * Return whether the setter method of the given bean property is defined
 	 * in any of the given interfaces.
-	 * @param pd the PropertyDescriptor of the bean property
+	 *
+	 * @param pd         the PropertyDescriptor of the bean property
 	 * @param interfaces the Set of interfaces (Class objects)
 	 * @return whether the setter method is defined by an interface
 	 */
@@ -134,8 +130,9 @@ abstract class AutowireUtils {
 	/**
 	 * Resolve the given autowiring value against the given required type,
 	 * e.g. an {@link ObjectFactory} value to its actual object result.
+	 *
 	 * @param autowiringValue the value to resolve
-	 * @param requiredType the type to assign the result to
+	 * @param requiredType    the type to assign the result to
 	 * @return the resolved value
 	 */
 	public static Object resolveAutowiringValue(Object autowiringValue, Class<?> requiredType) {
@@ -143,9 +140,8 @@ abstract class AutowireUtils {
 			ObjectFactory<?> factory = (ObjectFactory<?>) autowiringValue;
 			if (autowiringValue instanceof Serializable && requiredType.isInterface()) {
 				autowiringValue = Proxy.newProxyInstance(requiredType.getClassLoader(),
-						new Class<?>[] {requiredType}, new ObjectFactoryDelegatingInvocationHandler(factory));
-			}
-			else {
+						new Class<?>[]{requiredType}, new ObjectFactoryDelegatingInvocationHandler(factory));
+			} else {
 				return factory.getObject();
 			}
 		}
@@ -175,11 +171,12 @@ abstract class AutowireUtils {
 	 * Method#getGenericParameterTypes() formal argument list} for the given
 	 * method</li>
 	 * </ul>
-	 * @param method the method to introspect (never {@code null})
-	 * @param args the arguments that will be supplied to the method when it is
-	 * invoked (never {@code null})
+	 *
+	 * @param method      the method to introspect (never {@code null})
+	 * @param args        the arguments that will be supplied to the method when it is
+	 *                    invoked (never {@code null})
 	 * @param classLoader the ClassLoader to resolve class names against,
-	 * if necessary (never {@code null})
+	 *                    if necessary (never {@code null})
 	 * @return the resolved target return type or the standard method return type
 	 * @since 3.2.5
 	 */
@@ -219,32 +216,27 @@ abstract class AutowireUtils {
 							if (resolvedType != null) {
 								return resolvedType;
 							}
-						}
-						catch (ClassNotFoundException ex) {
+						} catch (ClassNotFoundException ex) {
 							throw new IllegalStateException("Failed to resolve value type [" +
 									typedValue.getTargetTypeName() + "] for factory method argument", ex);
 						}
-					}
-					else if (arg != null && !(arg instanceof BeanMetadataElement)) {
+					} else if (arg != null && !(arg instanceof BeanMetadataElement)) {
 						// Only consider argument type if it is a simple value...
 						return arg.getClass();
 					}
 					return method.getReturnType();
-				}
-				else if (methodParameterType instanceof ParameterizedType) {
+				} else if (methodParameterType instanceof ParameterizedType) {
 					ParameterizedType parameterizedType = (ParameterizedType) methodParameterType;
 					Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
 					for (Type typeArg : actualTypeArguments) {
 						if (typeArg.equals(genericReturnType)) {
 							if (arg instanceof Class) {
 								return (Class<?>) arg;
-							}
-							else {
+							} else {
 								String className = null;
 								if (arg instanceof String) {
 									className = (String) arg;
-								}
-								else if (arg instanceof TypedStringValue) {
+								} else if (arg instanceof TypedStringValue) {
 									TypedStringValue typedValue = ((TypedStringValue) arg);
 									String targetTypeName = typedValue.getTargetTypeName();
 									if (targetTypeName == null || Class.class.getName().equals(targetTypeName)) {
@@ -254,8 +246,7 @@ abstract class AutowireUtils {
 								if (className != null) {
 									try {
 										return ClassUtils.forName(className, classLoader);
-									}
-									catch (ClassNotFoundException ex) {
+									} catch (ClassNotFoundException ex) {
 										throw new IllegalStateException("Could not resolve class name [" + arg +
 												"] for factory method argument", ex);
 									}
@@ -293,18 +284,15 @@ abstract class AutowireUtils {
 			if (methodName.equals("equals")) {
 				// Only consider equal when proxies are identical.
 				return (proxy == args[0]);
-			}
-			else if (methodName.equals("hashCode")) {
+			} else if (methodName.equals("hashCode")) {
 				// Use hashCode of proxy.
 				return System.identityHashCode(proxy);
-			}
-			else if (methodName.equals("toString")) {
+			} else if (methodName.equals("toString")) {
 				return this.objectFactory.toString();
 			}
 			try {
 				return method.invoke(this.objectFactory.getObject(), args);
-			}
-			catch (InvocationTargetException ex) {
+			} catch (InvocationTargetException ex) {
 				throw ex.getTargetException();
 			}
 		}

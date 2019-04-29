@@ -33,13 +33,13 @@ public class NestedTestBean implements INestedTestBean {
 		setCompany(company);
 	}
 
-	public void setCompany(String company) {
-		this.company = (company != null ? company : "");
-	}
-
 	@Override
 	public String getCompany() {
 		return company;
+	}
+
+	public void setCompany(String company) {
+		this.company = (company != null ? company : "");
 	}
 
 	@Override

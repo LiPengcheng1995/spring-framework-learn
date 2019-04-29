@@ -597,11 +597,11 @@ public class ExtendedBeanInfoTests {
 			// non-standard indexed write method
 			public C setFoos(int i, String foo) {
 				return this;
-			}			public C setFoos(String[] foos) {
-				return this;
 			}
 
-
+			public C setFoos(String[] foos) {
+				return this;
+			}
 
 
 		}

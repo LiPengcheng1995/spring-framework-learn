@@ -17,12 +17,10 @@
 package org.springframework.beans.factory.xml;
 
 import org.junit.Test;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.tests.sample.beans.TestBean;
-
 import org.xml.sax.SAXParseException;
 
 import static org.junit.Assert.*;
@@ -39,8 +37,7 @@ public class SchemaValidationTests {
 		try {
 			reader.loadBeanDefinitions(new ClassPathResource("invalidPerSchema.xml", getClass()));
 			fail("Should not be able to parse a file with errors");
-		}
-		catch (BeansException ex) {
+		} catch (BeansException ex) {
 			assertTrue(ex.getCause() instanceof SAXParseException);
 		}
 	}
@@ -53,8 +50,7 @@ public class SchemaValidationTests {
 		try {
 			reader.loadBeanDefinitions(new ClassPathResource("invalidPerSchema.xml", getClass()));
 			fail("Should not be able to parse a file with errors");
-		}
-		catch (BeansException ex) {
+		} catch (BeansException ex) {
 			assertTrue(ex.getCause() instanceof SAXParseException);
 		}
 	}

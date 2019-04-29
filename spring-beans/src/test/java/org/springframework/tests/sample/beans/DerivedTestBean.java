@@ -16,10 +16,10 @@
 
 package org.springframework.tests.sample.beans;
 
-import java.io.Serializable;
-
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.DisposableBean;
+
+import java.io.Serializable;
 
 /**
  * @author Juergen Hoeller
@@ -50,17 +50,16 @@ public class DerivedTestBean extends TestBean implements Serializable, BeanNameA
 		return new DerivedTestBean(names);
 	}
 
+	@Override
+	public String getBeanName() {
+		return beanName;
+	}
 
 	@Override
 	public void setBeanName(String beanName) {
 		if (this.beanName == null || beanName == null) {
 			this.beanName = beanName;
 		}
-	}
-
-	@Override
-	public String getBeanName() {
-		return beanName;
 	}
 
 	public void setActualSpouse(TestBean spouse) {

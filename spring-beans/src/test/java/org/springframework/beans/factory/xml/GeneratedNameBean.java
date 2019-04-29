@@ -27,21 +27,21 @@ public class GeneratedNameBean implements BeanNameAware {
 
 	private GeneratedNameBean child;
 
+	public String getBeanName() {
+		return beanName;
+	}
+
 	@Override
 	public void setBeanName(String beanName) {
 		this.beanName = beanName;
 	}
 
-	public String getBeanName() {
-		return beanName;
+	public GeneratedNameBean getChild() {
+		return child;
 	}
 
 	public void setChild(GeneratedNameBean child) {
 		this.child = child;
-	}
-
-	public GeneratedNameBean getChild() {
-		return child;
 	}
 
 }

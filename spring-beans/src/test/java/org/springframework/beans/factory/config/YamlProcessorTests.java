@@ -16,18 +16,18 @@
 
 package org.springframework.beans.factory.config;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.core.io.ByteArrayResource;
 import org.yaml.snakeyaml.parser.ParserException;
 import org.yaml.snakeyaml.scanner.ScannerException;
 
-import org.springframework.core.io.ByteArrayResource;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link YamlProcessor}.
@@ -37,7 +37,8 @@ import static org.junit.Assert.*;
  */
 public class YamlProcessorTests {
 
-	private final YamlProcessor processor = new YamlProcessor() {};
+	private final YamlProcessor processor = new YamlProcessor() {
+	};
 
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
@@ -70,7 +71,8 @@ public class YamlProcessorTests {
 		this.processor.setResources(new ByteArrayResource("foo # a document\nbar: baz".getBytes()));
 		this.exception.expect(ParserException.class);
 		this.exception.expectMessage("line 2, column 1");
-		this.processor.process((properties, map) -> {});
+		this.processor.process((properties, map) -> {
+		});
 	}
 
 	@Test
@@ -78,7 +80,8 @@ public class YamlProcessorTests {
 		this.processor.setResources(new ByteArrayResource("foo: bar\ncd\nspam:\n  foo: baz".getBytes()));
 		this.exception.expect(ScannerException.class);
 		this.exception.expectMessage("line 3, column 1");
-		this.processor.process((properties, map) -> {});
+		this.processor.process((properties, map) -> {
+		});
 	}
 
 	@Test

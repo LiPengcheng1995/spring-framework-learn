@@ -16,9 +16,8 @@
 
 package org.springframework.beans.factory.xml;
 
-import org.w3c.dom.Node;
-
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
+import org.w3c.dom.Node;
 
 /**
  * Interface used by the {@link DefaultBeanDefinitionDocumentReader}
@@ -51,9 +50,9 @@ import org.springframework.beans.factory.config.BeanDefinitionHolder;
  * {@link NamespaceHandler} for the namespace in which the custom tag resides.
  *
  * @author Rob Harrop
- * @since 2.0
  * @see NamespaceHandler
  * @see BeanDefinitionParser
+ * @since 2.0
  */
 public interface BeanDefinitionDecorator {
 

@@ -42,6 +42,7 @@ public class RuntimeBeanReference implements BeanReference {
 	 * Create a new RuntimeBeanReference to the given bean name,
 	 * without explicitly marking it as reference to a bean in
 	 * the parent factory.
+	 *
 	 * @param beanName name of the target bean
 	 */
 	public RuntimeBeanReference(String beanName) {
@@ -52,9 +53,10 @@ public class RuntimeBeanReference implements BeanReference {
 	 * Create a new RuntimeBeanReference to the given bean name,
 	 * with the option to mark it as reference to a bean in
 	 * the parent factory.
+	 *
 	 * @param beanName name of the target bean
 	 * @param toParent whether this is an explicit reference to
-	 * a bean in the parent factory
+	 *                 a bean in the parent factory
 	 */
 	public RuntimeBeanReference(String beanName, boolean toParent) {
 		Assert.hasText(beanName, "'beanName' must not be empty");
@@ -76,6 +78,12 @@ public class RuntimeBeanReference implements BeanReference {
 		return this.toParent;
 	}
 
+	@Override
+	@Nullable
+	public Object getSource() {
+		return this.source;
+	}
+
 	/**
 	 * Set the configuration source {@code Object} for this metadata element.
 	 * <p>The exact type of the object will depend on the configuration mechanism used.
@@ -83,13 +91,6 @@ public class RuntimeBeanReference implements BeanReference {
 	public void setSource(@Nullable Object source) {
 		this.source = source;
 	}
-
-	@Override
-	@Nullable
-	public Object getSource() {
-		return this.source;
-	}
-
 
 	@Override
 	public boolean equals(Object other) {

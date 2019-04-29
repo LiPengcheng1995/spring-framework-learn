@@ -16,12 +16,12 @@
 
 package org.springframework.beans.factory.support;
 
-import java.lang.reflect.Method;
-
 import org.springframework.beans.BeanMetadataElement;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+
+import java.lang.reflect.Method;
 
 /**
  * Object representing the override of a method on a managed object by the IoC
@@ -47,6 +47,7 @@ public abstract class MethodOverride implements BeanMetadataElement {
 
 	/**
 	 * Construct a new override for the given method.
+	 *
 	 * @param methodName the name of the method to override
 	 */
 	protected MethodOverride(String methodName) {
@@ -63,6 +64,14 @@ public abstract class MethodOverride implements BeanMetadataElement {
 	}
 
 	/**
+	 * Return whether the overridden method is <em>overloaded</em> (i.e., whether argument
+	 * type matching needs to occur to disambiguate methods of the same name).
+	 */
+	protected boolean isOverloaded() {
+		return this.overloaded;
+	}
+
+	/**
 	 * Set whether the overridden method is <em>overloaded</em> (i.e., whether argument
 	 * type matching needs to occur to disambiguate methods of the same name).
 	 * <p>Default is {@code true}; can be switched to {@code false} to optimize
@@ -72,12 +81,10 @@ public abstract class MethodOverride implements BeanMetadataElement {
 		this.overloaded = overloaded;
 	}
 
-	/**
-	 * Return whether the overridden method is <em>overloaded</em> (i.e., whether argument
-	 * type matching needs to occur to disambiguate methods of the same name).
-	 */
-	protected boolean isOverloaded() {
-		return this.overloaded;
+	@Override
+	@Nullable
+	public Object getSource() {
+		return this.source;
 	}
 
 	/**
@@ -88,16 +95,11 @@ public abstract class MethodOverride implements BeanMetadataElement {
 		this.source = source;
 	}
 
-	@Override
-	@Nullable
-	public Object getSource() {
-		return this.source;
-	}
-
 	/**
 	 * Subclasses must override this to indicate whether they <em>match</em> the
 	 * given method. This allows for argument list checking as well as method
 	 * name checking.
+	 *
 	 * @param method the method to check
 	 * @return whether this override matches the given method
 	 */

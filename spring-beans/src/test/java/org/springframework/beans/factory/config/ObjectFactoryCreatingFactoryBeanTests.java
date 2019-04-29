@@ -16,22 +16,22 @@
 
 package org.springframework.beans.factory.config;
 
-import java.util.Date;
-import javax.inject.Provider;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.util.SerializationTestUtils;
 
+import javax.inject.Provider;
+import java.util.Date;
+
 import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
-import static org.springframework.tests.TestResourceUtils.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.springframework.tests.TestResourceUtils.qualifiedResource;
 
 /**
  * @author Colin Sampaleanu
@@ -124,8 +124,8 @@ public class ObjectFactoryCreatingFactoryBeanTests {
 		try {
 			new ObjectFactoryCreatingFactoryBean().afterPropertiesSet();
 			fail("Must have thrown an IllegalArgumentException; 'targetBeanName' property not set.");
+		} catch (IllegalArgumentException expected) {
 		}
-		catch (IllegalArgumentException expected) {}
 	}
 
 	@Test
@@ -135,8 +135,8 @@ public class ObjectFactoryCreatingFactoryBeanTests {
 			factory.setTargetBeanName("");
 			factory.afterPropertiesSet();
 			fail("Must have thrown an IllegalArgumentException; 'targetBeanName' property set to (invalid) empty string.");
+		} catch (IllegalArgumentException expected) {
 		}
-		catch (IllegalArgumentException expected) {}
 	}
 
 	@Test
@@ -146,14 +146,14 @@ public class ObjectFactoryCreatingFactoryBeanTests {
 			factory.setTargetBeanName("  \t");
 			factory.afterPropertiesSet();
 			fail("Must have thrown an IllegalArgumentException; 'targetBeanName' property set to (invalid) only-whitespace string.");
+		} catch (IllegalArgumentException expected) {
 		}
-		catch (IllegalArgumentException expected) {}
 	}
 
 	@Test
 	public void testEnsureOFBFBReportsThatItActuallyCreatesObjectFactoryInstances() {
 		assertEquals("Must be reporting that it creates ObjectFactory instances (as per class contract).",
-			ObjectFactory.class, new ObjectFactoryCreatingFactoryBean().getObjectType());
+				ObjectFactory.class, new ObjectFactoryCreatingFactoryBean().getObjectType());
 	}
 
 

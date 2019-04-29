@@ -16,19 +16,9 @@
 
 package org.springframework.tests.sample.beans;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.springframework.core.io.Resource;
+
+import java.util.*;
 
 /**
  * @author Juergen Hoeller
@@ -113,6 +103,33 @@ public class GenericBean<T> {
 		this.collectionMap = collectionMap;
 	}
 
+	public static GenericBean createInstance(Set<Integer> integerSet) {
+		return new GenericBean(integerSet);
+	}
+
+	public static GenericBean createInstance(Set<Integer> integerSet, List<Resource> resourceList) {
+		return new GenericBean(integerSet, resourceList);
+	}
+
+	public static GenericBean createInstance(HashSet<Integer> integerSet, Map<Short, Integer> shortMap) {
+		return new GenericBean(integerSet, shortMap);
+	}
+
+	public static GenericBean createInstance(Map<Short, Integer> shortMap, Resource resource) {
+		return new GenericBean(shortMap, resource);
+	}
+
+	public static GenericBean createInstance(Map map, Map<Short, Integer> shortMap) {
+		return new GenericBean(map, shortMap);
+	}
+
+	public static GenericBean createInstance(HashMap<Long, ?> longMap) {
+		return new GenericBean(longMap);
+	}
+
+	public static GenericBean createInstance(boolean someFlag, Map<Number, Collection<? extends Object>> collectionMap) {
+		return new GenericBean(someFlag, collectionMap);
+	}
 
 	public Set<Integer> getIntegerSet() {
 		return integerSet;
@@ -158,16 +175,16 @@ public class GenericBean<T> {
 		return listOfLists;
 	}
 
+	public void setListOfLists(List<List<Integer>> listOfLists) {
+		this.listOfLists = listOfLists;
+	}
+
 	public ArrayList<String[]> getListOfArrays() {
 		return listOfArrays;
 	}
 
 	public void setListOfArrays(ArrayList<String[]> listOfArrays) {
 		this.listOfArrays = listOfArrays;
-	}
-
-	public void setListOfLists(List<List<Integer>> listOfLists) {
-		this.listOfLists = listOfLists;
 	}
 
 	public List<Map<Integer, Long>> getListOfMaps() {
@@ -287,34 +304,6 @@ public class GenericBean<T> {
 
 	public void setStandardEnumMap(EnumMap<CustomEnum, Integer> standardEnumMap) {
 		this.standardEnumMap = standardEnumMap;
-	}
-
-	public static GenericBean createInstance(Set<Integer> integerSet) {
-		return new GenericBean(integerSet);
-	}
-
-	public static GenericBean createInstance(Set<Integer> integerSet, List<Resource> resourceList) {
-		return new GenericBean(integerSet, resourceList);
-	}
-
-	public static GenericBean createInstance(HashSet<Integer> integerSet, Map<Short, Integer> shortMap) {
-		return new GenericBean(integerSet, shortMap);
-	}
-
-	public static GenericBean createInstance(Map<Short, Integer> shortMap, Resource resource) {
-		return new GenericBean(shortMap, resource);
-	}
-
-	public static GenericBean createInstance(Map map, Map<Short, Integer> shortMap) {
-		return new GenericBean(map, shortMap);
-	}
-
-	public static GenericBean createInstance(HashMap<Long, ?> longMap) {
-		return new GenericBean(longMap);
-	}
-
-	public static GenericBean createInstance(boolean someFlag, Map<Number, Collection<? extends Object>> collectionMap) {
-		return new GenericBean(someFlag, collectionMap);
 	}
 
 }

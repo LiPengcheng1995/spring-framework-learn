@@ -16,13 +16,13 @@
 
 package org.springframework.beans.factory.config;
 
-import java.io.IOException;
-import java.util.Properties;
-
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.support.PropertiesLoaderSupport;
 import org.springframework.lang.Nullable;
+
+import java.io.IOException;
+import java.util.Properties;
 
 /**
  * Allows for making a properties file from a classpath location available
@@ -51,6 +51,10 @@ public class PropertiesFactoryBean extends PropertiesLoaderSupport
 	@Nullable
 	private Properties singletonInstance;
 
+	@Override
+	public final boolean isSingleton() {
+		return this.singleton;
+	}
 
 	/**
 	 * Set whether a shared 'singleton' Properties instance should be
@@ -60,12 +64,6 @@ public class PropertiesFactoryBean extends PropertiesLoaderSupport
 	public final void setSingleton(boolean singleton) {
 		this.singleton = singleton;
 	}
-
-	@Override
-	public final boolean isSingleton() {
-		return this.singleton;
-	}
-
 
 	@Override
 	public final void afterPropertiesSet() throws IOException {
@@ -79,8 +77,7 @@ public class PropertiesFactoryBean extends PropertiesLoaderSupport
 	public final Properties getObject() throws IOException {
 		if (this.singleton) {
 			return this.singletonInstance;
-		}
-		else {
+		} else {
 			return createProperties();
 		}
 	}
@@ -97,6 +94,7 @@ public class PropertiesFactoryBean extends PropertiesLoaderSupport
 	 * plain merged Properties instance.
 	 * <p>Invoked on initialization of this FactoryBean in case of a
 	 * shared singleton; else, on each {@link #getObject()} call.
+	 *
 	 * @return the object returned by this factory
 	 * @throws IOException if an exception occurred during properties loading
 	 * @see #mergeProperties()

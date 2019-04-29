@@ -16,21 +16,21 @@
 
 package org.springframework.beans.factory.support;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.core.io.AbstractResource;
 import org.springframework.util.Assert;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Descriptive {@link org.springframework.core.io.Resource} wrapper for
  * a {@link org.springframework.beans.factory.config.BeanDefinition}.
  *
  * @author Juergen Hoeller
- * @since 2.5.2
  * @see org.springframework.core.io.DescriptiveResource
+ * @since 2.5.2
  */
 class BeanDefinitionResource extends AbstractResource {
 
@@ -39,6 +39,7 @@ class BeanDefinitionResource extends AbstractResource {
 
 	/**
 	 * Create a new BeanDefinitionResource.
+	 *
 	 * @param beanDefinition the BeanDefinition objectto wrap
 	 */
 	public BeanDefinitionResource(BeanDefinition beanDefinition) {

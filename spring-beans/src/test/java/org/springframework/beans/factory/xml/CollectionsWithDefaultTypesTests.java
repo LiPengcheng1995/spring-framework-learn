@@ -16,16 +16,16 @@
 
 package org.springframework.beans.factory.xml;
 
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Test;
-
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.tests.sample.beans.TestBean;
 
-import static org.junit.Assert.*;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Rob Harrop
@@ -69,7 +69,7 @@ public class CollectionsWithDefaultTypesTests {
 		assertMap(bean.getSomeMap());
 	}
 
-	private void assertMap(Map<?,?> map) {
+	private void assertMap(Map<?, ?> map) {
 		for (Map.Entry entry : map.entrySet()) {
 			assertEquals("Key type is incorrect", Integer.class, entry.getKey().getClass());
 			assertEquals("Value type is incorrect", Boolean.class, entry.getValue().getClass());

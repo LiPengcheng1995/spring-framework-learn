@@ -16,22 +16,22 @@
 
 package org.springframework.beans.factory.config;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.TypeConverter;
 import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Simple factory for shared List instances. Allows for central setup
  * of Lists via the "list" element in XML bean definitions.
  *
  * @author Juergen Hoeller
- * @since 09.12.2003
  * @see SetFactoryBean
  * @see MapFactoryBean
+ * @since 09.12.2003
  */
 public class ListFactoryBean extends AbstractFactoryBean<List<Object>> {
 
@@ -54,6 +54,7 @@ public class ListFactoryBean extends AbstractFactoryBean<List<Object>> {
 	 * Set the class to use for the target List. Can be populated with a fully
 	 * qualified class name when defined in a Spring application context.
 	 * <p>Default is a {@code java.util.ArrayList}.
+	 *
 	 * @see java.util.ArrayList
 	 */
 	@SuppressWarnings("rawtypes")
@@ -83,8 +84,7 @@ public class ListFactoryBean extends AbstractFactoryBean<List<Object>> {
 		List<Object> result = null;
 		if (this.targetListClass != null) {
 			result = BeanUtils.instantiateClass(this.targetListClass);
-		}
-		else {
+		} else {
 			result = new ArrayList<>(this.sourceList.size());
 		}
 		Class<?> valueType = null;
@@ -96,8 +96,7 @@ public class ListFactoryBean extends AbstractFactoryBean<List<Object>> {
 			for (Object elem : this.sourceList) {
 				result.add(converter.convertIfNecessary(elem, valueType));
 			}
-		}
-		else {
+		} else {
 			result.addAll(this.sourceList);
 		}
 		return result;

@@ -16,22 +16,13 @@
 
 package org.springframework.tests.sample.beans;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.util.ObjectUtils;
+
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Simple test bean used for testing bean factories, the AOP framework etc.
@@ -43,26 +34,16 @@ import org.springframework.util.ObjectUtils;
  */
 public class TestBean implements BeanNameAware, BeanFactoryAware, ITestBean, IOther, Comparable<Object> {
 
-	private String beanName;
-
-	private String country;
-
-	private BeanFactory beanFactory;
-
-	private boolean postProcessed;
-
-	private String name;
-
-	private String sex;
-
-	private int age;
-
-	private boolean jedi;
-
-	private ITestBean spouse;
-
 	protected ITestBean[] spouses;
-
+	private String beanName;
+	private String country;
+	private BeanFactory beanFactory;
+	private boolean postProcessed;
+	private String name;
+	private String sex;
+	private int age;
+	private boolean jedi;
+	private ITestBean spouse;
 	private String touchy;
 
 	private String[] stringArray;
@@ -145,14 +126,17 @@ public class TestBean implements BeanNameAware, BeanFactoryAware, ITestBean, IOt
 		this.someProperties = someProperties;
 	}
 
+	public String getBeanName() {
+		return beanName;
+	}
 
 	@Override
 	public void setBeanName(String beanName) {
 		this.beanName = beanName;
 	}
 
-	public String getBeanName() {
-		return beanName;
+	public BeanFactory getBeanFactory() {
+		return beanFactory;
 	}
 
 	@Override
@@ -160,16 +144,12 @@ public class TestBean implements BeanNameAware, BeanFactoryAware, ITestBean, IOt
 		this.beanFactory = beanFactory;
 	}
 
-	public BeanFactory getBeanFactory() {
-		return beanFactory;
+	public boolean isPostProcessed() {
+		return postProcessed;
 	}
 
 	public void setPostProcessed(boolean postProcessed) {
 		this.postProcessed = postProcessed;
-	}
-
-	public boolean isPostProcessed() {
-		return postProcessed;
 	}
 
 	@Override
@@ -223,7 +203,7 @@ public class TestBean implements BeanNameAware, BeanFactoryAware, ITestBean, IOt
 
 	@Override
 	public ITestBean[] getSpouses() {
-		return (spouse != null ? new ITestBean[] {spouse} : null);
+		return (spouse != null ? new ITestBean[]{spouse} : null);
 	}
 
 	public String getTouchy() {
@@ -436,6 +416,7 @@ public class TestBean implements BeanNameAware, BeanFactoryAware, ITestBean, IOt
 	public void unreliableFileOperation() throws IOException {
 		throw new IOException();
 	}
+
 	/**
 	 * @see org.springframework.tests.sample.beans.ITestBean#returnsThis()
 	 */
@@ -487,8 +468,7 @@ public class TestBean implements BeanNameAware, BeanFactoryAware, ITestBean, IOt
 	public int compareTo(Object other) {
 		if (this.name != null && other instanceof TestBean) {
 			return this.name.compareTo(((TestBean) other).getName());
-		}
-		else {
+		} else {
 			return 1;
 		}
 	}

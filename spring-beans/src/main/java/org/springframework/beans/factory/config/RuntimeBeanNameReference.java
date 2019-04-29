@@ -24,10 +24,10 @@ import org.springframework.util.Assert;
  * reference to another bean name in the factory, to be resolved at runtime.
  *
  * @author Juergen Hoeller
- * @since 2.0
  * @see RuntimeBeanReference
  * @see BeanDefinition#getPropertyValues()
  * @see org.springframework.beans.factory.BeanFactory#getBean
+ * @since 2.0
  */
 public class RuntimeBeanNameReference implements BeanReference {
 
@@ -39,6 +39,7 @@ public class RuntimeBeanNameReference implements BeanReference {
 
 	/**
 	 * Create a new RuntimeBeanNameReference to the given bean name.
+	 *
 	 * @param beanName name of the target bean
 	 */
 	public RuntimeBeanNameReference(String beanName) {
@@ -51,6 +52,12 @@ public class RuntimeBeanNameReference implements BeanReference {
 		return this.beanName;
 	}
 
+	@Override
+	@Nullable
+	public Object getSource() {
+		return this.source;
+	}
+
 	/**
 	 * Set the configuration source {@code Object} for this metadata element.
 	 * <p>The exact type of the object will depend on the configuration mechanism used.
@@ -58,13 +65,6 @@ public class RuntimeBeanNameReference implements BeanReference {
 	public void setSource(@Nullable Object source) {
 		this.source = source;
 	}
-
-	@Override
-	@Nullable
-	public Object getSource() {
-		return this.source;
-	}
-
 
 	@Override
 	public boolean equals(Object other) {

@@ -17,7 +17,6 @@
 package org.springframework.beans.factory.xml;
 
 import org.junit.Test;
-
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -26,7 +25,7 @@ import org.springframework.tests.sample.beans.TestBean;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.hasItems;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for propagating enclosing beans element defaults to nested beans elements.
@@ -105,7 +104,7 @@ public class NestedBeansElementAttributeRecursionTests {
 
 		TestBean secondLevel = bf.getBean("secondLevelNestedTestBean", TestBean.class);
 		// merges all values
-		assertThat((Iterable<String>)secondLevel.getSomeList(),
+		assertThat((Iterable<String>) secondLevel.getSomeList(),
 				hasItems("charlie", "delta", "echo", "foxtrot", "golf", "hotel"));
 	}
 
@@ -184,11 +183,27 @@ class InitDestroyBean {
 	boolean destroyMethod2Called;
 	boolean destroyMethod3Called;
 
-	void initMethod1() { this.initMethod1Called = true; }
-	void initMethod2() { this.initMethod2Called = true; }
-	void initMethod3() { this.initMethod3Called = true; }
+	void initMethod1() {
+		this.initMethod1Called = true;
+	}
 
-	void destroyMethod1() { this.destroyMethod1Called = true; }
-	void destroyMethod2() { this.destroyMethod2Called = true; }
-	void destroyMethod3() { this.destroyMethod3Called = true; }
+	void initMethod2() {
+		this.initMethod2Called = true;
+	}
+
+	void initMethod3() {
+		this.initMethod3Called = true;
+	}
+
+	void destroyMethod1() {
+		this.destroyMethod1Called = true;
+	}
+
+	void destroyMethod2() {
+		this.destroyMethod2Called = true;
+	}
+
+	void destroyMethod3() {
+		this.destroyMethod3Called = true;
+	}
 }

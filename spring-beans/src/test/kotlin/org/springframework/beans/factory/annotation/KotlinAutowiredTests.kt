@@ -16,15 +16,13 @@
 
 package org.springframework.beans.factory.annotation
 
+import org.junit.Assert.*
 import org.junit.Test
-
+import org.springframework.beans.factory.BeanCreationException
 import org.springframework.beans.factory.support.DefaultListableBeanFactory
 import org.springframework.beans.factory.support.RootBeanDefinition
-import org.springframework.tests.sample.beans.TestBean
-
-import org.junit.Assert.*
-import org.springframework.beans.factory.BeanCreationException
 import org.springframework.tests.sample.beans.Colour
+import org.springframework.tests.sample.beans.TestBean
 
 /**
  * Tests for Kotlin support with [Autowired].
@@ -67,7 +65,7 @@ class KotlinAutowiredTests {
 		assertNull(kb.injectedFromMethod)
 		assertNull(kb.injectedField)
 	}
-	
+
 	@Test  // SPR-15847
 	fun `Autowiring by primary constructor with mandatory and optional parameters`() {
 		val bf = DefaultListableBeanFactory()
@@ -202,7 +200,7 @@ class KotlinAutowiredTests {
 
 
 	class KotlinBean(val injectedFromConstructor: TestBean?) {
-		
+
 		var injectedFromMethod: TestBean? = null
 
 		@Autowired
@@ -245,8 +243,9 @@ class KotlinAutowiredTests {
 			val optional: String = "foo",
 			val injectedFromConstructor: TestBean
 	) {
-		@Autowired constructor(injectedFromSecondaryConstructor: Colour, injectedFromConstructor: TestBean,
-							   optional: String = "bar") : this(optional, injectedFromConstructor) {
+		@Autowired
+		constructor(injectedFromSecondaryConstructor: Colour, injectedFromConstructor: TestBean,
+					optional: String = "bar") : this(optional, injectedFromConstructor) {
 			this.injectedFromSecondaryConstructor = injectedFromSecondaryConstructor
 		}
 

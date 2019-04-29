@@ -16,18 +16,19 @@
 
 package org.springframework.beans.factory.support;
 
-import java.util.List;
-
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 /**
  * @author Rick Evans
  * @author Juergen Hoeller
  * @author Sam Brannen
  */
-@SuppressWarnings({ "rawtypes", "unchecked" })
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class ManagedListTests {
 
 	@Test

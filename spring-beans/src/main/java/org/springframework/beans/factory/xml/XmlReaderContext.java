@@ -16,11 +16,6 @@
 
 package org.springframework.beans.factory.xml;
 
-import java.io.StringReader;
-
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.parsing.ProblemReporter;
@@ -32,6 +27,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.lang.Nullable;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+
+import java.io.StringReader;
 
 /**
  * Extension of {@link org.springframework.beans.factory.parsing.ReaderContext},
@@ -51,11 +50,12 @@ public class XmlReaderContext extends ReaderContext {
 
 	/**
 	 * Construct a new {@code XmlReaderContext}.
-	 * @param resource the XML bean definition resource
-	 * @param problemReporter the problem reporter in use
-	 * @param eventListener the event listener in use
-	 * @param sourceExtractor the source extractor in use
-	 * @param reader the XML bean definition reader in use
+	 *
+	 * @param resource                 the XML bean definition resource
+	 * @param problemReporter          the problem reporter in use
+	 * @param eventListener            the event listener in use
+	 * @param sourceExtractor          the source extractor in use
+	 * @param reader                   the XML bean definition reader in use
 	 * @param namespaceHandlerResolver the XML namespace resolver
 	 */
 	public XmlReaderContext(
@@ -78,6 +78,7 @@ public class XmlReaderContext extends ReaderContext {
 
 	/**
 	 * Return the bean definition registry to use.
+	 *
 	 * @see XmlBeanDefinitionReader#XmlBeanDefinitionReader(BeanDefinitionRegistry)
 	 */
 	public final BeanDefinitionRegistry getRegistry() {
@@ -88,6 +89,7 @@ public class XmlReaderContext extends ReaderContext {
 	 * Return the resource loader to use, if any.
 	 * <p>This will be non-null in regular scenarios,
 	 * also allowing access to the resource class loader.
+	 *
 	 * @see XmlBeanDefinitionReader#setResourceLoader
 	 * @see ResourceLoader#getClassLoader()
 	 */
@@ -100,6 +102,7 @@ public class XmlReaderContext extends ReaderContext {
 	 * Return the bean class loader to use, if any.
 	 * <p>Note that this will be null in regular scenarios,
 	 * as an indication to lazily resolve bean classes.
+	 *
 	 * @see XmlBeanDefinitionReader#setBeanClassLoader
 	 */
 	@Nullable
@@ -109,6 +112,7 @@ public class XmlReaderContext extends ReaderContext {
 
 	/**
 	 * Return the environment to use.
+	 *
 	 * @see XmlBeanDefinitionReader#setEnvironment
 	 */
 	public final Environment getEnvironment() {
@@ -117,6 +121,7 @@ public class XmlReaderContext extends ReaderContext {
 
 	/**
 	 * Return the namespace resolver.
+	 *
 	 * @see XmlBeanDefinitionReader#setNamespaceHandlerResolver
 	 */
 	public final NamespaceHandlerResolver getNamespaceHandlerResolver() {
@@ -128,6 +133,7 @@ public class XmlReaderContext extends ReaderContext {
 
 	/**
 	 * Call the bean name generator for the given bean definition.
+	 *
 	 * @see XmlBeanDefinitionReader#getBeanNameGenerator()
 	 * @see org.springframework.beans.factory.support.BeanNameGenerator#generateBeanName
 	 */
@@ -138,6 +144,7 @@ public class XmlReaderContext extends ReaderContext {
 	/**
 	 * Call the bean name generator for the given bean definition
 	 * and register the bean definition under the generated name.
+	 *
 	 * @see XmlBeanDefinitionReader#getBeanNameGenerator()
 	 * @see org.springframework.beans.factory.support.BeanNameGenerator#generateBeanName
 	 * @see BeanDefinitionRegistry#registerBeanDefinition
@@ -150,14 +157,14 @@ public class XmlReaderContext extends ReaderContext {
 
 	/**
 	 * Read an XML document from the given String.
+	 *
 	 * @see #getReader()
 	 */
 	public Document readDocumentFromString(String documentContent) {
 		InputSource is = new InputSource(new StringReader(documentContent));
 		try {
 			return this.reader.doLoadDocument(is, getResource());
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new BeanDefinitionStoreException("Failed to read XML document", ex);
 		}
 	}

@@ -16,22 +16,22 @@
 
 package org.springframework.beans.factory.config;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.TypeConverter;
 import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Simple factory for shared Set instances. Allows for central setup
  * of Sets via the "set" element in XML bean definitions.
  *
  * @author Juergen Hoeller
- * @since 09.12.2003
  * @see ListFactoryBean
  * @see MapFactoryBean
+ * @since 09.12.2003
  */
 public class SetFactoryBean extends AbstractFactoryBean<Set<Object>> {
 
@@ -54,6 +54,7 @@ public class SetFactoryBean extends AbstractFactoryBean<Set<Object>> {
 	 * Set the class to use for the target Set. Can be populated with a fully
 	 * qualified class name when defined in a Spring application context.
 	 * <p>Default is a linked HashSet, keeping the registration order.
+	 *
 	 * @see java.util.LinkedHashSet
 	 */
 	@SuppressWarnings("rawtypes")
@@ -83,8 +84,7 @@ public class SetFactoryBean extends AbstractFactoryBean<Set<Object>> {
 		Set<Object> result = null;
 		if (this.targetSetClass != null) {
 			result = BeanUtils.instantiateClass(this.targetSetClass);
-		}
-		else {
+		} else {
 			result = new LinkedHashSet<>(this.sourceSet.size());
 		}
 		Class<?> valueType = null;
@@ -96,8 +96,7 @@ public class SetFactoryBean extends AbstractFactoryBean<Set<Object>> {
 			for (Object elem : this.sourceSet) {
 				result.add(converter.convertIfNecessary(elem, valueType));
 			}
-		}
-		else {
+		} else {
 			result.addAll(this.sourceSet);
 		}
 		return result;

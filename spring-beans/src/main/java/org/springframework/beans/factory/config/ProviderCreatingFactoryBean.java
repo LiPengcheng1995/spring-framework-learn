@@ -16,13 +16,13 @@
 
 package org.springframework.beans.factory.config;
 
-import java.io.Serializable;
-import javax.inject.Provider;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import javax.inject.Provider;
+import java.io.Serializable;
 
 /**
  * A {@link org.springframework.beans.factory.FactoryBean} implementation that
@@ -36,9 +36,9 @@ import org.springframework.util.Assert;
  * alternative to JSR-330's {@code @Inject} annotation-driven approach.
  *
  * @author Juergen Hoeller
- * @since 3.0.2
  * @see javax.inject.Provider
  * @see ObjectFactoryCreatingFactoryBean
+ * @since 3.0.2
  */
 public class ProviderCreatingFactoryBean extends AbstractFactoryBean<Provider<Object>> {
 

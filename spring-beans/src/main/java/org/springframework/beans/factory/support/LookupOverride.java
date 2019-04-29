@@ -16,11 +16,11 @@
 
 package org.springframework.beans.factory.support;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.ObjectUtils;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 /**
  * Represents an override of a method that looks up an object in the same IoC context.
@@ -42,9 +42,10 @@ public class LookupOverride extends MethodOverride {
 
 	/**
 	 * Construct a new LookupOverride.
+	 *
 	 * @param methodName the name of the method to override
-	 * @param beanName the name of the bean in the current {@code BeanFactory}
-	 * that the overridden method should return (may be {@code null})
+	 * @param beanName   the name of the bean in the current {@code BeanFactory}
+	 *                   that the overridden method should return (may be {@code null})
 	 */
 	public LookupOverride(String methodName, @Nullable String beanName) {
 		super(methodName);
@@ -53,9 +54,10 @@ public class LookupOverride extends MethodOverride {
 
 	/**
 	 * Construct a new LookupOverride.
-	 * @param method the method to override
+	 *
+	 * @param method   the method to override
 	 * @param beanName the name of the bean in the current {@code BeanFactory}
-	 * that the overridden method should return (may be {@code null})
+	 *                 that the overridden method should return (may be {@code null})
 	 */
 	public LookupOverride(Method method, @Nullable String beanName) {
 		super(method.getName());
@@ -84,8 +86,7 @@ public class LookupOverride extends MethodOverride {
 	public boolean matches(Method method) {
 		if (this.method != null) {
 			return method.equals(this.method);
-		}
-		else {
+		} else {
 			return (method.getName().equals(getMethodName()) && (!isOverloaded() ||
 					Modifier.isAbstract(method.getModifiers()) || method.getParameterCount() == 0));
 		}
