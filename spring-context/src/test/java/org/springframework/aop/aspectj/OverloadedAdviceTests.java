@@ -17,11 +17,10 @@
 package org.springframework.aop.aspectj;
 
 import org.junit.Test;
-
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Integration tests for overloaded advice.
@@ -35,8 +34,7 @@ public class OverloadedAdviceTests {
 	public void testExceptionOnConfigParsingWithMismatchedAdviceMethod() {
 		try {
 			new ClassPathXmlApplicationContext(getClass().getSimpleName() + ".xml", getClass());
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			Throwable cause = ex.getRootCause();
 			assertTrue("Should be IllegalArgumentException", cause instanceof IllegalArgumentException);
 			assertTrue("invalidAbsoluteTypeName should be detected by AJ",
@@ -48,8 +46,7 @@ public class OverloadedAdviceTests {
 	public void testExceptionOnConfigParsingWithAmbiguousAdviceMethod() {
 		try {
 			new ClassPathXmlApplicationContext(getClass().getSimpleName() + "-ambiguous.xml", getClass());
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			Throwable cause = ex.getRootCause();
 			assertTrue("Should be IllegalArgumentException", cause instanceof IllegalArgumentException);
 			assertTrue("Cannot resolve method 'myBeforeAdvice' to a unique method",

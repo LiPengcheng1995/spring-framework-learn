@@ -16,16 +16,15 @@
 
 package org.springframework.context.annotation;
 
-import java.util.Map;
-
 import org.junit.Test;
-
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 
+import java.util.Map;
+
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * Unit tests for SPR-8954, in which a custom {@link InstantiationAwareBeanPostProcessor}
@@ -83,9 +82,16 @@ public class Spr8954Tests {
 	}
 
 
+	interface AnInterface {
+	}
+
+	interface PredictedType {
+	}
+
 	static class FooConfig {
 
-		@Bean FooFactoryBean foo() {
+		@Bean
+		FooFactoryBean foo() {
 			return new FooFactoryBean();
 		}
 	}
@@ -108,13 +114,7 @@ public class Spr8954Tests {
 		}
 	}
 
-	interface AnInterface {
-	}
-
 	static class Foo {
-	}
-
-	interface PredictedType {
 	}
 
 	static class PredictedTypeImpl implements PredictedType {

@@ -16,11 +16,11 @@
 
 package org.springframework.core.env;
 
-import static org.springframework.beans.factory.support.BeanDefinitionBuilder.rootBeanDefinition;
-
 import org.junit.Test;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.support.GenericApplicationContext;
+
+import static org.springframework.beans.factory.support.BeanDefinitionBuilder.rootBeanDefinition;
 
 @SuppressWarnings("resource")
 public class PropertyPlaceholderConfigurerEnvironmentIntegrationTests {
@@ -29,8 +29,8 @@ public class PropertyPlaceholderConfigurerEnvironmentIntegrationTests {
 		GenericApplicationContext ctx = new GenericApplicationContext();
 		ctx.registerBeanDefinition("ppc",
 				rootBeanDefinition(PropertyPlaceholderConfigurer.class)
-				.addPropertyValue("searchSystemEnvironment", false)
-				.getBeanDefinition());
+						.addPropertyValue("searchSystemEnvironment", false)
+						.getBeanDefinition());
 		ctx.refresh();
 		ctx.getBean("ppc");
 	}

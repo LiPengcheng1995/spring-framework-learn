@@ -17,7 +17,6 @@
 package org.springframework.context.support;
 
 import org.junit.Test;
-
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 
@@ -42,8 +41,7 @@ public class GenericApplicationContextTests {
 		try {
 			assertSame(ac.getBean("testBean"), ac.getBean(Object.class));
 			fail("Should have thrown NoUniqueBeanDefinitionException");
-		}
-		catch (NoUniqueBeanDefinitionException ex) {
+		} catch (NoUniqueBeanDefinitionException ex) {
 			// expected
 		}
 	}
@@ -88,8 +86,7 @@ public class GenericApplicationContextTests {
 		try {
 			assertSame(ac.getBean("testBean"), ac.getBean(String.class));
 			fail("Should have thrown IllegalStateException");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			// expected
 		}
 
@@ -97,8 +94,7 @@ public class GenericApplicationContextTests {
 			assertSame(ac.getAutowireCapableBeanFactory().getBean("testBean"),
 					ac.getAutowireCapableBeanFactory().getBean(String.class));
 			fail("Should have thrown IllegalStateException");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			// expected
 		}
 	}

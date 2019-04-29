@@ -16,15 +16,15 @@
 
 package org.springframework.web.filter;
 
-import java.io.IOException;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import java.io.IOException;
 
 /**
  * Servlet Filter that exposes the request to the current thread,
@@ -41,11 +41,11 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  * @author Juergen Hoeller
  * @author Rod Johnson
  * @author Rossen Stoyanchev
- * @since 2.0
  * @see org.springframework.context.i18n.LocaleContextHolder
  * @see org.springframework.web.context.request.RequestContextHolder
  * @see org.springframework.web.context.request.RequestContextListener
  * @see org.springframework.web.servlet.DispatcherServlet
+ * @since 2.0
  */
 public class RequestContextFilter extends OncePerRequestFilter {
 
@@ -97,8 +97,7 @@ public class RequestContextFilter extends OncePerRequestFilter {
 
 		try {
 			filterChain.doFilter(request, response);
-		}
-		finally {
+		} finally {
 			resetContextHolders();
 			if (logger.isDebugEnabled()) {
 				logger.debug("Cleared thread-bound request context: " + request);

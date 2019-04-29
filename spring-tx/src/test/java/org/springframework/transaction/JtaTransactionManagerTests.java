@@ -16,28 +16,14 @@
 
 package org.springframework.transaction;
 
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.Status;
-import javax.transaction.SystemException;
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
-import javax.transaction.UserTransaction;
-
 import org.junit.After;
 import org.junit.Test;
-
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.tests.transaction.MockJtaTransaction;
 import org.springframework.transaction.jta.JtaTransactionManager;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.transaction.support.*;
+
+import javax.transaction.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.*;
@@ -118,7 +104,7 @@ public class JtaTransactionManagerTests {
 	public void jtaTransactionManagerWithCommitAndSynchronizationNever() throws Exception {
 		UserTransaction ut = mock(UserTransaction.class);
 		given(ut.getStatus()).willReturn(
-		Status.STATUS_NO_TRANSACTION, Status.STATUS_ACTIVE, Status.STATUS_ACTIVE);
+				Status.STATUS_NO_TRANSACTION, Status.STATUS_ACTIVE, Status.STATUS_ACTIVE);
 
 		JtaTransactionManager ptm = newJtaTransactionManager(ut);
 		TransactionTemplate tt = new TransactionTemplate(ptm);
@@ -273,8 +259,7 @@ public class JtaTransactionManagerTests {
 				}
 			});
 			fail("Should have thrown IllegalStateException");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			// expected
 		}
 		assertFalse(TransactionSynchronizationManager.isSynchronizationActive());
@@ -304,8 +289,7 @@ public class JtaTransactionManagerTests {
 				}
 			});
 			fail("Should have thrown OptimisticLockingFailureException");
-		}
-		catch (OptimisticLockingFailureException ex) {
+		} catch (OptimisticLockingFailureException ex) {
 			// expected
 		}
 		assertFalse(TransactionSynchronizationManager.isSynchronizationActive());
@@ -361,8 +345,7 @@ public class JtaTransactionManagerTests {
 				}
 			});
 			fail("Should have thrown IllegalStateException");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			// expected
 		}
 		assertFalse(TransactionSynchronizationManager.isSynchronizationActive());
@@ -703,8 +686,7 @@ public class JtaTransactionManagerTests {
 				}
 			});
 			fail("Should have thrown TransactionSystemException");
-		}
-		catch (TransactionSystemException ex) {
+		} catch (TransactionSystemException ex) {
 			// expected
 		}
 		assertFalse(TransactionSynchronizationManager.isSynchronizationActive());
@@ -731,8 +713,7 @@ public class JtaTransactionManagerTests {
 				}
 			});
 			fail("Should have thrown CannotCreateTransactionException");
-		}
-		catch (CannotCreateTransactionException ex) {
+		} catch (CannotCreateTransactionException ex) {
 			// expected
 		}
 		assertFalse(TransactionSynchronizationManager.isSynchronizationActive());
@@ -779,8 +760,7 @@ public class JtaTransactionManagerTests {
 				}
 			});
 			fail("Should have thrown TransactionSuspensionNotSupportedException");
-		}
-		catch (TransactionSuspensionNotSupportedException ex) {
+		} catch (TransactionSuspensionNotSupportedException ex) {
 			// expected
 		}
 		assertFalse(TransactionSynchronizationManager.isSynchronizationActive());
@@ -802,8 +782,7 @@ public class JtaTransactionManagerTests {
 				}
 			});
 			fail("Should have thrown InvalidIsolationLevelException");
-		}
-		catch (InvalidIsolationLevelException ex) {
+		} catch (InvalidIsolationLevelException ex) {
 			// expected
 		}
 	}
@@ -823,8 +802,7 @@ public class JtaTransactionManagerTests {
 				}
 			});
 			fail("Should have thrown TransactionSystemException");
-		}
-		catch (TransactionSystemException ex) {
+		} catch (TransactionSystemException ex) {
 			// expected
 		}
 	}
@@ -865,8 +843,7 @@ public class JtaTransactionManagerTests {
 				}
 			});
 			fail("Should have thrown NestedTransactionNotSupportedException");
-		}
-		catch (NestedTransactionNotSupportedException ex) {
+		} catch (NestedTransactionNotSupportedException ex) {
 			// expected
 		}
 	}
@@ -888,8 +865,7 @@ public class JtaTransactionManagerTests {
 				}
 			});
 			fail("Should have thrown NestedTransactionNotSupportedException");
-		}
-		catch (NestedTransactionNotSupportedException ex) {
+		} catch (NestedTransactionNotSupportedException ex) {
 			// expected
 		}
 	}
@@ -910,8 +886,7 @@ public class JtaTransactionManagerTests {
 				}
 			});
 			fail("Should have thrown CannotCreateTransactionException");
-		}
-		catch (CannotCreateTransactionException ex) {
+		} catch (CannotCreateTransactionException ex) {
 			// expected
 		}
 	}
@@ -939,8 +914,7 @@ public class JtaTransactionManagerTests {
 				}
 			});
 			fail("Should have thrown UnexpectedRollbackException");
-		}
-		catch (UnexpectedRollbackException ex) {
+		} catch (UnexpectedRollbackException ex) {
 			// expected
 		}
 
@@ -991,16 +965,14 @@ public class JtaTransactionManagerTests {
 			tm.commit(ts);
 
 			fail("Should have thrown UnexpectedRollbackException");
-		}
-		catch (UnexpectedRollbackException ex) {
+		} catch (UnexpectedRollbackException ex) {
 			// expected
 			if (!outerTransactionBoundaryReached) {
 				tm.rollback(ts);
 			}
 			if (failEarly) {
 				assertFalse(outerTransactionBoundaryReached);
-			}
-			else {
+			} else {
 				assertTrue(outerTransactionBoundaryReached);
 			}
 		}
@@ -1008,8 +980,7 @@ public class JtaTransactionManagerTests {
 		verify(ut).begin();
 		if (failEarly) {
 			verify(ut).rollback();
-		}
-		else {
+		} else {
 			verify(ut).commit();
 		}
 	}
@@ -1037,8 +1008,7 @@ public class JtaTransactionManagerTests {
 				}
 			});
 			fail("Should have thrown HeuristicCompletionException");
-		}
-		catch (HeuristicCompletionException ex) {
+		} catch (HeuristicCompletionException ex) {
 			// expected
 			assertTrue(ex.getOutcomeState() == HeuristicCompletionException.STATE_MIXED);
 		}
@@ -1069,8 +1039,7 @@ public class JtaTransactionManagerTests {
 				}
 			});
 			fail("Should have thrown HeuristicCompletionException");
-		}
-		catch (HeuristicCompletionException ex) {
+		} catch (HeuristicCompletionException ex) {
 			// expected
 			assertTrue(ex.getOutcomeState() == HeuristicCompletionException.STATE_ROLLED_BACK);
 		}
@@ -1101,8 +1070,7 @@ public class JtaTransactionManagerTests {
 				}
 			});
 			fail("Should have thrown TransactionSystemException");
-		}
-		catch (TransactionSystemException ex) {
+		} catch (TransactionSystemException ex) {
 			// expected
 		}
 
@@ -1131,8 +1099,7 @@ public class JtaTransactionManagerTests {
 				}
 			});
 			fail("Should have thrown TransactionSystemException");
-		}
-		catch (TransactionSystemException ex) {
+		} catch (TransactionSystemException ex) {
 			// expected
 		}
 
@@ -1155,8 +1122,7 @@ public class JtaTransactionManagerTests {
 				}
 			});
 			fail("Should have thrown TransactionSystemException");
-		}
-		catch (TransactionSystemException ex) {
+		} catch (TransactionSystemException ex) {
 			// expected
 		}
 	}
@@ -1183,8 +1149,7 @@ public class JtaTransactionManagerTests {
 				}
 			});
 			fail("Should have thrown TransactionSystemException");
-		}
-		catch (TransactionSystemException ex) {
+		} catch (TransactionSystemException ex) {
 			// expected
 		}
 	}
@@ -1206,8 +1171,7 @@ public class JtaTransactionManagerTests {
 			// second commit attempt
 			ptm.commit(status);
 			fail("Should have thrown IllegalTransactionStateException");
-		}
-		catch (IllegalTransactionStateException ex) {
+		} catch (IllegalTransactionStateException ex) {
 			// expected
 		}
 
@@ -1231,8 +1195,7 @@ public class JtaTransactionManagerTests {
 			// second rollback attempt
 			ptm.rollback(status);
 			fail("Should have thrown IllegalTransactionStateException");
-		}
-		catch (IllegalTransactionStateException ex) {
+		} catch (IllegalTransactionStateException ex) {
 			// expected
 		}
 
@@ -1256,8 +1219,7 @@ public class JtaTransactionManagerTests {
 			// second: commit attempt
 			ptm.commit(status);
 			fail("Should have thrown IllegalTransactionStateException");
-		}
-		catch (IllegalTransactionStateException ex) {
+		} catch (IllegalTransactionStateException ex) {
 			// expected
 		}
 

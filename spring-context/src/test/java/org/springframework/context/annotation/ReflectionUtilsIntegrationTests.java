@@ -16,22 +16,22 @@
 
 package org.springframework.context.annotation;
 
-import java.lang.reflect.Method;
-
 import org.junit.Test;
-
 import org.springframework.util.ReflectionUtils;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import java.lang.reflect.Method;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests ReflectionUtils methods as used against CGLIB-generated classes created
  * by ConfigurationClassEnhancer.
  *
  * @author Chris Beams
- * @since 3.1
  * @see org.springframework.util.ReflectionUtilsTests
+ * @since 3.1
  */
 public class ReflectionUtilsIntegrationTests {
 

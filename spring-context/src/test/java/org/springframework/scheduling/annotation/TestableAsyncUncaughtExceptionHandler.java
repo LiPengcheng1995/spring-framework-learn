@@ -16,26 +16,26 @@
 
 package org.springframework.scheduling.annotation;
 
+import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
+
 import java.lang.reflect.Method;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * A {@link AsyncUncaughtExceptionHandler} implementation used for testing purposes.
+ *
  * @author Stephane Nicoll
  */
 class TestableAsyncUncaughtExceptionHandler
 		implements AsyncUncaughtExceptionHandler {
 
 	private final CountDownLatch latch = new CountDownLatch(1);
-
-	private UncaughtExceptionDescriptor descriptor;
-
 	private final boolean throwUnexpectedException;
+	private UncaughtExceptionDescriptor descriptor;
 
 	TestableAsyncUncaughtExceptionHandler() {
 		this(false);
@@ -67,8 +67,7 @@ class TestableAsyncUncaughtExceptionHandler
 	public void await(long timeout) {
 		try {
 			this.latch.await(timeout, TimeUnit.MILLISECONDS);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			Thread.currentThread().interrupt();
 		}
 	}

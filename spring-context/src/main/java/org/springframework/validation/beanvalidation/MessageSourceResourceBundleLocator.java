@@ -16,24 +16,23 @@
 
 package org.springframework.validation.beanvalidation;
 
-import java.util.Locale;
-import java.util.ResourceBundle;
-
 import org.hibernate.validator.spi.resourceloading.ResourceBundleLocator;
-
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.MessageSourceResourceBundle;
 import org.springframework.util.Assert;
+
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * Implementation of Hibernate Validator 4.3/5.x's {@link ResourceBundleLocator} interface,
  * exposing a Spring {@link MessageSource} as localized {@link MessageSourceResourceBundle}.
  *
  * @author Juergen Hoeller
- * @since 3.0.4
  * @see ResourceBundleLocator
  * @see MessageSource
  * @see MessageSourceResourceBundle
+ * @since 3.0.4
  */
 public class MessageSourceResourceBundleLocator implements ResourceBundleLocator {
 
@@ -41,6 +40,7 @@ public class MessageSourceResourceBundleLocator implements ResourceBundleLocator
 
 	/**
 	 * Build a MessageSourceResourceBundleLocator for the given MessageSource.
+	 *
 	 * @param messageSource the Spring MessageSource to wrap
 	 */
 	public MessageSourceResourceBundleLocator(MessageSource messageSource) {

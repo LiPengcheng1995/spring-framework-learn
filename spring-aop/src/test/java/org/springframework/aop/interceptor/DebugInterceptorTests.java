@@ -20,7 +20,8 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.logging.Log;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.*;
 
 /**
@@ -61,8 +62,7 @@ public class DebugInterceptorTests {
 		try {
 			interceptor.invoke(methodInvocation);
 			fail("Must have propagated the IllegalArgumentException.");
-		}
-		catch (IllegalArgumentException expected) {
+		} catch (IllegalArgumentException expected) {
 		}
 		checkCallCountTotal(interceptor);
 

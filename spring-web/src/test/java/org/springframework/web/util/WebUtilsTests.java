@@ -16,24 +16,16 @@
 
 package org.springframework.web.util;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Test;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.util.MultiValueMap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import java.util.*;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Juergen Hoeller
@@ -49,7 +41,7 @@ public class WebUtilsTests {
 		params.put("myKey1", "myValue1");
 		params.put("myKey2_myValue2", "xxx");
 		params.put("myKey3_myValue3.x", "xxx");
-		params.put("myKey4_myValue4.y", new String[] {"yyy"});
+		params.put("myKey4_myValue4.y", new String[]{"yyy"});
 
 		assertNull(WebUtils.findParameterValue(params, "myKey0"));
 		assertEquals("myValue1", WebUtils.findParameterValue(params, "myKey1"));

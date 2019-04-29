@@ -16,11 +16,7 @@
 
 package org.springframework.format.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Declares that a field or method parameter should be formatted as a date or time.
@@ -47,9 +43,9 @@ import java.lang.annotation.Target;
  *
  * @author Keith Donald
  * @author Juergen Hoeller
- * @since 3.0
  * @see java.time.format.DateTimeFormatter
  * @see org.joda.time.format.DateTimeFormat
+ * @since 3.0
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

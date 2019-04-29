@@ -16,15 +16,6 @@
 
 package org.springframework.http.codec;
 
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.codec.CodecException;
 import org.springframework.core.codec.Decoder;
@@ -35,6 +26,14 @@ import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ReactiveHttpInputMessage;
 import org.springframework.lang.Nullable;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Reader that supports a stream of {@link ServerSentEvent}s and also plain
@@ -100,7 +99,7 @@ public class ServerSentEventHttpMessageReader implements HttpMessageReader<Objec
 
 	@Override
 	public Flux<Object> read(ResolvableType elementType, ReactiveHttpInputMessage message,
-			Map<String, Object> hints) {
+							 Map<String, Object> hints) {
 
 		boolean shouldWrap = isServerSentEvent(elementType);
 		ResolvableType valueType = (shouldWrap ? elementType.getGeneric() : elementType);
@@ -111,7 +110,7 @@ public class ServerSentEventHttpMessageReader implements HttpMessageReader<Objec
 	}
 
 	private Mono<?> buildEvent(List<String> lines, ResolvableType valueType, boolean shouldWrap,
-			Map<String, Object> hints) {
+							   Map<String, Object> hints) {
 
 		ServerSentEvent.Builder<Object> sseBuilder = shouldWrap ? ServerSentEvent.builder() : null;
 		StringBuilder data = null;
@@ -125,14 +124,11 @@ public class ServerSentEventHttpMessageReader implements HttpMessageReader<Objec
 			if (shouldWrap) {
 				if (line.startsWith("id:")) {
 					sseBuilder.id(line.substring(3));
-				}
-				else if (line.startsWith("event:")) {
+				} else if (line.startsWith("event:")) {
 					sseBuilder.event(line.substring(6));
-				}
-				else if (line.startsWith("retry:")) {
+				} else if (line.startsWith("retry:")) {
 					sseBuilder.retry(Duration.ofMillis(Long.valueOf(line.substring(6))));
-				}
-				else if (line.startsWith(":")) {
+				} else if (line.startsWith(":")) {
 					comment = (comment != null ? comment : new StringBuilder());
 					comment.append(line.substring(1)).append("\n");
 				}
@@ -149,8 +145,7 @@ public class ServerSentEventHttpMessageReader implements HttpMessageReader<Objec
 				sseBuilder.data(o);
 				return sseBuilder.build();
 			});
-		}
-		else {
+		} else {
 			return decodedData;
 		}
 	}
@@ -171,7 +166,7 @@ public class ServerSentEventHttpMessageReader implements HttpMessageReader<Objec
 
 	@Override
 	public Mono<Object> readMono(ResolvableType elementType, ReactiveHttpInputMessage message,
-			Map<String, Object> hints) {
+								 Map<String, Object> hints) {
 
 		// We're ahead of String + "*/*"
 		// Let's see if we can aggregate the output (lest we time out)...

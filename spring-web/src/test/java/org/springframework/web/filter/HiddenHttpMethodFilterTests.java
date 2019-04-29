@@ -16,23 +16,22 @@
 
 package org.springframework.web.filter;
 
-import java.io.IOException;
+import org.junit.Test;
+import org.springframework.mock.web.test.MockHttpServletRequest;
+import org.springframework.mock.web.test.MockHttpServletResponse;
+
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
-import org.junit.Test;
-
-import org.springframework.mock.web.test.MockHttpServletRequest;
-import org.springframework.mock.web.test.MockHttpServletResponse;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link HiddenHttpMethodFilter}.
- * 
+ *
  * @author Arjen Poutsma
  * @author Brian Clozel
  */
@@ -62,7 +61,7 @@ public class HiddenHttpMethodFilterTests {
 	private void filterWithParameterForMethod(String methodParam, String expectedMethod)
 			throws IOException, ServletException {
 		MockHttpServletRequest request = new MockHttpServletRequest("POST", "/hotels");
-		if(methodParam != null) {
+		if (methodParam != null) {
 			request.addParameter("_method", methodParam);
 		}
 		MockHttpServletResponse response = new MockHttpServletResponse();
@@ -71,7 +70,7 @@ public class HiddenHttpMethodFilterTests {
 
 			@Override
 			public void doFilter(ServletRequest filterRequest,
-					ServletResponse filterResponse) throws IOException, ServletException {
+								 ServletResponse filterResponse) throws IOException, ServletException {
 				assertEquals("Invalid method", expectedMethod,
 						((HttpServletRequest) filterRequest).getMethod());
 			}

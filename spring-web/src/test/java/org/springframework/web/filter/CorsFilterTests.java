@@ -16,30 +16,30 @@
 
 package org.springframework.web.filter;
 
-import java.io.IOException;
-import java.util.Arrays;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.mock.web.test.MockHttpServletResponse;
 import org.springframework.web.cors.CorsConfiguration;
 
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import java.io.IOException;
+import java.util.Arrays;
+
+import static org.junit.Assert.*;
+
 /**
  * Unit tests for {@link CorsFilter}.
+ *
  * @author Sebastien Deleuze
  */
 public class CorsFilterTests {
 
-	private CorsFilter filter;
-
 	private final CorsConfiguration config = new CorsConfiguration();
+	private CorsFilter filter;
 
 	@Before
 	public void setup() throws Exception {

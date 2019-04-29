@@ -25,8 +25,8 @@ import org.springframework.util.Assert;
  * configurable {@link CacheErrorHandler} when an exception occurs.
  *
  * @author Stephane Nicoll
- * @since 4.1
  * @see org.springframework.cache.interceptor.CacheErrorHandler
+ * @since 4.1
  */
 public abstract class AbstractCacheInvoker {
 
@@ -41,6 +41,12 @@ public abstract class AbstractCacheInvoker {
 		this.errorHandler = errorHandler;
 	}
 
+	/**
+	 * Return the {@link CacheErrorHandler} to use.
+	 */
+	public CacheErrorHandler getErrorHandler() {
+		return this.errorHandler;
+	}
 
 	/**
 	 * Set the {@link CacheErrorHandler} instance to use to handle errors
@@ -53,26 +59,18 @@ public abstract class AbstractCacheInvoker {
 	}
 
 	/**
-	 * Return the {@link CacheErrorHandler} to use.
-	 */
-	public CacheErrorHandler getErrorHandler() {
-		return this.errorHandler;
-	}
-
-
-	/**
 	 * Execute {@link Cache#get(Object)} on the specified {@link Cache} and
 	 * invoke the error handler if an exception occurs. Return {@code null}
 	 * if the handler does not throw any exception, which simulates a cache
 	 * miss in case of error.
+	 *
 	 * @see Cache#get(Object)
 	 */
 	@Nullable
 	protected Cache.ValueWrapper doGet(Cache cache, Object key) {
 		try {
 			return cache.get(key);
-		}
-		catch (RuntimeException ex) {
+		} catch (RuntimeException ex) {
 			getErrorHandler().handleCacheGetError(ex, cache, key);
 			return null;  // If the exception is handled, return a cache miss
 		}
@@ -85,8 +83,7 @@ public abstract class AbstractCacheInvoker {
 	protected void doPut(Cache cache, Object key, @Nullable Object result) {
 		try {
 			cache.put(key, result);
-		}
-		catch (RuntimeException ex) {
+		} catch (RuntimeException ex) {
 			getErrorHandler().handleCachePutError(ex, cache, key, result);
 		}
 	}
@@ -98,8 +95,7 @@ public abstract class AbstractCacheInvoker {
 	protected void doEvict(Cache cache, Object key) {
 		try {
 			cache.evict(key);
-		}
-		catch (RuntimeException ex) {
+		} catch (RuntimeException ex) {
 			getErrorHandler().handleCacheEvictError(ex, cache, key);
 		}
 	}
@@ -111,8 +107,7 @@ public abstract class AbstractCacheInvoker {
 	protected void doClear(Cache cache) {
 		try {
 			cache.clear();
-		}
-		catch (RuntimeException ex) {
+		} catch (RuntimeException ex) {
 			getErrorHandler().handleCacheClearError(ex, cache);
 		}
 	}

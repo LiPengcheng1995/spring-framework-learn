@@ -16,22 +16,16 @@
 
 package org.springframework.scheduling.support;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.TimeZone;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-
 import org.springframework.scheduling.TriggerContext;
 
-import static org.junit.Assert.*;
+import java.util.*;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Dave Syer
@@ -56,16 +50,21 @@ public class CronTriggerTests {
 	@Parameters(name = "date [{0}], time zone [{1}]")
 	public static List<Object[]> getParameters() {
 		List<Object[]> list = new ArrayList<>();
-		list.add(new Object[] { new Date(), TimeZone.getTimeZone("PST") });
-		list.add(new Object[] { new Date(), TimeZone.getTimeZone("CET") });
+		list.add(new Object[]{new Date(), TimeZone.getTimeZone("PST")});
+		list.add(new Object[]{new Date(), TimeZone.getTimeZone("CET")});
 		return list;
+	}
+
+	private static TriggerContext getTriggerContext(Date lastCompletionTime) {
+		SimpleTriggerContext context = new SimpleTriggerContext();
+		context.update(null, null, lastCompletionTime);
+		return context;
 	}
 
 	private void roundup(Calendar calendar) {
 		calendar.add(Calendar.SECOND, 1);
 		calendar.set(Calendar.MILLISECOND, 0);
 	}
-
 
 	@Before
 	public void setUp() {
@@ -720,12 +719,6 @@ public class CronTriggerTests {
 		roundup(calendar);
 		TriggerContext context = getTriggerContext(date);
 		assertEquals(calendar.getTime(), trigger.nextExecutionTime(context));
-	}
-
-	private static TriggerContext getTriggerContext(Date lastCompletionTime) {
-		SimpleTriggerContext context = new SimpleTriggerContext();
-		context.update(null, null, lastCompletionTime);
-		return context;
 	}
 
 }

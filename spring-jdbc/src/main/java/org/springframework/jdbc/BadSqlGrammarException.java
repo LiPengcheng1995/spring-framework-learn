@@ -16,9 +16,9 @@
 
 package org.springframework.jdbc;
 
-import java.sql.SQLException;
-
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
+
+import java.sql.SQLException;
 
 /**
  * Exception thrown when SQL specified is invalid. Such exceptions always have
@@ -39,9 +39,10 @@ public class BadSqlGrammarException extends InvalidDataAccessResourceUsageExcept
 
 	/**
 	 * Constructor for BadSqlGrammarException.
+	 *
 	 * @param task name of current task
-	 * @param sql the offending SQL statement
-	 * @param ex the root cause
+	 * @param sql  the offending SQL statement
+	 * @param ex   the root cause
 	 */
 	public BadSqlGrammarException(String task, String sql, SQLException ex) {
 		super(task + "; bad SQL grammar [" + sql + "]", ex);

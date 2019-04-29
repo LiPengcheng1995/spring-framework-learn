@@ -16,13 +16,13 @@
 
 package org.springframework.beans;
 
+import org.springframework.core.Ordered;
+import org.springframework.lang.Nullable;
+
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.lang.reflect.Method;
-
-import org.springframework.core.Ordered;
-import org.springframework.lang.Nullable;
 
 /**
  * {@link BeanInfoFactory} implementation that evaluates whether bean classes have
@@ -33,9 +33,9 @@ import org.springframework.lang.Nullable;
  * {@link BeanInfoFactory} types to take precedence.
  *
  * @author Chris Beams
- * @since 3.2
  * @see BeanInfoFactory
  * @see CachedIntrospectionResults
+ * @since 3.2
  */
 public class ExtendedBeanInfoFactory implements BeanInfoFactory, Ordered {
 

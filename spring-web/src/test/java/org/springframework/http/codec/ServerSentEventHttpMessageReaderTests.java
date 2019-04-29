@@ -16,18 +16,17 @@
 
 package org.springframework.http.codec;
 
-import java.time.Duration;
-import java.util.Collections;
-
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.buffer.AbstractDataBufferAllocatingTestCase;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
+import reactor.core.publisher.Flux;
+import reactor.test.StepVerifier;
+
+import java.time.Duration;
+import java.util.Collections;
 
 import static org.junit.Assert.*;
 
@@ -58,7 +57,7 @@ public class ServerSentEventHttpMessageReaderTests extends AbstractDataBufferAll
 	public void readServerSentEvents() {
 		MockServerHttpRequest request = MockServerHttpRequest.post("/").body(
 				"id:c42\nevent:foo\nretry:123\n:bla\n:bla bla\n:bla bla bla\ndata:bar\n\n" +
-				"id:c43\nevent:bar\nretry:456\ndata:baz\n\n");
+						"id:c43\nevent:bar\nretry:456\ndata:baz\n\n");
 
 		Flux<ServerSentEvent> events = this.messageReader
 				.read(ResolvableType.forClassWithGenerics(ServerSentEvent.class, String.class),
@@ -133,7 +132,7 @@ public class ServerSentEventHttpMessageReaderTests extends AbstractDataBufferAll
 	public void readPojo() {
 		MockServerHttpRequest request = MockServerHttpRequest.post("/").body(
 				"data:{\"foo\": \"foofoo\", \"bar\": \"barbar\"}\n\n" +
-				"data:{\"foo\": \"foofoofoo\", \"bar\": \"barbarbar\"}\n\n");
+						"data:{\"foo\": \"foofoofoo\", \"bar\": \"barbarbar\"}\n\n");
 
 		Flux<Pojo> data = messageReader.read(ResolvableType.forClass(Pojo.class), request,
 				Collections.emptyMap()).cast(Pojo.class);

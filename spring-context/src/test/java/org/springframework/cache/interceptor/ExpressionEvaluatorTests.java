@@ -16,13 +16,7 @@
 
 package org.springframework.cache.interceptor;
 
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-
 import org.junit.Test;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -35,6 +29,11 @@ import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -78,7 +77,7 @@ public class ExpressionEvaluatorTests {
 		AnnotatedClass target = new AnnotatedClass();
 		Method method = ReflectionUtils.findMethod(
 				AnnotatedClass.class, "multipleCaching", Object.class, Object.class);
-		Object[] args = new Object[] {new Object(), new Object()};
+		Object[] args = new Object[]{new Object(), new Object()};
 		Collection<ConcurrentMapCache> caches = Collections.singleton(new ConcurrentMapCache("test"));
 
 		EvaluationContext evalCtx = this.eval.createEvaluationContext(caches, method, args,
@@ -122,8 +121,7 @@ public class ExpressionEvaluatorTests {
 		try {
 			new SpelExpressionParser().parseExpression("#result").getValue(context);
 			fail("Should have failed to parse expression, result not available");
-		}
-		catch (VariableNotAvailableException e) {
+		} catch (VariableNotAvailableException e) {
 			assertEquals("wrong variable name", "result", e.getName());
 		}
 	}
@@ -148,7 +146,7 @@ public class ExpressionEvaluatorTests {
 		AnnotatedClass target = new AnnotatedClass();
 		Method method = ReflectionUtils.findMethod(
 				AnnotatedClass.class, "multipleCaching", Object.class, Object.class);
-		Object[] args = new Object[] {new Object(), new Object()};
+		Object[] args = new Object[]{new Object(), new Object()};
 		Collection<ConcurrentMapCache> caches = Collections.singleton(new ConcurrentMapCache("test"));
 		return this.eval.createEvaluationContext(
 				caches, method, args, target, target.getClass(), method, result, beanFactory);
@@ -157,7 +155,7 @@ public class ExpressionEvaluatorTests {
 
 	private static class AnnotatedClass {
 
-		@Caching(cacheable = { @Cacheable(value = "test", key = "#a"), @Cacheable(value = "test", key = "#b") })
+		@Caching(cacheable = {@Cacheable(value = "test", key = "#a"), @Cacheable(value = "test", key = "#b")})
 		public void multipleCaching(Object a, Object b) {
 		}
 	}

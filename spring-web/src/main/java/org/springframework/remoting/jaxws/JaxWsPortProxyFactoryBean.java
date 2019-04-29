@@ -16,12 +16,12 @@
 
 package org.springframework.remoting.jaxws;
 
-import javax.xml.ws.BindingProvider;
-
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import javax.xml.ws.BindingProvider;
 
 /**
  * {@link org.springframework.beans.factory.FactoryBean} for a specific port of a
@@ -29,9 +29,9 @@ import org.springframework.util.Assert;
  * Inherits configuration properties from {@link JaxWsPortClientInterceptor}.
  *
  * @author Juergen Hoeller
- * @since 2.5
  * @see #setServiceInterface
  * @see LocalJaxWsServiceFactoryBean
+ * @since 2.5
  */
 public class JaxWsPortProxyFactoryBean extends JaxWsPortClientInterceptor implements FactoryBean<Object> {
 

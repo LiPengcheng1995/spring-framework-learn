@@ -16,10 +16,7 @@
 
 package org.springframework.context.support;
 
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.junit.Test;
-
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -30,6 +27,8 @@ import org.springframework.context.SmartLifecycle;
 import org.springframework.tests.Assume;
 import org.springframework.tests.TestGroup;
 
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import static org.junit.Assert.*;
 
 /**
@@ -37,6 +36,11 @@ import static org.junit.Assert.*;
  * @since 3.0
  */
 public class DefaultLifecycleProcessorTests {
+
+	private static int getPhase(Lifecycle lifecycle) {
+		return (lifecycle instanceof SmartLifecycle) ?
+				((SmartLifecycle) lifecycle).getPhase() : 0;
+	}
 
 	@Test
 	public void defaultLifecycleProcessorInstance() {
@@ -568,13 +572,6 @@ public class DefaultLifecycleProcessorTests {
 		assertEquals(Integer.MIN_VALUE, getPhase(stoppedBeans.get(4)));
 	}
 
-
-	private static int getPhase(Lifecycle lifecycle) {
-		return (lifecycle instanceof SmartLifecycle) ?
-				((SmartLifecycle) lifecycle).getPhase() : 0;
-	}
-
-
 	private static class TestLifecycleBean implements Lifecycle {
 
 		private final CopyOnWriteArrayList<Lifecycle> startedBeans;
@@ -584,17 +581,17 @@ public class DefaultLifecycleProcessorTests {
 		private volatile boolean running;
 
 
+		private TestLifecycleBean(CopyOnWriteArrayList<Lifecycle> startedBeans, CopyOnWriteArrayList<Lifecycle> stoppedBeans) {
+			this.startedBeans = startedBeans;
+			this.stoppedBeans = stoppedBeans;
+		}
+
 		static TestLifecycleBean forStartupTests(CopyOnWriteArrayList<Lifecycle> startedBeans) {
 			return new TestLifecycleBean(startedBeans, null);
 		}
 
 		static TestLifecycleBean forShutdownTests(CopyOnWriteArrayList<Lifecycle> stoppedBeans) {
 			return new TestLifecycleBean(null, stoppedBeans);
-		}
-
-		private TestLifecycleBean(CopyOnWriteArrayList<Lifecycle> startedBeans,  CopyOnWriteArrayList<Lifecycle> stoppedBeans) {
-			this.startedBeans = startedBeans;
-			this.stoppedBeans = stoppedBeans;
 		}
 
 		@Override
@@ -628,18 +625,18 @@ public class DefaultLifecycleProcessorTests {
 
 		private volatile boolean autoStartup = true;
 
+		private TestSmartLifecycleBean(int phase, int shutdownDelay, CopyOnWriteArrayList<Lifecycle> startedBeans, CopyOnWriteArrayList<Lifecycle> stoppedBeans) {
+			super(startedBeans, stoppedBeans);
+			this.phase = phase;
+			this.shutdownDelay = shutdownDelay;
+		}
+
 		static TestSmartLifecycleBean forStartupTests(int phase, CopyOnWriteArrayList<Lifecycle> startedBeans) {
 			return new TestSmartLifecycleBean(phase, 0, startedBeans, null);
 		}
 
 		static TestSmartLifecycleBean forShutdownTests(int phase, int shutdownDelay, CopyOnWriteArrayList<Lifecycle> stoppedBeans) {
 			return new TestSmartLifecycleBean(phase, shutdownDelay, null, stoppedBeans);
-		}
-
-		private TestSmartLifecycleBean(int phase, int shutdownDelay, CopyOnWriteArrayList<Lifecycle> startedBeans, CopyOnWriteArrayList<Lifecycle> stoppedBeans) {
-			super(startedBeans, stoppedBeans);
-			this.phase = phase;
-			this.shutdownDelay = shutdownDelay;
 		}
 
 		@Override
@@ -667,11 +664,9 @@ public class DefaultLifecycleProcessorTests {
 				public void run() {
 					try {
 						Thread.sleep(delay);
-					}
-					catch (InterruptedException e) {
+					} catch (InterruptedException e) {
 						// ignore
-					}
-					finally {
+					} finally {
 						callback.run();
 					}
 				}

@@ -21,21 +21,27 @@ import org.aopalliance.intercept.MethodInvocation;
 /**
  * Abstract base class for remote service accessors that are based
  * on serialization of {@link RemoteInvocation} objects.
- *
+ * <p>
  * Provides a "remoteInvocationFactory" property, with a
  * {@link DefaultRemoteInvocationFactory} as default strategy.
  *
  * @author Juergen Hoeller
- * @since 1.1
  * @see #setRemoteInvocationFactory
  * @see RemoteInvocation
  * @see RemoteInvocationFactory
  * @see DefaultRemoteInvocationFactory
+ * @since 1.1
  */
 public abstract class RemoteInvocationBasedAccessor extends UrlBasedRemoteAccessor {
 
 	private RemoteInvocationFactory remoteInvocationFactory = new DefaultRemoteInvocationFactory();
 
+	/**
+	 * Return the RemoteInvocationFactory used by this accessor.
+	 */
+	public RemoteInvocationFactory getRemoteInvocationFactory() {
+		return this.remoteInvocationFactory;
+	}
 
 	/**
 	 * Set the RemoteInvocationFactory to use for this accessor.
@@ -49,13 +55,6 @@ public abstract class RemoteInvocationBasedAccessor extends UrlBasedRemoteAccess
 	}
 
 	/**
-	 * Return the RemoteInvocationFactory used by this accessor.
-	 */
-	public RemoteInvocationFactory getRemoteInvocationFactory() {
-		return this.remoteInvocationFactory;
-	}
-
-	/**
 	 * Create a new RemoteInvocation object for the given AOP method invocation.
 	 * <p>The default implementation delegates to the configured
 	 * {@link #setRemoteInvocationFactory RemoteInvocationFactory}.
@@ -63,6 +62,7 @@ public abstract class RemoteInvocationBasedAccessor extends UrlBasedRemoteAccess
 	 * subclasses, containing additional invocation parameters (e.g. user credentials).
 	 * <p>Note that it is preferable to build a custom RemoteInvocationFactory
 	 * as a reusable strategy, instead of overriding this method.
+	 *
 	 * @param methodInvocation the current AOP method invocation
 	 * @return the RemoteInvocation object
 	 * @see RemoteInvocationFactory#createRemoteInvocation
@@ -76,6 +76,7 @@ public abstract class RemoteInvocationBasedAccessor extends UrlBasedRemoteAccess
 	 * <p>The default implementation calls the default {@code recreate()} method.
 	 * This can be overridden in subclass to provide custom recreation, potentially
 	 * processing the returned result object.
+	 *
 	 * @param result the RemoteInvocationResult to recreate
 	 * @return a return value if the invocation result is a successful return
 	 * @throws Throwable if the invocation result is an exception

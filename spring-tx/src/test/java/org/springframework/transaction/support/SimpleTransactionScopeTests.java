@@ -16,17 +16,16 @@
 
 package org.springframework.transaction.support;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.junit.Test;
-
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.tests.sample.beans.DerivedTestBean;
 import org.springframework.tests.sample.beans.TestBean;
 import org.springframework.tests.transaction.CallCountingTransactionManager;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -57,8 +56,7 @@ public class SimpleTransactionScopeTests {
 		try {
 			context.getBean(TestBean.class);
 			fail("Should have thrown BeanCreationException");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			// expected - no synchronization active
 			assertTrue(ex.getCause() instanceof IllegalStateException);
 		}
@@ -66,8 +64,7 @@ public class SimpleTransactionScopeTests {
 		try {
 			context.getBean(DerivedTestBean.class);
 			fail("Should have thrown BeanCreationException");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			// expected - no synchronization active
 			assertTrue(ex.getCause() instanceof IllegalStateException);
 		}
@@ -99,8 +96,7 @@ public class SimpleTransactionScopeTests {
 			assertSame(bean2b, context.getBean(DerivedTestBean.class));
 			assertNotSame(bean2, bean2b);
 			assertNotSame(bean2a, bean2b);
-		}
-		finally {
+		} finally {
 			TransactionSynchronizationUtils.triggerAfterCompletion(TransactionSynchronization.STATUS_COMMITTED);
 			TransactionSynchronizationManager.clearSynchronization();
 		}
@@ -112,8 +108,7 @@ public class SimpleTransactionScopeTests {
 		try {
 			context.getBean(TestBean.class);
 			fail("Should have thrown IllegalStateException");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			// expected - no synchronization active
 			assertTrue(ex.getCause() instanceof IllegalStateException);
 		}
@@ -121,8 +116,7 @@ public class SimpleTransactionScopeTests {
 		try {
 			context.getBean(DerivedTestBean.class);
 			fail("Should have thrown IllegalStateException");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			// expected - no synchronization active
 			assertTrue(ex.getCause() instanceof IllegalStateException);
 		}

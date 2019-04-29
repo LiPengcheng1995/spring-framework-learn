@@ -16,13 +16,13 @@
 
 package org.springframework.beans;
 
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.*;
+import java.util.List;
+import java.util.Map;
+
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.*;
 
 /**
@@ -127,8 +127,7 @@ public class BeanWrapperAutoGrowingTests {
 		try {
 			assertNotNull(wrapper.getPropertyValue("list[4]"));
 			fail("Should have thrown InvalidPropertyException");
-		}
-		catch (InvalidPropertyException ex) {
+		} catch (InvalidPropertyException ex) {
 			// expected
 			assertTrue(ex.getRootCause() instanceof IndexOutOfBoundsException);
 		}

@@ -16,9 +16,6 @@
 
 package org.springframework.util.xml;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventFactory;
@@ -28,14 +25,17 @@ import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.Namespace;
 import javax.xml.stream.events.StartElement;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Implementation of the {@link javax.xml.stream.XMLStreamWriter} interface
  * that wraps an {@link XMLEventWriter}.
  *
  * @author Arjen Poutsma
- * @since 3.0.5
  * @see StaxUtils#createEventStreamWriter(javax.xml.stream.XMLEventWriter, javax.xml.stream.XMLEventFactory)
+ * @since 3.0.5
  */
 class XMLEventStreamWriter implements XMLStreamWriter {
 
@@ -55,15 +55,14 @@ class XMLEventStreamWriter implements XMLStreamWriter {
 		this.eventFactory = eventFactory;
 	}
 
+	@Override
+	public NamespaceContext getNamespaceContext() {
+		return this.eventWriter.getNamespaceContext();
+	}
 
 	@Override
 	public void setNamespaceContext(NamespaceContext context) throws XMLStreamException {
 		this.eventWriter.setNamespaceContext(context);
-	}
-
-	@Override
-	public NamespaceContext getNamespaceContext() {
-		return this.eventWriter.getNamespaceContext();
 	}
 
 	@Override

@@ -34,12 +34,12 @@ import javax.jms.Session;
  * For maximum compatibility, implement a standard JMS MessageListener instead.
  *
  * @author Juergen Hoeller
- * @since 2.0
  * @see AbstractMessageListenerContainer#setMessageListener
  * @see DefaultMessageListenerContainer
  * @see SimpleMessageListenerContainer
  * @see org.springframework.jms.listener.endpoint.JmsMessageEndpointManager
  * @see javax.jms.MessageListener
+ * @since 2.0
  */
 @FunctionalInterface
 public interface SessionAwareMessageListener<M extends Message> {
@@ -48,6 +48,7 @@ public interface SessionAwareMessageListener<M extends Message> {
 	 * Callback for processing a received JMS message.
 	 * <p>Implementors are supposed to process the given Message,
 	 * typically sending reply messages through the given Session.
+	 *
 	 * @param message the received JMS message (never {@code null})
 	 * @param session the underlying JMS Session (never {@code null})
 	 * @throws JMSException if thrown by JMS methods

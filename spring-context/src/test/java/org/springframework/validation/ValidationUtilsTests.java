@@ -17,7 +17,6 @@
 package org.springframework.validation;
 
 import org.junit.Test;
-
 import org.springframework.lang.Nullable;
 import org.springframework.tests.sample.beans.TestBean;
 
@@ -96,13 +95,13 @@ public class ValidationUtilsTests {
 		TestBean tb = new TestBean();
 
 		Errors errors = new BeanPropertyBindingResult(tb, "tb");
-		ValidationUtils.rejectIfEmpty(errors, "name", "EMPTY_OR_WHITESPACE", new Object[] {"arg"});
+		ValidationUtils.rejectIfEmpty(errors, "name", "EMPTY_OR_WHITESPACE", new Object[]{"arg"});
 		assertTrue(errors.hasFieldErrors("name"));
 		assertEquals("EMPTY_OR_WHITESPACE", errors.getFieldError("name").getCode());
 		assertEquals("arg", errors.getFieldError("name").getArguments()[0]);
 
 		errors = new BeanPropertyBindingResult(tb, "tb");
-		ValidationUtils.rejectIfEmpty(errors, "name", "EMPTY_OR_WHITESPACE", new Object[] {"arg"}, "msg");
+		ValidationUtils.rejectIfEmpty(errors, "name", "EMPTY_OR_WHITESPACE", new Object[]{"arg"}, "msg");
 		assertTrue(errors.hasFieldErrors("name"));
 		assertEquals("EMPTY_OR_WHITESPACE", errors.getFieldError("name").getCode());
 		assertEquals("arg", errors.getFieldError("name").getArguments()[0]);
@@ -147,13 +146,13 @@ public class ValidationUtilsTests {
 		tb.setName(" ");
 
 		Errors errors = new BeanPropertyBindingResult(tb, "tb");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "EMPTY_OR_WHITESPACE", new Object[] {"arg"});
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "EMPTY_OR_WHITESPACE", new Object[]{"arg"});
 		assertTrue(errors.hasFieldErrors("name"));
 		assertEquals("EMPTY_OR_WHITESPACE", errors.getFieldError("name").getCode());
 		assertEquals("arg", errors.getFieldError("name").getArguments()[0]);
 
 		errors = new BeanPropertyBindingResult(tb, "tb");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "EMPTY_OR_WHITESPACE", new Object[] {"arg"}, "msg");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "EMPTY_OR_WHITESPACE", new Object[]{"arg"}, "msg");
 		assertTrue(errors.hasFieldErrors("name"));
 		assertEquals("EMPTY_OR_WHITESPACE", errors.getFieldError("name").getCode());
 		assertEquals("arg", errors.getFieldError("name").getArguments()[0]);

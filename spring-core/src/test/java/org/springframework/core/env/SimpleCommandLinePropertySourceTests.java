@@ -16,12 +16,12 @@
 
 package org.springframework.core.env;
 
-import java.util.List;
-
 import org.junit.Test;
 
+import java.util.List;
+
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * Unit tests for {@link SimpleCommandLinePropertySource}.
@@ -54,7 +54,7 @@ public class SimpleCommandLinePropertySourceTests {
 	@Test
 	public void withOptionArgsOnly() {
 		CommandLinePropertySource<?> ps =
-			new SimpleCommandLinePropertySource("--o1=v1", "--o2");
+				new SimpleCommandLinePropertySource("--o1=v1", "--o2");
 		assertThat(ps.containsProperty("o1"), is(true));
 		assertThat(ps.containsProperty("o2"), is(true));
 		assertThat(ps.containsProperty("o3"), is(false));
@@ -79,7 +79,7 @@ public class SimpleCommandLinePropertySourceTests {
 	@Test
 	public void withDefaultNonOptionArgsNameAndNonOptionArgsPresent() {
 		CommandLinePropertySource<?> ps =
-			new SimpleCommandLinePropertySource("--o1=v1", "noa1", "--o2", "noa2");
+				new SimpleCommandLinePropertySource("--o1=v1", "noa1", "--o2", "noa2");
 
 		assertThat(ps.containsProperty("nonOptionArgs"), is(true));
 		assertThat(ps.containsProperty("o1"), is(true));
@@ -92,7 +92,7 @@ public class SimpleCommandLinePropertySourceTests {
 	@Test
 	public void withCustomNonOptionArgsNameAndNoNonOptionArgsPresent() {
 		CommandLinePropertySource<?> ps =
-			new SimpleCommandLinePropertySource("--o1=v1", "noa1", "--o2", "noa2");
+				new SimpleCommandLinePropertySource("--o1=v1", "noa1", "--o2", "noa2");
 		ps.setNonOptionArgsPropertyName("NOA");
 
 		assertThat(ps.containsProperty("nonOptionArgs"), is(false));
@@ -106,7 +106,7 @@ public class SimpleCommandLinePropertySourceTests {
 	@Test
 	public void covertNonOptionArgsToStringArrayAndList() {
 		CommandLinePropertySource<?> ps =
-			new SimpleCommandLinePropertySource("--o1=v1", "noa1", "--o2", "noa2");
+				new SimpleCommandLinePropertySource("--o1=v1", "noa1", "--o2", "noa2");
 		StandardEnvironment env = new StandardEnvironment();
 		env.getPropertySources().addFirst(ps);
 

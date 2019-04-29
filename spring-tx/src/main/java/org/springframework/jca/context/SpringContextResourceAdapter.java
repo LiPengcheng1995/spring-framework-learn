@@ -16,18 +16,8 @@
 
 package org.springframework.jca.context;
 
-import javax.resource.NotSupportedException;
-import javax.resource.ResourceException;
-import javax.resource.spi.ActivationSpec;
-import javax.resource.spi.BootstrapContext;
-import javax.resource.spi.ResourceAdapter;
-import javax.resource.spi.ResourceAdapterInternalException;
-import javax.resource.spi.endpoint.MessageEndpointFactory;
-import javax.transaction.xa.XAResource;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -36,6 +26,15 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+
+import javax.resource.NotSupportedException;
+import javax.resource.ResourceException;
+import javax.resource.spi.ActivationSpec;
+import javax.resource.spi.BootstrapContext;
+import javax.resource.spi.ResourceAdapter;
+import javax.resource.spi.ResourceAdapterInternalException;
+import javax.resource.spi.endpoint.MessageEndpointFactory;
+import javax.transaction.xa.XAResource;
 
 /**
  * JCA 1.7 {@link javax.resource.spi.ResourceAdapter} implementation
@@ -70,22 +69,22 @@ import org.springframework.util.StringUtils;
  * <pre class="code">
  * &lt;?xml version="1.0" encoding="UTF-8"?&gt;
  * &lt;connector xmlns="http://java.sun.com/xml/ns/j2ee"
- *		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- *		 xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee https://java.sun.com/xml/ns/j2ee/connector_1_5.xsd"
- *		 version="1.5"&gt;
- *	 &lt;vendor-name&gt;Spring Framework&lt;/vendor-name&gt;
- *	 &lt;eis-type&gt;Spring Connector&lt;/eis-type&gt;
- *	 &lt;resourceadapter-version&gt;1.0&lt;/resourceadapter-version&gt;
- *	 &lt;resourceadapter&gt;
- *		 &lt;resourceadapter-class&gt;org.springframework.jca.context.SpringContextResourceAdapter&lt;/resourceadapter-class&gt;
- *		 &lt;config-property&gt;
- *			 &lt;config-property-name&gt;ContextConfigLocation&lt;/config-property-name&gt;
- *			 &lt;config-property-type&gt;java.lang.String&lt;/config-property-type&gt;
- *			 &lt;config-property-value&gt;META-INF/applicationContext.xml&lt;/config-property-value&gt;
- *		 &lt;/config-property&gt;
- *	 &lt;/resourceadapter&gt;
+ * 		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ * 		 xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee https://java.sun.com/xml/ns/j2ee/connector_1_5.xsd"
+ * 		 version="1.5"&gt;
+ * 	 &lt;vendor-name&gt;Spring Framework&lt;/vendor-name&gt;
+ * 	 &lt;eis-type&gt;Spring Connector&lt;/eis-type&gt;
+ * 	 &lt;resourceadapter-version&gt;1.0&lt;/resourceadapter-version&gt;
+ * 	 &lt;resourceadapter&gt;
+ * 		 &lt;resourceadapter-class&gt;org.springframework.jca.context.SpringContextResourceAdapter&lt;/resourceadapter-class&gt;
+ * 		 &lt;config-property&gt;
+ * 			 &lt;config-property-name&gt;ContextConfigLocation&lt;/config-property-name&gt;
+ * 			 &lt;config-property-type&gt;java.lang.String&lt;/config-property-type&gt;
+ * 			 &lt;config-property-value&gt;META-INF/applicationContext.xml&lt;/config-property-value&gt;
+ * 		 &lt;/config-property&gt;
+ * 	 &lt;/resourceadapter&gt;
  * &lt;/connector&gt;</pre>
- *
+ * <p>
  * Note that "META-INF/applicationContext.xml" is the default context config
  * location, so it doesn't have to specified unless you intend to specify
  * different/additional config files. So in the default case, you may remove
@@ -101,16 +100,17 @@ import org.springframework.util.StringUtils;
  * deployment directory!
  *
  * @author Juergen Hoeller
- * @since 2.5
  * @see #setContextConfigLocation
  * @see #loadBeanDefinitions
  * @see ResourceAdapterApplicationContext
+ * @since 2.5
  */
 public class SpringContextResourceAdapter implements ResourceAdapter {
 
 	/**
 	 * Any number of these characters are considered delimiters between
 	 * multiple context config paths in a single String value.
+	 *
 	 * @see #setContextConfigLocation
 	 */
 	public static final String CONFIG_LOCATION_DELIMITERS = ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS;
@@ -125,6 +125,12 @@ public class SpringContextResourceAdapter implements ResourceAdapter {
 	@Nullable
 	private ConfigurableApplicationContext applicationContext;
 
+	/**
+	 * Return the specified context configuration files.
+	 */
+	protected String getContextConfigLocation() {
+		return this.contextConfigLocation;
+	}
 
 	/**
 	 * Set the location of the context configuration files, within the
@@ -137,13 +143,6 @@ public class SpringContextResourceAdapter implements ResourceAdapter {
 	 */
 	public void setContextConfigLocation(String contextConfigLocation) {
 		this.contextConfigLocation = contextConfigLocation;
-	}
-
-	/**
-	 * Return the specified context configuration files.
-	 */
-	protected String getContextConfigLocation() {
-		return this.contextConfigLocation;
 	}
 
 	/**
@@ -172,6 +171,7 @@ public class SpringContextResourceAdapter implements ResourceAdapter {
 	 * <p>The default implementation builds a {@link ResourceAdapterApplicationContext}
 	 * and delegates to {@link #loadBeanDefinitions} for actually parsing the
 	 * specified configuration files.
+	 *
 	 * @param bootstrapContext this ResourceAdapter's BootstrapContext
 	 * @return the Spring ApplicationContext instance
 	 */
@@ -195,7 +195,8 @@ public class SpringContextResourceAdapter implements ResourceAdapter {
 	/**
 	 * Load the bean definitions into the given registry,
 	 * based on the specified configuration files.
-	 * @param registry the registry to load into
+	 *
+	 * @param registry        the registry to load into
 	 * @param configLocations the parsed config locations
 	 * @see #setContextConfigLocation
 	 */

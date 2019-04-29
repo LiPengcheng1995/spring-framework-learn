@@ -16,30 +16,16 @@
 
 package org.springframework.remoting.caucho;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-
-import com.caucho.hessian.io.AbstractHessianInput;
-import com.caucho.hessian.io.AbstractHessianOutput;
-import com.caucho.hessian.io.Hessian2Input;
-import com.caucho.hessian.io.Hessian2Output;
-import com.caucho.hessian.io.HessianDebugInputStream;
-import com.caucho.hessian.io.HessianDebugOutputStream;
-import com.caucho.hessian.io.HessianInput;
-import com.caucho.hessian.io.HessianOutput;
-import com.caucho.hessian.io.HessianRemoteResolver;
-import com.caucho.hessian.io.SerializerFactory;
+import com.caucho.hessian.io.*;
 import com.caucho.hessian.server.HessianSkeleton;
 import org.apache.commons.logging.Log;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.lang.Nullable;
 import org.springframework.remoting.support.RemoteExporter;
 import org.springframework.util.Assert;
 import org.springframework.util.CommonsLogWriter;
+
+import java.io.*;
 
 /**
  * General stream-based protocol exporter for a Hessian endpoint.
@@ -50,10 +36,10 @@ import org.springframework.util.CommonsLogWriter;
  * <b>Note: As of Spring 4.0, this exporter requires Hessian 4.0 or above.</b>
  *
  * @author Juergen Hoeller
- * @since 2.5.1
  * @see #invoke(java.io.InputStream, java.io.OutputStream)
  * @see HessianServiceExporter
  * @see SimpleHessianServiceExporter
+ * @since 2.5.1
  */
 public class HessianExporter extends RemoteExporter implements InitializingBean {
 
@@ -112,6 +98,7 @@ public class HessianExporter extends RemoteExporter implements InitializingBean 
 	/**
 	 * Set whether Hessian's debug mode should be enabled, logging to
 	 * this exporter's Commons Logging log. Default is "false".
+	 *
 	 * @see com.caucho.hessian.client.HessianProxyFactory#setDebug
 	 */
 	public void setDebug(boolean debug) {
@@ -136,7 +123,8 @@ public class HessianExporter extends RemoteExporter implements InitializingBean 
 
 	/**
 	 * Perform an invocation on the exported object.
-	 * @param inputStream the request stream
+	 *
+	 * @param inputStream  the request stream
 	 * @param outputStream the response stream
 	 * @throws Throwable if invocation failed
 	 */
@@ -147,8 +135,9 @@ public class HessianExporter extends RemoteExporter implements InitializingBean 
 
 	/**
 	 * Actually invoke the skeleton with the given streams.
-	 * @param skeleton the skeleton to invoke
-	 * @param inputStream the request stream
+	 *
+	 * @param skeleton     the skeleton to invoke
+	 * @param inputStream  the request stream
 	 * @param outputStream the response stream
 	 * @throws Throwable if invocation failed
 	 */
@@ -161,7 +150,7 @@ public class HessianExporter extends RemoteExporter implements InitializingBean 
 			OutputStream osToUse = outputStream;
 
 			if (this.debugLogger != null && this.debugLogger.isDebugEnabled()) {
-				try (PrintWriter debugWriter = new PrintWriter(new CommonsLogWriter(this.debugLogger))){
+				try (PrintWriter debugWriter = new PrintWriter(new CommonsLogWriter(this.debugLogger))) {
 					@SuppressWarnings("resource")
 					HessianDebugInputStream dis = new HessianDebugInputStream(inputStream, debugWriter);
 					@SuppressWarnings("resource")
@@ -195,27 +184,23 @@ public class HessianExporter extends RemoteExporter implements InitializingBean 
 				in = new Hessian2Input(isToUse);
 				out = new Hessian2Output(osToUse);
 				in.readCall();
-			}
-			else if (code == 'C') {
+			} else if (code == 'C') {
 				// Hessian 2.0 call... for some reason not handled in HessianServlet!
 				isToUse.reset();
 				in = new Hessian2Input(isToUse);
 				out = new Hessian2Output(osToUse);
 				in.readCall();
-			}
-			else if (code == 'c') {
+			} else if (code == 'c') {
 				// Hessian 1.0 call
 				major = isToUse.read();
 				minor = isToUse.read();
 				in = new HessianInput(isToUse);
 				if (major >= 2) {
 					out = new Hessian2Output(osToUse);
-				}
-				else {
+				} else {
 					out = new HessianOutput(osToUse);
 				}
-			}
-			else {
+			} else {
 				throw new IOException("Expected 'H'/'C' (Hessian 2.0) or 'c' (Hessian 1.0) in hessian input at " + code);
 			}
 
@@ -227,25 +212,21 @@ public class HessianExporter extends RemoteExporter implements InitializingBean 
 
 			try {
 				skeleton.invoke(in, out);
-			}
-			finally {
+			} finally {
 				try {
 					in.close();
 					isToUse.close();
-				}
-				catch (IOException ex) {
+				} catch (IOException ex) {
 					// ignore
 				}
 				try {
 					out.close();
 					osToUse.close();
-				}
-				catch (IOException ex) {
+				} catch (IOException ex) {
 					// ignore
 				}
 			}
-		}
-		finally {
+		} finally {
 			resetThreadContextClassLoader(originalClassLoader);
 		}
 	}

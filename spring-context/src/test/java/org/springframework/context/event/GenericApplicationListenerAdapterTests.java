@@ -17,12 +17,11 @@
 package org.springframework.context.event;
 
 import org.junit.Test;
-
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.ResolvableType;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
@@ -143,7 +142,7 @@ public class GenericApplicationListenerAdapterTests extends AbstractApplicationE
 	}
 
 	private void supportsEventType(boolean match, Class<? extends ApplicationListener> listenerType,
-			ResolvableType eventType) {
+								   ResolvableType eventType) {
 
 		ApplicationListener<?> listener = mock(listenerType);
 		GenericApplicationListenerAdapter adapter = new GenericApplicationListenerAdapter(listener);

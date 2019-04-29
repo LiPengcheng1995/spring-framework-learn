@@ -16,14 +16,9 @@
 
 package org.springframework.jdbc.config;
 
-import java.util.function.Predicate;
-
-import javax.sql.DataSource;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -39,9 +34,12 @@ import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.tests.Assume;
 import org.springframework.tests.TestGroup;
 
+import javax.sql.DataSource;
+import java.util.function.Predicate;
+
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
-import static org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory.*;
+import static org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory.DEFAULT_DATABASE_NAME;
 
 /**
  * @author Dave Syer
@@ -77,7 +75,7 @@ public class JdbcNamespaceIntegrationTests {
 	@Test
 	public void createWithAnonymousDataSourceAndDefaultDatabaseName() throws Exception {
 		assertCorrectSetupForSingleDataSource("jdbc-config-db-name-default-and-anonymous-datasource.xml",
-			(url) -> url.endsWith(DEFAULT_DATABASE_NAME));
+				(url) -> url.endsWith(DEFAULT_DATABASE_NAME));
 	}
 
 	@Test
@@ -119,8 +117,7 @@ public class JdbcNamespaceIntegrationTests {
 			context.getBean(DataSourceInitializer.class).destroy();
 			expected.expect(BadSqlGrammarException.class); // Table has been dropped
 			assertNumRowsInTestTable(template, 1);
-		}
-		finally {
+		} finally {
 			context.close();
 		}
 	}
@@ -135,8 +132,7 @@ public class JdbcNamespaceIntegrationTests {
 			context.getBean(EmbeddedDatabaseFactoryBean.class).destroy();
 			expected.expect(BadSqlGrammarException.class); // Table has been dropped
 			assertNumRowsInTestTable(template, 1);
-		}
-		finally {
+		} finally {
 			context.close();
 		}
 	}
@@ -151,8 +147,7 @@ public class JdbcNamespaceIntegrationTests {
 			context.getBean(EmbeddedDatabaseFactoryBean.class).destroy();
 			expected.expect(BadSqlGrammarException.class); // Table has been dropped
 			assertNumRowsInTestTable(template, 1);
-		}
-		finally {
+		} finally {
 			context.close();
 		}
 	}
@@ -161,7 +156,7 @@ public class JdbcNamespaceIntegrationTests {
 	public void multipleDataSourcesHaveDifferentDatabaseNames() throws Exception {
 		DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
 		new XmlBeanDefinitionReader(factory).loadBeanDefinitions(new ClassPathResource(
-			"jdbc-config-multiple-datasources.xml", getClass()));
+				"jdbc-config-multiple-datasources.xml", getClass()));
 		assertBeanPropertyValueOf("databaseName", "firstDataSource", factory);
 		assertBeanPropertyValueOf("databaseName", "secondDataSource", factory);
 	}
@@ -205,8 +200,7 @@ public class JdbcNamespaceIntegrationTests {
 				AbstractDriverBasedDataSource adbDataSource = (AbstractDriverBasedDataSource) dataSource;
 				assertThat(adbDataSource.getUrl(), containsString(dataSourceName));
 			}
-		}
-		finally {
+		} finally {
 			context.close();
 		}
 	}
@@ -219,8 +213,7 @@ public class JdbcNamespaceIntegrationTests {
 			assertTrue(dataSource instanceof AbstractDriverBasedDataSource);
 			AbstractDriverBasedDataSource adbDataSource = (AbstractDriverBasedDataSource) dataSource;
 			assertTrue(urlPredicate.test(adbDataSource.getUrl()));
-		}
-		finally {
+		} finally {
 			context.close();
 		}
 	}

@@ -16,12 +16,7 @@
 
 package org.springframework.test.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * {@code @Rollback} is a test annotation that is used to indicate whether
@@ -50,9 +45,9 @@ import java.lang.annotation.Target;
  * {@link Commit @Commit} for a concrete example.
  *
  * @author Sam Brannen
- * @since 2.5
  * @see Commit
  * @see org.springframework.test.context.transaction.TransactionalTestExecutionListener
+ * @since 2.5
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

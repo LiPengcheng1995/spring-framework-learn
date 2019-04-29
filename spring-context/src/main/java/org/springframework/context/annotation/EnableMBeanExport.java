@@ -16,14 +16,10 @@
 
 package org.springframework.context.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.jmx.export.annotation.AnnotationMBeanExporter;
 import org.springframework.jmx.support.RegistrationPolicy;
+
+import java.lang.annotation.*;
 
 /**
  * Enables default exporting of all standard {@code MBean}s from the Spring context, as
@@ -37,8 +33,8 @@ import org.springframework.jmx.support.RegistrationPolicy;
  * {@code <context:mbean-export/>} element.
  *
  * @author Phillip Webb
- * @since 3.2
  * @see MBeanExportConfiguration
+ * @since 3.2
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

@@ -16,17 +16,13 @@
 
 package org.springframework.beans;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Properties;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -43,6 +39,34 @@ public class ConcurrentBeanWrapperTests {
 	private Set<TestRun> set = Collections.synchronizedSet(new HashSet<TestRun>());
 
 	private Throwable ex = null;
+
+	private static void performSet() {
+		TestBean bean = new TestBean();
+
+		Properties p = (Properties) System.getProperties().clone();
+
+		assertTrue("The System properties must not be empty", p.size() != 0);
+
+		for (Iterator<?> i = p.entrySet().iterator(); i.hasNext(); ) {
+			i.next();
+			if (Math.random() > 0.9) {
+				i.remove();
+			}
+		}
+
+		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+		try {
+			p.store(buffer, null);
+		} catch (IOException e) {
+			// ByteArrayOutputStream does not throw
+			// any IOException
+		}
+		String value = new String(buffer.toByteArray());
+
+		BeanWrapperImpl wrapper = new BeanWrapperImpl(bean);
+		wrapper.setPropertyValue("properties", value);
+		assertEquals(p, bean.getProperties());
+	}
 
 	@Test
 	public void testSingleThread() {
@@ -65,8 +89,7 @@ public class ConcurrentBeanWrapperTests {
 			while (!set.isEmpty() && ex == null) {
 				try {
 					wait();
-				}
-				catch (InterruptedException e) {
+				} catch (InterruptedException e) {
 					logger.info(e.toString());
 				}
 				logger.info(set.size() + " threads still active.");
@@ -76,36 +99,6 @@ public class ConcurrentBeanWrapperTests {
 			fail(ex.getMessage());
 		}
 	}
-
-	private static void performSet() {
-		TestBean bean = new TestBean();
-
-		Properties p = (Properties) System.getProperties().clone();
-
-		assertTrue("The System properties must not be empty", p.size() != 0);
-
-		for (Iterator<?> i = p.entrySet().iterator(); i.hasNext();) {
-			i.next();
-			if (Math.random() > 0.9) {
-				i.remove();
-			}
-		}
-
-		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-		try {
-			p.store(buffer, null);
-		}
-		catch (IOException e) {
-			// ByteArrayOutputStream does not throw
-			// any IOException
-		}
-		String value = new String(buffer.toByteArray());
-
-		BeanWrapperImpl wrapper = new BeanWrapperImpl(bean);
-		wrapper.setPropertyValue("properties", value);
-		assertEquals(p, bean.getProperties());
-	}
-
 
 	private static class TestRun implements Runnable {
 
@@ -121,11 +114,9 @@ public class ConcurrentBeanWrapperTests {
 				for (int i = 0; i < 100; i++) {
 					performSet();
 				}
-			}
-			catch (Throwable e) {
+			} catch (Throwable e) {
 				test.ex = e;
-			}
-			finally {
+			} finally {
 				synchronized (test) {
 					test.set.remove(this);
 					test.notifyAll();

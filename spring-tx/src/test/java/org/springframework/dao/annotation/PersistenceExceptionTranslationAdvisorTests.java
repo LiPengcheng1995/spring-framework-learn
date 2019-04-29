@@ -16,14 +16,7 @@
 
 package org.springframework.dao.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import javax.persistence.PersistenceException;
-
 import org.junit.Test;
-
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -31,7 +24,14 @@ import org.springframework.dao.support.DataAccessUtilsTests.MapPersistenceExcept
 import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.stereotype.Repository;
 
-import static org.junit.Assert.*;
+import javax.persistence.PersistenceException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
 /**
  * Tests for PersistenceExceptionTranslationAdvisor's exception translation, as applied by
@@ -71,15 +71,13 @@ public class PersistenceExceptionTranslationAdvisorTests {
 		try {
 			ri.noThrowsClause();
 			fail();
-		}
-		catch (RuntimeException ex) {
+		} catch (RuntimeException ex) {
 			assertSame(persistenceException1, ex);
 		}
 		try {
 			ri.throwsPersistenceException();
 			fail();
-		}
-		catch (RuntimeException ex) {
+		} catch (RuntimeException ex) {
 			assertSame(persistenceException1, ex);
 		}
 	}
@@ -96,15 +94,13 @@ public class PersistenceExceptionTranslationAdvisorTests {
 		try {
 			ri.noThrowsClause();
 			fail();
-		}
-		catch (RuntimeException ex) {
+		} catch (RuntimeException ex) {
 			assertSame(doNotTranslate, ex);
 		}
 		try {
 			ri.throwsPersistenceException();
 			fail();
-		}
-		catch (RuntimeException ex) {
+		} catch (RuntimeException ex) {
 			assertSame(doNotTranslate, ex);
 		}
 	}
@@ -141,20 +137,17 @@ public class PersistenceExceptionTranslationAdvisorTests {
 		try {
 			ri.noThrowsClause();
 			fail();
-		}
-		catch (DataAccessException ex) {
+		} catch (DataAccessException ex) {
 			// Expected
 			assertSame(persistenceException1, ex.getCause());
-		}
-		catch (PersistenceException ex) {
+		} catch (PersistenceException ex) {
 			fail("Should have been translated");
 		}
 
 		try {
 			ri.throwsPersistenceException();
 			fail();
-		}
-		catch (PersistenceException ex) {
+		} catch (PersistenceException ex) {
 			assertSame(persistenceException1, ex);
 		}
 	}
@@ -165,6 +158,19 @@ public class PersistenceExceptionTranslationAdvisorTests {
 		void noThrowsClause();
 
 		void throwsPersistenceException() throws PersistenceException;
+	}
+
+	@Target({ElementType.TYPE})
+	@Retention(RetentionPolicy.RUNTIME)
+	@Repository
+	public @interface MyRepository {
+	}
+
+	@Repository
+	public interface StereotypedInterface {
+	}
+
+	public interface StereotypedInheritingInterface extends StereotypedInterface {
 	}
 
 	public static class RepositoryInterfaceImpl implements RepositoryInterface {
@@ -202,21 +208,8 @@ public class PersistenceExceptionTranslationAdvisorTests {
 	public static class CustomStereotypedRepositoryInterfaceImpl extends RepositoryInterfaceImpl {
 	}
 
-	@Target({ElementType.TYPE})
-	@Retention(RetentionPolicy.RUNTIME)
-	@Repository
-	public @interface MyRepository {
-	}
-
-	@Repository
-	public interface StereotypedInterface {
-	}
-
 	public static class MyInterfaceStereotypedRepositoryInterfaceImpl extends RepositoryInterfaceImpl
 			implements StereotypedInterface {
-	}
-
-	public interface StereotypedInheritingInterface extends StereotypedInterface {
 	}
 
 	public static class MyInterfaceInheritedStereotypedRepositoryInterfaceImpl extends RepositoryInterfaceImpl

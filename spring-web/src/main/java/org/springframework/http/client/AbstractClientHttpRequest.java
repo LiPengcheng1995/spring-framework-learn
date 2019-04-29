@@ -16,11 +16,11 @@
 
 package org.springframework.http.client;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.Assert;
+
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * Abstract base for {@link ClientHttpRequest} that makes sure that headers
@@ -57,6 +57,7 @@ public abstract class AbstractClientHttpRequest implements ClientHttpRequest {
 
 	/**
 	 * Assert that this request has not been {@linkplain #execute() executed} yet.
+	 *
 	 * @throws IllegalStateException if this request has been executed
 	 */
 	protected void assertNotExecuted() {
@@ -66,6 +67,7 @@ public abstract class AbstractClientHttpRequest implements ClientHttpRequest {
 
 	/**
 	 * Abstract template method that returns the body.
+	 *
 	 * @param headers the HTTP headers
 	 * @return the body output stream
 	 */
@@ -73,6 +75,7 @@ public abstract class AbstractClientHttpRequest implements ClientHttpRequest {
 
 	/**
 	 * Abstract template method that writes the given headers and content to the HTTP request.
+	 *
 	 * @param headers the HTTP headers
 	 * @return the response object for the executed request
 	 */

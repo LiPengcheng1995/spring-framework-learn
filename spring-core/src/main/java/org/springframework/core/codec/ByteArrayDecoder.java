@@ -16,14 +16,14 @@
 
 package org.springframework.core.codec;
 
-import java.util.Map;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
+
+import java.util.Map;
 
 /**
  * Decoder for {@code byte} arrays.
@@ -46,7 +46,7 @@ public class ByteArrayDecoder extends AbstractDataBufferDecoder<byte[]> {
 
 	@Override
 	protected byte[] decodeDataBuffer(DataBuffer dataBuffer, ResolvableType elementType,
-			@Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
+									  @Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
 
 		byte[] result = new byte[dataBuffer.readableByteCount()];
 		dataBuffer.read(result);

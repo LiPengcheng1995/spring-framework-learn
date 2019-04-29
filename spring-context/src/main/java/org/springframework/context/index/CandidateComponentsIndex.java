@@ -16,16 +16,16 @@
 
 package org.springframework.context.index;
 
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.springframework.util.AntPathMatcher;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 /**
  * Provide access to the candidates that are defined in {@code META-INF/spring.components}.
@@ -57,11 +57,24 @@ public class CandidateComponentsIndex {
 		this.index = parseIndex(content);
 	}
 
+	private static MultiValueMap<String, Entry> parseIndex(List<Properties> content) {
+		MultiValueMap<String, Entry> index = new LinkedMultiValueMap<>();
+		for (Properties entry : content) {
+			entry.forEach((type, values) -> {
+				String[] stereotypes = ((String) values).split(",");
+				for (String stereotype : stereotypes) {
+					index.add(stereotype, new Entry((String) type));
+				}
+			});
+		}
+		return index;
+	}
 
 	/**
 	 * Return the candidate types that are associated with the specified stereotype.
+	 *
 	 * @param basePackage the package to check for candidates
-	 * @param stereotype the stereotype to use
+	 * @param stereotype  the stereotype to use
 	 * @return the candidate types associated with the specified {@code stereotype}
 	 * or an empty set if none has been found for the specified {@code basePackage}
 	 */
@@ -76,19 +89,6 @@ public class CandidateComponentsIndex {
 		return Collections.emptySet();
 	}
 
-	private static MultiValueMap<String, Entry> parseIndex(List<Properties> content) {
-		MultiValueMap<String, Entry> index = new LinkedMultiValueMap<>();
-		for (Properties entry : content) {
-			entry.forEach((type, values) -> {
-				String[] stereotypes = ((String) values).split(",");
-				for (String stereotype : stereotypes) {
-					index.add(stereotype, new Entry((String) type));
-				}
-			});
-		}
-		return index;
-	}
-
 	private static class Entry {
 		private final String type;
 		private final String packageName;
@@ -101,8 +101,7 @@ public class CandidateComponentsIndex {
 		public boolean match(String basePackage) {
 			if (pathMatcher.isPattern(basePackage)) {
 				return pathMatcher.match(basePackage, this.packageName);
-			}
-			else {
+			} else {
 				return this.type.startsWith(basePackage);
 			}
 		}

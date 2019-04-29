@@ -16,8 +16,6 @@
 
 package org.springframework.transaction.config;
 
-import org.w3c.dom.Element;
-
 import org.springframework.aop.config.AopNamespaceUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -30,6 +28,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.transaction.event.TransactionalEventListenerFactory;
 import org.springframework.transaction.interceptor.BeanFactoryTransactionAttributeSourceAdvisor;
 import org.springframework.transaction.interceptor.TransactionInterceptor;
+import org.w3c.dom.Element;
 
 /**
  * {@link org.springframework.beans.factory.xml.BeanDefinitionParser
@@ -51,6 +50,11 @@ import org.springframework.transaction.interceptor.TransactionInterceptor;
  */
 class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 
+	private static void registerTransactionManager(Element element, BeanDefinition def) {
+		def.getPropertyValues().add("transactionManagerBeanName",
+				TxNamespaceHandler.getTransactionManagerName(element));
+	}
+
 	/**
 	 * Parses the {@code <tx:annotation-driven/>} tag. Will
 	 * {@link AopNamespaceUtils#registerAutoProxyCreatorIfNecessary register an AutoProxyCreator}
@@ -64,8 +68,7 @@ class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 		if ("aspectj".equals(mode)) {
 			// mode="aspectj"
 			registerTransactionAspect(element, parserContext);
-		}
-		else {
+		} else {
 			// mode="proxy"
 			AopAutoProxyConfigurer.configureAutoProxyCreator(element, parserContext);
 		}
@@ -82,11 +85,6 @@ class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 			registerTransactionManager(element, def);
 			parserContext.registerBeanComponent(new BeanComponentDefinition(def, txAspectBeanName));
 		}
-	}
-
-	private static void registerTransactionManager(Element element, BeanDefinition def) {
-		def.getPropertyValues().add("transactionManagerBeanName",
-				TxNamespaceHandler.getTransactionManagerName(element));
 	}
 
 	private void registerTransactionalEventListenerFactory(ParserContext parserContext) {

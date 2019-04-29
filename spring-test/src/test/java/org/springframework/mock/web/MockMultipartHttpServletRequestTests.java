@@ -16,21 +16,15 @@
 
 package org.springframework.mock.web;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.junit.Test;
-
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -57,7 +51,7 @@ public class MockMultipartHttpServletRequestTests {
 		MockMultipartHttpServletRequest request = new MockMultipartHttpServletRequest();
 		request.addFile(new MockMultipartFile("file1", new ByteArrayInputStream("myContent1".getBytes())));
 		request.addFile(new MockMultipartFile("file2", "myOrigFilename", "text/plain", new ByteArrayInputStream(
-			"myContent2".getBytes())));
+				"myContent2".getBytes())));
 		doTestMultipartHttpServletRequest(request);
 	}
 
@@ -83,13 +77,13 @@ public class MockMultipartHttpServletRequestTests {
 		assertNull(file1.getContentType());
 		assertTrue(ObjectUtils.nullSafeEquals("myContent1".getBytes(), file1.getBytes()));
 		assertTrue(ObjectUtils.nullSafeEquals("myContent1".getBytes(),
-			FileCopyUtils.copyToByteArray(file1.getInputStream())));
+				FileCopyUtils.copyToByteArray(file1.getInputStream())));
 		assertEquals("file2", file2.getName());
 		assertEquals("myOrigFilename", file2.getOriginalFilename());
 		assertEquals("text/plain", file2.getContentType());
 		assertTrue(ObjectUtils.nullSafeEquals("myContent2".getBytes(), file2.getBytes()));
 		assertTrue(ObjectUtils.nullSafeEquals("myContent2".getBytes(),
-			FileCopyUtils.copyToByteArray(file2.getInputStream())));
+				FileCopyUtils.copyToByteArray(file2.getInputStream())));
 	}
 
 }

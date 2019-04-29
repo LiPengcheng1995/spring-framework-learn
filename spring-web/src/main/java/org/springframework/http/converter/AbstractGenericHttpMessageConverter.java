@@ -16,15 +16,15 @@
 
 package org.springframework.http.converter;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.reflect.Type;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.StreamingHttpOutputMessage;
 import org.springframework.lang.Nullable;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.reflect.Type;
 
 /**
  * Abstract base class for most {@link GenericHttpMessageConverter} implementations.
@@ -38,6 +38,7 @@ public abstract class AbstractGenericHttpMessageConverter<T> extends AbstractHtt
 
 	/**
 	 * Construct an {@code AbstractGenericHttpMessageConverter} with no supported media types.
+	 *
 	 * @see #setSupportedMediaTypes
 	 */
 	protected AbstractGenericHttpMessageConverter() {
@@ -45,6 +46,7 @@ public abstract class AbstractGenericHttpMessageConverter<T> extends AbstractHtt
 
 	/**
 	 * Construct an {@code AbstractGenericHttpMessageConverter} with one supported media type.
+	 *
 	 * @param supportedMediaType the supported media type
 	 */
 	protected AbstractGenericHttpMessageConverter(MediaType supportedMediaType) {
@@ -53,6 +55,7 @@ public abstract class AbstractGenericHttpMessageConverter<T> extends AbstractHtt
 
 	/**
 	 * Construct an {@code AbstractGenericHttpMessageConverter} with multiple supported media type.
+	 *
 	 * @param supportedMediaTypes the supported media types
 	 */
 	protected AbstractGenericHttpMessageConverter(MediaType... supportedMediaTypes) {
@@ -80,7 +83,7 @@ public abstract class AbstractGenericHttpMessageConverter<T> extends AbstractHtt
 	 * and then calls {@link #writeInternal}.
 	 */
 	public final void write(final T t, @Nullable final Type type, @Nullable MediaType contentType,
-			HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
+							HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
 
 		final HttpHeaders headers = outputMessage.getHeaders();
 		addDefaultHeaders(headers, t, contentType);
@@ -92,13 +95,13 @@ public abstract class AbstractGenericHttpMessageConverter<T> extends AbstractHtt
 				public OutputStream getBody() {
 					return outputStream;
 				}
+
 				@Override
 				public HttpHeaders getHeaders() {
 					return headers;
 				}
 			}));
-		}
-		else {
+		} else {
 			writeInternal(t, type, outputMessage);
 			outputMessage.getBody().flush();
 		}
@@ -113,10 +116,11 @@ public abstract class AbstractGenericHttpMessageConverter<T> extends AbstractHtt
 
 	/**
 	 * Abstract template method that writes the actual body. Invoked from {@link #write}.
-	 * @param t the object to write to the output message
-	 * @param type the type of object to write (may be {@code null})
+	 *
+	 * @param t             the object to write to the output message
+	 * @param type          the type of object to write (may be {@code null})
 	 * @param outputMessage the HTTP output message to write to
-	 * @throws IOException in case of I/O errors
+	 * @throws IOException                     in case of I/O errors
 	 * @throws HttpMessageNotWritableException in case of conversion errors
 	 */
 	protected abstract void writeInternal(T t, @Nullable Type type, HttpOutputMessage outputMessage)

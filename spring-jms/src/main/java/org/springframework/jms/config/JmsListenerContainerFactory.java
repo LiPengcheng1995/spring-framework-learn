@@ -23,13 +23,14 @@ import org.springframework.jms.listener.MessageListenerContainer;
  * {@link JmsListenerEndpoint} definition.
  *
  * @author Stephane Nicoll
- * @since 4.1
  * @see JmsListenerEndpoint
+ * @since 4.1
  */
 public interface JmsListenerContainerFactory<C extends MessageListenerContainer> {
 
 	/**
 	 * Create a {@link MessageListenerContainer} for the given {@link JmsListenerEndpoint}.
+	 *
 	 * @param endpoint the endpoint to configure
 	 * @return the created container
 	 */

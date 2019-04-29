@@ -54,6 +54,11 @@ public abstract class AbstractMarshallerTests<M extends Marshaller> {
 
 	protected Object flights;
 
+	private static CompareMatcher isSimilarTo(final Object content) {
+		return CompareMatcher.isSimilarTo(content)
+				.ignoreWhitespace();
+	}
+
 	@Before
 	public final void setUp() throws Exception {
 		marshaller = createMarshaller();
@@ -167,9 +172,4 @@ public abstract class AbstractMarshallerTests<M extends Marshaller> {
 		marshaller.marshal(flights, result);
 		assertThat("Marshaller writes invalid StreamResult", writer.toString(), isSimilarTo(EXPECTED_STRING));
 	}
-
-    private static CompareMatcher isSimilarTo(final Object content) {
-        return CompareMatcher.isSimilarTo(content)
-                .ignoreWhitespace();
-    }
 }

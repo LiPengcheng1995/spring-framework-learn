@@ -16,6 +16,9 @@
 
 package org.springframework.core.io;
 
+import org.springframework.lang.Nullable;
+import org.springframework.util.ReflectionUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,9 +27,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * Utility for detecting and accessing JBoss VFS in the classpath.
@@ -44,12 +44,12 @@ import org.springframework.util.ReflectionUtils;
  */
 public abstract class VfsUtils {
 
+	protected static final Class<?> VIRTUAL_FILE_VISITOR_INTERFACE;
+	protected static final Method VIRTUAL_FILE_METHOD_VISIT;
 	private static final String VFS3_PKG = "org.jboss.vfs.";
 	private static final String VFS_NAME = "VFS";
-
 	private static final Method VFS_METHOD_GET_ROOT_URL;
 	private static final Method VFS_METHOD_GET_ROOT_URI;
-
 	private static final Method VIRTUAL_FILE_METHOD_EXISTS;
 	private static final Method VIRTUAL_FILE_METHOD_GET_INPUT_STREAM;
 	private static final Method VIRTUAL_FILE_METHOD_GET_SIZE;
@@ -60,10 +60,6 @@ public abstract class VfsUtils {
 	private static final Method VIRTUAL_FILE_METHOD_GET_PATH_NAME;
 	private static final Method VIRTUAL_FILE_METHOD_GET_PHYSICAL_FILE;
 	private static final Method VIRTUAL_FILE_METHOD_GET_CHILD;
-
-	protected static final Class<?> VIRTUAL_FILE_VISITOR_INTERFACE;
-	protected static final Method VIRTUAL_FILE_METHOD_VISIT;
-
 	private static final Field VISITOR_ATTRIBUTES_FIELD_RECURSE;
 
 	static {
@@ -90,8 +86,7 @@ public abstract class VfsUtils {
 
 			Class<?> visitorAttributesClass = loader.loadClass(VFS3_PKG + "VisitorAttributes");
 			VISITOR_ATTRIBUTES_FIELD_RECURSE = visitorAttributesClass.getField("RECURSE");
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			throw new IllegalStateException("Could not detect JBoss VFS infrastructure", ex);
 		}
 	}
@@ -99,15 +94,13 @@ public abstract class VfsUtils {
 	protected static Object invokeVfsMethod(Method method, @Nullable Object target, Object... args) throws IOException {
 		try {
 			return method.invoke(target, args);
-		}
-		catch (InvocationTargetException ex) {
+		} catch (InvocationTargetException ex) {
 			Throwable targetEx = ex.getTargetException();
 			if (targetEx instanceof IOException) {
 				throw (IOException) targetEx;
 			}
 			ReflectionUtils.handleInvocationTargetException(ex);
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			ReflectionUtils.handleReflectionException(ex);
 		}
 
@@ -117,8 +110,7 @@ public abstract class VfsUtils {
 	static boolean exists(Object vfsResource) {
 		try {
 			return (Boolean) invokeVfsMethod(VIRTUAL_FILE_METHOD_EXISTS, vfsResource);
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			return false;
 		}
 	}
@@ -126,8 +118,7 @@ public abstract class VfsUtils {
 	static boolean isReadable(Object vfsResource) {
 		try {
 			return (Long) invokeVfsMethod(VIRTUAL_FILE_METHOD_GET_SIZE, vfsResource) > 0;
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			return false;
 		}
 	}
@@ -155,8 +146,7 @@ public abstract class VfsUtils {
 	static String getName(Object vfsResource) {
 		try {
 			return (String) invokeVfsMethod(VIRTUAL_FILE_METHOD_GET_NAME, vfsResource);
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			throw new IllegalStateException("Cannot get resource name", ex);
 		}
 	}

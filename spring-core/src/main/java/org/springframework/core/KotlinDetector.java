@@ -16,10 +16,10 @@
 
 package org.springframework.core;
 
-import java.lang.annotation.Annotation;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
+
+import java.lang.annotation.Annotation;
 
 /**
  * A common delegate for detecting Kotlin's presence and for identifying Kotlin types.
@@ -38,8 +38,7 @@ public abstract class KotlinDetector {
 		Class<?> metadata;
 		try {
 			metadata = ClassUtils.forName("kotlin.Metadata", KotlinDetector.class.getClassLoader());
-		}
-		catch (ClassNotFoundException ex) {
+		} catch (ClassNotFoundException ex) {
 			// Kotlin API not available - no Kotlin support
 			metadata = null;
 		}

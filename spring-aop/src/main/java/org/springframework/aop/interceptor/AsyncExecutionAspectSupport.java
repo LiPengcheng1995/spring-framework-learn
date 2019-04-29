@@ -16,18 +16,8 @@
 
 package org.springframework.aop.interceptor;
 
-import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Future;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -41,6 +31,10 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.util.concurrent.ListenableFuture;
+
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.concurrent.*;
 
 /**
  * Base class for asynchronous method execution aspects, such as
@@ -63,6 +57,7 @@ public abstract class AsyncExecutionAspectSupport implements BeanFactoryAware {
 	 * The default name of the {@link TaskExecutor} bean to pick up: "taskExecutor".
 	 * <p>Note that the initial lookup happens by type; this is just the fallback
 	 * in case of multiple executor beans found in the context.
+	 *
 	 * @since 4.2.6
 	 */
 	public static final String DEFAULT_TASK_EXECUTOR_BEAN_NAME = "taskExecutor";
@@ -83,10 +78,11 @@ public abstract class AsyncExecutionAspectSupport implements BeanFactoryAware {
 
 	/**
 	 * Create a new instance with a default {@link AsyncUncaughtExceptionHandler}.
+	 *
 	 * @param defaultExecutor the {@code Executor} (typically a Spring {@code AsyncTaskExecutor}
-	 * or {@link java.util.concurrent.ExecutorService}) to delegate to, unless a more specific
-	 * executor has been requested via a qualifier on the async method, in which case the
-	 * executor will be looked up at invocation time against the enclosing bean factory
+	 *                        or {@link java.util.concurrent.ExecutorService}) to delegate to, unless a more specific
+	 *                        executor has been requested via a qualifier on the async method, in which case the
+	 *                        executor will be looked up at invocation time against the enclosing bean factory
 	 */
 	public AsyncExecutionAspectSupport(@Nullable Executor defaultExecutor) {
 		this(defaultExecutor, new SimpleAsyncUncaughtExceptionHandler());
@@ -94,10 +90,11 @@ public abstract class AsyncExecutionAspectSupport implements BeanFactoryAware {
 
 	/**
 	 * Create a new {@link AsyncExecutionAspectSupport} with the given exception handler.
-	 * @param defaultExecutor the {@code Executor} (typically a Spring {@code AsyncTaskExecutor}
-	 * or {@link java.util.concurrent.ExecutorService}) to delegate to, unless a more specific
-	 * executor has been requested via a qualifier on the async method, in which case the
-	 * executor will be looked up at invocation time against the enclosing bean factory
+	 *
+	 * @param defaultExecutor  the {@code Executor} (typically a Spring {@code AsyncTaskExecutor}
+	 *                         or {@link java.util.concurrent.ExecutorService}) to delegate to, unless a more specific
+	 *                         executor has been requested via a qualifier on the async method, in which case the
+	 *                         executor will be looked up at invocation time against the enclosing bean factory
 	 * @param exceptionHandler the {@link AsyncUncaughtExceptionHandler} to use
 	 */
 	public AsyncExecutionAspectSupport(@Nullable Executor defaultExecutor, AsyncUncaughtExceptionHandler exceptionHandler) {
@@ -108,10 +105,11 @@ public abstract class AsyncExecutionAspectSupport implements BeanFactoryAware {
 
 	/**
 	 * Supply the executor to be used when executing async methods.
+	 *
 	 * @param defaultExecutor the {@code Executor} (typically a Spring {@code AsyncTaskExecutor}
-	 * or {@link java.util.concurrent.ExecutorService}) to delegate to, unless a more specific
-	 * executor has been requested via a qualifier on the async method, in which case the
-	 * executor will be looked up at invocation time against the enclosing bean factory
+	 *                        or {@link java.util.concurrent.ExecutorService}) to delegate to, unless a more specific
+	 *                        executor has been requested via a qualifier on the async method, in which case the
+	 *                        executor will be looked up at invocation time against the enclosing bean factory
 	 * @see #getExecutorQualifier(Method)
 	 * @see #setBeanFactory(BeanFactory)
 	 * @see #getDefaultExecutor(BeanFactory)
@@ -131,6 +129,7 @@ public abstract class AsyncExecutionAspectSupport implements BeanFactoryAware {
 	/**
 	 * Set the {@link BeanFactory} to be used when looking up executors by qualifier
 	 * or when relying on the default executor lookup algorithm.
+	 *
 	 * @see #findQualifiedExecutor(BeanFactory, String)
 	 * @see #getDefaultExecutor(BeanFactory)
 	 */
@@ -143,6 +142,7 @@ public abstract class AsyncExecutionAspectSupport implements BeanFactoryAware {
 	/**
 	 * Determine the specific executor to use when executing the given method.
 	 * Should preferably return an {@link AsyncListenableTaskExecutor} implementation.
+	 *
 	 * @return the executor to use (or {@code null}, but just if no default executor is available)
 	 */
 	@Nullable
@@ -153,8 +153,7 @@ public abstract class AsyncExecutionAspectSupport implements BeanFactoryAware {
 			String qualifier = getExecutorQualifier(method);
 			if (StringUtils.hasLength(qualifier)) {
 				targetExecutor = findQualifiedExecutor(this.beanFactory, qualifier);
-			}
-			else {
+			} else {
 				targetExecutor = this.defaultExecutor;
 				if (targetExecutor == null) {
 					synchronized (this.executors) {
@@ -181,6 +180,7 @@ public abstract class AsyncExecutionAspectSupport implements BeanFactoryAware {
 	 * Returning an empty string or {@code null} indicates that no specific executor has
 	 * been specified and that the {@linkplain #setExecutor(Executor) default executor}
 	 * should be used.
+	 *
 	 * @param method the method to inspect for executor qualifier metadata
 	 * @return the qualifier if specified, otherwise empty String or {@code null}
 	 * @see #determineAsyncExecutor(Method)
@@ -191,10 +191,11 @@ public abstract class AsyncExecutionAspectSupport implements BeanFactoryAware {
 
 	/**
 	 * Retrieve a target executor for the given qualifier.
+	 *
 	 * @param qualifier the qualifier to resolve
 	 * @return the target executor, or {@code null} if none available
-	 * @since 4.2.6
 	 * @see #getExecutorQualifier(Method)
+	 * @since 4.2.6
 	 */
 	@Nullable
 	protected Executor findQualifiedExecutor(@Nullable BeanFactory beanFactory, String qualifier) {
@@ -211,11 +212,12 @@ public abstract class AsyncExecutionAspectSupport implements BeanFactoryAware {
 	 * <p>The default implementation searches for a unique {@link TaskExecutor} bean
 	 * in the context, or for an {@link Executor} bean named "taskExecutor" otherwise.
 	 * If neither of the two is resolvable, this implementation will return {@code null}.
+	 *
 	 * @param beanFactory the BeanFactory to use for a default executor lookup
 	 * @return the default executor, or {@code null} if none available
-	 * @since 4.2.6
 	 * @see #findQualifiedExecutor(BeanFactory, String)
 	 * @see #DEFAULT_TASK_EXECUTOR_BEAN_NAME
+	 * @since 4.2.6
 	 */
 	@Nullable
 	protected Executor getDefaultExecutor(@Nullable BeanFactory beanFactory) {
@@ -225,26 +227,22 @@ public abstract class AsyncExecutionAspectSupport implements BeanFactoryAware {
 				// match with ScheduledExecutorService as well, which is unusable for
 				// our purposes here. TaskExecutor is more clearly designed for it.
 				return beanFactory.getBean(TaskExecutor.class);
-			}
-			catch (NoUniqueBeanDefinitionException ex) {
+			} catch (NoUniqueBeanDefinitionException ex) {
 				logger.debug("Could not find unique TaskExecutor bean", ex);
 				try {
 					return beanFactory.getBean(DEFAULT_TASK_EXECUTOR_BEAN_NAME, Executor.class);
-				}
-				catch (NoSuchBeanDefinitionException ex2) {
+				} catch (NoSuchBeanDefinitionException ex2) {
 					if (logger.isInfoEnabled()) {
 						logger.info("More than one TaskExecutor bean found within the context, and none is named " +
 								"'taskExecutor'. Mark one of them as primary or name it 'taskExecutor' (possibly " +
 								"as an alias) in order to use it for async processing: " + ex.getBeanNamesFound());
 					}
 				}
-			}
-			catch (NoSuchBeanDefinitionException ex) {
+			} catch (NoSuchBeanDefinitionException ex) {
 				logger.debug("Could not find default TaskExecutor bean", ex);
 				try {
 					return beanFactory.getBean(DEFAULT_TASK_EXECUTOR_BEAN_NAME, Executor.class);
-				}
-				catch (NoSuchBeanDefinitionException ex2) {
+				} catch (NoSuchBeanDefinitionException ex2) {
 					logger.info("No task executor bean found for async processing: " +
 							"no bean of type TaskExecutor and no bean named 'taskExecutor' either");
 				}
@@ -257,8 +255,9 @@ public abstract class AsyncExecutionAspectSupport implements BeanFactoryAware {
 
 	/**
 	 * Delegate for actually executing the given task with the chosen executor.
-	 * @param task the task to execute
-	 * @param executor the chosen executor
+	 *
+	 * @param task       the task to execute
+	 * @param executor   the chosen executor
 	 * @param returnType the declared return type (potentially a {@link Future} variant)
 	 * @return the execution result (potentially a corresponding {@link Future} handle)
 	 */
@@ -268,19 +267,15 @@ public abstract class AsyncExecutionAspectSupport implements BeanFactoryAware {
 			return CompletableFuture.supplyAsync(() -> {
 				try {
 					return task.call();
-				}
-				catch (Throwable ex) {
+				} catch (Throwable ex) {
 					throw new CompletionException(ex);
 				}
 			}, executor);
-		}
-		else if (ListenableFuture.class.isAssignableFrom(returnType)) {
+		} else if (ListenableFuture.class.isAssignableFrom(returnType)) {
 			return ((AsyncListenableTaskExecutor) executor).submitListenable(task);
-		}
-		else if (Future.class.isAssignableFrom(returnType)) {
+		} else if (Future.class.isAssignableFrom(returnType)) {
 			return executor.submit(task);
-		}
-		else {
+		} else {
 			executor.submit(task);
 			return null;
 		}
@@ -294,20 +289,19 @@ public abstract class AsyncExecutionAspectSupport implements BeanFactoryAware {
 	 * for all other cases, the exception will not be transmitted back to the client.
 	 * In that later case, the current {@link AsyncUncaughtExceptionHandler} will be
 	 * used to manage such exception.
-	 * @param ex the exception to handle
+	 *
+	 * @param ex     the exception to handle
 	 * @param method the method that was invoked
 	 * @param params the parameters used to invoke the method
 	 */
 	protected void handleError(Throwable ex, Method method, Object... params) throws Exception {
 		if (Future.class.isAssignableFrom(method.getReturnType())) {
 			ReflectionUtils.rethrowException(ex);
-		}
-		else {
+		} else {
 			// Could not transmit the exception to the caller with default executor
 			try {
 				this.exceptionHandler.handleUncaughtException(ex, method, params);
-			}
-			catch (Throwable ex2) {
+			} catch (Throwable ex2) {
 				logger.error("Exception handler for async method '" + method.toGenericString() +
 						"' threw unexpected exception itself", ex2);
 			}

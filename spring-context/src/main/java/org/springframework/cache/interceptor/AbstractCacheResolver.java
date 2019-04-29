@@ -16,15 +16,15 @@
 
 package org.springframework.cache.interceptor;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * A base {@link CacheResolver} implementation that requires the concrete
@@ -43,6 +43,7 @@ public abstract class AbstractCacheResolver implements CacheResolver, Initializi
 
 	/**
 	 * Construct a new {@code AbstractCacheResolver}.
+	 *
 	 * @see #setCacheManager
 	 */
 	protected AbstractCacheResolver() {
@@ -50,17 +51,10 @@ public abstract class AbstractCacheResolver implements CacheResolver, Initializi
 
 	/**
 	 * Construct a new {@code AbstractCacheResolver} for the given {@link CacheManager}.
+	 *
 	 * @param cacheManager the CacheManager to use
 	 */
 	protected AbstractCacheResolver(CacheManager cacheManager) {
-		this.cacheManager = cacheManager;
-	}
-
-
-	/**
-	 * Set the {@link CacheManager} that this instance should use.
-	 */
-	public void setCacheManager(CacheManager cacheManager) {
 		this.cacheManager = cacheManager;
 	}
 
@@ -72,8 +66,15 @@ public abstract class AbstractCacheResolver implements CacheResolver, Initializi
 		return this.cacheManager;
 	}
 
+	/**
+	 * Set the {@link CacheManager} that this instance should use.
+	 */
+	public void setCacheManager(CacheManager cacheManager) {
+		this.cacheManager = cacheManager;
+	}
+
 	@Override
-	public void afterPropertiesSet()  {
+	public void afterPropertiesSet() {
 		Assert.notNull(this.cacheManager, "CacheManager is required");
 	}
 
@@ -100,6 +101,7 @@ public abstract class AbstractCacheResolver implements CacheResolver, Initializi
 	 * Provide the name of the cache(s) to resolve against the current cache manager.
 	 * <p>It is acceptable to return {@code null} to indicate that no cache could
 	 * be resolved for this invocation.
+	 *
 	 * @param context the context of the particular invocation
 	 * @return the cache name(s) to resolve, or {@code null} if no cache should be resolved
 	 */

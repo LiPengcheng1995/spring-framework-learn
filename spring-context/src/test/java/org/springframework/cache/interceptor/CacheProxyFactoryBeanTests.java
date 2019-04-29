@@ -16,16 +16,15 @@
 
 package org.springframework.cache.interceptor;
 
-import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.junit.Test;
-
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
@@ -40,7 +39,7 @@ public class CacheProxyFactoryBeanTests {
 	@Test
 	public void configurationClassWithCacheProxyFactoryBean() {
 		try (AnnotationConfigApplicationContext applicationContext =
-				new AnnotationConfigApplicationContext(CacheProxyFactoryBeanConfiguration.class)) {
+					 new AnnotationConfigApplicationContext(CacheProxyFactoryBeanConfiguration.class)) {
 			Greeter greeter = applicationContext.getBean("greeter", Greeter.class);
 			assertNotNull(greeter);
 			assertFalse(greeter.isCacheMiss());
@@ -57,6 +56,26 @@ public class CacheProxyFactoryBeanTests {
 		}
 	}
 
+
+	interface Greeter {
+
+		default boolean isCacheHit() {
+			return !isCacheMiss();
+		}
+
+		boolean isCacheMiss();
+
+		void setCacheMiss();
+
+		default String greet() {
+			return greet("World");
+		}
+
+		default String greet(String name) {
+			setCacheMiss();
+			return String.format("Hello %s!", name);
+		}
+	}
 
 	@Configuration
 	@EnableCaching
@@ -88,28 +107,6 @@ public class CacheProxyFactoryBeanTests {
 			return builder.build();
 		}
 	}
-
-
-	interface Greeter {
-
-		default boolean isCacheHit() {
-			return !isCacheMiss();
-		}
-
-		boolean isCacheMiss();
-
-		void setCacheMiss();
-
-		default String greet() {
-			return greet("World");
-		}
-
-		default String greet(String name) {
-			setCacheMiss();
-			return String.format("Hello %s!", name);
-		}
-	}
-
 
 	static class SimpleGreeter implements Greeter {
 

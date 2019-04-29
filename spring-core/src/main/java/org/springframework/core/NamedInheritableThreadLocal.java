@@ -23,8 +23,8 @@ import org.springframework.util.Assert;
  * as {@link #toString()} result (allowing for introspection).
  *
  * @author Juergen Hoeller
- * @since 2.5.2
  * @see NamedThreadLocal
+ * @since 2.5.2
  */
 public class NamedInheritableThreadLocal<T> extends InheritableThreadLocal<T> {
 
@@ -33,6 +33,7 @@ public class NamedInheritableThreadLocal<T> extends InheritableThreadLocal<T> {
 
 	/**
 	 * Create a new NamedInheritableThreadLocal with the given name.
+	 *
 	 * @param name a descriptive name for this ThreadLocal
 	 */
 	public NamedInheritableThreadLocal(String name) {

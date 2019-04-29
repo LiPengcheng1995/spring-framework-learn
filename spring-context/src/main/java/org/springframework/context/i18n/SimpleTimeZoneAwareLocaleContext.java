@@ -16,10 +16,10 @@
 
 package org.springframework.context.i18n;
 
+import org.springframework.lang.Nullable;
+
 import java.util.Locale;
 import java.util.TimeZone;
-
-import org.springframework.lang.Nullable;
 
 /**
  * Simple implementation of the {@link TimeZoneAwareLocaleContext} interface,
@@ -30,9 +30,9 @@ import org.springframework.lang.Nullable;
  *
  * @author Juergen Hoeller
  * @author Nicholas Williams
- * @since 4.0
  * @see LocaleContextHolder#setLocaleContext
  * @see LocaleContextHolder#getTimeZone()
+ * @since 4.0
  */
 public class SimpleTimeZoneAwareLocaleContext extends SimpleLocaleContext implements TimeZoneAwareLocaleContext {
 
@@ -44,7 +44,8 @@ public class SimpleTimeZoneAwareLocaleContext extends SimpleLocaleContext implem
 	 * Create a new SimpleTimeZoneAwareLocaleContext that exposes the specified
 	 * Locale and TimeZone. Every {@link #getLocale()} call will return the given
 	 * Locale, and every {@link #getTimeZone()} call will return the given TimeZone.
-	 * @param locale the Locale to expose
+	 *
+	 * @param locale   the Locale to expose
 	 * @param timeZone the TimeZone to expose
 	 */
 	public SimpleTimeZoneAwareLocaleContext(@Nullable Locale locale, @Nullable TimeZone timeZone) {

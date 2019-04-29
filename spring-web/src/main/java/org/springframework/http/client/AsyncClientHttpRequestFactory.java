@@ -16,10 +16,10 @@
 
 package org.springframework.http.client;
 
+import org.springframework.http.HttpMethod;
+
 import java.io.IOException;
 import java.net.URI;
-
-import org.springframework.http.HttpMethod;
 
 /**
  * Factory for {@link AsyncClientHttpRequest} objects.
@@ -37,7 +37,8 @@ public interface AsyncClientHttpRequestFactory {
 	 * and HTTP method.
 	 * <p>The returned request can be written to, and then executed by calling
 	 * {@link AsyncClientHttpRequest#executeAsync()}.
-	 * @param uri the URI to create a request for
+	 *
+	 * @param uri        the URI to create a request for
 	 * @param httpMethod the HTTP method to execute
 	 * @return the created request
 	 * @throws IOException in case of I/O errors

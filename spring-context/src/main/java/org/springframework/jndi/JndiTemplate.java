@@ -16,18 +16,17 @@
 
 package org.springframework.jndi;
 
-import java.util.Hashtable;
-import java.util.Properties;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.lang.Nullable;
+import org.springframework.util.CollectionUtils;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.CollectionUtils;
+import java.util.Hashtable;
+import java.util.Properties;
 
 /**
  * Helper class that simplifies JNDI operations. It provides methods to lookup and
@@ -60,6 +59,13 @@ public class JndiTemplate {
 		this.environment = environment;
 	}
 
+	/**
+	 * Return the environment for the JNDI InitialContext, if any.
+	 */
+	@Nullable
+	public Properties getEnvironment() {
+		return this.environment;
+	}
 
 	/**
 	 * Set the environment for the JNDI InitialContext.
@@ -69,16 +75,8 @@ public class JndiTemplate {
 	}
 
 	/**
-	 * Return the environment for the JNDI InitialContext, if any.
-	 */
-	@Nullable
-	public Properties getEnvironment() {
-		return this.environment;
-	}
-
-
-	/**
 	 * Execute the given JNDI context callback implementation.
+	 *
 	 * @param contextCallback JndiCallback implementation
 	 * @return a result object returned by the callback, or {@code null}
 	 * @throws NamingException thrown by the callback implementation
@@ -89,8 +87,7 @@ public class JndiTemplate {
 		Context ctx = getContext();
 		try {
 			return contextCallback.doInContext(ctx);
-		}
-		finally {
+		} finally {
 			releaseContext(ctx);
 		}
 	}
@@ -99,6 +96,7 @@ public class JndiTemplate {
 	 * Obtain a JNDI context corresponding to this template's configuration.
 	 * Called by {@link #execute}; may also be called directly.
 	 * <p>The default implementation delegates to {@link #createInitialContext()}.
+	 *
 	 * @return the JNDI context (never {@code null})
 	 * @throws NamingException if context retrieval failed
 	 * @see #releaseContext
@@ -109,6 +107,7 @@ public class JndiTemplate {
 
 	/**
 	 * Release a JNDI context as obtained from {@link #getContext()}.
+	 *
 	 * @param ctx the JNDI context to release (may be {@code null})
 	 * @see #getContext
 	 */
@@ -116,8 +115,7 @@ public class JndiTemplate {
 		if (ctx != null) {
 			try {
 				ctx.close();
-			}
-			catch (NamingException ex) {
+			} catch (NamingException ex) {
 				logger.debug("Could not close JNDI InitialContext", ex);
 			}
 		}
@@ -127,6 +125,7 @@ public class JndiTemplate {
 	 * Create a new JNDI initial context. Invoked by {@link #getContext}.
 	 * <p>The default implementation use this template's environment settings.
 	 * Can be subclassed for custom contexts, e.g. for testing.
+	 *
 	 * @return the initial Context instance
 	 * @throws NamingException in case of initialization errors
 	 */
@@ -143,11 +142,12 @@ public class JndiTemplate {
 
 	/**
 	 * Look up the object with the given name in the current JNDI context.
+	 *
 	 * @param name the JNDI name of the object
 	 * @return object found (cannot be {@code null}; if a not so well-behaved
 	 * JNDI implementations returns null, a NamingException gets thrown)
 	 * @throws NamingException if there is no object with the given
-	 * name bound to JNDI
+	 *                         name bound to JNDI
 	 */
 	public Object lookup(final String name) throws NamingException {
 		if (logger.isDebugEnabled()) {
@@ -163,15 +163,16 @@ public class JndiTemplate {
 
 	/**
 	 * Look up the object with the given name in the current JNDI context.
-	 * @param name the JNDI name of the object
+	 *
+	 * @param name         the JNDI name of the object
 	 * @param requiredType type the JNDI object must match. Can be an interface or
-	 * superclass of the actual class, or {@code null} for any match. For example,
-	 * if the value is {@code Object.class}, this method will succeed whatever
-	 * the class of the returned instance.
+	 *                     superclass of the actual class, or {@code null} for any match. For example,
+	 *                     if the value is {@code Object.class}, this method will succeed whatever
+	 *                     the class of the returned instance.
 	 * @return object found (cannot be {@code null}; if a not so well-behaved
 	 * JNDI implementations returns null, a NamingException gets thrown)
 	 * @throws NamingException if there is no object with the given
-	 * name bound to JNDI
+	 *                         name bound to JNDI
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> T lookup(String name, @Nullable Class<T> requiredType) throws NamingException {
@@ -184,7 +185,8 @@ public class JndiTemplate {
 
 	/**
 	 * Bind the given object to the current JNDI context, using the given name.
-	 * @param name the JNDI name of the object
+	 *
+	 * @param name   the JNDI name of the object
 	 * @param object the object to bind
 	 * @throws NamingException thrown by JNDI, mostly name already bound
 	 */
@@ -201,7 +203,8 @@ public class JndiTemplate {
 	/**
 	 * Rebind the given object to the current JNDI context, using the given name.
 	 * Overwrites any existing binding.
-	 * @param name the JNDI name of the object
+	 *
+	 * @param name   the JNDI name of the object
 	 * @param object the object to rebind
 	 * @throws NamingException thrown by JNDI
 	 */
@@ -217,6 +220,7 @@ public class JndiTemplate {
 
 	/**
 	 * Remove the binding for the given name from the current JNDI context.
+	 *
 	 * @param name the JNDI name of the object
 	 * @throws NamingException thrown by JNDI, mostly name not found
 	 */

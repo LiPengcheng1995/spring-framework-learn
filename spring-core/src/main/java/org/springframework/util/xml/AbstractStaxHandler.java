@@ -16,20 +16,19 @@
 
 package org.springframework.util.xml;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-
+import org.springframework.lang.Nullable;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 
-import org.springframework.lang.Nullable;
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Abstract base class for SAX {@code ContentHandler} and {@code LexicalHandler}
@@ -53,8 +52,7 @@ abstract class AbstractStaxHandler implements ContentHandler, LexicalHandler {
 		newNamespaceMapping();
 		try {
 			startDocumentInternal();
-		}
-		catch (XMLStreamException ex) {
+		} catch (XMLStreamException ex) {
 			throw new SAXException("Could not handle startDocument: " + ex.getMessage(), ex);
 		}
 	}
@@ -64,8 +62,7 @@ abstract class AbstractStaxHandler implements ContentHandler, LexicalHandler {
 		removeAllNamespaceMappings();
 		try {
 			endDocumentInternal();
-		}
-		catch (XMLStreamException ex) {
+		} catch (XMLStreamException ex) {
 			throw new SAXException("Could not handle endDocument: " + ex.getMessage(), ex);
 		}
 	}
@@ -84,8 +81,7 @@ abstract class AbstractStaxHandler implements ContentHandler, LexicalHandler {
 		try {
 			startElementInternal(toQName(uri, qName), atts, currentNamespaceMapping());
 			newNamespaceMapping();
-		}
-		catch (XMLStreamException ex) {
+		} catch (XMLStreamException ex) {
 			throw new SAXException("Could not handle startElement: " + ex.getMessage(), ex);
 		}
 	}
@@ -95,8 +91,7 @@ abstract class AbstractStaxHandler implements ContentHandler, LexicalHandler {
 		try {
 			endElementInternal(toQName(uri, qName), currentNamespaceMapping());
 			removeNamespaceMapping();
-		}
-		catch (XMLStreamException ex) {
+		} catch (XMLStreamException ex) {
 			throw new SAXException("Could not handle endElement: " + ex.getMessage(), ex);
 		}
 	}
@@ -107,12 +102,10 @@ abstract class AbstractStaxHandler implements ContentHandler, LexicalHandler {
 			String data = new String(ch, start, length);
 			if (!this.inCData) {
 				charactersInternal(data);
-			}
-			else {
+			} else {
 				cDataInternal(data);
 			}
-		}
-		catch (XMLStreamException ex) {
+		} catch (XMLStreamException ex) {
 			throw new SAXException("Could not handle characters: " + ex.getMessage(), ex);
 		}
 	}
@@ -121,8 +114,7 @@ abstract class AbstractStaxHandler implements ContentHandler, LexicalHandler {
 	public final void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
 		try {
 			ignorableWhitespaceInternal(new String(ch, start, length));
-		}
-		catch (XMLStreamException ex) {
+		} catch (XMLStreamException ex) {
 			throw new SAXException(
 					"Could not handle ignorableWhitespace:" + ex.getMessage(), ex);
 		}
@@ -132,8 +124,7 @@ abstract class AbstractStaxHandler implements ContentHandler, LexicalHandler {
 	public final void processingInstruction(String target, String data) throws SAXException {
 		try {
 			processingInstructionInternal(target, data);
-		}
-		catch (XMLStreamException ex) {
+		} catch (XMLStreamException ex) {
 			throw new SAXException("Could not handle processingInstruction: " + ex.getMessage(), ex);
 		}
 	}
@@ -142,8 +133,7 @@ abstract class AbstractStaxHandler implements ContentHandler, LexicalHandler {
 	public final void skippedEntity(String name) throws SAXException {
 		try {
 			skippedEntityInternal(name);
-		}
-		catch (XMLStreamException ex) {
+		} catch (XMLStreamException ex) {
 			throw new SAXException("Could not handle skippedEntity: " + ex.getMessage(), ex);
 		}
 	}
@@ -157,16 +147,14 @@ abstract class AbstractStaxHandler implements ContentHandler, LexicalHandler {
 				builder.append(" PUBLIC \"");
 				builder.append(publicId);
 				builder.append("\" \"");
-			}
-			else {
+			} else {
 				builder.append(" SYSTEM \"");
 			}
 			builder.append(systemId);
 			builder.append("\">");
 
 			dtdInternal(builder.toString());
-		}
-		catch (XMLStreamException ex) {
+		} catch (XMLStreamException ex) {
 			throw new SAXException("Could not handle startDTD: " + ex.getMessage(), ex);
 		}
 	}
@@ -189,8 +177,7 @@ abstract class AbstractStaxHandler implements ContentHandler, LexicalHandler {
 	public final void comment(char[] ch, int start, int length) throws SAXException {
 		try {
 			commentInternal(new String(ch, start, length));
-		}
-		catch (XMLStreamException ex) {
+		} catch (XMLStreamException ex) {
 			throw new SAXException("Could not handle comment: " + ex.getMessage(), ex);
 		}
 	}
@@ -206,7 +193,8 @@ abstract class AbstractStaxHandler implements ContentHandler, LexicalHandler {
 	/**
 	 * Convert a namespace URI and DOM or SAX qualified name to a {@code QName}. The
 	 * qualified name can have the form {@code prefix:localname} or {@code localName}.
-	 * @param namespaceUri the namespace URI
+	 *
+	 * @param namespaceUri  the namespace URI
 	 * @param qualifiedName the qualified name
 	 * @return a QName
 	 */
@@ -214,8 +202,7 @@ abstract class AbstractStaxHandler implements ContentHandler, LexicalHandler {
 		int idx = qualifiedName.indexOf(':');
 		if (idx == -1) {
 			return new QName(namespaceUri, qualifiedName);
-		}
-		else {
+		} else {
 			String prefix = qualifiedName.substring(0, idx);
 			String localPart = qualifiedName.substring(idx + 1);
 			return new QName(namespaceUri, localPart, prefix);
@@ -252,7 +239,7 @@ abstract class AbstractStaxHandler implements ContentHandler, LexicalHandler {
 	protected abstract void endDocumentInternal() throws XMLStreamException;
 
 	protected abstract void startElementInternal(QName name, Attributes attributes,
-			Map<String, String> namespaceMapping) throws XMLStreamException;
+												 Map<String, String> namespaceMapping) throws XMLStreamException;
 
 	protected abstract void endElementInternal(QName name, Map<String, String> namespaceMapping)
 			throws XMLStreamException;

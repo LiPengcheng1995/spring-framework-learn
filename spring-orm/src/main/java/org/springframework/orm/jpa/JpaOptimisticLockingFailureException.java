@@ -16,17 +16,17 @@
 
 package org.springframework.orm.jpa;
 
-import javax.persistence.OptimisticLockException;
-
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
+
+import javax.persistence.OptimisticLockException;
 
 /**
  * JPA-specific subclass of ObjectOptimisticLockingFailureException.
  * Converts JPA's OptimisticLockException.
  *
  * @author Juergen Hoeller
- * @since 2.0
  * @see EntityManagerFactoryUtils#convertJpaAccessExceptionIfPossible
+ * @since 2.0
  */
 @SuppressWarnings("serial")
 public class JpaOptimisticLockingFailureException extends ObjectOptimisticLockingFailureException {

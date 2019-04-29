@@ -16,19 +16,19 @@
 
 package org.springframework.context.i18n;
 
-import java.util.Locale;
-
 import org.springframework.lang.Nullable;
+
+import java.util.Locale;
 
 /**
  * Simple implementation of the {@link LocaleContext} interface,
  * always returning a specified {@code Locale}.
  *
  * @author Juergen Hoeller
- * @since 1.2
  * @see LocaleContextHolder#setLocaleContext
  * @see LocaleContextHolder#getLocale()
  * @see SimpleTimeZoneAwareLocaleContext
+ * @since 1.2
  */
 public class SimpleLocaleContext implements LocaleContext {
 
@@ -39,6 +39,7 @@ public class SimpleLocaleContext implements LocaleContext {
 	/**
 	 * Create a new SimpleLocaleContext that exposes the specified Locale.
 	 * Every {@link #getLocale()} call will return this Locale.
+	 *
 	 * @param locale the Locale to expose, or {@code null} for no specific one
 	 */
 	public SimpleLocaleContext(@Nullable Locale locale) {

@@ -16,25 +16,20 @@
 
 package org.springframework.core;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.tests.sample.objects.TestObject;
+import org.springframework.util.ClassUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import org.springframework.tests.sample.objects.TestObject;
-import org.springframework.util.ClassUtils;
+import java.lang.reflect.Method;
+import java.util.*;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Unit tests for {@link Conventions}.
@@ -47,6 +42,23 @@ public class ConventionsTests {
 	@Rule
 	public final ExpectedException exception = ExpectedException.none();
 
+	private static MethodParameter getMethodParameter(Class<?> parameterType) {
+		Method method = ClassUtils.getMethod(TestBean.class, "handle", (Class<?>[]) null);
+		for (int i = 0; i < method.getParameterCount(); i++) {
+			if (parameterType.equals(method.getParameterTypes()[i])) {
+				return new MethodParameter(method, i);
+			}
+		}
+		throw new IllegalArgumentException("Parameter type not found: " + parameterType);
+	}
+
+	private static Method getMethodForReturnType(Class<?> returnType) {
+		return Arrays.stream(TestBean.class.getMethods())
+				.filter(method -> method.getReturnType().equals(returnType))
+				.findFirst()
+				.orElseThrow(() ->
+						new IllegalArgumentException("Unique return type not found: " + returnType));
+	}
 
 	@Test
 	public void simpleObject() {
@@ -129,47 +141,42 @@ public class ConventionsTests {
 		assertEquals(desiredResult, Conventions.getQualifiedAttributeName(cls, baseName));
 	}
 
-
-	private static MethodParameter getMethodParameter(Class<?> parameterType) {
-		Method method = ClassUtils.getMethod(TestBean.class, "handle", (Class<?>[]) null);
-		for (int i=0; i < method.getParameterCount(); i++) {
-			if (parameterType.equals(method.getParameterTypes()[i])) {
-				return new MethodParameter(method, i);
-			}
-		}
-		throw new IllegalArgumentException("Parameter type not found: " + parameterType);
-	}
-
-	private static Method getMethodForReturnType(Class<?> returnType) {
-		return Arrays.stream(TestBean.class.getMethods())
-				.filter(method -> method.getReturnType().equals(returnType))
-				.findFirst()
-				.orElseThrow(() ->
-						new IllegalArgumentException("Unique return type not found: " + returnType));
-	}
-
-
 	@SuppressWarnings("unused")
 	private static class TestBean {
 
 		public void handle(TestObject to,
-				List<TestObject> toList, Set<TestObject> toSet,
-				Mono<TestObject> toMono, Flux<TestObject> toFlux,
-				Single<TestObject> toSingle, Observable<TestObject> toObservable) { }
+						   List<TestObject> toList, Set<TestObject> toSet,
+						   Mono<TestObject> toMono, Flux<TestObject> toFlux,
+						   Single<TestObject> toSingle, Observable<TestObject> toObservable) {
+		}
 
-		public TestObject handleTo() { return null; }
+		public TestObject handleTo() {
+			return null;
+		}
 
-		public List<TestObject> handleToList() { return null; }
+		public List<TestObject> handleToList() {
+			return null;
+		}
 
-		public Set<TestObject> handleToSet() { return null; }
+		public Set<TestObject> handleToSet() {
+			return null;
+		}
 
-		public Mono<TestObject> handleToMono() { return null; }
+		public Mono<TestObject> handleToMono() {
+			return null;
+		}
 
-		public Flux<TestObject> handleToFlux() { return null; }
+		public Flux<TestObject> handleToFlux() {
+			return null;
+		}
 
-		public Single<TestObject> handleToSingle() { return null; }
+		public Single<TestObject> handleToSingle() {
+			return null;
+		}
 
-		public Observable<TestObject> handleToObservable() { return null; }
+		public Observable<TestObject> handleToObservable() {
+			return null;
+		}
 
 	}
 

@@ -25,14 +25,10 @@ import org.junit.rules.ExpectedException;
  */
 public class JmsListenerEndpointRegistryTests {
 
-	private final JmsListenerEndpointRegistry registry = new JmsListenerEndpointRegistry();
-
-	private final JmsListenerContainerTestFactory containerFactory = new JmsListenerContainerTestFactory();
-
-
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();
-
+	private final JmsListenerEndpointRegistry registry = new JmsListenerEndpointRegistry();
+	private final JmsListenerContainerTestFactory containerFactory = new JmsListenerContainerTestFactory();
 
 	@Test
 	public void createWithNullEndpoint() {

@@ -76,7 +76,7 @@ inline fun <reified T : Any> JdbcOperations.queryForList(sql: String): List<T> =
  */
 @Suppress("EXTENSION_SHADOWED_BY_MEMBER")
 inline fun <reified T : Any> JdbcOperations.queryForList(sql: String, args: Array<out Any>,
-		argTypes: IntArray): List<T> =
+														 argTypes: IntArray): List<T> =
 		queryForList(sql, args, argTypes, T::class.java)
 
 /**
@@ -97,7 +97,7 @@ inline fun <reified T : Any> JdbcOperations.queryForList(sql: String, args: Arra
  * @since 5.0
  */
 inline fun <reified T : Any> JdbcOperations.query(sql: String, vararg args: Any,
-		crossinline function: (ResultSet) -> T): T? =
+												  crossinline function: (ResultSet) -> T): T? =
 		query(sql, ResultSetExtractor { function(it) }, *args)
 
 /**

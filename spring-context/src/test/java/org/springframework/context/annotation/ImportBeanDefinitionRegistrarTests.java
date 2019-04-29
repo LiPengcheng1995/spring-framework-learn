@@ -16,13 +16,7 @@
 
 package org.springframework.context.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.junit.Test;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanFactory;
@@ -35,8 +29,14 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 /**
  * Integration tests for {@link ImportBeanDefinitionRegistrar}.
@@ -58,18 +58,16 @@ public class ImportBeanDefinitionRegistrarTests {
 	}
 
 
-	@Sample
-	@Configuration
-	static class Config {
-	}
-
-
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Import(SampleRegistrar.class)
 	public @interface Sample {
 	}
 
+	@Sample
+	@Configuration
+	static class Config {
+	}
 
 	private static class SampleRegistrar implements ImportBeanDefinitionRegistrar,
 			BeanClassLoaderAware, ResourceLoaderAware, BeanFactoryAware, EnvironmentAware {
@@ -101,7 +99,7 @@ public class ImportBeanDefinitionRegistrarTests {
 
 		@Override
 		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
-				BeanDefinitionRegistry registry) {
+											BeanDefinitionRegistry registry) {
 		}
 	}
 

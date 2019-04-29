@@ -35,6 +35,7 @@ public class QosSettings {
 
 	/**
 	 * Create a new instance with the default settings.
+	 *
 	 * @see Message#DEFAULT_DELIVERY_MODE
 	 * @see Message#DEFAULT_PRIORITY
 	 * @see Message#DEFAULT_TIME_TO_LIVE
@@ -52,10 +53,17 @@ public class QosSettings {
 		this.timeToLive = timeToLive;
 	}
 
+	/**
+	 * Return the delivery mode to use when sending a message.
+	 */
+	public int getDeliveryMode() {
+		return this.deliveryMode;
+	}
 
 	/**
 	 * Set the delivery mode to use when sending a message.
 	 * Default is the JMS Message default: "PERSISTENT".
+	 *
 	 * @param deliveryMode the delivery mode to use
 	 * @see javax.jms.DeliveryMode#PERSISTENT
 	 * @see javax.jms.DeliveryMode#NON_PERSISTENT
@@ -67,22 +75,6 @@ public class QosSettings {
 	}
 
 	/**
-	 * Return the delivery mode to use when sending a message.
-	 */
-	public int getDeliveryMode() {
-		return this.deliveryMode;
-	}
-
-	/**
-	 * Set the priority of a message when sending.
-	 * @see javax.jms.Message#DEFAULT_PRIORITY
-	 * @see javax.jms.MessageProducer#send(javax.jms.Message, int, int, long)
-	 */
-	public void setPriority(int priority) {
-		this.priority = priority;
-	}
-
-	/**
 	 * Return the priority of a message when sending.
 	 */
 	public int getPriority() {
@@ -90,13 +82,13 @@ public class QosSettings {
 	}
 
 	/**
-	 * Set the time-to-live of the message when sending.
-	 * @param timeToLive the message's lifetime (in milliseconds)
-	 * @see javax.jms.Message#DEFAULT_TIME_TO_LIVE
+	 * Set the priority of a message when sending.
+	 *
+	 * @see javax.jms.Message#DEFAULT_PRIORITY
 	 * @see javax.jms.MessageProducer#send(javax.jms.Message, int, int, long)
 	 */
-	public void setTimeToLive(long timeToLive) {
-		this.timeToLive = timeToLive;
+	public void setPriority(int priority) {
+		this.priority = priority;
 	}
 
 	/**
@@ -106,6 +98,16 @@ public class QosSettings {
 		return this.timeToLive;
 	}
 
+	/**
+	 * Set the time-to-live of the message when sending.
+	 *
+	 * @param timeToLive the message's lifetime (in milliseconds)
+	 * @see javax.jms.Message#DEFAULT_TIME_TO_LIVE
+	 * @see javax.jms.MessageProducer#send(javax.jms.Message, int, int, long)
+	 */
+	public void setTimeToLive(long timeToLive) {
+		this.timeToLive = timeToLive;
+	}
 
 	@Override
 	public boolean equals(Object other) {

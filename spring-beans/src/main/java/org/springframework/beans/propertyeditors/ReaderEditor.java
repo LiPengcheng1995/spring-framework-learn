@@ -16,14 +16,14 @@
 
 package org.springframework.beans.propertyeditors;
 
-import java.beans.PropertyEditorSupport;
-import java.io.IOException;
-
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceEditor;
 import org.springframework.core.io.support.EncodedResource;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.beans.PropertyEditorSupport;
+import java.io.IOException;
 
 /**
  * One-way PropertyEditor which can convert from a text String to a
@@ -36,11 +36,11 @@ import org.springframework.util.Assert;
  * <p>Note that such readers usually do not get closed by Spring itself!
  *
  * @author Juergen Hoeller
- * @since 4.2
  * @see java.io.Reader
  * @see org.springframework.core.io.ResourceEditor
  * @see org.springframework.core.io.ResourceLoader
  * @see InputStreamEditor
+ * @since 4.2
  */
 public class ReaderEditor extends PropertyEditorSupport {
 
@@ -56,24 +56,12 @@ public class ReaderEditor extends PropertyEditorSupport {
 
 	/**
 	 * Create a new ReaderEditor, using the given ResourceEditor underneath.
+	 *
 	 * @param resourceEditor the ResourceEditor to use
 	 */
 	public ReaderEditor(ResourceEditor resourceEditor) {
 		Assert.notNull(resourceEditor, "ResourceEditor must not be null");
 		this.resourceEditor = resourceEditor;
-	}
-
-
-	@Override
-	public void setAsText(String text) throws IllegalArgumentException {
-		this.resourceEditor.setAsText(text);
-		Resource resource = (Resource) this.resourceEditor.getValue();
-		try {
-			setValue(resource != null ? new EncodedResource(resource).getReader() : null);
-		}
-		catch (IOException ex) {
-			throw new IllegalArgumentException("Failed to retrieve Reader for " + resource, ex);
-		}
 	}
 
 	/**
@@ -84,6 +72,17 @@ public class ReaderEditor extends PropertyEditorSupport {
 	@Nullable
 	public String getAsText() {
 		return null;
+	}
+
+	@Override
+	public void setAsText(String text) throws IllegalArgumentException {
+		this.resourceEditor.setAsText(text);
+		Resource resource = (Resource) this.resourceEditor.getValue();
+		try {
+			setValue(resource != null ? new EncodedResource(resource).getReader() : null);
+		} catch (IOException ex) {
+			throw new IllegalArgumentException("Failed to retrieve Reader for " + resource, ex);
+		}
 	}
 
 }

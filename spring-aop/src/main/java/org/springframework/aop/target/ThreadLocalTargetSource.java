@@ -16,15 +16,15 @@
 
 package org.springframework.aop.target;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.springframework.aop.IntroductionAdvisor;
 import org.springframework.aop.support.DefaultIntroductionAdvisor;
 import org.springframework.aop.support.DelegatingIntroductionInterceptor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.core.NamedThreadLocal;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Alternative to an object pool. This {@link org.springframework.aop.TargetSource}
@@ -90,8 +90,7 @@ public class ThreadLocalTargetSource extends AbstractPrototypeBasedTargetSource
 			synchronized (this.targetSet) {
 				this.targetSet.add(target);
 			}
-		}
-		else {
+		} else {
 			++this.hitCount;
 		}
 		return target;
@@ -99,6 +98,7 @@ public class ThreadLocalTargetSource extends AbstractPrototypeBasedTargetSource
 
 	/**
 	 * Dispose of targets if necessary; clear ThreadLocal.
+	 *
 	 * @see #destroyPrototypeInstance
 	 */
 	@Override

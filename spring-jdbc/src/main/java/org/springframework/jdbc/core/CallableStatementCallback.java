@@ -16,11 +16,11 @@
 
 package org.springframework.jdbc.core;
 
-import java.sql.CallableStatement;
-import java.sql.SQLException;
-
 import org.springframework.dao.DataAccessException;
 import org.springframework.lang.Nullable;
+
+import java.sql.CallableStatement;
+import java.sql.SQLException;
 
 /**
  * Generic callback interface for code that operates on a CallableStatement.
@@ -37,9 +37,9 @@ import org.springframework.lang.Nullable;
  * capability is not needed either.
  *
  * @author Juergen Hoeller
- * @since 16.03.2004
  * @see JdbcTemplate#execute(String, CallableStatementCallback)
  * @see JdbcTemplate#execute(CallableStatementCreator, CallableStatementCallback)
+ * @since 16.03.2004
  */
 @FunctionalInterface
 public interface CallableStatementCallback<T> {
@@ -70,8 +70,8 @@ public interface CallableStatementCallback<T> {
 	 *
 	 * @param cs active JDBC CallableStatement
 	 * @return a result object, or {@code null} if none
-	 * @throws SQLException if thrown by a JDBC method, to be auto-converted
-	 * into a DataAccessException by a SQLExceptionTranslator
+	 * @throws SQLException        if thrown by a JDBC method, to be auto-converted
+	 *                             into a DataAccessException by a SQLExceptionTranslator
 	 * @throws DataAccessException in case of custom exceptions
 	 */
 	@Nullable

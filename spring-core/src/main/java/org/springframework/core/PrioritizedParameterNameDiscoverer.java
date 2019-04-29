@@ -16,12 +16,12 @@
 
 package org.springframework.core;
 
+import org.springframework.lang.Nullable;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.springframework.lang.Nullable;
 
 /**
  * {@link ParameterNameDiscoverer} implementation that tries several discoverer

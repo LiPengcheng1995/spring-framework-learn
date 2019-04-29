@@ -17,7 +17,6 @@
 package org.springframework.aop.framework;
 
 import org.junit.Test;
-
 import org.springframework.aop.support.DelegatingIntroductionInterceptor;
 import org.springframework.tests.sample.beans.ITestBean;
 import org.springframework.tests.sample.beans.TestBean;
@@ -25,7 +24,7 @@ import org.springframework.util.StopWatch;
 
 /**
  * Benchmarks for introductions.
- *
+ * <p>
  * NOTE: No assertions!
  *
  * @author Rod Johnson
@@ -36,21 +35,10 @@ public class IntroductionBenchmarkTests {
 
 	private static final int EXPECTED_COMPARE = 13;
 
-	/** Increase this if you want meaningful results! */
+	/**
+	 * Increase this if you want meaningful results!
+	 */
 	private static final int INVOCATIONS = 100000;
-
-
-	@SuppressWarnings("serial")
-	public static class SimpleCounterIntroduction extends DelegatingIntroductionInterceptor implements Counter {
-		@Override
-		public int getCount() {
-			return EXPECTED_COMPARE;
-		}
-	}
-
-	public static interface Counter {
-		int getCount();
-	}
 
 	@Test
 	public void timeManyInvocations() {
@@ -83,5 +71,17 @@ public class IntroductionBenchmarkTests {
 		sw.stop();
 
 		System.out.println(sw.prettyPrint());
+	}
+
+	public static interface Counter {
+		int getCount();
+	}
+
+	@SuppressWarnings("serial")
+	public static class SimpleCounterIntroduction extends DelegatingIntroductionInterceptor implements Counter {
+		@Override
+		public int getCount() {
+			return EXPECTED_COMPARE;
+		}
 	}
 }

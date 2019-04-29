@@ -66,19 +66,23 @@ public class SQLErrorCodes {
 	@Nullable
 	private SQLExceptionTranslator customSqlExceptionTranslator;
 
+	@Nullable
+	public String getDatabaseProductName() {
+		return (this.databaseProductNames != null && this.databaseProductNames.length > 0 ?
+				this.databaseProductNames[0] : null);
+	}
 
 	/**
 	 * Set this property if the database name contains spaces,
 	 * in which case we can not use the bean name for lookup.
 	 */
 	public void setDatabaseProductName(@Nullable String databaseProductName) {
-		this.databaseProductNames = new String[] {databaseProductName};
+		this.databaseProductNames = new String[]{databaseProductName};
 	}
 
 	@Nullable
-	public String getDatabaseProductName() {
-		return (this.databaseProductNames != null && this.databaseProductNames.length > 0 ?
-				this.databaseProductNames[0] : null);
+	public String[] getDatabaseProductNames() {
+		return this.databaseProductNames;
 	}
 
 	/**
@@ -89,9 +93,8 @@ public class SQLErrorCodes {
 		this.databaseProductNames = databaseProductNames;
 	}
 
-	@Nullable
-	public String[] getDatabaseProductNames() {
-		return this.databaseProductNames;
+	public boolean isUseSqlStateForTranslation() {
+		return this.useSqlStateForTranslation;
 	}
 
 	/**
@@ -102,24 +105,20 @@ public class SQLErrorCodes {
 		this.useSqlStateForTranslation = useStateCodeForTranslation;
 	}
 
-	public boolean isUseSqlStateForTranslation() {
-		return this.useSqlStateForTranslation;
+	public String[] getBadSqlGrammarCodes() {
+		return this.badSqlGrammarCodes;
 	}
 
 	public void setBadSqlGrammarCodes(String... badSqlGrammarCodes) {
 		this.badSqlGrammarCodes = StringUtils.sortStringArray(badSqlGrammarCodes);
 	}
 
-	public String[] getBadSqlGrammarCodes() {
-		return this.badSqlGrammarCodes;
+	public String[] getInvalidResultSetAccessCodes() {
+		return this.invalidResultSetAccessCodes;
 	}
 
 	public void setInvalidResultSetAccessCodes(String... invalidResultSetAccessCodes) {
 		this.invalidResultSetAccessCodes = StringUtils.sortStringArray(invalidResultSetAccessCodes);
-	}
-
-	public String[] getInvalidResultSetAccessCodes() {
-		return this.invalidResultSetAccessCodes;
 	}
 
 	public String[] getDuplicateKeyCodes() {
@@ -130,64 +129,60 @@ public class SQLErrorCodes {
 		this.duplicateKeyCodes = duplicateKeyCodes;
 	}
 
-	public void setDataIntegrityViolationCodes(String... dataIntegrityViolationCodes) {
-		this.dataIntegrityViolationCodes = StringUtils.sortStringArray(dataIntegrityViolationCodes);
-	}
-
 	public String[] getDataIntegrityViolationCodes() {
 		return this.dataIntegrityViolationCodes;
 	}
 
-	public void setPermissionDeniedCodes(String... permissionDeniedCodes) {
-		this.permissionDeniedCodes = StringUtils.sortStringArray(permissionDeniedCodes);
+	public void setDataIntegrityViolationCodes(String... dataIntegrityViolationCodes) {
+		this.dataIntegrityViolationCodes = StringUtils.sortStringArray(dataIntegrityViolationCodes);
 	}
 
 	public String[] getPermissionDeniedCodes() {
 		return this.permissionDeniedCodes;
 	}
 
-	public void setDataAccessResourceFailureCodes(String... dataAccessResourceFailureCodes) {
-		this.dataAccessResourceFailureCodes = StringUtils.sortStringArray(dataAccessResourceFailureCodes);
+	public void setPermissionDeniedCodes(String... permissionDeniedCodes) {
+		this.permissionDeniedCodes = StringUtils.sortStringArray(permissionDeniedCodes);
 	}
 
 	public String[] getDataAccessResourceFailureCodes() {
 		return this.dataAccessResourceFailureCodes;
 	}
 
-	public void setTransientDataAccessResourceCodes(String... transientDataAccessResourceCodes) {
-		this.transientDataAccessResourceCodes = StringUtils.sortStringArray(transientDataAccessResourceCodes);
+	public void setDataAccessResourceFailureCodes(String... dataAccessResourceFailureCodes) {
+		this.dataAccessResourceFailureCodes = StringUtils.sortStringArray(dataAccessResourceFailureCodes);
 	}
 
 	public String[] getTransientDataAccessResourceCodes() {
 		return this.transientDataAccessResourceCodes;
 	}
 
-	public void setCannotAcquireLockCodes(String... cannotAcquireLockCodes) {
-		this.cannotAcquireLockCodes = StringUtils.sortStringArray(cannotAcquireLockCodes);
+	public void setTransientDataAccessResourceCodes(String... transientDataAccessResourceCodes) {
+		this.transientDataAccessResourceCodes = StringUtils.sortStringArray(transientDataAccessResourceCodes);
 	}
 
 	public String[] getCannotAcquireLockCodes() {
 		return this.cannotAcquireLockCodes;
 	}
 
-	public void setDeadlockLoserCodes(String... deadlockLoserCodes) {
-		this.deadlockLoserCodes = StringUtils.sortStringArray(deadlockLoserCodes);
+	public void setCannotAcquireLockCodes(String... cannotAcquireLockCodes) {
+		this.cannotAcquireLockCodes = StringUtils.sortStringArray(cannotAcquireLockCodes);
 	}
 
 	public String[] getDeadlockLoserCodes() {
 		return this.deadlockLoserCodes;
 	}
 
-	public void setCannotSerializeTransactionCodes(String... cannotSerializeTransactionCodes) {
-		this.cannotSerializeTransactionCodes = StringUtils.sortStringArray(cannotSerializeTransactionCodes);
+	public void setDeadlockLoserCodes(String... deadlockLoserCodes) {
+		this.deadlockLoserCodes = StringUtils.sortStringArray(deadlockLoserCodes);
 	}
 
 	public String[] getCannotSerializeTransactionCodes() {
 		return this.cannotSerializeTransactionCodes;
 	}
 
-	public void setCustomTranslations(CustomSQLErrorCodesTranslation... customTranslations) {
-		this.customTranslations = customTranslations;
+	public void setCannotSerializeTransactionCodes(String... cannotSerializeTransactionCodes) {
+		this.cannotSerializeTransactionCodes = StringUtils.sortStringArray(cannotSerializeTransactionCodes);
 	}
 
 	@Nullable
@@ -195,28 +190,30 @@ public class SQLErrorCodes {
 		return this.customTranslations;
 	}
 
+	public void setCustomTranslations(CustomSQLErrorCodesTranslation... customTranslations) {
+		this.customTranslations = customTranslations;
+	}
+
 	public void setCustomSqlExceptionTranslatorClass(@Nullable Class<? extends SQLExceptionTranslator> customTranslatorClass) {
 		if (customTranslatorClass != null) {
 			try {
 				this.customSqlExceptionTranslator =
 						ReflectionUtils.accessibleConstructor(customTranslatorClass).newInstance();
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				throw new IllegalStateException("Unable to instantiate custom translator", ex);
 			}
-		}
-		else {
+		} else {
 			this.customSqlExceptionTranslator = null;
 		}
-	}
-
-	public void setCustomSqlExceptionTranslator(@Nullable SQLExceptionTranslator customSqlExceptionTranslator) {
-		this.customSqlExceptionTranslator = customSqlExceptionTranslator;
 	}
 
 	@Nullable
 	public SQLExceptionTranslator getCustomSqlExceptionTranslator() {
 		return this.customSqlExceptionTranslator;
+	}
+
+	public void setCustomSqlExceptionTranslator(@Nullable SQLExceptionTranslator customSqlExceptionTranslator) {
+		this.customSqlExceptionTranslator = customSqlExceptionTranslator;
 	}
 
 }

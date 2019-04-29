@@ -16,6 +16,12 @@
 
 package org.springframework.http.client;
 
+import org.springframework.core.task.AsyncListenableTaskExecutor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.lang.Nullable;
+import org.springframework.util.StreamUtils;
+import org.springframework.util.concurrent.ListenableFuture;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -23,22 +29,16 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.Callable;
 
-import org.springframework.core.task.AsyncListenableTaskExecutor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.lang.Nullable;
-import org.springframework.util.StreamUtils;
-import org.springframework.util.concurrent.ListenableFuture;
-
 /**
  * {@link org.springframework.http.client.ClientHttpRequest} implementation
  * that uses standard Java facilities to execute streaming requests. Created
  * via the {@link org.springframework.http.client.SimpleClientHttpRequestFactory}.
  *
  * @author Arjen Poutsma
- * @since 3.0
  * @see org.springframework.http.client.SimpleClientHttpRequestFactory#createRequest
  * @see org.springframework.http.client.support.AsyncHttpAccessor
  * @see org.springframework.web.client.AsyncRestTemplate
+ * @since 3.0
  * @deprecated as of Spring 5.0, with no direct replacement
  */
 @Deprecated
@@ -47,17 +47,14 @@ final class SimpleStreamingAsyncClientHttpRequest extends AbstractAsyncClientHtt
 	private final HttpURLConnection connection;
 
 	private final int chunkSize;
-
+	private final boolean outputStreaming;
+	private final AsyncListenableTaskExecutor taskExecutor;
 	@Nullable
 	private OutputStream body;
 
-	private final boolean outputStreaming;
-
-	private final AsyncListenableTaskExecutor taskExecutor;
-
 
 	SimpleStreamingAsyncClientHttpRequest(HttpURLConnection connection, int chunkSize,
-			boolean outputStreaming, AsyncListenableTaskExecutor taskExecutor) {
+										  boolean outputStreaming, AsyncListenableTaskExecutor taskExecutor) {
 
 		this.connection = connection;
 		this.chunkSize = chunkSize;
@@ -75,8 +72,7 @@ final class SimpleStreamingAsyncClientHttpRequest extends AbstractAsyncClientHtt
 	public URI getURI() {
 		try {
 			return this.connection.getURL().toURI();
-		}
-		catch (URISyntaxException ex) {
+		} catch (URISyntaxException ex) {
 			throw new IllegalStateException(
 					"Could not get HttpURLConnection URI: " + ex.getMessage(), ex);
 		}
@@ -89,8 +85,7 @@ final class SimpleStreamingAsyncClientHttpRequest extends AbstractAsyncClientHtt
 				long contentLength = headers.getContentLength();
 				if (contentLength >= 0) {
 					this.connection.setFixedLengthStreamingMode(contentLength);
-				}
-				else {
+				} else {
 					this.connection.setChunkedStreamingMode(this.chunkSize);
 				}
 			}
@@ -109,15 +104,13 @@ final class SimpleStreamingAsyncClientHttpRequest extends AbstractAsyncClientHtt
 				try {
 					if (body != null) {
 						body.close();
-					}
-					else {
+					} else {
 						SimpleBufferingClientHttpRequest.addHeaders(connection, headers);
 						connection.connect();
 						// Immediately trigger the request in a no-output scenario as well
 						connection.getResponseCode();
 					}
-				}
-				catch (IOException ex) {
+				} catch (IOException ex) {
 					// ignore
 				}
 				return new SimpleClientHttpResponse(connection);

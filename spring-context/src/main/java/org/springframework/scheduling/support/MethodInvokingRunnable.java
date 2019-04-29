@@ -16,16 +16,15 @@
 
 package org.springframework.scheduling.support;
 
-import java.lang.reflect.InvocationTargetException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.support.ArgumentConvertingMethodInvoker;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
+
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Adapter that implements the {@link Runnable} interface as a configurable
@@ -35,8 +34,8 @@ import org.springframework.util.ClassUtils;
  * {@link org.springframework.util.MethodInvoker}.
  *
  * @author Juergen Hoeller
- * @since 1.2.4
  * @see java.util.concurrent.Executor#execute(Runnable)
+ * @since 1.2.4
  */
 public class MethodInvokingRunnable extends ArgumentConvertingMethodInvoker
 		implements Runnable, BeanClassLoaderAware, InitializingBean {
@@ -67,12 +66,10 @@ public class MethodInvokingRunnable extends ArgumentConvertingMethodInvoker
 	public void run() {
 		try {
 			invoke();
-		}
-		catch (InvocationTargetException ex) {
+		} catch (InvocationTargetException ex) {
 			logger.error(getInvocationFailureMessage(), ex.getTargetException());
 			// Do not throw exception, else the main loop of the scheduler might stop!
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			logger.error(getInvocationFailureMessage(), ex);
 			// Do not throw exception, else the main loop of the scheduler might stop!
 		}
@@ -80,6 +77,7 @@ public class MethodInvokingRunnable extends ArgumentConvertingMethodInvoker
 
 	/**
 	 * Build a message for an invocation failure exception.
+	 *
 	 * @return the error message, including the target method name etc
 	 */
 	protected String getInvocationFailureMessage() {

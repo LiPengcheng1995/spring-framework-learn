@@ -16,21 +16,11 @@
 
 package org.springframework.cache;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
-
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
-import org.springframework.cache.annotation.CachingConfigurerSupport;
-import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.annotation.*;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.cache.interceptor.AbstractCacheResolver;
@@ -43,8 +33,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.Nullable;
 import org.springframework.tests.sample.beans.TestBean;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests to reproduce raised caching issues.
@@ -193,6 +189,23 @@ public class CacheReproTests {
 	}
 
 
+	public interface Spr11124Service {
+
+		List<String> single(int id);
+
+		List<String> multiple(int id);
+	}
+
+
+	public interface Spr15271Interface {
+
+		@Cacheable(value = "itemCache", sync = true)
+		Optional<TestBean> findById(String id);
+
+		@CachePut(cacheNames = "itemCache", key = "#item.name")
+		TestBean insertItem(TestBean item);
+	}
+
 	@Configuration
 	@EnableCaching
 	public static class Spr11124Config {
@@ -207,15 +220,6 @@ public class CacheReproTests {
 			return new Spr11124ServiceImpl();
 		}
 	}
-
-
-	public interface Spr11124Service {
-
-		List<String> single(int id);
-
-		List<String> multiple(int id);
-	}
-
 
 	public static class Spr11124ServiceImpl implements Spr11124Service {
 
@@ -244,7 +248,6 @@ public class CacheReproTests {
 		}
 	}
 
-
 	@Configuration
 	@EnableCaching
 	public static class Spr11249Config {
@@ -260,7 +263,6 @@ public class CacheReproTests {
 		}
 	}
 
-
 	public static class Spr11249Service {
 
 		@Cacheable("smallCache")
@@ -268,7 +270,6 @@ public class CacheReproTests {
 			return new Object();
 		}
 	}
-
 
 	@Configuration
 	@EnableCaching
@@ -293,7 +294,6 @@ public class CacheReproTests {
 		}
 	}
 
-
 	public static class Spr11592Service {
 
 		@Cacheable("cache")
@@ -306,7 +306,6 @@ public class CacheReproTests {
 			return new Object();
 		}
 	}
-
 
 	@Configuration
 	@EnableCaching
@@ -323,7 +322,6 @@ public class CacheReproTests {
 			return new Spr13081Service();
 		}
 	}
-
 
 	public static class MyCacheResolver extends AbstractCacheResolver {
 
@@ -346,7 +344,6 @@ public class CacheReproTests {
 		}
 	}
 
-
 	public static class Spr13081Service {
 
 		@Cacheable
@@ -354,7 +351,6 @@ public class CacheReproTests {
 			return new Object();
 		}
 	}
-
 
 	public static class Spr14230Service {
 
@@ -368,7 +364,6 @@ public class CacheReproTests {
 			return item;
 		}
 	}
-
 
 	@Configuration
 	@EnableCaching
@@ -385,7 +380,6 @@ public class CacheReproTests {
 		}
 	}
 
-
 	public static class Spr14853Service {
 
 		@Cacheable(value = "itemCache", sync = true)
@@ -399,7 +393,6 @@ public class CacheReproTests {
 		}
 
 	}
-
 
 	@Configuration
 	@EnableCaching
@@ -415,17 +408,6 @@ public class CacheReproTests {
 			return new Spr14853Service();
 		}
 	}
-
-
-	public interface Spr15271Interface {
-
-		@Cacheable(value = "itemCache", sync = true)
-		Optional<TestBean> findById(String id);
-
-		@CachePut(cacheNames = "itemCache", key = "#item.name")
-		TestBean insertItem(TestBean item);
-	}
-
 
 	public static class Spr15271Service implements Spr15271Interface {
 

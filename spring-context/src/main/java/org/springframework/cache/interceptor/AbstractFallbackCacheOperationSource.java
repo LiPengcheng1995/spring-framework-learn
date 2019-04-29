@@ -16,20 +16,19 @@
 
 package org.springframework.cache.interceptor;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.aop.support.AopUtils;
+import org.springframework.core.MethodClassKey;
+import org.springframework.lang.Nullable;
+import org.springframework.util.ClassUtils;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.springframework.aop.support.AopUtils;
-import org.springframework.core.MethodClassKey;
-import org.springframework.lang.Nullable;
-import org.springframework.util.ClassUtils;
 
 /**
  * Abstract implementation of {@link CacheOperation} that caches attributes
@@ -77,7 +76,8 @@ public abstract class AbstractFallbackCacheOperationSource implements CacheOpera
 	/**
 	 * Determine the caching attribute for this method invocation.
 	 * <p>Defaults to the class's caching attribute if no method attribute is found.
-	 * @param method the method for the current invocation (never {@code null})
+	 *
+	 * @param method      the method for the current invocation (never {@code null})
 	 * @param targetClass the target class for this invocation (may be {@code null})
 	 * @return {@link CacheOperation} for this method, or {@code null} if the method
 	 * is not cacheable
@@ -94,16 +94,14 @@ public abstract class AbstractFallbackCacheOperationSource implements CacheOpera
 
 		if (cached != null) {
 			return (cached != NULL_CACHING_ATTRIBUTE ? cached : null);
-		}
-		else {
+		} else {
 			Collection<CacheOperation> cacheOps = computeCacheOperations(method, targetClass);
 			if (cacheOps != null) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Adding cacheable method '" + method.getName() + "' with attribute: " + cacheOps);
 				}
 				this.attributeCache.put(cacheKey, cacheOps);
-			}
-			else {
+			} else {
 				this.attributeCache.put(cacheKey, NULL_CACHING_ATTRIBUTE);
 			}
 			return cacheOps;
@@ -114,7 +112,8 @@ public abstract class AbstractFallbackCacheOperationSource implements CacheOpera
 	 * Determine a cache key for the given method and target class.
 	 * <p>Must not produce same key for overloaded methods.
 	 * Must produce same key for different instances of the same method.
-	 * @param method the method (never {@code null})
+	 *
+	 * @param method      the method (never {@code null})
 	 * @param targetClass the target class (may be {@code null})
 	 * @return the cache key (never {@code null})
 	 */
@@ -165,6 +164,7 @@ public abstract class AbstractFallbackCacheOperationSource implements CacheOpera
 	/**
 	 * Subclasses need to implement this to return the caching attribute for the
 	 * given class, if any.
+	 *
 	 * @param clazz the class to retrieve the attribute for
 	 * @return all caching attribute associated with this class, or {@code null} if none
 	 */
@@ -174,6 +174,7 @@ public abstract class AbstractFallbackCacheOperationSource implements CacheOpera
 	/**
 	 * Subclasses need to implement this to return the caching attribute for the
 	 * given method, if any.
+	 *
 	 * @param method the method to retrieve the attribute for
 	 * @return all caching attribute associated with this method, or {@code null} if none
 	 */

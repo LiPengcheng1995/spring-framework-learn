@@ -17,7 +17,6 @@
 package org.springframework.context.annotation;
 
 import org.junit.Test;
-
 import org.springframework.aop.scope.ScopedObject;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,7 +89,8 @@ public class ClassPathFactoryBeanDefinitionScannerTests {
 
 	public static class QualifiedClientBean {
 
-		@Autowired @Qualifier("public")
+		@Autowired
+		@Qualifier("public")
 		public TestBean testBean;
 
 		@Autowired

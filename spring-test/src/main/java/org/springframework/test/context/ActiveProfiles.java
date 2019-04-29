@@ -16,14 +16,9 @@
 
 package org.springframework.test.context;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.core.annotation.AliasFor;
+
+import java.lang.annotation.*;
 
 /**
  * {@code ActiveProfiles} is a class-level annotation that is used to declare
@@ -35,13 +30,13 @@ import org.springframework.core.annotation.AliasFor;
  * <em>meta-annotation</em> to create custom <em>composed annotations</em>.
  *
  * @author Sam Brannen
- * @since 3.1
  * @see SmartContextLoader
  * @see MergedContextConfiguration
  * @see ContextConfiguration
  * @see ActiveProfilesResolver
  * @see org.springframework.context.ApplicationContext
  * @see org.springframework.context.annotation.Profile
+ * @since 3.1
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -68,8 +63,9 @@ public @interface ActiveProfiles {
 	/**
 	 * The type of {@link ActiveProfilesResolver} to use for resolving the active
 	 * bean definition profiles programmatically.
-	 * @since 4.0
+	 *
 	 * @see ActiveProfilesResolver
+	 * @since 4.0
 	 */
 	Class<? extends ActiveProfilesResolver> resolver() default ActiveProfilesResolver.class;
 
@@ -107,6 +103,7 @@ public @interface ActiveProfiles {
 	 * <p>Note: {@code @ActiveProfiles} can be used when loading an
 	 * {@code ApplicationContext} from path-based resource locations or
 	 * annotated classes.
+	 *
 	 * @see ContextConfiguration#locations
 	 * @see ContextConfiguration#classes
 	 * @see ContextConfiguration#inheritLocations

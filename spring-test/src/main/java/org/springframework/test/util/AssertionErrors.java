@@ -30,6 +30,7 @@ public abstract class AssertionErrors {
 
 	/**
 	 * Fails a test with the given message.
+	 *
 	 * @param message describes the reason for the failure
 	 */
 	public static void fail(String message) {
@@ -47,9 +48,10 @@ public abstract class AssertionErrors {
 	 * <pre class="code">
 	 * Response header [Accept] expected:&lt;application/json&gt; but was:&lt;text/plain&gt;
 	 * </pre>
-	 * @param message describes the value that failed the match
+	 *
+	 * @param message  describes the value that failed the match
 	 * @param expected expected value
-	 * @param actual actual value
+	 * @param actual   actual value
 	 */
 	public static void fail(String message, @Nullable Object expected, @Nullable Object actual) {
 		throw new AssertionError(message + " expected:<" + expected + "> but was:<" + actual + ">");
@@ -58,7 +60,8 @@ public abstract class AssertionErrors {
 	/**
 	 * Assert the given condition is {@code true} and raise an
 	 * {@link AssertionError} if it is not.
-	 * @param message the message
+	 *
+	 * @param message   the message
 	 * @param condition the condition to test for
 	 */
 	public static void assertTrue(String message, boolean condition) {
@@ -73,9 +76,10 @@ public abstract class AssertionErrors {
 	 * <pre class="code">
 	 * assertEquals("Response header [" + name + "]", expected, actual);
 	 * </pre>
-	 * @param message describes the value being checked
+	 *
+	 * @param message  describes the value being checked
 	 * @param expected the expected value
-	 * @param actual the actual value
+	 * @param actual   the actual value
 	 */
 	public static void assertEquals(String message, @Nullable Object expected, @Nullable Object actual) {
 		if (!ObjectUtils.nullSafeEquals(expected, actual)) {
@@ -89,9 +93,10 @@ public abstract class AssertionErrors {
 	 * <pre class="code">
 	 * assertNotEquals("Response header [" + name + "]", expected, actual);
 	 * </pre>
-	 * @param message describes the value being checked
+	 *
+	 * @param message  describes the value being checked
 	 * @param expected the expected value
-	 * @param actual the actual value
+	 * @param actual   the actual value
 	 */
 	public static void assertNotEquals(String message, @Nullable Object expected, @Nullable Object actual) {
 		if (ObjectUtils.nullSafeEquals(expected, actual)) {

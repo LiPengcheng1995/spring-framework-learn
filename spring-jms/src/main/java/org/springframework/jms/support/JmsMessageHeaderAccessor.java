@@ -16,13 +16,13 @@
 
 package org.springframework.jms.support;
 
-import java.util.List;
-import java.util.Map;
-import javax.jms.Destination;
-
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.NativeMessageHeaderAccessor;
+
+import javax.jms.Destination;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A {@link org.springframework.messaging.support.MessageHeaderAccessor}
@@ -41,9 +41,16 @@ public class JmsMessageHeaderAccessor extends NativeMessageHeaderAccessor {
 		super(message);
 	}
 
+	/**
+	 * Create a {@link JmsMessageHeaderAccessor} from the headers of an existing message.
+	 */
+	public static JmsMessageHeaderAccessor wrap(Message<?> message) {
+		return new JmsMessageHeaderAccessor(message);
+	}
 
 	/**
 	 * Return the {@link JmsHeaders#CORRELATION_ID correlationId}.
+	 *
 	 * @see JmsHeaders#CORRELATION_ID
 	 */
 	@Nullable
@@ -53,6 +60,7 @@ public class JmsMessageHeaderAccessor extends NativeMessageHeaderAccessor {
 
 	/**
 	 * Return the {@link JmsHeaders#DESTINATION destination}.
+	 *
 	 * @see JmsHeaders#DESTINATION
 	 */
 	@Nullable
@@ -62,6 +70,7 @@ public class JmsMessageHeaderAccessor extends NativeMessageHeaderAccessor {
 
 	/**
 	 * Return the {@link JmsHeaders#DELIVERY_MODE delivery mode}.
+	 *
 	 * @see JmsHeaders#DELIVERY_MODE
 	 */
 	@Nullable
@@ -71,6 +80,7 @@ public class JmsMessageHeaderAccessor extends NativeMessageHeaderAccessor {
 
 	/**
 	 * Return the message {@link JmsHeaders#EXPIRATION expiration}.
+	 *
 	 * @see JmsHeaders#EXPIRATION
 	 */
 	@Nullable
@@ -80,6 +90,7 @@ public class JmsMessageHeaderAccessor extends NativeMessageHeaderAccessor {
 
 	/**
 	 * Return the {@link JmsHeaders#MESSAGE_ID message id}.
+	 *
 	 * @see JmsHeaders#MESSAGE_ID
 	 */
 	@Nullable
@@ -89,6 +100,7 @@ public class JmsMessageHeaderAccessor extends NativeMessageHeaderAccessor {
 
 	/**
 	 * Return the {@link JmsHeaders#PRIORITY priority}.
+	 *
 	 * @see JmsHeaders#PRIORITY
 	 */
 	@Nullable
@@ -98,6 +110,7 @@ public class JmsMessageHeaderAccessor extends NativeMessageHeaderAccessor {
 
 	/**
 	 * Return the {@link JmsHeaders#REPLY_TO reply to}.
+	 *
 	 * @see JmsHeaders#REPLY_TO
 	 */
 	@Nullable
@@ -107,6 +120,7 @@ public class JmsMessageHeaderAccessor extends NativeMessageHeaderAccessor {
 
 	/**
 	 * Return the {@link JmsHeaders#REDELIVERED redelivered} flag.
+	 *
 	 * @see JmsHeaders#REDELIVERED
 	 */
 	@Nullable
@@ -116,6 +130,7 @@ public class JmsMessageHeaderAccessor extends NativeMessageHeaderAccessor {
 
 	/**
 	 * Return the {@link JmsHeaders#TYPE type}.
+	 *
 	 * @see JmsHeaders#TYPE
 	 */
 	@Nullable
@@ -123,24 +138,18 @@ public class JmsMessageHeaderAccessor extends NativeMessageHeaderAccessor {
 		return (String) getHeader(JmsHeaders.TYPE);
 	}
 
+
+	// Static factory method
+
 	/**
 	 * Return the {@link JmsHeaders#TIMESTAMP timestamp}.
+	 *
 	 * @see JmsHeaders#TIMESTAMP
 	 */
 	@Override
 	@Nullable
 	public Long getTimestamp() {
 		return (Long) getHeader(JmsHeaders.TIMESTAMP);
-	}
-
-
-	// Static factory method
-
-	/**
-	 * Create a {@link JmsMessageHeaderAccessor} from the headers of an existing message.
-	 */
-	public static JmsMessageHeaderAccessor wrap(Message<?> message) {
-		return new JmsMessageHeaderAccessor(message);
 	}
 
 }

@@ -19,19 +19,17 @@ package org.springframework.cache;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.cache.support.AbstractValueAdaptingCache;
 
 /**
  * @author Stephane Nicoll
  */
 public abstract class AbstractValueAdaptingCacheTests<T extends AbstractValueAdaptingCache>
-		extends AbstractCacheTests<T>  {
-
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+		extends AbstractCacheTests<T> {
 
 	protected final static String CACHE_NAME_NO_NULL = "testCacheNoNull";
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	protected abstract T getCache(boolean allowNull);
 

@@ -16,18 +16,13 @@
 
 package org.springframework.jdbc.support;
 
+import org.springframework.dao.*;
+import org.springframework.jdbc.BadSqlGrammarException;
+import org.springframework.lang.Nullable;
+
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.springframework.dao.ConcurrencyFailureException;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataAccessResourceFailureException;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.QueryTimeoutException;
-import org.springframework.dao.TransientDataAccessResourceException;
-import org.springframework.jdbc.BadSqlGrammarException;
-import org.springframework.lang.Nullable;
 
 /**
  * {@link SQLExceptionTranslator} implementation that analyzes the SQL state in
@@ -58,32 +53,32 @@ public class SQLStateSQLExceptionTranslator extends AbstractFallbackSQLException
 
 
 	static {
-		BAD_SQL_GRAMMAR_CODES.add("07");	// Dynamic SQL error
-		BAD_SQL_GRAMMAR_CODES.add("21");	// Cardinality violation
-		BAD_SQL_GRAMMAR_CODES.add("2A");	// Syntax error direct SQL
-		BAD_SQL_GRAMMAR_CODES.add("37");	// Syntax error dynamic SQL
-		BAD_SQL_GRAMMAR_CODES.add("42");	// General SQL syntax error
-		BAD_SQL_GRAMMAR_CODES.add("65");	// Oracle: unknown identifier
+		BAD_SQL_GRAMMAR_CODES.add("07");    // Dynamic SQL error
+		BAD_SQL_GRAMMAR_CODES.add("21");    // Cardinality violation
+		BAD_SQL_GRAMMAR_CODES.add("2A");    // Syntax error direct SQL
+		BAD_SQL_GRAMMAR_CODES.add("37");    // Syntax error dynamic SQL
+		BAD_SQL_GRAMMAR_CODES.add("42");    // General SQL syntax error
+		BAD_SQL_GRAMMAR_CODES.add("65");    // Oracle: unknown identifier
 
-		DATA_INTEGRITY_VIOLATION_CODES.add("01");	// Data truncation
-		DATA_INTEGRITY_VIOLATION_CODES.add("02");	// No data found
-		DATA_INTEGRITY_VIOLATION_CODES.add("22");	// Value out of range
-		DATA_INTEGRITY_VIOLATION_CODES.add("23");	// Integrity constraint violation
-		DATA_INTEGRITY_VIOLATION_CODES.add("27");	// Triggered data change violation
-		DATA_INTEGRITY_VIOLATION_CODES.add("44");	// With check violation
+		DATA_INTEGRITY_VIOLATION_CODES.add("01");    // Data truncation
+		DATA_INTEGRITY_VIOLATION_CODES.add("02");    // No data found
+		DATA_INTEGRITY_VIOLATION_CODES.add("22");    // Value out of range
+		DATA_INTEGRITY_VIOLATION_CODES.add("23");    // Integrity constraint violation
+		DATA_INTEGRITY_VIOLATION_CODES.add("27");    // Triggered data change violation
+		DATA_INTEGRITY_VIOLATION_CODES.add("44");    // With check violation
 
-		DATA_ACCESS_RESOURCE_FAILURE_CODES.add("08");	 // Connection exception
-		DATA_ACCESS_RESOURCE_FAILURE_CODES.add("53");	 // PostgreSQL: insufficient resources (e.g. disk full)
-		DATA_ACCESS_RESOURCE_FAILURE_CODES.add("54");	 // PostgreSQL: program limit exceeded (e.g. statement too complex)
-		DATA_ACCESS_RESOURCE_FAILURE_CODES.add("57");	 // DB2: out-of-memory exception / database not started
-		DATA_ACCESS_RESOURCE_FAILURE_CODES.add("58");	 // DB2: unexpected system error
+		DATA_ACCESS_RESOURCE_FAILURE_CODES.add("08");     // Connection exception
+		DATA_ACCESS_RESOURCE_FAILURE_CODES.add("53");     // PostgreSQL: insufficient resources (e.g. disk full)
+		DATA_ACCESS_RESOURCE_FAILURE_CODES.add("54");     // PostgreSQL: program limit exceeded (e.g. statement too complex)
+		DATA_ACCESS_RESOURCE_FAILURE_CODES.add("57");     // DB2: out-of-memory exception / database not started
+		DATA_ACCESS_RESOURCE_FAILURE_CODES.add("58");     // DB2: unexpected system error
 
-		TRANSIENT_DATA_ACCESS_RESOURCE_CODES.add("JW");	 // Sybase: internal I/O error
-		TRANSIENT_DATA_ACCESS_RESOURCE_CODES.add("JZ");	 // Sybase: unexpected I/O error
-		TRANSIENT_DATA_ACCESS_RESOURCE_CODES.add("S1");	 // DB2: communication failure
+		TRANSIENT_DATA_ACCESS_RESOURCE_CODES.add("JW");     // Sybase: internal I/O error
+		TRANSIENT_DATA_ACCESS_RESOURCE_CODES.add("JZ");     // Sybase: unexpected I/O error
+		TRANSIENT_DATA_ACCESS_RESOURCE_CODES.add("S1");     // DB2: communication failure
 
-		CONCURRENCY_FAILURE_CODES.add("40");	// Transaction rollback
-		CONCURRENCY_FAILURE_CODES.add("61");	// Oracle: deadlock
+		CONCURRENCY_FAILURE_CODES.add("40");    // Transaction rollback
+		CONCURRENCY_FAILURE_CODES.add("61");    // Oracle: deadlock
 	}
 
 
@@ -99,17 +94,13 @@ public class SQLStateSQLExceptionTranslator extends AbstractFallbackSQLException
 			}
 			if (BAD_SQL_GRAMMAR_CODES.contains(classCode)) {
 				return new BadSqlGrammarException(task, (sql != null ? sql : ""), ex);
-			}
-			else if (DATA_INTEGRITY_VIOLATION_CODES.contains(classCode)) {
+			} else if (DATA_INTEGRITY_VIOLATION_CODES.contains(classCode)) {
 				return new DataIntegrityViolationException(buildMessage(task, sql, ex), ex);
-			}
-			else if (DATA_ACCESS_RESOURCE_FAILURE_CODES.contains(classCode)) {
+			} else if (DATA_ACCESS_RESOURCE_FAILURE_CODES.contains(classCode)) {
 				return new DataAccessResourceFailureException(buildMessage(task, sql, ex), ex);
-			}
-			else if (TRANSIENT_DATA_ACCESS_RESOURCE_CODES.contains(classCode)) {
+			} else if (TRANSIENT_DATA_ACCESS_RESOURCE_CODES.contains(classCode)) {
 				return new TransientDataAccessResourceException(buildMessage(task, sql, ex), ex);
-			}
-			else if (CONCURRENCY_FAILURE_CODES.contains(classCode)) {
+			} else if (CONCURRENCY_FAILURE_CODES.contains(classCode)) {
 				return new ConcurrencyFailureException(buildMessage(task, sql, ex), ex);
 			}
 		}
@@ -128,8 +119,9 @@ public class SQLStateSQLExceptionTranslator extends AbstractFallbackSQLException
 	 * Gets the SQL state code from the supplied {@link SQLException exception}.
 	 * <p>Some JDBC drivers nest the actual exception from a batched update, so we
 	 * might need to dig down into the nested exception.
+	 *
 	 * @param ex the exception from which the {@link SQLException#getSQLState() SQL state}
-	 * is to be extracted
+	 *           is to be extracted
 	 * @return the SQL state code
 	 */
 	@Nullable

@@ -16,14 +16,10 @@
 
 package org.springframework.util.concurrent;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.util.concurrent.*;
 
 /**
  * A {@link ListenableFuture} whose value can be set via {@link #set(Object)}
@@ -50,6 +46,7 @@ public class SettableListenableFuture<T> implements ListenableFuture<T> {
 	 * Set the value of this future. This method will return {@code true} if the
 	 * value was set successfully, or {@code false} if the future has already been
 	 * set or cancelled.
+	 *
 	 * @param value the value that will be set
 	 * @return {@code true} if the value was successfully set, else {@code false}
 	 */
@@ -61,6 +58,7 @@ public class SettableListenableFuture<T> implements ListenableFuture<T> {
 	 * Set the exception of this future. This method will return {@code true} if the
 	 * exception was set successfully, or {@code false} if the future has already been
 	 * set or cancelled.
+	 *
 	 * @param exception the value that will be set
 	 * @return {@code true} if the exception was successfully set, else {@code false}
 	 */
@@ -111,6 +109,7 @@ public class SettableListenableFuture<T> implements ListenableFuture<T> {
 	 * throws an {@link java.util.concurrent.ExecutionException} if an exception has
 	 * been set via {@link #setException(Throwable)}, or throws a
 	 * {@link java.util.concurrent.CancellationException} if the future has been cancelled.
+	 *
 	 * @return the value associated with this future
 	 */
 	@Override
@@ -124,8 +123,9 @@ public class SettableListenableFuture<T> implements ListenableFuture<T> {
 	 * throws an {@link java.util.concurrent.ExecutionException} if an exception has
 	 * been set via {@link #setException(Throwable)}, or throws a
 	 * {@link java.util.concurrent.CancellationException} if the future has been cancelled.
+	 *
 	 * @param timeout the maximum time to wait
-	 * @param unit the unit of the timeout argument
+	 * @param unit    the unit of the timeout argument
 	 * @return the value associated with this future
 	 */
 	@Override

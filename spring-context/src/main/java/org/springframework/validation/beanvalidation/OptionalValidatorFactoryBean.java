@@ -16,9 +16,9 @@
 
 package org.springframework.validation.beanvalidation;
 
-import javax.validation.ValidationException;
-
 import org.apache.commons.logging.LogFactory;
+
+import javax.validation.ValidationException;
 
 /**
  * {@link LocalValidatorFactoryBean} subclass that simply turns
@@ -38,8 +38,7 @@ public class OptionalValidatorFactoryBean extends LocalValidatorFactoryBean {
 	public void afterPropertiesSet() {
 		try {
 			super.afterPropertiesSet();
-		}
-		catch (ValidationException ex) {
+		} catch (ValidationException ex) {
 			LogFactory.getLog(getClass()).debug("Failed to set up a Bean Validation provider", ex);
 		}
 	}

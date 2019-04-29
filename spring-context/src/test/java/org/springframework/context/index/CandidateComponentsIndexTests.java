@@ -16,15 +16,15 @@
 
 package org.springframework.context.index;
 
+import org.junit.Test;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.Set;
 
-import org.junit.Test;
-
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link CandidateComponentsIndex}.
@@ -32,6 +32,21 @@ import static org.junit.Assert.*;
  * @author Stephane Nicoll
  */
 public class CandidateComponentsIndexTests {
+
+	private static Properties createProperties(String key, String stereotypes) {
+		Properties properties = new Properties();
+		properties.put(key, String.join(",", stereotypes));
+		return properties;
+	}
+
+	private static Properties createSampleProperties() {
+		Properties properties = new Properties();
+		properties.put("com.example.service.One", "service");
+		properties.put("com.example.service.sub.Two", "service");
+		properties.put("com.example.service.Three", "service");
+		properties.put("com.example.domain.Four", "entity");
+		return properties;
+	}
 
 	@Test
 	public void getCandidateTypes() {
@@ -75,21 +90,6 @@ public class CandidateComponentsIndexTests {
 				contains("com.example.Foo"));
 		assertThat(index.getCandidateTypes("com.example", "entity"),
 				contains("com.example.Foo"));
-	}
-
-	private static Properties createProperties(String key, String stereotypes) {
-		Properties properties = new Properties();
-		properties.put(key, String.join(",", stereotypes));
-		return properties;
-	}
-
-	private static Properties createSampleProperties() {
-		Properties properties = new Properties();
-		properties.put("com.example.service.One", "service");
-		properties.put("com.example.service.sub.Two", "service");
-		properties.put("com.example.service.Three", "service");
-		properties.put("com.example.domain.Four", "entity");
-		return properties;
 	}
 
 }

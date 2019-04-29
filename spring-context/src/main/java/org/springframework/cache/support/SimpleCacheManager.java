@@ -16,10 +16,10 @@
 
 package org.springframework.cache.support;
 
+import org.springframework.cache.Cache;
+
 import java.util.Collection;
 import java.util.Collections;
-
-import org.springframework.cache.Cache;
 
 /**
  * Simple cache manager working against a given collection of caches.

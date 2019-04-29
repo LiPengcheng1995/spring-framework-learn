@@ -16,21 +16,13 @@
 
 package org.springframework.util;
 
+import org.springframework.lang.Nullable;
+import org.springframework.util.MimeType.SpecificityComparator;
+
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.MimeType.SpecificityComparator;
+import java.util.*;
 
 /**
  * Miscellaneous {@link MimeType} utility methods.
@@ -41,117 +33,95 @@ import org.springframework.util.MimeType.SpecificityComparator;
  */
 public abstract class MimeTypeUtils {
 
-	private static final byte[] BOUNDARY_CHARS =
-			new byte[] {'-', '_', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'a', 'b', 'c', 'd', 'e', 'f', 'g',
-					'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A',
-					'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
-					'V', 'W', 'X', 'Y', 'Z'};
-
 	/**
 	 * Comparator used by {@link #sortBySpecificity(List)}.
 	 */
 	public static final Comparator<MimeType> SPECIFICITY_COMPARATOR = new SpecificityComparator<>();
-
 	/**
 	 * Public constant mime type that includes all media ranges (i.e. "&#42;/&#42;").
 	 */
 	public static final MimeType ALL;
-
 	/**
 	 * A String equivalent of {@link MimeTypeUtils#ALL}.
 	 */
 	public static final String ALL_VALUE = "*/*";
-
 	/**
 	 * Public constant mime type for {@code application/json}.
-	 * */
+	 */
 	public static final MimeType APPLICATION_JSON;
-
 	/**
 	 * A String equivalent of {@link MimeTypeUtils#APPLICATION_JSON}.
 	 */
 	public static final String APPLICATION_JSON_VALUE = "application/json";
-
 	/**
 	 * Public constant mime type for {@code application/octet-stream}.
-	 *  */
+	 */
 	public static final MimeType APPLICATION_OCTET_STREAM;
-
 	/**
 	 * A String equivalent of {@link MimeTypeUtils#APPLICATION_OCTET_STREAM}.
 	 */
 	public static final String APPLICATION_OCTET_STREAM_VALUE = "application/octet-stream";
-
 	/**
 	 * Public constant mime type for {@code application/xml}.
 	 */
 	public static final MimeType APPLICATION_XML;
-
 	/**
 	 * A String equivalent of {@link MimeTypeUtils#APPLICATION_XML}.
 	 */
 	public static final String APPLICATION_XML_VALUE = "application/xml";
-
 	/**
 	 * Public constant mime type for {@code image/gif}.
 	 */
 	public static final MimeType IMAGE_GIF;
-
 	/**
 	 * A String equivalent of {@link MimeTypeUtils#IMAGE_GIF}.
 	 */
 	public static final String IMAGE_GIF_VALUE = "image/gif";
-
 	/**
 	 * Public constant mime type for {@code image/jpeg}.
 	 */
 	public static final MimeType IMAGE_JPEG;
-
 	/**
 	 * A String equivalent of {@link MimeTypeUtils#IMAGE_JPEG}.
 	 */
 	public static final String IMAGE_JPEG_VALUE = "image/jpeg";
-
 	/**
 	 * Public constant mime type for {@code image/png}.
 	 */
 	public static final MimeType IMAGE_PNG;
-
 	/**
 	 * A String equivalent of {@link MimeTypeUtils#IMAGE_PNG}.
 	 */
 	public static final String IMAGE_PNG_VALUE = "image/png";
-
 	/**
 	 * Public constant mime type for {@code text/html}.
-	 *  */
+	 */
 	public static final MimeType TEXT_HTML;
-
 	/**
 	 * A String equivalent of {@link MimeTypeUtils#TEXT_HTML}.
 	 */
 	public static final String TEXT_HTML_VALUE = "text/html";
-
 	/**
 	 * Public constant mime type for {@code text/plain}.
-	 *  */
+	 */
 	public static final MimeType TEXT_PLAIN;
-
 	/**
 	 * A String equivalent of {@link MimeTypeUtils#TEXT_PLAIN}.
 	 */
 	public static final String TEXT_PLAIN_VALUE = "text/plain";
-
 	/**
 	 * Public constant mime type for {@code text/xml}.
-	 *  */
+	 */
 	public static final MimeType TEXT_XML;
-
 	/**
 	 * A String equivalent of {@link MimeTypeUtils#TEXT_XML}.
 	 */
 	public static final String TEXT_XML_VALUE = "text/xml";
-
+	private static final byte[] BOUNDARY_CHARS =
+			new byte[]{'-', '_', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'a', 'b', 'c', 'd', 'e', 'f', 'g',
+					'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A',
+					'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
+					'V', 'W', 'X', 'Y', 'Z'};
 	@Nullable
 	private static volatile Random random;
 
@@ -172,6 +142,7 @@ public abstract class MimeTypeUtils {
 
 	/**
 	 * Parse the given String into a single {@code MimeType}.
+	 *
 	 * @param mimeType the string to parse
 	 * @return the mime type
 	 * @throws InvalidMimeTypeException if the string cannot be parsed
@@ -214,8 +185,7 @@ public abstract class MimeTypeUtils {
 					if (!quoted) {
 						break;
 					}
-				}
-				else if (ch == '"') {
+				} else if (ch == '"') {
 					quoted = !quoted;
 				}
 				nextIndex++;
@@ -238,17 +208,16 @@ public abstract class MimeTypeUtils {
 
 		try {
 			return new MimeType(type, subtype, parameters);
-		}
-		catch (UnsupportedCharsetException ex) {
+		} catch (UnsupportedCharsetException ex) {
 			throw new InvalidMimeTypeException(mimeType, "unsupported charset '" + ex.getCharsetName() + "'");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			throw new InvalidMimeTypeException(mimeType, ex.getMessage());
 		}
 	}
 
 	/**
 	 * Parse the given, comma-separated string into a list of {@code MimeType} objects.
+	 *
 	 * @param mimeTypes the string to parse
 	 * @return the list of mime types
 	 * @throws IllegalArgumentException if the string cannot be parsed
@@ -267,13 +236,14 @@ public abstract class MimeTypeUtils {
 
 	/**
 	 * Return a string representation of the given list of {@code MimeType} objects.
+	 *
 	 * @param mimeTypes the string to parse
 	 * @return the list of mime types
 	 * @throws IllegalArgumentException if the String cannot be parsed
 	 */
 	public static String toString(Collection<? extends MimeType> mimeTypes) {
 		StringBuilder builder = new StringBuilder();
-		for (Iterator<? extends MimeType> iterator = mimeTypes.iterator(); iterator.hasNext();) {
+		for (Iterator<? extends MimeType> iterator = mimeTypes.iterator(); iterator.hasNext(); ) {
 			MimeType mimeType = iterator.next();
 			mimeType.appendTo(builder);
 			if (iterator.hasNext()) {
@@ -304,6 +274,7 @@ public abstract class MimeTypeUtils {
 	 * <blockquote>audio/basic;level=1 &lt; audio/basic</blockquote>
 	 * <blockquote>audio/basic == text/html</blockquote> <blockquote>audio/basic ==
 	 * audio/wave</blockquote>
+	 *
 	 * @param mimeTypes the list of mime types to be sorted
 	 * @see <a href="https://tools.ietf.org/html/rfc7231#section-5.3.2">HTTP 1.1: Semantics
 	 * and Content, section 5.3.2</a>

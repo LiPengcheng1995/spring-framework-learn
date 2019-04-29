@@ -16,11 +16,7 @@
 
 package org.springframework.context.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Indicates one or more {@link Configuration @Configuration} classes to import.
@@ -43,10 +39,10 @@ import java.lang.annotation.Target;
  *
  * @author Chris Beams
  * @author Juergen Hoeller
- * @since 3.0
  * @see Configuration
  * @see ImportSelector
  * @see ImportResource
+ * @since 3.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

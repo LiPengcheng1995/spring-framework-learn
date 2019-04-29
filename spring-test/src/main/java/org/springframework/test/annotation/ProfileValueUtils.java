@@ -16,11 +16,8 @@
 
 package org.springframework.test.annotation;
 
-import java.lang.reflect.Method;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.lang.Nullable;
@@ -29,15 +26,17 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.lang.reflect.Method;
+
 /**
  * General utility methods for working with <em>profile values</em>.
  *
  * @author Sam Brannen
  * @author Juergen Hoeller
- * @since 2.5
  * @see ProfileValueSource
  * @see ProfileValueSourceConfiguration
  * @see IfProfileValue
+ * @since 2.5
  */
 public abstract class ProfileValueUtils {
 
@@ -54,8 +53,9 @@ public abstract class ProfileValueUtils {
 	 * &#064;ProfileValueSourceConfiguration} is not present on the specified
 	 * class or if a custom {@link ProfileValueSource} is not declared, the
 	 * default {@link SystemProfileValueSource} will be returned instead.
+	 *
 	 * @param testClass The test class for which the ProfileValueSource should
-	 * be retrieved
+	 *                  be retrieved
 	 * @return the configured (or default) ProfileValueSource for the specified
 	 * class
 	 * @see SystemProfileValueSource
@@ -74,8 +74,7 @@ public abstract class ProfileValueUtils {
 		Class<? extends ProfileValueSource> profileValueSourceType;
 		if (config != null) {
 			profileValueSourceType = config.value();
-		}
-		else {
+		} else {
 			profileValueSourceType = (Class<? extends ProfileValueSource>) AnnotationUtils.getDefaultValue(annotationType);
 			Assert.state(profileValueSourceType != null, "No default ProfileValueSource class");
 		}
@@ -87,12 +86,10 @@ public abstract class ProfileValueUtils {
 		ProfileValueSource profileValueSource;
 		if (SystemProfileValueSource.class == profileValueSourceType) {
 			profileValueSource = SystemProfileValueSource.getInstance();
-		}
-		else {
+		} else {
 			try {
 				profileValueSource = ReflectionUtils.accessibleConstructor(profileValueSourceType).newInstance();
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				if (logger.isWarnEnabled()) {
 					logger.warn("Could not instantiate a ProfileValueSource of type [" + profileValueSourceType +
 							"] for class [" + testClass.getName() + "]: using default.", ex);
@@ -110,6 +107,7 @@ public abstract class ProfileValueUtils {
 	 * &#064;IfProfileValue} annotation at the class level.
 	 * <p>Defaults to {@code true} if no {@link IfProfileValue
 	 * &#064;IfProfileValue} annotation is declared.
+	 *
 	 * @param testClass the test class
 	 * @return {@code true} if the test is <em>enabled</em> in the current
 	 * environment
@@ -127,8 +125,9 @@ public abstract class ProfileValueUtils {
 	 * method-level usage.
 	 * <p>Defaults to {@code true} if no {@link IfProfileValue
 	 * &#064;IfProfileValue} annotation is declared.
+	 *
 	 * @param testMethod the test method
-	 * @param testClass the test class
+	 * @param testClass  the test class
 	 * @return {@code true} if the test is <em>enabled</em> in the current
 	 * environment
 	 */
@@ -144,15 +143,16 @@ public abstract class ProfileValueUtils {
 	 * method-level usage.
 	 * <p>Defaults to {@code true} if no {@link IfProfileValue
 	 * &#064;IfProfileValue} annotation is declared.
+	 *
 	 * @param profileValueSource the ProfileValueSource to use to determine if
-	 * the test is enabled
-	 * @param testMethod the test method
-	 * @param testClass the test class
+	 *                           the test is enabled
+	 * @param testMethod         the test method
+	 * @param testClass          the test class
 	 * @return {@code true} if the test is <em>enabled</em> in the current
 	 * environment
 	 */
 	public static boolean isTestEnabledInThisEnvironment(ProfileValueSource profileValueSource, Method testMethod,
-			Class<?> testClass) {
+														 Class<?> testClass) {
 
 		IfProfileValue ifProfileValue = AnnotatedElementUtils.findMergedAnnotation(testClass, IfProfileValue.class);
 		boolean classLevelEnabled = isTestEnabledInThisEnvironment(profileValueSource, ifProfileValue);
@@ -169,16 +169,17 @@ public abstract class ProfileValueUtils {
 	 * Determine if the {@code value} (or one of the {@code values})
 	 * in the supplied {@link IfProfileValue &#064;IfProfileValue} annotation is
 	 * <em>enabled</em> in the current environment.
+	 *
 	 * @param profileValueSource the ProfileValueSource to use to determine if
-	 * the test is enabled
-	 * @param ifProfileValue the annotation to introspect; may be
-	 * {@code null}
+	 *                           the test is enabled
+	 * @param ifProfileValue     the annotation to introspect; may be
+	 *                           {@code null}
 	 * @return {@code true} if the test is <em>enabled</em> in the current
 	 * environment or if the supplied {@code ifProfileValue} is
 	 * {@code null}
 	 */
 	private static boolean isTestEnabledInThisEnvironment(ProfileValueSource profileValueSource,
-			@Nullable IfProfileValue ifProfileValue) {
+														  @Nullable IfProfileValue ifProfileValue) {
 
 		if (ifProfileValue == null) {
 			return true;
@@ -188,8 +189,8 @@ public abstract class ProfileValueUtils {
 		String[] annotatedValues = ifProfileValue.values();
 		if (StringUtils.hasLength(ifProfileValue.value())) {
 			Assert.isTrue(annotatedValues.length == 0, () -> "Setting both the 'value' and 'values' attributes " +
-						"of @IfProfileValue is not allowed: choose one or the other.");
-			annotatedValues = new String[] { ifProfileValue.value() };
+					"of @IfProfileValue is not allowed: choose one or the other.");
+			annotatedValues = new String[]{ifProfileValue.value()};
 		}
 
 		for (String value : annotatedValues) {

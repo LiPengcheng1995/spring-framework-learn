@@ -16,11 +16,10 @@
 
 package org.springframework.web.reactive;
 
-import java.util.function.Function;
-
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import org.springframework.web.server.ServerWebExchange;
+import java.util.function.Function;
 
 /**
  * Contract that decouples the {@link DispatcherHandler} from the details of
@@ -34,6 +33,7 @@ public interface HandlerAdapter {
 
 	/**
 	 * Whether this {@code HandlerAdapter} supports the given {@code handler}.
+	 *
 	 * @param handler handler object to check
 	 * @return whether or not the handler is supported
 	 */
@@ -49,9 +49,10 @@ public interface HandlerAdapter {
 	 * {@link HandlerResult#setExceptionHandler(Function) set an exception
 	 * handler} on the {@code HandlerResult} so that may also be applied later
 	 * after result handling.
+	 *
 	 * @param exchange current server exchange
-	 * @param handler the selected handler which must have been previously
-	 * checked via {@link #supports(Object)}
+	 * @param handler  the selected handler which must have been previously
+	 *                 checked via {@link #supports(Object)}
 	 * @return {@link Mono} that emits a single {@code HandlerResult} or none if
 	 * the request has been fully handled and doesn't require further handling.
 	 */

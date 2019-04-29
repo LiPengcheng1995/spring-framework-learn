@@ -16,16 +16,15 @@
 
 package org.springframework.mock.web;
 
+import org.junit.Test;
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.util.WebUtils;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-
-import org.junit.Test;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.web.util.WebUtils;
 
 import static org.junit.Assert.*;
 
@@ -308,7 +307,7 @@ public class MockHttpServletResponseTests {
 	@SuppressWarnings("deprecation")
 	public void modifyStatusMessageAfterSendError() throws IOException {
 		response.sendError(HttpServletResponse.SC_NOT_FOUND);
-		response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,"Server Error");
+		response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server Error");
 		assertEquals(HttpServletResponse.SC_NOT_FOUND, response.getStatus());
 	}
 

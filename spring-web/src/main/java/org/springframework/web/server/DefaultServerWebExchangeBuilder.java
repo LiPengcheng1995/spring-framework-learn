@@ -16,19 +16,18 @@
 
 package org.springframework.web.server;
 
-import java.security.Principal;
-import java.util.function.Consumer;
-
-import reactor.core.publisher.Mono;
-
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+import reactor.core.publisher.Mono;
+
+import java.security.Principal;
+import java.util.function.Consumer;
 
 /**
  * Package-private implementation of {@link ServerWebExchange.Builder}.
- * 
+ *
  * @author Rossen Stoyanchev
  * @since 5.0
  */
@@ -99,7 +98,7 @@ class DefaultServerWebExchangeBuilder implements ServerWebExchange.Builder {
 		private final Mono<Principal> principalMono;
 
 		public MutativeDecorator(ServerWebExchange delegate, @Nullable ServerHttpRequest request,
-				@Nullable ServerHttpResponse response, @Nullable Mono<Principal> principalMono) {
+								 @Nullable ServerHttpResponse response, @Nullable Mono<Principal> principalMono) {
 
 			super(delegate);
 			this.request = request;

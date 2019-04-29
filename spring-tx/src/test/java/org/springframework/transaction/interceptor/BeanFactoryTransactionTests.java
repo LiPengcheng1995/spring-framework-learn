@@ -16,15 +16,10 @@
 
 package org.springframework.transaction.interceptor;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.Map;
-
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.aop.support.AopUtils;
 import org.springframework.aop.support.StaticMethodMatcherPointcut;
 import org.springframework.aop.target.HotSwappableTargetSource;
@@ -42,8 +37,13 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.Map;
+
 import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verifyZeroInteractions;
 
 /**
  * Test cases for AOP transaction management.
@@ -146,6 +146,7 @@ public class BeanFactoryTransactionTests {
 		final TransactionStatus ts = mock(TransactionStatus.class);
 		ptm = new PlatformTransactionManager() {
 			private boolean invoked;
+
 			@Override
 			public TransactionStatus getTransaction(@Nullable TransactionDefinition def) throws TransactionException {
 				if (invoked) {
@@ -158,10 +159,12 @@ public class BeanFactoryTransactionTests {
 				}
 				return ts;
 			}
+
 			@Override
 			public void commit(TransactionStatus status) throws TransactionException {
 				assertTrue(status == ts);
 			}
+
 			@Override
 			public void rollback(TransactionStatus status) throws TransactionException {
 				throw new IllegalStateException("rollback should not get invoked");
@@ -191,8 +194,7 @@ public class BeanFactoryTransactionTests {
 			new XmlBeanDefinitionReader(bf).loadBeanDefinitions(new ClassPathResource("noTransactionAttributeSource.xml", getClass()));
 			bf.getBean("noTransactionAttributeSource");
 			fail("Should require TransactionAttributeSource to be set");
-		}
-		catch (FatalBeanException ex) {
+		} catch (FatalBeanException ex) {
 			// Ok
 		}
 	}

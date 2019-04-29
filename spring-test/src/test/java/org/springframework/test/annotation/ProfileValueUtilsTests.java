@@ -16,14 +16,15 @@
 
 package org.springframework.test.annotation;
 
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for {@link ProfileValueUtils}.
@@ -48,24 +49,24 @@ public class ProfileValueUtilsTests {
 
 	private void assertClassIsEnabled(Class<?> testClass) throws Exception {
 		assertTrue("Test class [" + testClass + "] should be enabled.",
-			ProfileValueUtils.isTestEnabledInThisEnvironment(testClass));
+				ProfileValueUtils.isTestEnabledInThisEnvironment(testClass));
 	}
 
 	private void assertClassIsDisabled(Class<?> testClass) throws Exception {
 		assertFalse("Test class [" + testClass + "] should be disbled.",
-			ProfileValueUtils.isTestEnabledInThisEnvironment(testClass));
+				ProfileValueUtils.isTestEnabledInThisEnvironment(testClass));
 	}
 
 	private void assertMethodIsEnabled(String methodName, Class<?> testClass) throws Exception {
 		Method testMethod = testClass.getMethod(methodName);
 		assertTrue("Test method [" + testMethod + "] should be enabled.",
-			ProfileValueUtils.isTestEnabledInThisEnvironment(testMethod, testClass));
+				ProfileValueUtils.isTestEnabledInThisEnvironment(testMethod, testClass));
 	}
 
 	private void assertMethodIsDisabled(String methodName, Class<?> testClass) throws Exception {
 		Method testMethod = testClass.getMethod(methodName);
 		assertFalse("Test method [" + testMethod + "] should be disabled.",
-			ProfileValueUtils.isTestEnabledInThisEnvironment(testMethod, testClass));
+				ProfileValueUtils.isTestEnabledInThisEnvironment(testMethod, testClass));
 	}
 
 	private void assertMethodIsEnabled(ProfileValueSource profileValueSource, String methodName, Class<?> testClass)
@@ -159,6 +160,36 @@ public class ProfileValueUtilsTests {
 
 	// -------------------------------------------------------------------
 
+	@IfProfileValue(name = NAME, value = VALUE + "X")
+	private interface IfProfileValueTestInterface {
+	}
+
+	@IfProfileValue(name = NAME, value = VALUE)
+	@Retention(RetentionPolicy.RUNTIME)
+	private static @interface MetaEnabled {
+	}
+
+	@IfProfileValue(name = NAME, value = VALUE + "X")
+	@Retention(RetentionPolicy.RUNTIME)
+	private static @interface MetaDisabled {
+	}
+
+	@ProfileValueSourceConfiguration(HardCodedProfileValueSource.class)
+	@IfProfileValue(name = NAME, value = "42")
+	@Retention(RetentionPolicy.RUNTIME)
+	private static @interface MetaEnabledWithCustomProfileValueSource {
+	}
+
+	@ProfileValueSourceConfiguration(HardCodedProfileValueSource.class)
+	@IfProfileValue(name = NAME, value = "13")
+	@Retention(RetentionPolicy.RUNTIME)
+	private static @interface MetaDisabledWithCustomProfileValueSource {
+	}
+
+	@ProfileValueSourceConfiguration(HardCodedProfileValueSource.class)
+	private interface CustomProfileValueSourceTestInterface {
+	}
+
 	@SuppressWarnings("unused")
 	private static class NonAnnotated {
 
@@ -182,10 +213,6 @@ public class ProfileValueUtilsTests {
 		}
 	}
 
-	@IfProfileValue(name = NAME, value = VALUE + "X")
-	private interface IfProfileValueTestInterface {
-	}
-
 	@SuppressWarnings("unused")
 	private static class DisabledAnnotatedSingleValueOnTestInterface implements IfProfileValueTestInterface {
 
@@ -194,7 +221,7 @@ public class ProfileValueUtilsTests {
 	}
 
 	@SuppressWarnings("unused")
-	@IfProfileValue(name = NAME, values = { "foo", VALUE, "bar" })
+	@IfProfileValue(name = NAME, values = {"foo", VALUE, "bar"})
 	private static class EnabledAnnotatedMultiValue {
 
 		public void nonAnnotatedMethod() {
@@ -226,7 +253,7 @@ public class ProfileValueUtilsTests {
 	}
 
 	@SuppressWarnings("unused")
-	@IfProfileValue(name = NAME, values = { "foo", "bar" })
+	@IfProfileValue(name = NAME, values = {"foo", "bar"})
 	private static class DisabledAnnotatedMultiValue {
 
 		public void nonAnnotatedMethod() {
@@ -239,16 +266,6 @@ public class ProfileValueUtilsTests {
 		@IfProfileValue(name = NAME, value = VALUE + "X")
 		public void disabledAnnotatedMethod() {
 		}
-	}
-
-	@IfProfileValue(name = NAME, value = VALUE)
-	@Retention(RetentionPolicy.RUNTIME)
-	private static @interface MetaEnabled {
-	}
-
-	@IfProfileValue(name = NAME, value = VALUE + "X")
-	@Retention(RetentionPolicy.RUNTIME)
-	private static @interface MetaDisabled {
 	}
 
 	@MetaEnabled
@@ -299,28 +316,12 @@ public class ProfileValueUtilsTests {
 		}
 	}
 
-	@ProfileValueSourceConfiguration(HardCodedProfileValueSource.class)
-	@IfProfileValue(name = NAME, value = "42")
-	@Retention(RetentionPolicy.RUNTIME)
-	private static @interface MetaEnabledWithCustomProfileValueSource {
-	}
-
-	@ProfileValueSourceConfiguration(HardCodedProfileValueSource.class)
-	@IfProfileValue(name = NAME, value = "13")
-	@Retention(RetentionPolicy.RUNTIME)
-	private static @interface MetaDisabledWithCustomProfileValueSource {
-	}
-
 	@MetaEnabledWithCustomProfileValueSource
 	private static class MetaEnabledWithCustomProfileValueSourceClass {
 	}
 
 	@MetaDisabledWithCustomProfileValueSource
 	private static class MetaDisabledWithCustomProfileValueSourceClass {
-	}
-
-	@ProfileValueSourceConfiguration(HardCodedProfileValueSource.class)
-	private interface CustomProfileValueSourceTestInterface {
 	}
 
 	@IfProfileValue(name = NAME, value = "42")

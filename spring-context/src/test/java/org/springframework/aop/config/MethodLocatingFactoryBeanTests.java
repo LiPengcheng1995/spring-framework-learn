@@ -16,12 +16,11 @@
 
 package org.springframework.aop.config;
 
-import java.lang.reflect.Method;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.factory.BeanFactory;
+
+import java.lang.reflect.Method;
 
 import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.*;
@@ -89,7 +88,7 @@ public class MethodLocatingFactoryBeanTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testSunnyDayPath() throws Exception {
-		given(beanFactory.getType(BEAN_NAME)).willReturn((Class)String.class);
+		given(beanFactory.getType(BEAN_NAME)).willReturn((Class) String.class);
 		factory.setTargetBeanName(BEAN_NAME);
 		factory.setMethodName("toString()");
 		factory.setBeanFactory(beanFactory);
@@ -103,7 +102,7 @@ public class MethodLocatingFactoryBeanTests {
 	@Test(expected = IllegalArgumentException.class)
 	@SuppressWarnings("unchecked")
 	public void testWhereMethodCannotBeResolved() {
-		given(beanFactory.getType(BEAN_NAME)).willReturn((Class)String.class);
+		given(beanFactory.getType(BEAN_NAME)).willReturn((Class) String.class);
 		factory.setTargetBeanName(BEAN_NAME);
 		factory.setMethodName("loadOfOld()");
 		factory.setBeanFactory(beanFactory);

@@ -45,6 +45,10 @@ public class Service implements ApplicationContextAware, MessageSourceAware, Dis
 		this.applicationContext = applicationContext;
 	}
 
+	public MessageSource getMessageSource() {
+		return messageSource;
+	}
+
 	@Override
 	public void setMessageSource(MessageSource messageSource) {
 		if (this.messageSource != null) {
@@ -53,18 +57,13 @@ public class Service implements ApplicationContextAware, MessageSourceAware, Dis
 		this.messageSource = messageSource;
 	}
 
-	public MessageSource getMessageSource() {
-		return messageSource;
+	public Resource[] getResources() {
+		return resources;
 	}
 
 	public void setResources(Resource[] resources) {
 		this.resources = resources;
 	}
-
-	public Resource[] getResources() {
-		return resources;
-	}
-
 
 	@Override
 	public void destroy() {
@@ -78,8 +77,7 @@ public class Service implements ApplicationContextAware, MessageSourceAware, Dis
 					applicationContext.getBean("service2");
 					// Should have thrown BeanCreationNotAllowedException
 					properlyDestroyed = false;
-				}
-				catch (BeanCreationNotAllowedException ex) {
+				} catch (BeanCreationNotAllowedException ex) {
 					// expected
 				}
 			}
@@ -87,8 +85,7 @@ public class Service implements ApplicationContextAware, MessageSourceAware, Dis
 		thread.start();
 		try {
 			thread.join();
-		}
-		catch (InterruptedException ex) {
+		} catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();
 		}
 	}

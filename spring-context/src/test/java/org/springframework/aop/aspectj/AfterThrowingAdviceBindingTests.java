@@ -18,12 +18,12 @@ package org.springframework.aop.aspectj;
 
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.aop.aspectj.AfterThrowingAdviceBindingTestAspect.AfterThrowingAdviceBindingCollaborator;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.tests.sample.beans.ITestBean;
 
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * Tests for various parameter binding scenarios with before advice.
@@ -99,16 +99,6 @@ public class AfterThrowingAdviceBindingTests {
 
 final class AfterThrowingAdviceBindingTestAspect {
 
-	// collaborator interface that makes it easy to test this aspect is
-	// working as expected through mocking.
-	public interface AfterThrowingAdviceBindingCollaborator {
-		void noArgs();
-		void oneThrowable(Throwable t);
-		void oneRuntimeException(RuntimeException re);
-		void noArgsOnThrowableMatch();
-		void noArgsOnRuntimeExceptionMatch();
-	}
-
 	protected AfterThrowingAdviceBindingCollaborator collaborator = null;
 
 	public void setCollaborator(AfterThrowingAdviceBindingCollaborator aCollaborator) {
@@ -133,5 +123,19 @@ final class AfterThrowingAdviceBindingTestAspect {
 
 	public void noArgsOnRuntimeExceptionMatch() {
 		this.collaborator.noArgsOnRuntimeExceptionMatch();
+	}
+
+	// collaborator interface that makes it easy to test this aspect is
+	// working as expected through mocking.
+	public interface AfterThrowingAdviceBindingCollaborator {
+		void noArgs();
+
+		void oneThrowable(Throwable t);
+
+		void oneRuntimeException(RuntimeException re);
+
+		void noArgsOnThrowableMatch();
+
+		void noArgsOnRuntimeExceptionMatch();
 	}
 }

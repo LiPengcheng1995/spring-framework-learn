@@ -16,13 +16,9 @@
 
 package org.springframework.transaction.interceptor;
 
-import java.io.Serializable;
-import java.util.Properties;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -32,6 +28,9 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.util.SerializationTestUtils;
+
+import java.io.Serializable;
+import java.util.Properties;
 
 import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.*;
@@ -227,7 +226,7 @@ public class TransactionInterceptorTests extends AbstractTransactionAspectTests 
 		TransactionInterceptor ti = transactionInterceptorWithTransactionManagerName(
 				"fooTransactionManager", beanFactory);
 
-		PlatformTransactionManager txManager = 	associateTransactionManager(beanFactory, "fooTransactionManager");
+		PlatformTransactionManager txManager = associateTransactionManager(beanFactory, "fooTransactionManager");
 
 		DefaultTransactionAttribute attribute = new DefaultTransactionAttribute();
 		PlatformTransactionManager actual = ti.determineTransactionManager(attribute);
@@ -259,7 +258,7 @@ public class TransactionInterceptorTests extends AbstractTransactionAspectTests 
 
 
 	private TransactionInterceptor createTransactionInterceptor(BeanFactory beanFactory,
-			String transactionManagerName, PlatformTransactionManager transactionManager) {
+																String transactionManagerName, PlatformTransactionManager transactionManager) {
 
 		TransactionInterceptor ti = new TransactionInterceptor();
 		if (beanFactory != null) {

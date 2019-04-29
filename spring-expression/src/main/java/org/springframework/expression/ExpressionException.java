@@ -36,6 +36,7 @@ public class ExpressionException extends RuntimeException {
 
 	/**
 	 * Construct a new expression exception.
+	 *
 	 * @param message a descriptive message
 	 */
 	public ExpressionException(String message) {
@@ -44,8 +45,9 @@ public class ExpressionException extends RuntimeException {
 
 	/**
 	 * Construct a new expression exception.
+	 *
 	 * @param message a descriptive message
-	 * @param cause the underlying cause of this exception
+	 * @param cause   the underlying cause of this exception
 	 */
 	public ExpressionException(String message, Throwable cause) {
 		super(message, cause);
@@ -53,8 +55,9 @@ public class ExpressionException extends RuntimeException {
 
 	/**
 	 * Construct a new expression exception.
+	 *
 	 * @param expressionString the expression string
-	 * @param message a descriptive message
+	 * @param message          a descriptive message
 	 */
 	public ExpressionException(@Nullable String expressionString, String message) {
 		super(message);
@@ -64,9 +67,10 @@ public class ExpressionException extends RuntimeException {
 
 	/**
 	 * Construct a new expression exception.
+	 *
 	 * @param expressionString the expression string
-	 * @param position the position in the expression string where the problem occurred
-	 * @param message a descriptive message
+	 * @param position         the position in the expression string where the problem occurred
+	 * @param message          a descriptive message
 	 */
 	public ExpressionException(@Nullable String expressionString, int position, String message) {
 		super(message);
@@ -76,8 +80,9 @@ public class ExpressionException extends RuntimeException {
 
 	/**
 	 * Construct a new expression exception.
+	 *
 	 * @param position the position in the expression string where the problem occurred
-	 * @param message a descriptive message
+	 * @param message  a descriptive message
 	 */
 	public ExpressionException(int position, String message) {
 		super(message);
@@ -86,9 +91,10 @@ public class ExpressionException extends RuntimeException {
 
 	/**
 	 * Construct a new expression exception.
+	 *
 	 * @param position the position in the expression string where the problem occurred
-	 * @param message a descriptive message
-	 * @param cause the underlying cause of this exception
+	 * @param message  a descriptive message
+	 * @param cause    the underlying cause of this exception
 	 */
 	public ExpressionException(int position, String message, Throwable cause) {
 		super(message, cause);
@@ -114,6 +120,7 @@ public class ExpressionException extends RuntimeException {
 	/**
 	 * Return the exception message.
 	 * As of Spring 4.0, this method returns the same result as {@link #toDetailedString()}.
+	 *
 	 * @see #getSimpleMessage()
 	 * @see java.lang.Throwable#getMessage()
 	 */
@@ -139,8 +146,7 @@ public class ExpressionException extends RuntimeException {
 			output.append(": ");
 			output.append(getSimpleMessage());
 			return output.toString();
-		}
-		else {
+		} else {
 			return getSimpleMessage();
 		}
 	}
@@ -148,6 +154,7 @@ public class ExpressionException extends RuntimeException {
 	/**
 	 * Return the exception simple message without including the expression
 	 * that caused the failure.
+	 *
 	 * @since 4.0
 	 */
 	public String getSimpleMessage() {

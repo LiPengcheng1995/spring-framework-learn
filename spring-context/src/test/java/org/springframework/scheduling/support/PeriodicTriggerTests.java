@@ -16,13 +16,12 @@
 
 package org.springframework.scheduling.support;
 
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
 import org.junit.Test;
-
 import org.springframework.scheduling.TriggerContext;
 import org.springframework.util.NumberUtils;
+
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -31,6 +30,37 @@ import static org.junit.Assert.*;
  * @since 3.0
  */
 public class PeriodicTriggerTests {
+
+	private static void assertNegligibleDifference(Date d1, Date d2) {
+		long diff = Math.abs(d1.getTime() - d2.getTime());
+		assertTrue("difference exceeds threshold: " + diff, diff < 100);
+	}
+
+	private static void assertApproximateDifference(Date lesser, Date greater, long expected) {
+		long diff = greater.getTime() - lesser.getTime();
+		long variance = Math.abs(expected - diff);
+		assertTrue("expected approximate difference of " + expected +
+				", but actual difference was " + diff, variance < 100);
+	}
+
+	private static TriggerContext context(Object scheduled, Object actual, Object completion) {
+		return new TestTriggerContext(asDate(scheduled), asDate(actual), asDate(completion));
+	}
+
+	private static Date asDate(Object o) {
+		if (o == null) {
+			return null;
+		}
+		if (o instanceof Date) {
+			return (Date) o;
+		}
+		if (o instanceof Number) {
+			return new Date(System.currentTimeMillis() +
+					NumberUtils.convertNumberToTargetClass((Number) o, Long.class));
+		}
+		throw new IllegalArgumentException(
+				"expected Date or Number, but actual type was: " + o.getClass());
+	}
 
 	@Test
 	public void fixedDelayFirstExecution() {
@@ -141,6 +171,9 @@ public class PeriodicTriggerTests {
 		assertApproximateDifference(now, next, (initialDelay * 60 * 1000));
 	}
 
+
+	// utility methods
+
 	@Test
 	public void fixedRateSubsequentExecution() {
 		Date now = new Date();
@@ -199,40 +232,6 @@ public class PeriodicTriggerTests {
 		assertFalse(trigger3.equals(trigger1));
 		trigger1.setInitialDelay(7000);
 		assertEquals(trigger1, trigger3);
-	}
-
-
-	// utility methods
-
-	private static void assertNegligibleDifference(Date d1, Date d2) {
-		long diff = Math.abs(d1.getTime() - d2.getTime());
-		assertTrue("difference exceeds threshold: " + diff, diff < 100);
-	}
-
-	private static void assertApproximateDifference(Date lesser, Date greater, long expected) {
-		long diff = greater.getTime() - lesser.getTime();
-		long variance = Math.abs(expected - diff);
-		assertTrue("expected approximate difference of " + expected +
-				", but actual difference was " + diff, variance < 100);
-	}
-
-	private static TriggerContext context(Object scheduled, Object actual, Object completion) {
-		return new TestTriggerContext(asDate(scheduled), asDate(actual), asDate(completion));
-	}
-
-	private static Date asDate(Object o) {
-		if (o == null) {
-			return null;
-		}
-		if (o instanceof Date) {
-			return (Date) o;
-		}
-		if (o instanceof Number) {
-			return new Date(System.currentTimeMillis() +
-					NumberUtils.convertNumberToTargetClass((Number) o, Long.class));
-		}
-		throw new IllegalArgumentException(
-				"expected Date or Number, but actual type was: " + o.getClass());
 	}
 
 

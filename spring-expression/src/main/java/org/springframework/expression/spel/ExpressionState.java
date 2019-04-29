@@ -16,26 +16,13 @@
 
 package org.springframework.expression.spel;
 
-import java.util.ArrayDeque;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-
 import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.expression.EvaluationContext;
-import org.springframework.expression.EvaluationException;
-import org.springframework.expression.Operation;
-import org.springframework.expression.OperatorOverloader;
-import org.springframework.expression.PropertyAccessor;
-import org.springframework.expression.TypeComparator;
-import org.springframework.expression.TypeConverter;
-import org.springframework.expression.TypedValue;
+import org.springframework.expression.*;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+
+import java.util.*;
 
 /**
  * An ExpressionState is for maintaining per-expression-evaluation state, any changes to
@@ -121,8 +108,7 @@ public class ExpressionState {
 		}
 		try {
 			this.contextObjects.pop();
-		}
-		catch (NoSuchElementException ex) {
+		} catch (NoSuchElementException ex) {
 			throw new IllegalStateException("Cannot pop active context object: stack is empty");
 		}
 	}
@@ -233,10 +219,9 @@ public class ExpressionState {
 		if (overloader.overridesOperation(op, left, right)) {
 			Object returnValue = overloader.operate(op, left, right);
 			return new TypedValue(returnValue);
-		}
-		else {
+		} else {
 			String leftType = (left == null ? "null" : left.getClass().getName());
-			String rightType = (right == null? "null" : right.getClass().getName());
+			String rightType = (right == null ? "null" : right.getClass().getName());
 			throw new SpelEvaluationException(SpelMessage.OPERATOR_NOT_SUPPORTED_BETWEEN_TYPES, op, leftType, rightType);
 		}
 	}
@@ -275,7 +260,7 @@ public class ExpressionState {
 		}
 
 		public VariableScope(String name, Object value) {
-			this.vars.put(name,value);
+			this.vars.put(name, value);
 		}
 
 		public Object lookupVariable(String name) {
@@ -283,7 +268,7 @@ public class ExpressionState {
 		}
 
 		public void setVariable(String name, Object value) {
-			this.vars.put(name,value);
+			this.vars.put(name, value);
 		}
 
 		public boolean definesVariable(String name) {

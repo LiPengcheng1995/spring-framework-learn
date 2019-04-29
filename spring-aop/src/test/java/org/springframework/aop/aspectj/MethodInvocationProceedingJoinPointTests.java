@@ -16,10 +16,6 @@
 
 package org.springframework.aop.aspectj;
 
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.JoinPoint.StaticPart;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -27,7 +23,6 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.aspectj.lang.reflect.SourceLocation;
 import org.aspectj.runtime.reflect.Factory;
 import org.junit.Test;
-
 import org.springframework.aop.MethodBeforeAdvice;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.aop.framework.ProxyFactory;
@@ -36,6 +31,10 @@ import org.springframework.aop.support.AopUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.tests.sample.beans.ITestBean;
 import org.springframework.tests.sample.beans.TestBean;
+
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
@@ -52,8 +51,7 @@ public class MethodInvocationProceedingJoinPointTests {
 		try {
 			AbstractAspectJAdvice.currentJoinPoint();
 			fail("Needs to be bound by interceptor action");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			// expected
 		}
 	}
@@ -63,8 +61,7 @@ public class MethodInvocationProceedingJoinPointTests {
 		try {
 			AbstractAspectJAdvice.currentJoinPoint();
 			fail("Needs to be bound by interceptor action");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			// expected
 		}
 	}
@@ -146,16 +143,14 @@ public class MethodInvocationProceedingJoinPointTests {
 				try {
 					sloc.getLine();
 					fail("Can't get line number");
-				}
-				catch (UnsupportedOperationException ex) {
+				} catch (UnsupportedOperationException ex) {
 					// Expected
 				}
 
 				try {
 					sloc.getFileName();
 					fail("Can't get file name");
-				}
-				catch (UnsupportedOperationException ex) {
+				} catch (UnsupportedOperationException ex) {
 					// Expected
 				}
 			}
@@ -216,8 +211,7 @@ public class MethodInvocationProceedingJoinPointTests {
 		itb.setSpouse(new TestBean());
 		try {
 			itb.unreliableFileOperation();
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			// we don't really care...
 		}
 	}

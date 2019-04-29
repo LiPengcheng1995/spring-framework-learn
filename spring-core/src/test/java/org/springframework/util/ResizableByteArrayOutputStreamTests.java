@@ -19,7 +19,8 @@ package org.springframework.util;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Brian Clozel
@@ -70,13 +71,13 @@ public class ResizableByteArrayOutputStreamTests {
 	}
 
 	@Test
-	public void write() throws Exception{
+	public void write() throws Exception {
 		this.baos.write(helloBytes);
 		assertByteArrayEqualsString(this.baos);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void failResize() throws Exception{
+	public void failResize() throws Exception {
 		this.baos.write(helloBytes);
 		this.baos.resize(5);
 	}

@@ -16,18 +16,7 @@
 
 package org.springframework.context.support;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Test;
-
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.factory.BeanCreationException;
@@ -42,6 +31,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.tests.sample.beans.ResourceTestBean;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ObjectUtils;
+
+import java.io.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -135,12 +129,11 @@ public class ClassPathXmlApplicationContextTests {
 	@Test
 	public void testContextWithInvalidValueType() throws IOException {
 		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
-				new String[] {INVALID_VALUE_TYPE_CONTEXT}, false);
+				new String[]{INVALID_VALUE_TYPE_CONTEXT}, false);
 		try {
 			context.refresh();
 			fail("Should have thrown BeanCreationException");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			assertTrue(ex.contains(TypeMismatchException.class));
 			assertTrue(ex.toString().contains("someMessageSource"));
 			assertTrue(ex.toString().contains("useCodeAsDefaultMessage"));
@@ -165,8 +158,7 @@ public class ClassPathXmlApplicationContextTests {
 		try {
 			ctx.getBean("someMessageSource");
 			fail("Should have thrown CannotLoadBeanClassException");
-		}
-		catch (CannotLoadBeanClassException ex) {
+		} catch (CannotLoadBeanClassException ex) {
 			assertTrue(ex.contains(ClassNotFoundException.class));
 		}
 		ctx.close();
@@ -183,7 +175,7 @@ public class ClassPathXmlApplicationContextTests {
 	@Test
 	public void testMultipleConfigLocationsWithClass() {
 		ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(
-				new String[] {CONTEXT_B, CONTEXT_C, CONTEXT_A}, getClass());
+				new String[]{CONTEXT_B, CONTEXT_C, CONTEXT_A}, getClass());
 		assertTrue(ctx.containsBean("service"));
 		assertTrue(ctx.containsBean("logicOne"));
 		assertTrue(ctx.containsBean("logicTwo"));
@@ -229,7 +221,7 @@ public class ClassPathXmlApplicationContextTests {
 	public void testChildWithProxy() throws Exception {
 		ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(CONTEXT_WILDCARD);
 		ClassPathXmlApplicationContext child = new ClassPathXmlApplicationContext(
-				new String[] {CHILD_WITH_PROXY_CONTEXT}, ctx);
+				new String[]{CHILD_WITH_PROXY_CONTEXT}, ctx);
 		assertTrue(AopUtils.isAopProxy(child.getBean("assemblerOne")));
 		assertTrue(AopUtils.isAopProxy(child.getBean("assemblerTwo")));
 		ctx.close();
@@ -241,7 +233,7 @@ public class ClassPathXmlApplicationContextTests {
 		assertTrue(ctx.containsBean("someMessageSource"));
 
 		ClassPathXmlApplicationContext child = new ClassPathXmlApplicationContext(
-				new String[] {ALIAS_FOR_PARENT_CONTEXT}, ctx);
+				new String[]{ALIAS_FOR_PARENT_CONTEXT}, ctx);
 		assertTrue(child.containsBean("someMessageSource"));
 		assertTrue(child.containsBean("yourMessageSource"));
 		assertTrue(child.containsBean("myMessageSource"));
@@ -277,7 +269,7 @@ public class ClassPathXmlApplicationContextTests {
 		Object someMs = ctx.getBean("someMessageSource");
 
 		ClassPathXmlApplicationContext child = new ClassPathXmlApplicationContext(
-				new String[] {ALIAS_THAT_OVERRIDES_PARENT_CONTEXT}, ctx);
+				new String[]{ALIAS_THAT_OVERRIDES_PARENT_CONTEXT}, ctx);
 		Object myMs = child.getBean("myMessageSource");
 		Object someMs2 = child.getBean("someMessageSource");
 		assertSame(myMs, someMs2);

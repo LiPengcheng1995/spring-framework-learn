@@ -16,18 +16,17 @@
 
 package org.springframework.web.filter;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.test.MockFilterChain;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.mock.web.test.MockHttpServletResponse;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -67,8 +66,7 @@ public class HttpPutFormContentFilterTests {
 			filter.doFilter(request, response, filterChain);
 			if (method == HttpMethod.PUT || method == HttpMethod.PATCH) {
 				assertNotSame("Should wrap HTTP method " + method, request, filterChain.getRequest());
-			}
-			else {
+			} else {
 				assertSame("Should not wrap for HTTP method " + method, request, filterChain.getRequest());
 			}
 		}
@@ -77,7 +75,7 @@ public class HttpPutFormContentFilterTests {
 	@Test
 	public void wrapFormEncodedOnly() throws Exception {
 		request.setContent("".getBytes("ISO-8859-1"));
-		String[] contentTypes = new String[] {"text/plain", "multipart/form-data"};
+		String[] contentTypes = new String[]{"text/plain", "multipart/form-data"};
 		for (String contentType : contentTypes) {
 			request.setContentType(contentType);
 			filterChain = new MockFilterChain();
@@ -202,8 +200,8 @@ public class HttpPutFormContentFilterTests {
 
 		assertNotSame("Request not wrapped", request, filterChain.getRequest());
 		assertEquals(2, parameters.size());
-		assertArrayEquals(new String[] {"value1", "value2", "value3"}, parameters.get("name"));
-		assertArrayEquals(new String[] {"value4"}, parameters.get("name4"));
+		assertArrayEquals(new String[]{"value1", "value2", "value3"}, parameters.get("name"));
+		assertArrayEquals(new String[]{"value4"}, parameters.get("name4"));
 	}
 
 	@Test  // SPR-15835

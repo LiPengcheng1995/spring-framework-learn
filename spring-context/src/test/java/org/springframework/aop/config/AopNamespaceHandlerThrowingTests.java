@@ -17,12 +17,12 @@
 package org.springframework.aop.config;
 
 import org.junit.Test;
-import org.xml.sax.SAXParseException;
-
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.xml.sax.SAXParseException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Adrian Colyer
@@ -40,8 +40,7 @@ public class AopNamespaceHandlerThrowingTests {
 		try {
 			new ClassPathXmlApplicationContext(getClass().getSimpleName() + "-error.xml", getClass());
 			fail("Expected BeanDefinitionStoreException");
-		}
-		catch (BeanDefinitionStoreException ex) {
+		} catch (BeanDefinitionStoreException ex) {
 			assertTrue(ex.contains(SAXParseException.class));
 		}
 	}

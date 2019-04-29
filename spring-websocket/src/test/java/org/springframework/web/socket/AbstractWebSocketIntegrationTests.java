@@ -16,9 +16,6 @@
 
 package org.springframework.web.socket;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.After;
@@ -26,7 +23,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
 import org.junit.runners.Parameterized.Parameter;
-
 import org.springframework.context.Lifecycle;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,6 +34,9 @@ import org.springframework.web.socket.server.jetty.JettyRequestUpgradeStrategy;
 import org.springframework.web.socket.server.standard.TomcatRequestUpgradeStrategy;
 import org.springframework.web.socket.server.standard.UndertowRequestUpgradeStrategy;
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Base class for WebSocket integration tests.
@@ -58,15 +57,11 @@ public abstract class AbstractWebSocketIntegrationTests {
 
 	@Rule
 	public final TestName testName = new TestName();
-
+	protected final Log logger = LogFactory.getLog(getClass());
 	@Parameter(0)
 	public WebSocketTestServer server;
-
 	@Parameter(1)
 	public WebSocketClient webSocketClient;
-
-	protected final Log logger = LogFactory.getLog(getClass());
-
 	protected AnnotationConfigWebApplicationContext wac;
 
 
@@ -100,26 +95,22 @@ public abstract class AbstractWebSocketIntegrationTests {
 			if (this.webSocketClient instanceof Lifecycle) {
 				((Lifecycle) this.webSocketClient).stop();
 			}
-		}
-		catch (Throwable t) {
+		} catch (Throwable t) {
 			logger.error("Failed to stop WebSocket client", t);
 		}
 		try {
 			this.server.undeployConfig();
-		}
-		catch (Throwable t) {
+		} catch (Throwable t) {
 			logger.error("Failed to undeploy application config", t);
 		}
 		try {
 			this.server.stop();
-		}
-		catch (Throwable t) {
+		} catch (Throwable t) {
 			logger.error("Failed to stop server", t);
 		}
 		try {
 			this.wac.close();
-		}
-		catch (Throwable t) {
+		} catch (Throwable t) {
 			logger.error("Failed to close WebApplicationContext", t);
 		}
 	}

@@ -16,10 +16,10 @@
 
 package org.springframework.context.event;
 
-import java.lang.reflect.Method;
-
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
+
+import java.lang.reflect.Method;
 
 /**
  * Default {@link EventListenerFactory} implementation that supports the
@@ -34,16 +34,14 @@ public class DefaultEventListenerFactory implements EventListenerFactory, Ordere
 
 	private int order = LOWEST_PRECEDENCE;
 
-
-	public void setOrder(int order) {
-		this.order = order;
-	}
-
 	@Override
 	public int getOrder() {
 		return this.order;
 	}
 
+	public void setOrder(int order) {
+		this.order = order;
+	}
 
 	public boolean supportsMethod(Method method) {
 		return true;

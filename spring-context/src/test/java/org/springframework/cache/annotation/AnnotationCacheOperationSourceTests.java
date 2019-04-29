@@ -16,6 +16,14 @@
 
 package org.springframework.cache.annotation;
 
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.springframework.cache.interceptor.CacheEvictOperation;
+import org.springframework.cache.interceptor.CacheOperation;
+import org.springframework.cache.interceptor.CacheableOperation;
+import org.springframework.core.annotation.AliasFor;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -26,16 +34,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import org.springframework.cache.interceptor.CacheEvictOperation;
-import org.springframework.cache.interceptor.CacheOperation;
-import org.springframework.cache.interceptor.CacheableOperation;
-import org.springframework.core.annotation.AliasFor;
-
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
 
 /**
@@ -204,7 +204,7 @@ public class AnnotationCacheOperationSourceTests {
 	public void fullClassLevelWithCustomKeyManager() {
 		Collection<CacheOperation> ops = getOps(AnnotatedClassWithFullDefault.class, "methodLevelKeyGenerator", 1);
 		CacheOperation cacheOperation = ops.iterator().next();
-		assertSharedConfig(cacheOperation, "custom", "", "classCacheResolver" , "classCacheName");
+		assertSharedConfig(cacheOperation, "custom", "", "classCacheResolver", "classCacheName");
 	}
 
 	@Test
@@ -218,7 +218,7 @@ public class AnnotationCacheOperationSourceTests {
 	public void fullClassLevelWithCustomCacheResolver() {
 		Collection<CacheOperation> ops = getOps(AnnotatedClassWithFullDefault.class, "methodLevelCacheResolver", 1);
 		CacheOperation cacheOperation = ops.iterator().next();
-		assertSharedConfig(cacheOperation, "classKeyGenerator", "", "custom" , "classCacheName");
+		assertSharedConfig(cacheOperation, "classKeyGenerator", "", "custom", "classCacheName");
 	}
 
 	@Test
@@ -291,166 +291,21 @@ public class AnnotationCacheOperationSourceTests {
 		try {
 			Method method = target.getMethod(name);
 			return this.source.getCacheOperations(method, target);
-		}
-		catch (NoSuchMethodException ex) {
+		} catch (NoSuchMethodException ex) {
 			throw new IllegalStateException(ex);
 		}
 	}
 
 	private void assertSharedConfig(CacheOperation actual, String keyGenerator, String cacheManager,
-			String cacheResolver, String... cacheNames) {
+									String cacheResolver, String... cacheNames) {
 
-		assertEquals("Wrong key manager",  keyGenerator, actual.getKeyGenerator());
+		assertEquals("Wrong key manager", keyGenerator, actual.getKeyGenerator());
 		assertEquals("Wrong cache manager", cacheManager, actual.getCacheManager());
 		assertEquals("Wrong cache resolver", cacheResolver, actual.getCacheResolver());
 		assertEquals("Wrong number of cache names", cacheNames.length, actual.getCacheNames().size());
 		Arrays.stream(cacheNames).forEach(cacheName ->
 				assertTrue("Cache '" + cacheName + "' not found in " + actual.getCacheNames(),
 						actual.getCacheNames().contains(cacheName)));
-	}
-
-
-	private static class AnnotatedClass {
-
-		@Cacheable("test")
-		public void singular() {
-		}
-
-		@CacheEvict("test")
-		@Cacheable("test")
-		public void multiple() {
-		}
-
-		@Caching(cacheable = @Cacheable("test"), evict = @CacheEvict("test"))
-		public void caching() {
-		}
-
-		@Caching
-		public void emptyCaching() {
-		}
-
-		@Cacheable(cacheNames = "test", keyGenerator = "custom")
-		public void customKeyGenerator() {
-		}
-
-		@Cacheable(cacheNames = "test", cacheManager = "custom")
-		public void customCacheManager() {
-		}
-
-		@Cacheable(cacheNames = "test", cacheResolver = "custom")
-		public void customCacheResolver() {
-		}
-
-		@EvictFoo
-		public void singleStereotype() {
-		}
-
-		@EvictFoo
-		@CacheableFoo
-		@EvictBar
-		public void multipleStereotype() {
-		}
-
-		@Cacheable("directly declared")
-		@ComposedCacheable(cacheNames = "composedCache", key = "composedKey")
-		public void singleComposed() {
-		}
-
-		@Cacheable("directly declared")
-		@ComposedCacheable(cacheNames = "composedCache", key = "composedKey")
-		@CacheableFoo
-		@ComposedCacheEvict(cacheNames = "composedCacheEvict", key = "composedEvictionKey")
-		public void multipleComposed() {
-		}
-
-		@Caching(cacheable = { @Cacheable(cacheNames = "test", key = "a"), @Cacheable(cacheNames = "test", key = "b") })
-		public void multipleCaching() {
-		}
-
-		@CacheableFooCustomKeyGenerator
-		public void customKeyGeneratorInherited() {
-		}
-
-		@Cacheable(cacheNames = "test", key = "#root.methodName", keyGenerator = "custom")
-		public void invalidKeyAndKeyGeneratorSet() {
-		}
-
-		@CacheableFooCustomCacheManager
-		public void customCacheManagerInherited() {
-		}
-
-		@CacheableFooCustomCacheResolver
-		public void customCacheResolverInherited() {
-		}
-
-		@Cacheable(cacheNames = "test", cacheManager = "custom", cacheResolver = "custom")
-		public void invalidCacheResolverAndCacheManagerSet() {
-		}
-
-		@Cacheable // cache name can be inherited from CacheConfig. There's none here
-		public void noCacheNameSpecified() {
-		}
-	}
-
-
-	@CacheConfig(cacheNames = "classCacheName",
-			keyGenerator = "classKeyGenerator",
-			cacheManager = "classCacheManager", cacheResolver = "classCacheResolver")
-	private static class AnnotatedClassWithFullDefault {
-
-		@Cacheable("custom")
-		public void methodLevelCacheName() {
-		}
-
-		@Cacheable(keyGenerator = "custom")
-		public void methodLevelKeyGenerator() {
-		}
-
-		@Cacheable(cacheManager = "custom")
-		public void methodLevelCacheManager() {
-		}
-
-		@Cacheable(cacheResolver = "custom")
-		public void methodLevelCacheResolver() {
-		}
-	}
-
-
-	@CacheConfigFoo
-	private static class AnnotatedClassWithCustomDefault {
-
-		@Cacheable("custom")
-		public void methodLevelCacheName() {
-		}
-	}
-
-
-	@CacheConfig(cacheNames = "classCacheName",
-			keyGenerator = "classKeyGenerator",
-			cacheManager = "classCacheManager")
-	private static class AnnotatedClassWithSomeDefault {
-
-		@Cacheable(cacheManager = "custom")
-		public void methodLevelCacheManager() {
-		}
-
-		@Cacheable(cacheResolver = "custom")
-		public void methodLevelCacheResolver() {
-		}
-
-		@Cacheable
-		public void noCustomization() {
-		}
-	}
-
-
-	@CacheConfigFoo
-	@CacheConfig(cacheNames = "myCache")  // multiple sources
-	private static class MultipleCacheConfig {
-
-		@Cacheable
-		public void multipleCacheConfig() {
-		}
 	}
 
 
@@ -462,19 +317,6 @@ public class AnnotationCacheOperationSourceTests {
 
 		@CachePut
 		void interfaceCacheableOverride();
-	}
-
-
-	private static class InterfaceCacheConfig implements CacheConfigIfc {
-
-		@Override
-		public void interfaceCacheConfig() {
-		}
-
-		@Override
-		@Cacheable
-		public void interfaceCacheableOverride() {
-		}
 	}
 
 
@@ -558,6 +400,157 @@ public class AnnotationCacheOperationSourceTests {
 
 		@AliasFor(annotation = CacheEvict.class)
 		String key() default "";
+	}
+
+	private static class AnnotatedClass {
+
+		@Cacheable("test")
+		public void singular() {
+		}
+
+		@CacheEvict("test")
+		@Cacheable("test")
+		public void multiple() {
+		}
+
+		@Caching(cacheable = @Cacheable("test"), evict = @CacheEvict("test"))
+		public void caching() {
+		}
+
+		@Caching
+		public void emptyCaching() {
+		}
+
+		@Cacheable(cacheNames = "test", keyGenerator = "custom")
+		public void customKeyGenerator() {
+		}
+
+		@Cacheable(cacheNames = "test", cacheManager = "custom")
+		public void customCacheManager() {
+		}
+
+		@Cacheable(cacheNames = "test", cacheResolver = "custom")
+		public void customCacheResolver() {
+		}
+
+		@EvictFoo
+		public void singleStereotype() {
+		}
+
+		@EvictFoo
+		@CacheableFoo
+		@EvictBar
+		public void multipleStereotype() {
+		}
+
+		@Cacheable("directly declared")
+		@ComposedCacheable(cacheNames = "composedCache", key = "composedKey")
+		public void singleComposed() {
+		}
+
+		@Cacheable("directly declared")
+		@ComposedCacheable(cacheNames = "composedCache", key = "composedKey")
+		@CacheableFoo
+		@ComposedCacheEvict(cacheNames = "composedCacheEvict", key = "composedEvictionKey")
+		public void multipleComposed() {
+		}
+
+		@Caching(cacheable = {@Cacheable(cacheNames = "test", key = "a"), @Cacheable(cacheNames = "test", key = "b")})
+		public void multipleCaching() {
+		}
+
+		@CacheableFooCustomKeyGenerator
+		public void customKeyGeneratorInherited() {
+		}
+
+		@Cacheable(cacheNames = "test", key = "#root.methodName", keyGenerator = "custom")
+		public void invalidKeyAndKeyGeneratorSet() {
+		}
+
+		@CacheableFooCustomCacheManager
+		public void customCacheManagerInherited() {
+		}
+
+		@CacheableFooCustomCacheResolver
+		public void customCacheResolverInherited() {
+		}
+
+		@Cacheable(cacheNames = "test", cacheManager = "custom", cacheResolver = "custom")
+		public void invalidCacheResolverAndCacheManagerSet() {
+		}
+
+		@Cacheable // cache name can be inherited from CacheConfig. There's none here
+		public void noCacheNameSpecified() {
+		}
+	}
+
+	@CacheConfig(cacheNames = "classCacheName",
+			keyGenerator = "classKeyGenerator",
+			cacheManager = "classCacheManager", cacheResolver = "classCacheResolver")
+	private static class AnnotatedClassWithFullDefault {
+
+		@Cacheable("custom")
+		public void methodLevelCacheName() {
+		}
+
+		@Cacheable(keyGenerator = "custom")
+		public void methodLevelKeyGenerator() {
+		}
+
+		@Cacheable(cacheManager = "custom")
+		public void methodLevelCacheManager() {
+		}
+
+		@Cacheable(cacheResolver = "custom")
+		public void methodLevelCacheResolver() {
+		}
+	}
+
+	@CacheConfigFoo
+	private static class AnnotatedClassWithCustomDefault {
+
+		@Cacheable("custom")
+		public void methodLevelCacheName() {
+		}
+	}
+
+	@CacheConfig(cacheNames = "classCacheName",
+			keyGenerator = "classKeyGenerator",
+			cacheManager = "classCacheManager")
+	private static class AnnotatedClassWithSomeDefault {
+
+		@Cacheable(cacheManager = "custom")
+		public void methodLevelCacheManager() {
+		}
+
+		@Cacheable(cacheResolver = "custom")
+		public void methodLevelCacheResolver() {
+		}
+
+		@Cacheable
+		public void noCustomization() {
+		}
+	}
+
+	@CacheConfigFoo
+	@CacheConfig(cacheNames = "myCache")  // multiple sources
+	private static class MultipleCacheConfig {
+
+		@Cacheable
+		public void multipleCacheConfig() {
+		}
+	}
+
+	private static class InterfaceCacheConfig implements CacheConfigIfc {
+
+		@Override
+		public void interfaceCacheConfig() {
+		}
+
+		@Override
+		@Cacheable
+		public void interfaceCacheableOverride() {
+		}
 	}
 
 }

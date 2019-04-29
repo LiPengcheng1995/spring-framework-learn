@@ -16,11 +16,7 @@
 
 package org.springframework.test.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Test-specific annotation to indicate that a test method has to finish
@@ -38,11 +34,11 @@ import java.lang.annotation.Target;
  *
  * @author Rod Johnson
  * @author Sam Brannen
- * @since 2.0
  * @see org.springframework.test.annotation.Repeat
  * @see org.springframework.test.context.junit4.SpringJUnit4ClassRunner
  * @see org.springframework.test.context.junit4.rules.SpringMethodRule
  * @see org.springframework.test.context.junit4.statements.SpringFailOnTimeout
+ * @since 2.0
  */
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)

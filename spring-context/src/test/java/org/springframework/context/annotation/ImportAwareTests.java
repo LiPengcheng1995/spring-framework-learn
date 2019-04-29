@@ -16,13 +16,7 @@
 
 package org.springframework.context.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.junit.Test;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -35,7 +29,13 @@ import org.springframework.core.type.StandardAnnotationMetadata;
 import org.springframework.scheduling.annotation.AsyncAnnotationBeanPostProcessor;
 import org.springframework.util.Assert;
 
-import static org.hamcrest.CoreMatchers.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.*;
 
 /**
@@ -121,18 +121,6 @@ public class ImportAwareTests {
 	}
 
 
-	@Configuration
-	@Import(ImportedConfig.class)
-	static class ImportingConfig {
-	}
-
-
-	@Configuration
-	@EnableImportedConfig(foo="xyz")
-	static class IndirectlyImportingConfig {
-	}
-
-
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Import(ImportedConfig.class)
@@ -140,6 +128,31 @@ public class ImportAwareTests {
 		String foo() default "";
 	}
 
+
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Import(ImportedRegistrar.class)
+	public @interface EnableImportRegistrar {
+	}
+
+
+	@Import(SomeConfiguration.class)
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface EnableSomeConfiguration {
+
+		String value() default "";
+	}
+
+	@Configuration
+	@Import(ImportedConfig.class)
+	static class ImportingConfig {
+	}
+
+	@Configuration
+	@EnableImportedConfig(foo = "xyz")
+	static class IndirectlyImportingConfig {
+	}
 
 	@Configuration
 	static class ImportedConfig implements ImportAware {
@@ -162,7 +175,6 @@ public class ImportAwareTests {
 		}
 	}
 
-
 	@Configuration
 	static class OtherImportedConfig {
 
@@ -171,7 +183,6 @@ public class ImportAwareTests {
 			return "";
 		}
 	}
-
 
 	static class BPP implements BeanPostProcessor, BeanFactoryAware {
 
@@ -190,25 +201,16 @@ public class ImportAwareTests {
 		}
 	}
 
-
 	@Configuration
 	@EnableImportRegistrar
 	static class ImportingRegistrarConfig {
 	}
-
 
 	@Configuration
 	@EnableImportRegistrar
 	@Import(ImportedConfig.class)
 	static class ImportingRegistrarConfigWithImport {
 	}
-
-	@Target(ElementType.TYPE)
-	@Retention(RetentionPolicy.RUNTIME)
-	@Import(ImportedRegistrar.class)
-	public @interface EnableImportRegistrar {
-	}
-
 
 	static class ImportedRegistrar implements ImportBeanDefinitionRegistrar {
 
@@ -227,28 +229,16 @@ public class ImportAwareTests {
 		}
 	}
 
-
 	@EnableSomeConfiguration("bar")
 	@Configuration
 	public static class ConfigurationOne {
 	}
-
 
 	@Conditional(OnMissingBeanCondition.class)
 	@EnableSomeConfiguration("foo")
 	@Configuration
 	public static class ConfigurationTwo {
 	}
-
-
-	@Import(SomeConfiguration.class)
-	@Target(ElementType.TYPE)
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface EnableSomeConfiguration {
-
-		String value() default "";
-	}
-
 
 	@Configuration
 	public static class SomeConfiguration implements ImportAware {

@@ -16,10 +16,6 @@
 
 package org.springframework.core.codec;
 
-import java.util.Map;
-
-import reactor.core.publisher.Flux;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -30,6 +26,9 @@ import org.springframework.util.Assert;
 import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.StreamUtils;
+import reactor.core.publisher.Flux;
+
+import java.util.Map;
 
 /**
  * Encoder for {@link Resource}s.
@@ -63,7 +62,7 @@ public class ResourceEncoder extends AbstractSingleValueEncoder<Resource> {
 
 	@Override
 	protected Flux<DataBuffer> encode(Resource resource, DataBufferFactory dataBufferFactory,
-			ResolvableType type, @Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
+									  ResolvableType type, @Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
 
 		return DataBufferUtils.read(resource, dataBufferFactory, this.bufferSize);
 	}

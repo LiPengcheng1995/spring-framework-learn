@@ -26,14 +26,20 @@ import java.lang.reflect.InvocationTargetException;
  * {@link DefaultRemoteInvocationExecutor} as default strategy.
  *
  * @author Juergen Hoeller
- * @since 1.1
  * @see RemoteInvocationExecutor
  * @see DefaultRemoteInvocationExecutor
+ * @since 1.1
  */
 public abstract class RemoteInvocationBasedExporter extends RemoteExporter {
 
 	private RemoteInvocationExecutor remoteInvocationExecutor = new DefaultRemoteInvocationExecutor();
 
+	/**
+	 * Return the RemoteInvocationExecutor used by this exporter.
+	 */
+	public RemoteInvocationExecutor getRemoteInvocationExecutor() {
+		return this.remoteInvocationExecutor;
+	}
 
 	/**
 	 * Set the RemoteInvocationExecutor to use for this exporter.
@@ -46,25 +52,18 @@ public abstract class RemoteInvocationBasedExporter extends RemoteExporter {
 	}
 
 	/**
-	 * Return the RemoteInvocationExecutor used by this exporter.
-	 */
-	public RemoteInvocationExecutor getRemoteInvocationExecutor() {
-		return this.remoteInvocationExecutor;
-	}
-
-
-	/**
 	 * Apply the given remote invocation to the given target object.
 	 * The default implementation delegates to the RemoteInvocationExecutor.
 	 * <p>Can be overridden in subclasses for custom invocation behavior,
 	 * possibly for applying additional invocation parameters from a
 	 * custom RemoteInvocation subclass. Note that it is preferable to use
 	 * a custom RemoteInvocationExecutor which is a reusable strategy.
-	 * @param invocation the remote invocation
+	 *
+	 * @param invocation   the remote invocation
 	 * @param targetObject the target object to apply the invocation to
 	 * @return the invocation result
-	 * @throws NoSuchMethodException if the method name could not be resolved
-	 * @throws IllegalAccessException if the method could not be accessed
+	 * @throws NoSuchMethodException     if the method name could not be resolved
+	 * @throws IllegalAccessException    if the method could not be accessed
 	 * @throws InvocationTargetException if the method invocation resulted in an exception
 	 * @see RemoteInvocationExecutor#invoke
 	 */
@@ -76,20 +75,17 @@ public abstract class RemoteInvocationBasedExporter extends RemoteExporter {
 		}
 		try {
 			return getRemoteInvocationExecutor().invoke(invocation, targetObject);
-		}
-		catch (NoSuchMethodException ex) {
+		} catch (NoSuchMethodException ex) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Could not find target method for " + invocation, ex);
 			}
 			throw ex;
-		}
-		catch (IllegalAccessException ex) {
+		} catch (IllegalAccessException ex) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Could not access target method for " + invocation, ex);
 			}
 			throw ex;
-		}
-		catch (InvocationTargetException ex) {
+		} catch (InvocationTargetException ex) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Target method failed for " + invocation, ex.getTargetException());
 			}
@@ -104,7 +100,8 @@ public abstract class RemoteInvocationBasedExporter extends RemoteExporter {
 	 * <p>Can be overridden in subclasses for custom invocation behavior,
 	 * for example to return additional context information. Note that this
 	 * is not covered by the RemoteInvocationExecutor strategy!
-	 * @param invocation the remote invocation
+	 *
+	 * @param invocation   the remote invocation
 	 * @param targetObject the target object to apply the invocation to
 	 * @return the invocation result
 	 * @see #invoke
@@ -113,8 +110,7 @@ public abstract class RemoteInvocationBasedExporter extends RemoteExporter {
 		try {
 			Object value = invoke(invocation, targetObject);
 			return new RemoteInvocationResult(value);
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			return new RemoteInvocationResult(ex);
 		}
 	}

@@ -16,10 +16,10 @@
 
 package org.springframework.jdbc;
 
-import java.sql.SQLException;
-
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.lang.Nullable;
+
+import java.sql.SQLException;
 
 /**
  * Fatal exception thrown when we can't connect to an RDBMS using JDBC.
@@ -32,6 +32,7 @@ public class CannotGetJdbcConnectionException extends DataAccessResourceFailureE
 
 	/**
 	 * Constructor for CannotGetJdbcConnectionException.
+	 *
 	 * @param msg the detail message
 	 * @since 5.0
 	 */
@@ -41,8 +42,9 @@ public class CannotGetJdbcConnectionException extends DataAccessResourceFailureE
 
 	/**
 	 * Constructor for CannotGetJdbcConnectionException.
+	 *
 	 * @param msg the detail message
-	 * @param ex SQLException root cause
+	 * @param ex  SQLException root cause
 	 */
 	public CannotGetJdbcConnectionException(String msg, @Nullable SQLException ex) {
 		super(msg, ex);

@@ -16,11 +16,11 @@
 
 package org.springframework.remoting.jaxws;
 
-import javax.xml.ws.Service;
-
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.lang.Nullable;
+
+import javax.xml.ws.Service;
 
 /**
  * {@link org.springframework.beans.factory.FactoryBean} for locally
@@ -31,10 +31,10 @@ import org.springframework.lang.Nullable;
  * in the JNDI environment of the Java EE container.
  *
  * @author Juergen Hoeller
- * @since 2.5
  * @see javax.xml.ws.Service
  * @see org.springframework.jndi.JndiObjectFactoryBean
  * @see JaxWsPortProxyFactoryBean
+ * @since 2.5
  */
 public class LocalJaxWsServiceFactoryBean extends LocalJaxWsServiceFactory
 		implements FactoryBean<Service>, InitializingBean {

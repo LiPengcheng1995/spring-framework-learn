@@ -16,16 +16,16 @@
 
 package org.springframework.jdbc.support;
 
-import java.sql.SQLException;
-
 import org.junit.Test;
-
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.jdbc.BadSqlGrammarException;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import java.sql.SQLException;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 /**
  * Unit tests for custom SQLException translation.
@@ -38,8 +38,8 @@ public class SQLExceptionCustomTranslatorTests {
 	private static SQLErrorCodes ERROR_CODES = new SQLErrorCodes();
 
 	static {
-		ERROR_CODES.setBadSqlGrammarCodes(new String[] { "1" });
-		ERROR_CODES.setDataAccessResourceFailureCodes(new String[] { "2" });
+		ERROR_CODES.setBadSqlGrammarCodes(new String[]{"1"});
+		ERROR_CODES.setDataAccessResourceFailureCodes(new String[]{"2"});
 		ERROR_CODES.setCustomSqlExceptionTranslatorClass(CustomSqlExceptionTranslator.class);
 	}
 

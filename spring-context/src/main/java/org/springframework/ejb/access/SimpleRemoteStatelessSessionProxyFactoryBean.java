@@ -16,13 +16,13 @@
 
 package org.springframework.ejb.access;
 
-import javax.naming.NamingException;
-
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
+
+import javax.naming.NamingException;
 
 /**
  * Convenient {@link FactoryBean} for remote SLSB proxies.
@@ -53,26 +53,37 @@ import org.springframework.util.ClassUtils;
  * @author Rod Johnson
  * @author Colin Sampaleanu
  * @author Juergen Hoeller
- * @since 09.05.2003
  * @see org.springframework.remoting.RemoteAccessException
  * @see AbstractSlsbInvokerInterceptor#setLookupHomeOnStartup
  * @see AbstractSlsbInvokerInterceptor#setCacheHome
  * @see AbstractRemoteSlsbInvokerInterceptor#setRefreshHomeOnConnectFailure
+ * @since 09.05.2003
  */
 public class SimpleRemoteStatelessSessionProxyFactoryBean extends SimpleRemoteSlsbInvokerInterceptor
-	implements FactoryBean<Object>, BeanClassLoaderAware {
+		implements FactoryBean<Object>, BeanClassLoaderAware {
 
-	/** The business interface of the EJB we're proxying */
+	/**
+	 * The business interface of the EJB we're proxying
+	 */
 	@Nullable
 	private Class<?> businessInterface;
 
 	@Nullable
 	private ClassLoader beanClassLoader = ClassUtils.getDefaultClassLoader();
 
-	/** EJBObject */
+	/**
+	 * EJBObject
+	 */
 	@Nullable
 	private Object proxy;
 
+	/**
+	 * Return the business interface of the EJB we're proxying.
+	 */
+	@Nullable
+	public Class<?> getBusinessInterface() {
+		return this.businessInterface;
+	}
 
 	/**
 	 * Set the business interface of the EJB we're proxying.
@@ -82,18 +93,11 @@ public class SimpleRemoteStatelessSessionProxyFactoryBean extends SimpleRemoteSl
 	 * that mirrors the EJB business methods but does not declare RemoteExceptions.
 	 * In this case, RemoteExceptions thrown by the EJB stub will automatically get
 	 * converted to Spring's generic RemoteAccessException.
+	 *
 	 * @param businessInterface the business interface of the EJB
 	 */
 	public void setBusinessInterface(@Nullable Class<?> businessInterface) {
 		this.businessInterface = businessInterface;
-	}
-
-	/**
-	 * Return the business interface of the EJB we're proxying.
-	 */
-	@Nullable
-	public Class<?> getBusinessInterface() {
-		return this.businessInterface;
 	}
 
 	@Override

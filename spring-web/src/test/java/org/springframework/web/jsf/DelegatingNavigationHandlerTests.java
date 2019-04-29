@@ -16,16 +16,15 @@
 
 package org.springframework.web.jsf;
 
-import javax.faces.application.NavigationHandler;
-import javax.faces.context.FacesContext;
-
 import org.junit.Test;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.support.StaticListableBeanFactory;
 import org.springframework.lang.Nullable;
 
-import static org.junit.Assert.*;
+import javax.faces.application.NavigationHandler;
+import javax.faces.context.FacesContext;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Colin Sampaleanu
@@ -92,7 +91,7 @@ public class DelegatingNavigationHandlerTests {
 
 		@Override
 		public void handleNavigation(FacesContext facesContext, @Nullable String fromAction,
-				@Nullable String outcome, @Nullable NavigationHandler originalNavigationHandler) {
+									 @Nullable String outcome, @Nullable NavigationHandler originalNavigationHandler) {
 
 			lastFromAction = fromAction;
 			lastOutcome = outcome;

@@ -16,9 +16,8 @@
 
 package org.springframework.web.reactive;
 
-import reactor.core.publisher.Mono;
-
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
 
 /**
  * Interface to be implemented by objects that define a mapping between
@@ -86,6 +85,7 @@ public interface HandlerMapping {
 
 	/**
 	 * Return a handler for this request.
+	 *
 	 * @param exchange current server exchange
 	 * @return a {@link Mono} that emits one value or none in case the request
 	 * cannot be resolved to a handler

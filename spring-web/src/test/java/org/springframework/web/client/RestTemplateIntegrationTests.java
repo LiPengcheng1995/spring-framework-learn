@@ -16,16 +16,6 @@
 
 package org.springframework.web.client;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
-
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -37,25 +27,20 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
-
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.client.Netty4ClientHttpRequestFactory;
-import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.*;
+import org.springframework.http.client.*;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.springframework.http.HttpMethod.POST;
@@ -67,10 +52,9 @@ import static org.springframework.http.HttpMethod.POST;
 @RunWith(Parameterized.class)
 public class RestTemplateIntegrationTests extends AbstractMockWebServerTestCase {
 
-	private RestTemplate template;
-
 	@Parameter
 	public ClientHttpRequestFactory clientHttpRequestFactory;
+	private RestTemplate template;
 
 	@SuppressWarnings("deprecation")
 	@Parameters
@@ -86,7 +70,7 @@ public class RestTemplateIntegrationTests extends AbstractMockWebServerTestCase 
 
 	@Before
 	public void setupClient() {
-		 this.template = new RestTemplate(this.clientHttpRequestFactory);
+		this.template = new RestTemplate(this.clientHttpRequestFactory);
 	}
 
 
@@ -172,8 +156,7 @@ public class RestTemplateIntegrationTests extends AbstractMockWebServerTestCase 
 		try {
 			template.execute(baseUrl + "/status/notfound", HttpMethod.GET, null, null);
 			fail("HttpClientErrorException expected");
-		}
-		catch (HttpClientErrorException ex) {
+		} catch (HttpClientErrorException ex) {
 			assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
 			assertNotNull(ex.getStatusText());
 			assertNotNull(ex.getResponseBodyAsString());
@@ -185,8 +168,7 @@ public class RestTemplateIntegrationTests extends AbstractMockWebServerTestCase 
 		try {
 			template.execute(baseUrl + "/status/server", HttpMethod.GET, null, null);
 			fail("HttpServerErrorException expected");
-		}
-		catch (HttpServerErrorException ex) {
+		} catch (HttpServerErrorException ex) {
 			assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, ex.getStatusCode());
 			assertNotNull(ex.getStatusText());
 			assertNotNull(ex.getResponseBodyAsString());
@@ -295,7 +277,8 @@ public class RestTemplateIntegrationTests extends AbstractMockWebServerTestCase 
 		List<ParentClass> list = new ArrayList<>();
 		list.add(new Foo("foo"));
 		list.add(new Bar("bar"));
-		ParameterizedTypeReference<?> typeReference = new ParameterizedTypeReference<List<ParentClass>>() {};
+		ParameterizedTypeReference<?> typeReference = new ParameterizedTypeReference<List<ParentClass>>() {
+		};
 		RequestEntity<List<ParentClass>> entity = RequestEntity
 				.post(new URI(baseUrl + "/jsonpost"))
 				.contentType(new MediaType("application", "json", StandardCharsets.UTF_8))
@@ -311,9 +294,11 @@ public class RestTemplateIntegrationTests extends AbstractMockWebServerTestCase 
 	}
 
 
-	public interface MyJacksonView1 {}
+	public interface MyJacksonView1 {
+	}
 
-	public interface MyJacksonView2 {}
+	public interface MyJacksonView2 {
+	}
 
 
 	public static class MySampleBean {

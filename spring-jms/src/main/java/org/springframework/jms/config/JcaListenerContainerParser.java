@@ -16,14 +16,13 @@
 
 package org.springframework.jms.config;
 
-import org.w3c.dom.Element;
-
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.StringUtils;
+import org.w3c.dom.Element;
 
 /**
  * Parser for the JMS {@code <jca-listener-container>} element.
@@ -41,7 +40,7 @@ class JcaListenerContainerParser extends AbstractListenerContainerParser {
 
 	@Override
 	protected RootBeanDefinition createContainerFactory(String factoryId, Element containerEle, ParserContext parserContext,
-			PropertyValues commonContainerProperties, PropertyValues specificContainerProperties) {
+														PropertyValues commonContainerProperties, PropertyValues specificContainerProperties) {
 
 		RootBeanDefinition factoryDef = new RootBeanDefinition();
 		factoryDef.setBeanClassName("org.springframework.jms.config.DefaultJcaListenerContainerFactory");
@@ -54,7 +53,7 @@ class JcaListenerContainerParser extends AbstractListenerContainerParser {
 
 	@Override
 	protected RootBeanDefinition createContainer(Element containerEle, Element listenerEle, ParserContext parserContext,
-			PropertyValues commonContainerProperties, PropertyValues specificContainerProperties) {
+												 PropertyValues commonContainerProperties, PropertyValues specificContainerProperties) {
 
 		RootBeanDefinition containerDef = new RootBeanDefinition();
 		containerDef.setSource(parserContext.extractSource(containerEle));
@@ -103,8 +102,7 @@ class JcaListenerContainerParser extends AbstractListenerContainerParser {
 			if (!StringUtils.hasText(resourceAdapterBeanName)) {
 				parserContext.getReaderContext().error(
 						"Listener container 'resource-adapter' attribute contains empty value.", containerEle);
-			}
-			else {
+			} else {
 				properties.add("resourceAdapter", new RuntimeBeanReference(resourceAdapterBeanName));
 			}
 		}

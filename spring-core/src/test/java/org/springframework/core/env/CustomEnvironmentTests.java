@@ -16,14 +16,14 @@
 
 package org.springframework.core.env;
 
+import org.junit.Test;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Unit tests covering the extensibility of {@link AbstractEnvironment}.
@@ -37,7 +37,8 @@ public class CustomEnvironmentTests {
 
 	@Test
 	public void control() {
-		Environment env = new AbstractEnvironment() { };
+		Environment env = new AbstractEnvironment() {
+		};
 		assertThat(env.acceptsProfiles(AbstractEnvironment.RESERVED_DEFAULT_PROFILE_NAME), is(true));
 	}
 
@@ -74,7 +75,10 @@ public class CustomEnvironmentTests {
 			@Override
 			@SuppressWarnings("serial")
 			protected Set<String> getReservedDefaultProfiles() {
-				return new HashSet<String>() {{ add("rd1"); add("rd2");  }};
+				return new HashSet<String>() {{
+					add("rd1");
+					add("rd2");
+				}};
 			}
 		}
 

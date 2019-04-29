@@ -16,19 +16,15 @@
 
 package org.springframework.http.server;
 
+import org.springframework.lang.Nullable;
+import org.springframework.util.*;
+
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.util.StringUtils;
 
 /**
  * Default implementation of {@link PathContainer}.
@@ -55,40 +51,6 @@ final class DefaultPathContainer implements PathContainer {
 		this.elements = Collections.unmodifiableList(elements);
 	}
 
-
-	@Override
-	public String value() {
-		return this.path;
-	}
-
-	@Override
-	public List<Element> elements() {
-		return this.elements;
-	}
-
-
-	@Override
-	public boolean equals(@Nullable Object other) {
-		if (this == other) {
-			return true;
-		}
-		if (other == null || getClass() != other.getClass()) {
-			return false;
-		}
-		return this.path.equals(((DefaultPathContainer) other).path);
-	}
-
-	@Override
-	public int hashCode() {
-		return this.path.hashCode();
-	}
-
-	@Override
-	public String toString() {
-		return "[path='" + this.path + "\']";
-	}
-
-
 	static PathContainer createFromUrlPath(String path) {
 		if (path.equals("")) {
 			return EMPTY_PATH;
@@ -100,8 +62,7 @@ final class DefaultPathContainer implements PathContainer {
 		if (path.length() > 0 && path.startsWith(separator)) {
 			begin = separator.length();
 			elements.add(separatorElement);
-		}
-		else {
+		} else {
 			begin = 0;
 		}
 		while (begin < path.length()) {
@@ -125,8 +86,7 @@ final class DefaultPathContainer implements PathContainer {
 		if (index == -1) {
 			String valueToMatch = StringUtils.uriDecode(segment, charset);
 			return new DefaultPathSegment(segment, valueToMatch, EMPTY_MAP);
-		}
-		else {
+		} else {
 			String valueToMatch = StringUtils.uriDecode(segment.substring(0, index), charset);
 			String pathParameterContent = segment.substring(index);
 			MultiValueMap<String, String> parameters = parsePathParams(pathParameterContent, charset);
@@ -161,8 +121,7 @@ final class DefaultPathContainer implements PathContainer {
 						output.add(name, StringUtils.uriDecode(v, charset));
 					}
 				}
-			}
-			else {
+			} else {
 				String name = StringUtils.uriDecode(input, charset);
 				if (StringUtils.hasText(name)) {
 					output.add(input, "");
@@ -189,6 +148,36 @@ final class DefaultPathContainer implements PathContainer {
 		return new DefaultPathContainer(path, subList);
 	}
 
+	@Override
+	public String value() {
+		return this.path;
+	}
+
+	@Override
+	public List<Element> elements() {
+		return this.elements;
+	}
+
+	@Override
+	public boolean equals(@Nullable Object other) {
+		if (this == other) {
+			return true;
+		}
+		if (other == null || getClass() != other.getClass()) {
+			return false;
+		}
+		return this.path.equals(((DefaultPathContainer) other).path);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.path.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return "[path='" + this.path + "\']";
+	}
 
 	private static class DefaultPathSegment implements PathSegment {
 

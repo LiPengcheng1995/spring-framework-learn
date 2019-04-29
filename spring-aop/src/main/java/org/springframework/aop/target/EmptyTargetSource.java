@@ -16,11 +16,11 @@
 
 package org.springframework.aop.target;
 
-import java.io.Serializable;
-
 import org.springframework.aop.TargetSource;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ObjectUtils;
+
+import java.io.Serializable;
 
 /**
  * Canonical {@code TargetSource} when there is no target
@@ -32,22 +32,43 @@ import org.springframework.util.ObjectUtils;
  */
 public class EmptyTargetSource implements TargetSource, Serializable {
 
-	/** use serialVersionUID from Spring 1.2 for interoperability */
-	private static final long serialVersionUID = 3680494563553489691L;
-
-
-	//---------------------------------------------------------------------
-	// Static factory methods
-	//---------------------------------------------------------------------
-
 	/**
 	 * The canonical (Singleton) instance of this {@link EmptyTargetSource}.
 	 */
 	public static final EmptyTargetSource INSTANCE = new EmptyTargetSource(null, true);
 
 
+	//---------------------------------------------------------------------
+	// Static factory methods
+	//---------------------------------------------------------------------
+	/**
+	 * use serialVersionUID from Spring 1.2 for interoperability
+	 */
+	private static final long serialVersionUID = 3680494563553489691L;
+	private final Class<?> targetClass;
+	private final boolean isStatic;
+
+
+	//---------------------------------------------------------------------
+	// Instance implementation
+	//---------------------------------------------------------------------
+
+	/**
+	 * Create a new instance of the {@link EmptyTargetSource} class.
+	 * <p>This constructor is {@code private} to enforce the
+	 * Singleton pattern / factory method pattern.
+	 *
+	 * @param targetClass the target class to expose (may be {@code null})
+	 * @param isStatic    whether the TargetSource is marked as static
+	 */
+	private EmptyTargetSource(@Nullable Class<?> targetClass, boolean isStatic) {
+		this.targetClass = targetClass;
+		this.isStatic = isStatic;
+	}
+
 	/**
 	 * Return an EmptyTargetSource for the given target Class.
+	 *
 	 * @param targetClass the target Class (may be {@code null})
 	 * @see #getTargetClass()
 	 */
@@ -57,36 +78,14 @@ public class EmptyTargetSource implements TargetSource, Serializable {
 
 	/**
 	 * Return an EmptyTargetSource for the given target Class.
+	 *
 	 * @param targetClass the target Class (may be {@code null})
-	 * @param isStatic whether the TargetSource should be marked as static
+	 * @param isStatic    whether the TargetSource should be marked as static
 	 * @see #getTargetClass()
 	 */
 	public static EmptyTargetSource forClass(@Nullable Class<?> targetClass, boolean isStatic) {
 		return (targetClass == null && isStatic ? INSTANCE : new EmptyTargetSource(targetClass, isStatic));
 	}
-
-
-	//---------------------------------------------------------------------
-	// Instance implementation
-	//---------------------------------------------------------------------
-
-	private final Class<?> targetClass;
-
-	private final boolean isStatic;
-
-
-	/**
-	 * Create a new instance of the {@link EmptyTargetSource} class.
-	 * <p>This constructor is {@code private} to enforce the
-	 * Singleton pattern / factory method pattern.
-	 * @param targetClass the target class to expose (may be {@code null})
-	 * @param isStatic whether the TargetSource is marked as static
-	 */
-	private EmptyTargetSource(@Nullable Class<?> targetClass, boolean isStatic) {
-		this.targetClass = targetClass;
-		this.isStatic = isStatic;
-	}
-
 
 	/**
 	 * Always returns the specified target Class, or {@code null} if none.

@@ -16,20 +16,22 @@
 
 package org.springframework.util;
 
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.util.SortedSet;
-import javax.net.ServerSocketFactory;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.springframework.util.SocketUtils.PORT_RANGE_MIN;
+import javax.net.ServerSocketFactory;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.util.SortedSet;
+
+import static org.hamcrest.CoreMatchers.endsWith;
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.util.SocketUtils.PORT_RANGE_MAX;
+import static org.springframework.util.SocketUtils.PORT_RANGE_MIN;
 
 /**
  * Unit tests for {@link SocketUtils}.
@@ -79,8 +81,7 @@ public class SocketUtilsTests {
 			exception.expectMessage(endsWith("after 1 attempts"));
 			// will only look for the exact port
 			SocketUtils.findAvailableTcpPort(port, port);
-		}
-		finally {
+		} finally {
 			socket.close();
 		}
 	}
@@ -156,8 +157,7 @@ public class SocketUtilsTests {
 			exception.expectMessage(endsWith("after 1 attempts"));
 			// will only look for the exact port
 			SocketUtils.findAvailableUdpPort(port, port);
-		}
-		finally {
+		} finally {
 			socket.close();
 		}
 	}
@@ -224,6 +224,7 @@ public class SocketUtilsTests {
 		SortedSet<Integer> ports = SocketUtils.findAvailableUdpPorts(numRequested, minPort, maxPort);
 		assertAvailablePorts(ports, numRequested, minPort, maxPort);
 	}
+
 	private void assertPortInRange(int port, int minPort, int maxPort) {
 		assertTrue("port [" + port + "] >= " + minPort, port >= minPort);
 		assertTrue("port [" + port + "] <= " + maxPort, port <= maxPort);

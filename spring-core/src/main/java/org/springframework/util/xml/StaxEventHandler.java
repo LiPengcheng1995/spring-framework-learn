@@ -16,9 +16,11 @@
 
 package org.springframework.util.xml;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import org.springframework.lang.Nullable;
+import org.xml.sax.Attributes;
+import org.xml.sax.Locator;
+import org.xml.sax.ext.LexicalHandler;
+
 import javax.xml.namespace.QName;
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLEventFactory;
@@ -26,12 +28,9 @@ import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.Namespace;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.Locator;
-import org.xml.sax.ext.LexicalHandler;
-
-import org.springframework.lang.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * SAX {@link org.xml.sax.ContentHandler} and {@link LexicalHandler}
@@ -50,6 +49,7 @@ class StaxEventHandler extends AbstractStaxHandler {
 	/**
 	 * Construct a new instance of the {@code StaxEventContentHandler} that writes to the
 	 * given {@code XMLEventWriter}. A default {@code XMLEventFactory} will be created.
+	 *
 	 * @param eventWriter the writer to write events to
 	 */
 	public StaxEventHandler(XMLEventWriter eventWriter) {
@@ -60,8 +60,9 @@ class StaxEventHandler extends AbstractStaxHandler {
 	/**
 	 * Construct a new instance of the {@code StaxEventContentHandler} that uses the given
 	 * event factory to create events and writes to the given {@code XMLEventConsumer}.
+	 *
 	 * @param eventWriter the writer to write events to
-	 * @param factory the factory used to create events
+	 * @param factory     the factory used to create events
 	 */
 	public StaxEventHandler(XMLEventWriter eventWriter, XMLEventFactory factory) {
 		this.eventFactory = factory;
@@ -88,7 +89,7 @@ class StaxEventHandler extends AbstractStaxHandler {
 
 	@Override
 	protected void startElementInternal(QName name, Attributes atts,
-			Map<String, String> namespaceMapping) throws XMLStreamException {
+										Map<String, String> namespaceMapping) throws XMLStreamException {
 
 		List<Attribute> attributes = getAttributes(atts);
 		List<Namespace> namespaces = getNamespaces(namespaceMapping);

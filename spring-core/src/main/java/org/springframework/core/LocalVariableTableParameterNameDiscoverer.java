@@ -16,6 +16,12 @@
 
 package org.springframework.core;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.asm.*;
+import org.springframework.lang.Nullable;
+import org.springframework.util.ClassUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -24,19 +30,6 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.springframework.asm.ClassReader;
-import org.springframework.asm.ClassVisitor;
-import org.springframework.asm.Label;
-import org.springframework.asm.MethodVisitor;
-import org.springframework.asm.Opcodes;
-import org.springframework.asm.SpringAsmInfo;
-import org.springframework.asm.Type;
-import org.springframework.lang.Nullable;
-import org.springframework.util.ClassUtils;
 
 /**
  * Implementation of {@link ParameterNameDiscoverer} that uses the LocalVariableTable
@@ -115,25 +108,21 @@ public class LocalVariableTableParameterNameDiscoverer implements ParameterNameD
 			Map<Member, String[]> map = new ConcurrentHashMap<>(32);
 			classReader.accept(new ParameterNameDiscoveringVisitor(clazz, map), 0);
 			return map;
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Exception thrown while reading '.class' file for class [" + clazz +
 						"] - unable to determine constructor/method parameter names", ex);
 			}
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("ASM ClassReader failed to parse class file [" + clazz +
 						"], probably due to a new Java class file version that isn't supported yet " +
 						"- unable to determine constructor/method parameter names", ex);
 			}
-		}
-		finally {
+		} finally {
 			try {
 				is.close();
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				// ignore
 			}
 		}
@@ -159,6 +148,14 @@ public class LocalVariableTableParameterNameDiscoverer implements ParameterNameD
 			this.memberMap = memberMap;
 		}
 
+		private static boolean isSyntheticOrBridged(int access) {
+			return (((access & Opcodes.ACC_SYNTHETIC) | (access & Opcodes.ACC_BRIDGE)) > 0);
+		}
+
+		private static boolean isStatic(int access) {
+			return ((access & Opcodes.ACC_STATIC) > 0);
+		}
+
 		@Override
 		@Nullable
 		public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
@@ -167,14 +164,6 @@ public class LocalVariableTableParameterNameDiscoverer implements ParameterNameD
 				return new LocalVariableTableVisitor(clazz, memberMap, name, desc, isStatic(access));
 			}
 			return null;
-		}
-
-		private static boolean isSyntheticOrBridged(int access) {
-			return (((access & Opcodes.ACC_SYNTHETIC) | (access & Opcodes.ACC_BRIDGE)) > 0);
-		}
-
-		private static boolean isStatic(int access) {
-			return ((access & Opcodes.ACC_STATIC) > 0);
 		}
 	}
 
@@ -194,14 +183,12 @@ public class LocalVariableTableParameterNameDiscoverer implements ParameterNameD
 		private final String[] parameterNames;
 
 		private final boolean isStatic;
-
-		private boolean hasLvtInfo = false;
-
 		/*
 		 * The nth entry contains the slot index of the LVT table entry holding the
 		 * argument name for the nth parameter.
 		 */
 		private final int[] lvtSlotIndex;
+		private boolean hasLvtInfo = false;
 
 		public LocalVariableTableVisitor(Class<?> clazz, Map<Member, String[]> map, String name, String desc, boolean isStatic) {
 			super(SpringAsmInfo.ASM_VERSION);
@@ -212,6 +199,25 @@ public class LocalVariableTableParameterNameDiscoverer implements ParameterNameD
 			this.parameterNames = new String[this.args.length];
 			this.isStatic = isStatic;
 			this.lvtSlotIndex = computeLvtSlotIndices(isStatic, this.args);
+		}
+
+		private static int[] computeLvtSlotIndices(boolean isStatic, Type[] paramTypes) {
+			int[] lvtIndex = new int[paramTypes.length];
+			int nextIndex = (isStatic ? 0 : 1);
+			for (int i = 0; i < paramTypes.length; i++) {
+				lvtIndex[i] = nextIndex;
+				if (isWideType(paramTypes[i])) {
+					nextIndex += 2;
+				} else {
+					nextIndex++;
+				}
+			}
+			return lvtIndex;
+		}
+
+		private static boolean isWideType(Type aType) {
+			// float is not a wide type
+			return (aType == Type.LONG_TYPE || aType == Type.DOUBLE_TYPE);
 		}
 
 		@Override
@@ -246,31 +252,10 @@ public class LocalVariableTableParameterNameDiscoverer implements ParameterNameD
 					return this.clazz.getDeclaredConstructor(argTypes);
 				}
 				return this.clazz.getDeclaredMethod(this.name, argTypes);
-			}
-			catch (NoSuchMethodException ex) {
+			} catch (NoSuchMethodException ex) {
 				throw new IllegalStateException("Method [" + this.name +
 						"] was discovered in the .class file but cannot be resolved in the class object", ex);
 			}
-		}
-
-		private static int[] computeLvtSlotIndices(boolean isStatic, Type[] paramTypes) {
-			int[] lvtIndex = new int[paramTypes.length];
-			int nextIndex = (isStatic ? 0 : 1);
-			for (int i = 0; i < paramTypes.length; i++) {
-				lvtIndex[i] = nextIndex;
-				if (isWideType(paramTypes[i])) {
-					nextIndex += 2;
-				}
-				else {
-					nextIndex++;
-				}
-			}
-			return lvtIndex;
-		}
-
-		private static boolean isWideType(Type aType) {
-			// float is not a wide type
-			return (aType == Type.LONG_TYPE || aType == Type.DOUBLE_TYPE);
 		}
 	}
 

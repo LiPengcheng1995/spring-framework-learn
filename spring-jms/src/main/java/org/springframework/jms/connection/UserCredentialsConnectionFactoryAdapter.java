@@ -16,20 +16,13 @@
 
 package org.springframework.jms.connection;
 
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSContext;
-import javax.jms.JMSException;
-import javax.jms.QueueConnection;
-import javax.jms.QueueConnectionFactory;
-import javax.jms.TopicConnection;
-import javax.jms.TopicConnectionFactory;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import javax.jms.*;
 
 /**
  * An adapter for a target JMS {@link javax.jms.ConnectionFactory}, applying the
@@ -69,26 +62,22 @@ import org.springframework.util.StringUtils;
  * as long as no actual JMS 2.0 calls are triggered by the application's setup.
  *
  * @author Juergen Hoeller
- * @since 1.2
  * @see #createConnection
  * @see #createQueueConnection
  * @see #createTopicConnection
+ * @since 1.2
  */
 public class UserCredentialsConnectionFactoryAdapter
 		implements ConnectionFactory, QueueConnectionFactory, TopicConnectionFactory, InitializingBean {
 
-	@Nullable
-	private ConnectionFactory targetConnectionFactory;
-
-	@Nullable
-	private String username;
-
-	@Nullable
-	private String password;
-
 	private final ThreadLocal<JmsUserCredentials> threadBoundCredentials =
 			new NamedThreadLocal<>("Current JMS user credentials");
-
+	@Nullable
+	private ConnectionFactory targetConnectionFactory;
+	@Nullable
+	private String username;
+	@Nullable
+	private String password;
 
 	/**
 	 * Set the target ConnectionFactory that this ConnectionFactory should delegate to.
@@ -128,6 +117,7 @@ public class UserCredentialsConnectionFactoryAdapter
 	 * {@code createConnection()} calls on this ConnectionFactory proxy.
 	 * <p>This will override any statically specified user credentials,
 	 * that is, values of the "username" and "password" bean properties.
+	 *
 	 * @param username the username to apply
 	 * @param password the password to apply
 	 * @see #removeCredentialsFromCurrentThread
@@ -139,6 +129,7 @@ public class UserCredentialsConnectionFactoryAdapter
 	/**
 	 * Remove any user credentials for this proxy from the current thread.
 	 * Statically specified user credentials apply again afterwards.
+	 *
 	 * @see #setCredentialsForCurrentThread
 	 */
 	public void removeCredentialsFromCurrentThread() {
@@ -150,6 +141,7 @@ public class UserCredentialsConnectionFactoryAdapter
 	 * Determine whether there are currently thread-bound credentials,
 	 * using them if available, falling back to the statically specified
 	 * username and password (i.e. values of the bean properties) otherwise.
+	 *
 	 * @see #doCreateConnection
 	 */
 	@Override
@@ -157,8 +149,7 @@ public class UserCredentialsConnectionFactoryAdapter
 		JmsUserCredentials threadCredentials = this.threadBoundCredentials.get();
 		if (threadCredentials != null) {
 			return doCreateConnection(threadCredentials.username, threadCredentials.password);
-		}
-		else {
+		} else {
 			return doCreateConnection(this.username, this.password);
 		}
 	}
@@ -176,6 +167,7 @@ public class UserCredentialsConnectionFactoryAdapter
 	 * method of the target ConnectionFactory, passing in the specified user credentials.
 	 * If the specified username is empty, it will simply delegate to the standard
 	 * {@code createConnection()} method of the target ConnectionFactory.
+	 *
 	 * @param username the username to use
 	 * @param password the password to use
 	 * @return the Connection
@@ -186,8 +178,7 @@ public class UserCredentialsConnectionFactoryAdapter
 		ConnectionFactory target = obtainTargetConnectionFactory();
 		if (StringUtils.hasLength(username)) {
 			return target.createConnection(username, password);
-		}
-		else {
+		} else {
 			return target.createConnection();
 		}
 	}
@@ -196,6 +187,7 @@ public class UserCredentialsConnectionFactoryAdapter
 	 * Determine whether there are currently thread-bound credentials,
 	 * using them if available, falling back to the statically specified
 	 * username and password (i.e. values of the bean properties) else.
+	 *
 	 * @see #doCreateQueueConnection
 	 */
 	@Override
@@ -203,8 +195,7 @@ public class UserCredentialsConnectionFactoryAdapter
 		JmsUserCredentials threadCredentials = this.threadBoundCredentials.get();
 		if (threadCredentials != null) {
 			return doCreateQueueConnection(threadCredentials.username, threadCredentials.password);
-		}
-		else {
+		} else {
 			return doCreateQueueConnection(this.username, this.password);
 		}
 	}
@@ -222,6 +213,7 @@ public class UserCredentialsConnectionFactoryAdapter
 	 * method of the target QueueConnectionFactory, passing in the specified user credentials.
 	 * If the specified username is empty, it will simply delegate to the standard
 	 * {@code createQueueConnection()} method of the target ConnectionFactory.
+	 *
 	 * @param username the username to use
 	 * @param password the password to use
 	 * @return the Connection
@@ -238,8 +230,7 @@ public class UserCredentialsConnectionFactoryAdapter
 		QueueConnectionFactory queueFactory = (QueueConnectionFactory) target;
 		if (StringUtils.hasLength(username)) {
 			return queueFactory.createQueueConnection(username, password);
-		}
-		else {
+		} else {
 			return queueFactory.createQueueConnection();
 		}
 	}
@@ -248,6 +239,7 @@ public class UserCredentialsConnectionFactoryAdapter
 	 * Determine whether there are currently thread-bound credentials,
 	 * using them if available, falling back to the statically specified
 	 * username and password (i.e. values of the bean properties) else.
+	 *
 	 * @see #doCreateTopicConnection
 	 */
 	@Override
@@ -255,8 +247,7 @@ public class UserCredentialsConnectionFactoryAdapter
 		JmsUserCredentials threadCredentials = this.threadBoundCredentials.get();
 		if (threadCredentials != null) {
 			return doCreateTopicConnection(threadCredentials.username, threadCredentials.password);
-		}
-		else {
+		} else {
 			return doCreateTopicConnection(this.username, this.password);
 		}
 	}
@@ -274,6 +265,7 @@ public class UserCredentialsConnectionFactoryAdapter
 	 * method of the target TopicConnectionFactory, passing in the specified user credentials.
 	 * If the specified username is empty, it will simply delegate to the standard
 	 * {@code createTopicConnection()} method of the target ConnectionFactory.
+	 *
 	 * @param username the username to use
 	 * @param password the password to use
 	 * @return the Connection
@@ -290,8 +282,7 @@ public class UserCredentialsConnectionFactoryAdapter
 		TopicConnectionFactory queueFactory = (TopicConnectionFactory) target;
 		if (StringUtils.hasLength(username)) {
 			return queueFactory.createTopicConnection(username, password);
-		}
-		else {
+		} else {
 			return queueFactory.createTopicConnection();
 		}
 	}

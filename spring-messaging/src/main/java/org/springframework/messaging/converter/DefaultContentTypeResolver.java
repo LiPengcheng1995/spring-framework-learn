@@ -35,6 +35,14 @@ public class DefaultContentTypeResolver implements ContentTypeResolver {
 	@Nullable
 	private MimeType defaultMimeType;
 
+	/**
+	 * Return the default MIME type to use if no
+	 * {@link MessageHeaders#CONTENT_TYPE} header is present.
+	 */
+	@Nullable
+	public MimeType getDefaultMimeType() {
+		return this.defaultMimeType;
+	}
 
 	/**
 	 * Set the default MIME type to use when there is no
@@ -45,16 +53,6 @@ public class DefaultContentTypeResolver implements ContentTypeResolver {
 		this.defaultMimeType = defaultMimeType;
 	}
 
-	/**
-	 * Return the default MIME type to use if no
-	 * {@link MessageHeaders#CONTENT_TYPE} header is present.
-	 */
-	@Nullable
-	public MimeType getDefaultMimeType() {
-		return this.defaultMimeType;
-	}
-
-
 	@Override
 	@Nullable
 	public MimeType resolve(@Nullable MessageHeaders headers) {
@@ -64,14 +62,11 @@ public class DefaultContentTypeResolver implements ContentTypeResolver {
 		Object value = headers.get(MessageHeaders.CONTENT_TYPE);
 		if (value == null) {
 			return null;
-		}
-		else if (value instanceof MimeType) {
+		} else if (value instanceof MimeType) {
 			return (MimeType) value;
-		}
-		else if (value instanceof String) {
+		} else if (value instanceof String) {
 			return MimeType.valueOf((String) value);
-		}
-		else {
+		} else {
 			throw new IllegalArgumentException(
 					"Unknown type for contentType header value: " + value.getClass());
 		}

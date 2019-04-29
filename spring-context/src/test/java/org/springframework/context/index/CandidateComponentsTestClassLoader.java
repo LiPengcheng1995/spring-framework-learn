@@ -16,14 +16,14 @@
 
 package org.springframework.context.index;
 
+import org.springframework.core.io.Resource;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.springframework.core.io.Resource;
 
 /**
  * A test {@link ClassLoader} that can be used in testing context to control the
@@ -34,9 +34,26 @@ import org.springframework.core.io.Resource;
  */
 public class CandidateComponentsTestClassLoader extends ClassLoader {
 
+	private final Enumeration<URL> resourceUrls;
+	private final IOException cause;
+
+
+	public CandidateComponentsTestClassLoader(ClassLoader classLoader, Enumeration<URL> resourceUrls) {
+		super(classLoader);
+		this.resourceUrls = resourceUrls;
+		this.cause = null;
+	}
+
+	public CandidateComponentsTestClassLoader(ClassLoader parent, IOException cause) {
+		super(parent);
+		this.resourceUrls = null;
+		this.cause = cause;
+	}
+
 	/**
 	 * Create a test {@link ClassLoader} that disable the use of the index, even
 	 * if resources are present at the standard location.
+	 *
 	 * @param classLoader the classloader to use for all other operations
 	 * @return a test {@link ClassLoader} that has no index
 	 * @see CandidateComponentsIndexLoader#COMPONENTS_RESOURCE_LOCATION
@@ -49,6 +66,7 @@ public class CandidateComponentsTestClassLoader extends ClassLoader {
 	/**
 	 * Create a test {@link ClassLoader} that creates an index with the
 	 * specified {@link Resource} instances
+	 *
 	 * @param classLoader the classloader to use for all other operations
 	 * @return a test {@link ClassLoader} with an index built based on the
 	 * specified resources.
@@ -58,28 +76,10 @@ public class CandidateComponentsTestClassLoader extends ClassLoader {
 				Collections.enumeration(Stream.of(resources).map(r -> {
 					try {
 						return r.getURL();
-					}
-					catch (Exception ex) {
+					} catch (Exception ex) {
 						throw new IllegalArgumentException("Invalid resource " + r, ex);
 					}
 				}).collect(Collectors.toList())));
-	}
-
-
-	private final Enumeration<URL> resourceUrls;
-
-	private final IOException cause;
-
-	public CandidateComponentsTestClassLoader(ClassLoader classLoader, Enumeration<URL> resourceUrls) {
-		super(classLoader);
-		this.resourceUrls = resourceUrls;
-		this.cause = null;
-	}
-
-	public CandidateComponentsTestClassLoader(ClassLoader parent, IOException cause) {
-		super(parent);
-		this.resourceUrls = null;
-		this.cause = cause;
 	}
 
 	@Override

@@ -16,6 +16,14 @@
 
 package org.springframework.format.datetime;
 
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Calendar;
@@ -23,17 +31,9 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import org.springframework.format.annotation.DateTimeFormat.ISO;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link DateFormatter}.
@@ -141,7 +141,7 @@ public class DateFormatterTests {
 
 	@Test
 	public void shouldSupportJodaStylePatterns() throws Exception {
-		String[] chars = { "S", "M", "-" };
+		String[] chars = {"S", "M", "-"};
 		for (String d : chars) {
 			for (String t : chars) {
 				String style = d + t;
@@ -149,8 +149,7 @@ public class DateFormatterTests {
 					Date date = getDate(2009, Calendar.JUNE, 10, 14, 23, 0, 0);
 					if (t.equals("-")) {
 						date = getDate(2009, Calendar.JUNE, 10);
-					}
-					else if (d.equals("-")) {
+					} else if (d.equals("-")) {
 						date = getDate(1970, Calendar.JANUARY, 1, 14, 23, 0, 0);
 					}
 					testJodaStylePatterns(style, Locale.US, date);
@@ -190,7 +189,7 @@ public class DateFormatterTests {
 		formatter.setPattern("yyyy");
 		Date date = getDate(2009, Calendar.JUNE, 1, 14, 23, 5, 3);
 
-		assertThat("uses pattern",formatter.print(date, Locale.US), is("2009"));
+		assertThat("uses pattern", formatter.print(date, Locale.US), is("2009"));
 
 		formatter.setPattern("");
 		assertThat("uses ISO", formatter.print(date, Locale.US), is("2009-06-01T14:23:05.003Z"));

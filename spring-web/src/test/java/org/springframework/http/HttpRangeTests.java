@@ -16,21 +16,20 @@
 
 package org.springframework.http;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
-
 import org.junit.Test;
-
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.support.ResourceRegion;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
 
 /**
  * Unit tests for {@link HttpRange}.
@@ -107,7 +106,7 @@ public class HttpRangeTests {
 
 		// 1. At limit..
 		StringBuilder sb = new StringBuilder("bytes=0-0");
-		for (int i=0; i < 99; i++) {
+		for (int i = 0; i < 99; i++) {
 			sb.append(",").append(i).append("-").append(i + 1);
 		}
 		List<HttpRange> ranges = HttpRange.parseRanges(sb.toString());
@@ -115,14 +114,13 @@ public class HttpRangeTests {
 
 		// 2. Above limit..
 		sb = new StringBuilder("bytes=0-0");
-		for (int i=0; i < 100; i++) {
+		for (int i = 0; i < 100; i++) {
 			sb.append(",").append(i).append("-").append(i + 1);
 		}
 		try {
 			HttpRange.parseRanges(sb.toString());
 			fail();
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// Expected
 		}
 	}
@@ -186,8 +184,7 @@ public class HttpRangeTests {
 		try {
 			HttpRange.toResourceRegions(ranges, resource);
 			fail();
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// Expected..
 		}
 	}

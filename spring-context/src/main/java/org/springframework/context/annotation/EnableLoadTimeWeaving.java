@@ -16,14 +16,10 @@
 
 package org.springframework.context.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.context.weaving.DefaultContextLoadTimeWeaver;
 import org.springframework.instrument.classloading.LoadTimeWeaver;
+
+import java.lang.annotation.*;
 
 /**
  * Activates a Spring {@link LoadTimeWeaver} for this application context, available as
@@ -40,7 +36,7 @@ import org.springframework.instrument.classloading.LoadTimeWeaver;
  *
  *     // application-specific &#064;Bean definitions ...
  * }</pre>
- *
+ * <p>
  * The example above is equivalent to the following Spring XML configuration:
  *
  * <pre class="code">
@@ -130,10 +126,10 @@ import org.springframework.instrument.classloading.LoadTimeWeaver;
  * {@code @EnableSpringConfigured} (included in the {@code spring-aspects} module)
  *
  * @author Chris Beams
- * @since 3.1
  * @see LoadTimeWeaver
  * @see DefaultContextLoadTimeWeaver
  * @see org.aspectj.weaver.loadtime.ClassPreProcessorAgentAdapter
+ * @since 3.1
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

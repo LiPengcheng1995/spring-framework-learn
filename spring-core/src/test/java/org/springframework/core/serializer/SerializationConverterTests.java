@@ -16,14 +16,13 @@
 
 package org.springframework.core.serializer;
 
-import java.io.NotSerializableException;
-import java.io.Serializable;
-
 import org.junit.Test;
-
 import org.springframework.core.serializer.support.DeserializingConverter;
 import org.springframework.core.serializer.support.SerializationFailedException;
 import org.springframework.core.serializer.support.SerializingConverter;
+
+import java.io.NotSerializableException;
+import java.io.Serializable;
 
 import static org.junit.Assert.*;
 
@@ -48,8 +47,7 @@ public class SerializationConverterTests {
 		try {
 			toBytes.convert(new Object());
 			fail("Expected IllegalArgumentException");
-		}
-		catch (SerializationFailedException e) {
+		} catch (SerializationFailedException e) {
 			assertNotNull(e.getCause());
 			assertTrue(e.getCause() instanceof IllegalArgumentException);
 		}
@@ -61,8 +59,7 @@ public class SerializationConverterTests {
 		try {
 			toBytes.convert(new UnSerializable());
 			fail("Expected SerializationFailureException");
-		}
-		catch (SerializationFailedException e) {
+		} catch (SerializationFailedException e) {
 			assertNotNull(e.getCause());
 			assertTrue(e.getCause() instanceof NotSerializableException);
 		}

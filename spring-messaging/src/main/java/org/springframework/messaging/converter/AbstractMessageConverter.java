@@ -16,14 +16,8 @@
 
 package org.springframework.messaging.converter;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
@@ -31,6 +25,11 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.util.Assert;
 import org.springframework.util.MimeType;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Abstract base class for {@link SmartMessageConverter} implementations including
@@ -59,6 +58,7 @@ public abstract class AbstractMessageConverter implements SmartMessageConverter 
 
 	/**
 	 * Construct an {@code AbstractMessageConverter} supporting a single MIME type.
+	 *
 	 * @param supportedMimeType the supported MIME type
 	 */
 	protected AbstractMessageConverter(MimeType supportedMimeType) {
@@ -68,6 +68,7 @@ public abstract class AbstractMessageConverter implements SmartMessageConverter 
 
 	/**
 	 * Construct an {@code AbstractMessageConverter} supporting multiple MIME types.
+	 *
 	 * @param supportedMimeTypes the supported MIME types
 	 */
 	protected AbstractMessageConverter(Collection<MimeType> supportedMimeTypes) {
@@ -84,6 +85,14 @@ public abstract class AbstractMessageConverter implements SmartMessageConverter 
 	}
 
 	/**
+	 * Return the configured {@link ContentTypeResolver}.
+	 */
+	@Nullable
+	public ContentTypeResolver getContentTypeResolver() {
+		return this.contentTypeResolver;
+	}
+
+	/**
 	 * Configure the {@link ContentTypeResolver} to use to resolve the content
 	 * type of an input message.
 	 * <p>Note that if no resolver is configured, then
@@ -97,11 +106,11 @@ public abstract class AbstractMessageConverter implements SmartMessageConverter 
 	}
 
 	/**
-	 * Return the configured {@link ContentTypeResolver}.
+	 * Whether content type resolution must produce a value that matches one of
+	 * the supported MIME types.
 	 */
-	@Nullable
-	public ContentTypeResolver getContentTypeResolver() {
-		return this.contentTypeResolver;
+	public boolean isStrictContentTypeMatch() {
+		return this.strictContentTypeMatch;
 	}
 
 	/**
@@ -124,17 +133,17 @@ public abstract class AbstractMessageConverter implements SmartMessageConverter 
 	}
 
 	/**
-	 * Whether content type resolution must produce a value that matches one of
-	 * the supported MIME types.
+	 * Return the configured preferred serialization payload class.
 	 */
-	public boolean isStrictContentTypeMatch() {
-		return this.strictContentTypeMatch;
+	public Class<?> getSerializedPayloadClass() {
+		return this.serializedPayloadClass;
 	}
 
 	/**
 	 * Configure the preferred serialization class to use (byte[] or String) when
 	 * converting an Object payload to a {@link Message}.
 	 * <p>The default value is byte[].
+	 *
 	 * @param payloadClass either byte[] or String
 	 */
 	public void setSerializedPayloadClass(Class<?> payloadClass) {
@@ -144,19 +153,12 @@ public abstract class AbstractMessageConverter implements SmartMessageConverter 
 	}
 
 	/**
-	 * Return the configured preferred serialization payload class.
-	 */
-	public Class<?> getSerializedPayloadClass() {
-		return this.serializedPayloadClass;
-	}
-
-
-	/**
 	 * Returns the default content type for the payload. Called when
 	 * {@link #toMessage(Object, MessageHeaders)} is invoked without message headers or
 	 * without a content type header.
 	 * <p>By default, this returns the first element of the {@link #getSupportedMimeTypes()
 	 * supportedMimeTypes}, if any. Can be overridden in sub-classes.
+	 *
 	 * @param payload the payload being converted to message
 	 * @return the content type, or {@code null} if not known
 	 */
@@ -252,6 +254,7 @@ public abstract class AbstractMessageConverter implements SmartMessageConverter 
 
 	/**
 	 * Whether the given class is supported by this converter.
+	 *
 	 * @param clazz the class to test for support
 	 * @return {@code true} if supported; {@code false} otherwise
 	 */
@@ -259,10 +262,11 @@ public abstract class AbstractMessageConverter implements SmartMessageConverter 
 
 	/**
 	 * Convert the message payload from serialized form to an Object.
-	 * @param message the input message
-	 * @param targetClass the target class for the conversion
+	 *
+	 * @param message        the input message
+	 * @param targetClass    the target class for the conversion
 	 * @param conversionHint an extra object passed to the {@link MessageConverter},
-	 * e.g. the associated {@code MethodParameter} (may be {@code null}}
+	 *                       e.g. the associated {@code MethodParameter} (may be {@code null}}
 	 * @return the result of the conversion, or {@code null} if the converter cannot
 	 * perform the conversion
 	 * @since 4.2
@@ -276,10 +280,11 @@ public abstract class AbstractMessageConverter implements SmartMessageConverter 
 
 	/**
 	 * Convert the payload object to serialized form.
-	 * @param payload the Object to convert
-	 * @param headers optional headers for the message (may be {@code null})
+	 *
+	 * @param payload        the Object to convert
+	 * @param headers        optional headers for the message (may be {@code null})
 	 * @param conversionHint an extra object passed to the {@link MessageConverter},
-	 * e.g. the associated {@code MethodParameter} (may be {@code null}}
+	 *                       e.g. the associated {@code MethodParameter} (may be {@code null}}
 	 * @return the resulting payload for the message, or {@code null} if the converter
 	 * cannot perform the conversion
 	 * @since 4.2

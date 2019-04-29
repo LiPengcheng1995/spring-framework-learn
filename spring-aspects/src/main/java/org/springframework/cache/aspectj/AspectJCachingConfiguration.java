@@ -29,9 +29,9 @@ import org.springframework.context.annotation.Role;
  *
  * @author Chris Beams
  * @author Stephane Nicoll
- * @since 3.1
  * @see org.springframework.cache.annotation.EnableCaching
  * @see org.springframework.cache.annotation.CachingConfigurationSelector
+ * @since 3.1
  */
 @Configuration
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
@@ -43,8 +43,7 @@ public class AspectJCachingConfiguration extends AbstractCachingConfiguration {
 		AnnotationCacheAspect cacheAspect = AnnotationCacheAspect.aspectOf();
 		if (this.cacheResolver != null) {
 			cacheAspect.setCacheResolver(this.cacheResolver);
-		}
-		else if (this.cacheManager != null) {
+		} else if (this.cacheManager != null) {
 			cacheAspect.setCacheManager(this.cacheManager);
 		}
 		if (this.keyGenerator != null) {

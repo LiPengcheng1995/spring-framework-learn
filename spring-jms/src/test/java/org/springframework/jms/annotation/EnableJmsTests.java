@@ -16,39 +16,27 @@
 
 package org.springframework.jms.annotation;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-import javax.jms.JMSException;
-import javax.jms.MessageListener;
-
 import org.hamcrest.core.Is;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.annotation.AliasFor;
-import org.springframework.jms.config.JmsListenerContainerTestFactory;
-import org.springframework.jms.config.JmsListenerEndpointRegistrar;
-import org.springframework.jms.config.JmsListenerEndpointRegistry;
-import org.springframework.jms.config.MessageListenerTestContainer;
-import org.springframework.jms.config.MethodJmsListenerEndpoint;
-import org.springframework.jms.config.SimpleJmsListenerEndpoint;
+import org.springframework.jms.config.*;
 import org.springframework.jms.listener.adapter.ListenerExecutionFailedException;
 import org.springframework.jms.listener.adapter.MessageListenerAdapter;
 import org.springframework.messaging.handler.annotation.support.DefaultMessageHandlerMethodFactory;
 import org.springframework.messaging.handler.annotation.support.MessageHandlerMethodFactory;
 import org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException;
 import org.springframework.stereotype.Component;
+
+import javax.jms.JMSException;
+import javax.jms.MessageListener;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 import static org.junit.Assert.*;
 
@@ -164,19 +152,19 @@ public class EnableJmsTests extends AbstractJmsAnnotationDrivenTests {
 	@Test
 	public void composedJmsListeners() {
 		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
-			EnableJmsDefaultContainerFactoryConfig.class, ComposedJmsListenersBean.class)) {
+				EnableJmsDefaultContainerFactoryConfig.class, ComposedJmsListenersBean.class)) {
 			JmsListenerContainerTestFactory simpleFactory = context.getBean("jmsListenerContainerFactory",
-				JmsListenerContainerTestFactory.class);
+					JmsListenerContainerTestFactory.class);
 			assertEquals(2, simpleFactory.getListenerContainers().size());
 
 			MethodJmsListenerEndpoint first = (MethodJmsListenerEndpoint) simpleFactory.getListenerContainer(
-				"first").getEndpoint();
+					"first").getEndpoint();
 			assertEquals("first", first.getId());
 			assertEquals("orderQueue", first.getDestination());
 			assertNull(first.getConcurrency());
 
 			MethodJmsListenerEndpoint second = (MethodJmsListenerEndpoint) simpleFactory.getListenerContainer(
-				"second").getEndpoint();
+					"second").getEndpoint();
 			assertEquals("second", second.getId());
 			assertEquals("billingQueue", second.getDestination());
 			assertEquals("2-10", second.getConcurrency());
@@ -208,6 +196,29 @@ public class EnableJmsTests extends AbstractJmsAnnotationDrivenTests {
 	}
 
 
+	@JmsListener(destination = "orderQueue")
+	@Retention(RetentionPolicy.RUNTIME)
+	private @interface OrderQueueListener {
+
+		@AliasFor(annotation = JmsListener.class)
+		String id() default "";
+
+		@AliasFor(annotation = JmsListener.class)
+		String concurrency() default "";
+	}
+
+
+	@JmsListener(destination = "billingQueue")
+	@Retention(RetentionPolicy.RUNTIME)
+	private @interface BillingQueueListener {
+
+		@AliasFor(annotation = JmsListener.class)
+		String id() default "";
+
+		@AliasFor(annotation = JmsListener.class)
+		String concurrency() default "";
+	}
+
 	@EnableJms
 	@Configuration
 	static class EnableJmsSampleConfig {
@@ -223,7 +234,6 @@ public class EnableJmsTests extends AbstractJmsAnnotationDrivenTests {
 		}
 	}
 
-
 	@EnableJms
 	@Configuration
 	static class EnableJmsFullConfig {
@@ -233,7 +243,6 @@ public class EnableJmsTests extends AbstractJmsAnnotationDrivenTests {
 			return new JmsListenerContainerTestFactory();
 		}
 	}
-
 
 	@EnableJms
 	@Configuration
@@ -250,7 +259,6 @@ public class EnableJmsTests extends AbstractJmsAnnotationDrivenTests {
 			return new PropertySourcesPlaceholderConfigurer();
 		}
 	}
-
 
 	@Configuration
 	@EnableJms
@@ -289,7 +297,6 @@ public class EnableJmsTests extends AbstractJmsAnnotationDrivenTests {
 		}
 	}
 
-
 	@Configuration
 	@EnableJms
 	static class EnableJmsCustomContainerFactoryConfig implements JmsListenerConfigurer {
@@ -305,7 +312,6 @@ public class EnableJmsTests extends AbstractJmsAnnotationDrivenTests {
 		}
 	}
 
-
 	@Configuration
 	@EnableJms
 	static class EnableJmsDefaultContainerFactoryConfig {
@@ -315,7 +321,6 @@ public class EnableJmsTests extends AbstractJmsAnnotationDrivenTests {
 			return new JmsListenerContainerTestFactory();
 		}
 	}
-
 
 	@Configuration
 	@EnableJms
@@ -339,7 +344,6 @@ public class EnableJmsTests extends AbstractJmsAnnotationDrivenTests {
 		}
 	}
 
-
 	@Configuration
 	@EnableJms
 	static class EnableJmsAutoStartupFalseConfig implements JmsListenerConfigurer {
@@ -357,7 +361,6 @@ public class EnableJmsTests extends AbstractJmsAnnotationDrivenTests {
 		}
 	}
 
-
 	@Component
 	@Lazy
 	static class LazyBean {
@@ -366,31 +369,6 @@ public class EnableJmsTests extends AbstractJmsAnnotationDrivenTests {
 		public void handle(String msg) {
 		}
 	}
-
-
-	@JmsListener(destination = "orderQueue")
-	@Retention(RetentionPolicy.RUNTIME)
-	private @interface OrderQueueListener {
-
-		@AliasFor(annotation = JmsListener.class)
-		String id() default "";
-
-		@AliasFor(annotation = JmsListener.class)
-		String concurrency() default "";
-	}
-
-
-	@JmsListener(destination = "billingQueue")
-	@Retention(RetentionPolicy.RUNTIME)
-	private @interface BillingQueueListener {
-
-		@AliasFor(annotation = JmsListener.class)
-		String id() default "";
-
-		@AliasFor(annotation = JmsListener.class)
-		String concurrency() default "";
-	}
-
 
 	@Component
 	static class ComposedJmsListenersBean {

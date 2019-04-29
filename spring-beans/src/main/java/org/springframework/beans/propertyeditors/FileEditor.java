@@ -16,15 +16,15 @@
 
 package org.springframework.beans.propertyeditors;
 
-import java.beans.PropertyEditorSupport;
-import java.io.File;
-import java.io.IOException;
-
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceEditor;
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
+
+import java.beans.PropertyEditorSupport;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Editor for {@code java.io.File}, to directly populate a File property
@@ -46,12 +46,12 @@ import org.springframework.util.StringUtils;
  *
  * @author Juergen Hoeller
  * @author Thomas Risberg
- * @since 09.12.2003
  * @see java.io.File
  * @see org.springframework.core.io.ResourceEditor
  * @see org.springframework.core.io.ResourceLoader
  * @see URLEditor
  * @see InputStreamEditor
+ * @since 09.12.2003
  */
 public class FileEditor extends PropertyEditorSupport {
 
@@ -67,6 +67,7 @@ public class FileEditor extends PropertyEditorSupport {
 
 	/**
 	 * Create a new FileEditor, using the given ResourceEditor underneath.
+	 *
 	 * @param resourceEditor the ResourceEditor to use
 	 */
 	public FileEditor(ResourceEditor resourceEditor) {
@@ -74,6 +75,11 @@ public class FileEditor extends PropertyEditorSupport {
 		this.resourceEditor = resourceEditor;
 	}
 
+	@Override
+	public String getAsText() {
+		File value = (File) getValue();
+		return (value != null ? value.getPath() : "");
+	}
 
 	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
@@ -101,22 +107,14 @@ public class FileEditor extends PropertyEditorSupport {
 		if (file == null || resource.exists()) {
 			try {
 				setValue(resource.getFile());
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				throw new IllegalArgumentException(
 						"Could not retrieve file for " + resource + ": " + ex.getMessage());
 			}
-		}
-		else {
+		} else {
 			// Set a relative File reference and hope for the best.
 			setValue(file);
 		}
-	}
-
-	@Override
-	public String getAsText() {
-		File value = (File) getValue();
-		return (value != null ? value.getPath() : "");
 	}
 
 }

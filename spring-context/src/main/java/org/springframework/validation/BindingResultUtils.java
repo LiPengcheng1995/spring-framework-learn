@@ -16,24 +16,25 @@
 
 package org.springframework.validation;
 
-import java.util.Map;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.util.Map;
 
 /**
  * Convenience methods for looking up BindingResults in a model Map.
  *
  * @author Juergen Hoeller
- * @since 2.0
  * @see BindingResult#MODEL_KEY_PREFIX
+ * @since 2.0
  */
 public abstract class BindingResultUtils {
 
 	/**
 	 * Find the BindingResult for the given name in the given model.
+	 *
 	 * @param model the model to search
-	 * @param name the name of the target object to find a BindingResult for
+	 * @param name  the name of the target object to find a BindingResult for
 	 * @return the BindingResult, or {@code null} if none found
 	 * @throws IllegalStateException if the attribute found is not of type BindingResult
 	 */
@@ -50,8 +51,9 @@ public abstract class BindingResultUtils {
 
 	/**
 	 * Find a required BindingResult for the given name in the given model.
+	 *
 	 * @param model the model to search
-	 * @param name the name of the target object to find a BindingResult for
+	 * @param name  the name of the target object to find a BindingResult for
 	 * @return the BindingResult (never {@code null})
 	 * @throws IllegalStateException if no BindingResult found
 	 */

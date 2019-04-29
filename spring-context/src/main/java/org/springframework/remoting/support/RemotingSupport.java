@@ -18,7 +18,6 @@ package org.springframework.remoting.support;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
@@ -32,16 +31,12 @@ import org.springframework.util.ClassUtils;
  */
 public abstract class RemotingSupport implements BeanClassLoaderAware {
 
-	/** Logger available to subclasses */
+	/**
+	 * Logger available to subclasses
+	 */
 	protected final Log logger = LogFactory.getLog(getClass());
 
 	private ClassLoader beanClassLoader = ClassUtils.getDefaultClassLoader();
-
-
-	@Override
-	public void setBeanClassLoader(ClassLoader classLoader) {
-		this.beanClassLoader = classLoader;
-	}
 
 	/**
 	 * Return the ClassLoader that this accessor operates in,
@@ -51,11 +46,16 @@ public abstract class RemotingSupport implements BeanClassLoaderAware {
 		return this.beanClassLoader;
 	}
 
+	@Override
+	public void setBeanClassLoader(ClassLoader classLoader) {
+		this.beanClassLoader = classLoader;
+	}
 
 	/**
 	 * Override the thread context ClassLoader with the environment's bean ClassLoader
 	 * if necessary, i.e. if the bean ClassLoader is not equivalent to the thread
 	 * context ClassLoader already.
+	 *
 	 * @return the original thread context ClassLoader, or {@code null} if not overridden
 	 */
 	@Nullable
@@ -65,8 +65,9 @@ public abstract class RemotingSupport implements BeanClassLoaderAware {
 
 	/**
 	 * Reset the original thread context ClassLoader if necessary.
+	 *
 	 * @param original the original thread context ClassLoader,
-	 * or {@code null} if not overridden (and hence nothing to reset)
+	 *                 or {@code null} if not overridden (and hence nothing to reset)
 	 */
 	protected void resetThreadContextClassLoader(@Nullable ClassLoader original) {
 		if (original != null) {

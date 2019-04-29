@@ -17,11 +17,10 @@
 package org.springframework.context.annotation;
 
 import org.junit.Test;
-
 import org.springframework.beans.factory.parsing.BeanDefinitionParsingException;
 import org.springframework.tests.sample.beans.TestBean;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 /**
  * TCK-style unit tests for handling circular use of the {@link Import} annotation.
@@ -41,12 +40,11 @@ public abstract class AbstractCircularImportDetectionTests {
 		boolean threw = false;
 		try {
 			newParser().parse(loadAsConfigurationSource(A.class), "A");
-		}
-		catch (BeanDefinitionParsingException ex) {
+		} catch (BeanDefinitionParsingException ex) {
 			assertTrue("Wrong message. Got: " + ex.getMessage(),
 					ex.getMessage().contains(
-						"Illegal attempt by @Configuration class 'AbstractCircularImportDetectionTests.B' " +
-						"to import class 'AbstractCircularImportDetectionTests.A'"));
+							"Illegal attempt by @Configuration class 'AbstractCircularImportDetectionTests.B' " +
+									"to import class 'AbstractCircularImportDetectionTests.A'"));
 			threw = true;
 		}
 		assertTrue(threw);
@@ -57,12 +55,11 @@ public abstract class AbstractCircularImportDetectionTests {
 		boolean threw = false;
 		try {
 			newParser().parse(loadAsConfigurationSource(X.class), "X");
-		}
-		catch (BeanDefinitionParsingException ex) {
+		} catch (BeanDefinitionParsingException ex) {
 			assertTrue("Wrong message. Got: " + ex.getMessage(),
 					ex.getMessage().contains(
-						"Illegal attempt by @Configuration class 'AbstractCircularImportDetectionTests.Z2' " +
-						"to import class 'AbstractCircularImportDetectionTests.Z'"));
+							"Illegal attempt by @Configuration class 'AbstractCircularImportDetectionTests.Z2' " +
+									"to import class 'AbstractCircularImportDetectionTests.Z'"));
 			threw = true;
 		}
 		assertTrue(threw);

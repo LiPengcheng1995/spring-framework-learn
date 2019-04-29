@@ -16,10 +16,10 @@
 
 package org.springframework.util;
 
+import org.springframework.lang.Nullable;
+
 import java.util.Collection;
 import java.util.Collections;
-
-import org.springframework.lang.Nullable;
 
 /**
  * A simple instance filter that checks if a given instance match based on
@@ -48,13 +48,14 @@ public class InstanceFilter<T> {
 	 * another if it is equals according to {@link Object#equals(Object)}
 	 * <p>If both collections are empty, {@code matchIfEmpty} defines if
 	 * an element matches or not.
-	 * @param includes the collection of includes
-	 * @param excludes the collection of excludes
+	 *
+	 * @param includes     the collection of includes
+	 * @param excludes     the collection of excludes
 	 * @param matchIfEmpty the matching result if both the includes and the excludes
-	 * collections are empty
+	 *                     collections are empty
 	 */
 	public InstanceFilter(@Nullable Collection<? extends T> includes,
-			@Nullable Collection<? extends T> excludes, boolean matchIfEmpty) {
+						  @Nullable Collection<? extends T> excludes, boolean matchIfEmpty) {
 
 		this.includes = (includes != null ? includes : Collections.emptyList());
 		this.excludes = (excludes != null ? excludes : Collections.emptyList());
@@ -88,7 +89,8 @@ public class InstanceFilter<T> {
 	/**
 	 * Determine if the specified {@code instance} is equal to the
 	 * specified {@code candidate}.
-	 * @param instance the instance to handle
+	 *
+	 * @param instance  the instance to handle
 	 * @param candidate a candidate defined by this filter
 	 * @return {@code true} if the instance matches the candidate
 	 */
@@ -99,7 +101,8 @@ public class InstanceFilter<T> {
 	/**
 	 * Determine if the specified {@code instance} matches one of the candidates.
 	 * <p>If the candidates collection is {@code null}, returns {@code false}.
-	 * @param instance the instance to check
+	 *
+	 * @param instance   the instance to check
 	 * @param candidates a list of candidates
 	 * @return {@code true} if the instance match or the candidates collection is null
 	 */

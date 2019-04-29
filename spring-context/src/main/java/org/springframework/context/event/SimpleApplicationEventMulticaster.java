@@ -16,17 +16,16 @@
 
 package org.springframework.context.event;
 
-import java.util.concurrent.Executor;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ErrorHandler;
+
+import java.util.concurrent.Executor;
 
 /**
  * Simple implementation of the {@link ApplicationEventMulticaster} interface.
@@ -68,6 +67,13 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 		setBeanFactory(beanFactory);
 	}
 
+	/**
+	 * Return the current task executor for this multicaster.
+	 */
+	@Nullable
+	protected Executor getTaskExecutor() {
+		return this.taskExecutor;
+	}
 
 	/**
 	 * Set a custom executor (typically a {@link org.springframework.core.task.TaskExecutor})
@@ -78,6 +84,7 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 	 * caller until all listeners have been executed. However, note that asynchronous
 	 * execution will not participate in the caller's thread context (class loader,
 	 * transaction association) unless the TaskExecutor explicitly supports this.
+	 *
 	 * @see org.springframework.core.task.SyncTaskExecutor
 	 * @see org.springframework.core.task.SimpleAsyncTaskExecutor
 	 */
@@ -86,11 +93,13 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 	}
 
 	/**
-	 * Return the current task executor for this multicaster.
+	 * Return the current error handler for this multicaster.
+	 *
+	 * @since 4.1
 	 */
 	@Nullable
-	protected Executor getTaskExecutor() {
-		return this.taskExecutor;
+	protected ErrorHandler getErrorHandler() {
+		return this.errorHandler;
 	}
 
 	/**
@@ -106,21 +115,12 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 	 * {@link org.springframework.scheduling.support.TaskUtils#LOG_AND_SUPPRESS_ERROR_HANDLER})
 	 * or an implementation that logs exceptions while nevertheless propagating them
 	 * (e.g. {@link org.springframework.scheduling.support.TaskUtils#LOG_AND_PROPAGATE_ERROR_HANDLER}).
+	 *
 	 * @since 4.1
 	 */
 	public void setErrorHandler(@Nullable ErrorHandler errorHandler) {
 		this.errorHandler = errorHandler;
 	}
-
-	/**
-	 * Return the current error handler for this multicaster.
-	 * @since 4.1
-	 */
-	@Nullable
-	protected ErrorHandler getErrorHandler() {
-		return this.errorHandler;
-	}
-
 
 	@Override
 	public void multicastEvent(ApplicationEvent event) {
@@ -134,8 +134,7 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 			Executor executor = getTaskExecutor();
 			if (executor != null) {
 				executor.execute(() -> invokeListener(listener, event));
-			}
-			else {
+			} else {
 				invokeListener(listener, event);
 			}
 		}
@@ -147,8 +146,9 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 
 	/**
 	 * Invoke the given listener with the given event.
+	 *
 	 * @param listener the ApplicationListener to invoke
-	 * @param event the current event to propagate
+	 * @param event    the current event to propagate
 	 * @since 4.1
 	 */
 	protected void invokeListener(ApplicationListener<?> listener, ApplicationEvent event) {
@@ -156,12 +156,10 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 		if (errorHandler != null) {
 			try {
 				doInvokeListener(listener, event);
-			}
-			catch (Throwable err) {
+			} catch (Throwable err) {
 				errorHandler.handleError(err);
 			}
-		}
-		else {
+		} else {
 			doInvokeListener(listener, event);
 		}
 	}
@@ -170,8 +168,7 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 	private void doInvokeListener(ApplicationListener listener, ApplicationEvent event) {
 		try {
 			listener.onApplicationEvent(event);
-		}
-		catch (ClassCastException ex) {
+		} catch (ClassCastException ex) {
 			String msg = ex.getMessage();
 			if (msg == null || matchesClassCastMessage(msg, event.getClass())) {
 				// Possibly a lambda-defined listener which we could not resolve the generic event type for
@@ -180,8 +177,7 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 				if (logger.isDebugEnabled()) {
 					logger.debug("Non-matching event type for listener: " + listener, ex);
 				}
-			}
-			else {
+			} else {
 				throw ex;
 			}
 		}

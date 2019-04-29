@@ -17,7 +17,6 @@
 package org.springframework.transaction.annotation;
 
 import org.junit.Test;
-
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.tests.transaction.CallCountingTransactionManager;
 import org.springframework.transaction.interceptor.TransactionInterceptor;
@@ -133,16 +132,14 @@ public class AnnotationTransactionInterceptorTests {
 		try {
 			proxy.doSomethingErroneous();
 			fail("Should throw IllegalStateException");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertGetTransactionAndRollbackCount(1);
 		}
 
 		try {
 			proxy.doSomethingElseErroneous();
 			fail("Should throw IllegalArgumentException");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			assertGetTransactionAndRollbackCount(2);
 		}
 	}
@@ -273,6 +270,42 @@ public class AnnotationTransactionInterceptorTests {
 	}
 
 
+	public interface BaseInterface {
+
+		void doSomething();
+	}
+
+
+	@Transactional
+	public interface TestWithInterface extends BaseInterface {
+
+		@Transactional(readOnly = true)
+		void doSomethingElse();
+
+		default void doSomethingDefault() {
+			assertTrue(TransactionSynchronizationManager.isActualTransactionActive());
+			assertFalse(TransactionSynchronizationManager.isCurrentTransactionReadOnly());
+		}
+	}
+
+
+	public interface SomeService {
+
+		void foo();
+
+		@Transactional
+		void bar();
+
+		@Transactional(readOnly = true)
+		void fooBar();
+	}
+
+
+	public interface OtherService {
+
+		void foo();
+	}
+
 	@Transactional
 	public static class TestClassLevelOnly {
 
@@ -286,7 +319,6 @@ public class AnnotationTransactionInterceptorTests {
 			assertFalse(TransactionSynchronizationManager.isCurrentTransactionReadOnly());
 		}
 	}
-
 
 	@Transactional
 	public static class TestWithSingleMethodOverride {
@@ -308,7 +340,6 @@ public class AnnotationTransactionInterceptorTests {
 		}
 	}
 
-
 	@Transactional(readOnly = true)
 	public static class TestWithSingleMethodOverrideInverted {
 
@@ -328,7 +359,6 @@ public class AnnotationTransactionInterceptorTests {
 			assertTrue(TransactionSynchronizationManager.isCurrentTransactionReadOnly());
 		}
 	}
-
 
 	@Transactional
 	public static class TestWithMultiMethodOverride {
@@ -351,7 +381,6 @@ public class AnnotationTransactionInterceptorTests {
 		}
 	}
 
-
 	@Transactional(rollbackFor = IllegalStateException.class)
 	public static class TestWithRollback {
 
@@ -369,26 +398,6 @@ public class AnnotationTransactionInterceptorTests {
 		}
 	}
 
-
-	public interface BaseInterface {
-
-		void doSomething();
-	}
-
-
-	@Transactional
-	public interface TestWithInterface extends BaseInterface {
-
-		@Transactional(readOnly = true)
-		void doSomethingElse();
-
-		default void doSomethingDefault() {
-			assertTrue(TransactionSynchronizationManager.isActualTransactionActive());
-			assertFalse(TransactionSynchronizationManager.isCurrentTransactionReadOnly());
-		}
-	}
-
-
 	public static class TestWithInterfaceImpl implements TestWithInterface {
 
 		@Override
@@ -403,19 +412,6 @@ public class AnnotationTransactionInterceptorTests {
 			assertTrue(TransactionSynchronizationManager.isCurrentTransactionReadOnly());
 		}
 	}
-
-
-	public interface SomeService {
-
-		void foo();
-
-		@Transactional
-		void bar();
-
-		@Transactional(readOnly = true)
-		void fooBar();
-	}
-
 
 	public static class SomeServiceImpl implements SomeService {
 
@@ -433,13 +429,6 @@ public class AnnotationTransactionInterceptorTests {
 		public void fooBar() {
 		}
 	}
-
-
-	public interface OtherService {
-
-		void foo();
-	}
-
 
 	@Transactional
 	public static class OtherServiceImpl implements OtherService {

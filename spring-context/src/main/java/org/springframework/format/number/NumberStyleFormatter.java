@@ -16,11 +16,11 @@
 
 package org.springframework.format.number;
 
+import org.springframework.lang.Nullable;
+
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
-
-import org.springframework.lang.Nullable;
 
 /**
  * A general-purpose number formatter using NumberFormat's number style.
@@ -32,9 +32,9 @@ import org.springframework.lang.Nullable;
  *
  * @author Keith Donald
  * @author Juergen Hoeller
- * @since 4.2
  * @see #setPattern
  * @see #setLenient
+ * @since 4.2
  */
 public class NumberStyleFormatter extends AbstractNumberFormatter {
 
@@ -50,6 +50,7 @@ public class NumberStyleFormatter extends AbstractNumberFormatter {
 
 	/**
 	 * Create a new NumberStyleFormatter with the specified pattern.
+	 *
 	 * @param pattern the format pattern
 	 * @see #setPattern
 	 */
@@ -61,6 +62,7 @@ public class NumberStyleFormatter extends AbstractNumberFormatter {
 	/**
 	 * Specify the pattern to use to format number values.
 	 * If not specified, the default DecimalFormat pattern is used.
+	 *
 	 * @see java.text.DecimalFormat#applyPattern(String)
 	 */
 	public void setPattern(String pattern) {

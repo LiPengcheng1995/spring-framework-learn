@@ -29,6 +29,12 @@ public abstract class UrlBasedRemoteAccessor extends RemoteAccessor implements I
 
 	private String serviceUrl;
 
+	/**
+	 * Return the URL of this remote accessor's target service.
+	 */
+	public String getServiceUrl() {
+		return this.serviceUrl;
+	}
 
 	/**
 	 * Set the URL of this remote accessor's target service.
@@ -37,14 +43,6 @@ public abstract class UrlBasedRemoteAccessor extends RemoteAccessor implements I
 	public void setServiceUrl(String serviceUrl) {
 		this.serviceUrl = serviceUrl;
 	}
-
-	/**
-	 * Return the URL of this remote accessor's target service.
-	 */
-	public String getServiceUrl() {
-		return this.serviceUrl;
-	}
-
 
 	@Override
 	public void afterPropertiesSet() {

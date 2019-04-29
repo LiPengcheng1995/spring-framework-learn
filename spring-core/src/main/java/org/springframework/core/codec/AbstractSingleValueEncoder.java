@@ -16,16 +16,15 @@
 
 package org.springframework.core.codec;
 
-import java.util.Map;
-
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.util.MimeType;
+import reactor.core.publisher.Flux;
+
+import java.util.Map;
 
 /**
  * Abstract base class for {@link org.springframework.core.codec.Encoder}
@@ -44,7 +43,7 @@ public abstract class AbstractSingleValueEncoder<T> extends AbstractEncoder<T> {
 
 	@Override
 	public final Flux<DataBuffer> encode(Publisher<? extends T> inputStream, DataBufferFactory bufferFactory,
-			ResolvableType elementType, @Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
+										 ResolvableType elementType, @Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
 
 		return Flux.from(inputStream).
 				take(1).
@@ -53,14 +52,15 @@ public abstract class AbstractSingleValueEncoder<T> extends AbstractEncoder<T> {
 
 	/**
 	 * Encode {@code T} to an output {@link DataBuffer} stream.
-	 * @param t the value to process
+	 *
+	 * @param t                 the value to process
 	 * @param dataBufferFactory a buffer factory used to create the output
-	 * @param type the stream element type to process
-	 * @param mimeType the mime type to process
-	 * @param hints Additional information about how to do decode, optional
+	 * @param type              the stream element type to process
+	 * @param mimeType          the mime type to process
+	 * @param hints             Additional information about how to do decode, optional
 	 * @return the output stream
 	 */
 	protected abstract Flux<DataBuffer> encode(T t, DataBufferFactory dataBufferFactory,
-			ResolvableType type, @Nullable MimeType mimeType, @Nullable Map<String, Object> hints);
+											   ResolvableType type, @Nullable MimeType mimeType, @Nullable Map<String, Object> hints);
 
 }

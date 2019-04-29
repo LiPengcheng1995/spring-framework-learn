@@ -16,19 +16,20 @@
 
 package org.springframework.expression.spel.support;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.expression.MethodExecutor;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+
 public class Spr7538Tests {
 
-	@Ignore @Test
+	@Ignore
+	@Test
 	public void repro() throws Exception {
 		AlwaysTrueReleaseStrategy target = new AlwaysTrueReleaseStrategy();
 		BeanFactoryTypeConverter converter = new BeanFactoryTypeConverter();
@@ -61,5 +62,6 @@ public class Spr7538Tests {
 		}
 	}
 
-	public static class Foo{}
+	public static class Foo {
+	}
 }

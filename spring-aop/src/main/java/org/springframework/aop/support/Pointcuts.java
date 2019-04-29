@@ -16,13 +16,13 @@
 
 package org.springframework.aop.support;
 
-import java.io.Serializable;
-import java.lang.reflect.Method;
-
 import org.springframework.aop.MethodMatcher;
 import org.springframework.aop.Pointcut;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.io.Serializable;
+import java.lang.reflect.Method;
 
 /**
  * Pointcut constants for matching getters and setters,
@@ -35,15 +35,20 @@ import org.springframework.util.Assert;
  */
 public abstract class Pointcuts {
 
-	/** Pointcut matching all bean property setters, in any class */
+	/**
+	 * Pointcut matching all bean property setters, in any class
+	 */
 	public static final Pointcut SETTERS = SetterPointcut.INSTANCE;
 
-	/** Pointcut matching all bean property getters, in any class */
+	/**
+	 * Pointcut matching all bean property getters, in any class
+	 */
 	public static final Pointcut GETTERS = GetterPointcut.INSTANCE;
 
 
 	/**
 	 * Match all methods that <b>either</b> (or both) of the given pointcuts matches.
+	 *
 	 * @param pc1 the first Pointcut
 	 * @param pc2 the second Pointcut
 	 * @return a distinct Pointcut that matches all methods that either
@@ -55,6 +60,7 @@ public abstract class Pointcuts {
 
 	/**
 	 * Match all methods that <b>both</b> the given pointcuts match.
+	 *
 	 * @param pc1 the first Pointcut
 	 * @param pc2 the second Pointcut
 	 * @return a distinct Pointcut that matches all methods that both
@@ -66,10 +72,11 @@ public abstract class Pointcuts {
 
 	/**
 	 * Perform the least expensive check for a pointcut match.
-	 * @param pointcut the pointcut to match
-	 * @param method the candidate method
+	 *
+	 * @param pointcut    the pointcut to match
+	 * @param method      the candidate method
 	 * @param targetClass the target class
-	 * @param args arguments to the method
+	 * @param args        arguments to the method
 	 * @return whether there's a runtime match
 	 */
 	public static boolean matches(Pointcut pointcut, Method method, Class<?> targetClass, Object... args) {

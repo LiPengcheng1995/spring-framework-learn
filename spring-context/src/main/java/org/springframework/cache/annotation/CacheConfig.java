@@ -16,11 +16,7 @@
 
 package org.springframework.cache.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * {@code @CacheConfig} provides a mechanism for sharing common cache-related
@@ -62,6 +58,7 @@ public @interface CacheConfig {
 	 * is set already.
 	 * <p>If no resolver and no cache manager are set at the operation level, and no cache
 	 * resolver is set via {@link #cacheResolver}, this one is used instead of the default.
+	 *
 	 * @see org.springframework.cache.interceptor.SimpleCacheResolver
 	 */
 	String cacheManager() default "";

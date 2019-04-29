@@ -16,20 +16,20 @@
 
 package org.springframework.http.client;
 
+import org.springframework.http.HttpMethod;
+import org.springframework.lang.Nullable;
+
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
-
-import org.springframework.http.HttpMethod;
-import org.springframework.lang.Nullable;
 
 /**
  * Wrapper for a {@link AsyncClientHttpRequestFactory} that has support for
  * {@link AsyncClientHttpRequestInterceptor}s.
  *
  * @author Jakub Narloch
- * @since 4.3
  * @see InterceptingAsyncClientHttpRequest
+ * @since 4.3
  * @deprecated as of Spring 5.0, with no direct replacement
  */
 @Deprecated
@@ -43,11 +43,12 @@ public class InterceptingAsyncClientHttpRequestFactory implements AsyncClientHtt
 	/**
 	 * Create new instance of {@link InterceptingAsyncClientHttpRequestFactory}
 	 * with delegated request factory and list of interceptors.
-	 * @param delegate the request factory to delegate to
+	 *
+	 * @param delegate     the request factory to delegate to
 	 * @param interceptors the list of interceptors to use
 	 */
 	public InterceptingAsyncClientHttpRequestFactory(AsyncClientHttpRequestFactory delegate,
-			@Nullable List<AsyncClientHttpRequestInterceptor> interceptors) {
+													 @Nullable List<AsyncClientHttpRequestInterceptor> interceptors) {
 
 		this.delegate = delegate;
 		this.interceptors = (interceptors != null ? interceptors : Collections.emptyList());

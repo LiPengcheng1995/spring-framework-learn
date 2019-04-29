@@ -16,13 +16,12 @@
 
 package org.springframework.ejb.config;
 
-import org.w3c.dom.Element;
-
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.jndi.JndiObjectFactoryBean;
 import org.springframework.util.StringUtils;
+import org.w3c.dom.Element;
 
 /**
  * Simple {@link org.springframework.beans.factory.xml.BeanDefinitionParser} implementation that
@@ -30,8 +29,8 @@ import org.springframework.util.StringUtils;
  *
  * @author Rob Harrop
  * @author Juergen Hoeller
- * @since 2.0
  * @see JndiObjectFactoryBean
+ * @since 2.0
  */
 class JndiLookupBeanDefinitionParser extends AbstractJndiLocatingBeanDefinitionParser {
 
@@ -65,8 +64,7 @@ class JndiLookupBeanDefinitionParser extends AbstractJndiLocatingBeanDefinitionP
 						"'default-value' attribute OR 'default-ref' attribute, not both", element);
 			}
 			builder.addPropertyValue(DEFAULT_OBJECT, defaultValue);
-		}
-		else if (StringUtils.hasLength(defaultRef)) {
+		} else if (StringUtils.hasLength(defaultRef)) {
 			builder.addPropertyValue(DEFAULT_OBJECT, new RuntimeBeanReference(defaultRef));
 		}
 	}

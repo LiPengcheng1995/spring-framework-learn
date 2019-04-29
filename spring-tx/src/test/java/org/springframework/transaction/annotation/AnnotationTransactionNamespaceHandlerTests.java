@@ -16,15 +16,8 @@
 
 package org.springframework.transaction.annotation;
 
-import java.lang.management.ManagementFactory;
-import java.util.Collection;
-import java.util.Map;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-
 import org.junit.After;
 import org.junit.Test;
-
 import org.springframework.aop.support.AopUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -34,6 +27,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.tests.transaction.CallCountingTransactionManager;
 import org.springframework.transaction.config.TransactionManagementConfigUtils;
 import org.springframework.transaction.event.TransactionalEventListenerFactory;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import java.lang.management.ManagementFactory;
+import java.util.Collection;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -79,8 +78,7 @@ public class AnnotationTransactionNamespaceHandlerTests {
 		try {
 			testBean.exceptional(new IllegalArgumentException("foo"));
 			fail("Should NEVER get here");
-		}
-		catch (Throwable throwable) {
+		} catch (Throwable throwable) {
 			assertEquals("Should have another started transaction", 2, ptm.begun);
 			assertEquals("Should have 1 rolled back transaction", 1, ptm.rollbacks);
 		}

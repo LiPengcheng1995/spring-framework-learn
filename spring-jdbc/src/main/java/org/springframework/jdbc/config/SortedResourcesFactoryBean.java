@@ -16,11 +16,6 @@
 
 package org.springframework.jdbc.config;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.context.ResourceLoaderAware;
@@ -29,6 +24,11 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternUtils;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * {@link FactoryBean} implementation that takes a list of location Strings
@@ -77,8 +77,7 @@ public class SortedResourcesFactoryBean extends AbstractFactoryBean<Resource[]> 
 			resources.sort((r1, r2) -> {
 				try {
 					return r1.getURL().toString().compareTo(r2.getURL().toString());
-				}
-				catch (IOException ex) {
+				} catch (IOException ex) {
 					return 0;
 				}
 			});

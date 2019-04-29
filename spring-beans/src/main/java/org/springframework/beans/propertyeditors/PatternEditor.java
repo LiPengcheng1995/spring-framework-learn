@@ -16,19 +16,19 @@
 
 package org.springframework.beans.propertyeditors;
 
+import org.springframework.lang.Nullable;
+
 import java.beans.PropertyEditorSupport;
 import java.util.regex.Pattern;
-
-import org.springframework.lang.Nullable;
 
 /**
  * Editor for {@code java.util.regex.Pattern}, to directly populate a Pattern property.
  * Expects the same syntax as Pattern's {@code compile} method.
  *
  * @author Juergen Hoeller
- * @since 2.0.1
  * @see java.util.regex.Pattern
  * @see java.util.regex.Pattern#compile(String)
+ * @since 2.0.1
  */
 public class PatternEditor extends PropertyEditorSupport {
 
@@ -44,6 +44,7 @@ public class PatternEditor extends PropertyEditorSupport {
 
 	/**
 	 * Create a new PatternEditor with the given settings.
+	 *
 	 * @param flags the {@code java.util.regex.Pattern} flags to apply
 	 * @see java.util.regex.Pattern#compile(String, int)
 	 * @see java.util.regex.Pattern#CASE_INSENSITIVE
@@ -56,16 +57,15 @@ public class PatternEditor extends PropertyEditorSupport {
 		this.flags = flags;
 	}
 
-
-	@Override
-	public void setAsText(@Nullable String text) {
-		setValue(text != null ? Pattern.compile(text, this.flags) : null);
-	}
-
 	@Override
 	public String getAsText() {
 		Pattern value = (Pattern) getValue();
 		return (value != null ? value.pattern() : "");
+	}
+
+	@Override
+	public void setAsText(@Nullable String text) {
+		setValue(text != null ? Pattern.compile(text, this.flags) : null);
 	}
 
 }

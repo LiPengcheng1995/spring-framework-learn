@@ -16,6 +16,9 @@
 
 package org.springframework.core.io;
 
+import org.springframework.lang.Nullable;
+import org.springframework.util.ResourceUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -25,9 +28,6 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.ResourceUtils;
 
 /**
  * Subclass of {@link UrlResource} which assumes file resolution, to the degree
@@ -54,6 +54,7 @@ public class FileUrlResource extends UrlResource implements WritableResource {
 	 * Create a new {@code FileUrlResource} based on the given URL object.
 	 * <p>Note that this does not enforce "file" as URL protocol. If a protocol
 	 * is known to be resolvable to a file,
+	 *
 	 * @param url a URL
 	 * @see ResourceUtils#isFileURL(URL)
 	 * @see #getFile()
@@ -66,6 +67,7 @@ public class FileUrlResource extends UrlResource implements WritableResource {
 	 * Create a new {@code FileUrlResource} based on the given file location,
 	 * using the URL protocol "file".
 	 * <p>The given parts will automatically get encoded if necessary.
+	 *
 	 * @param location the location (i.e. the file path within that protocol)
 	 * @throws MalformedURLException if the given URL specification is not valid
 	 * @see UrlResource#UrlResource(String, String)
@@ -95,12 +97,10 @@ public class FileUrlResource extends UrlResource implements WritableResource {
 				// Proceed with file system resolution
 				File file = getFile();
 				return (file.canWrite() && !file.isDirectory());
-			}
-			else {
+			} else {
 				return true;
 			}
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			return false;
 		}
 	}

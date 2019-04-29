@@ -16,22 +16,22 @@
 
 package org.springframework.remoting.caucho;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-
 import com.caucho.hessian.client.HessianProxyFactory;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.remoting.RemoteAccessException;
 import org.springframework.tests.sample.beans.ITestBean;
 import org.springframework.tests.sample.beans.TestBean;
 import org.springframework.util.SocketUtils;
 
-import static org.junit.Assert.*;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Juergen Hoeller
@@ -131,8 +131,7 @@ public class CauchoRemotingTests {
 			assertEquals("tb", proxy.getName());
 			proxy.setName("test");
 			assertEquals("test", proxy.getName());
-		}
-		finally {
+		} finally {
 			server.stop(Integer.MAX_VALUE);
 		}
 	}

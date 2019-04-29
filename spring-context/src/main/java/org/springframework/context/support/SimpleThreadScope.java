@@ -16,16 +16,15 @@
 
 package org.springframework.context.support;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.Scope;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.lang.Nullable;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple thread-backed {@link Scope} implementation.
@@ -48,8 +47,8 @@ import org.springframework.lang.Nullable;
  *
  * @author Arjen Poutsma
  * @author Juergen Hoeller
- * @since 3.0
  * @see org.springframework.web.context.request.RequestScope
+ * @since 3.0
  */
 public class SimpleThreadScope implements Scope {
 

@@ -25,6 +25,12 @@ public class ExceptionOnInitBean {
 
 	private String name;
 
+	public ExceptionOnInitBean() {
+		if (exceptOnInit) {
+			throw new RuntimeException("I am being init'd!");
+		}
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -35,12 +41,6 @@ public class ExceptionOnInitBean {
 
 	public void setExceptOnInit(boolean exceptOnInit) {
 		this.exceptOnInit = exceptOnInit;
-	}
-
-	public ExceptionOnInitBean() {
-		if (exceptOnInit) {
-			throw new RuntimeException("I am being init'd!");
-		}
 	}
 
 }

@@ -21,16 +21,12 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aop.support.AopUtils;
-import org.springframework.test.util.subpackage.Component;
-import org.springframework.test.util.subpackage.LegacyEntity;
-import org.springframework.test.util.subpackage.Person;
-import org.springframework.test.util.subpackage.PersonEntity;
-import org.springframework.test.util.subpackage.StaticFields;
+import org.springframework.test.util.subpackage.*;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.*;
 import static org.springframework.test.util.ReflectionTestUtils.*;
 
@@ -43,16 +39,49 @@ import static org.springframework.test.util.ReflectionTestUtils.*;
 public class ReflectionTestUtilsTests {
 
 	private static final Float PI = Float.valueOf((float) 22 / 7);
-
-	private final Person person = new PersonEntity();
-
-	private final Component component = new Component();
-
-	private final LegacyEntity entity = new LegacyEntity();
-
 	@Rule
 	public final ExpectedException exception = ExpectedException.none();
+	private final Person person = new PersonEntity();
+	private final Component component = new Component();
+	private final LegacyEntity entity = new LegacyEntity();
 
+	private static void assertSetFieldAndGetFieldBehavior(Person person) {
+		// Set reflectively
+		setField(person, "id", Long.valueOf(99), long.class);
+		setField(person, "name", "Tom");
+		setField(person, "age", Integer.valueOf(42));
+		setField(person, "eyeColor", "blue", String.class);
+		setField(person, "likesPets", Boolean.TRUE);
+		setField(person, "favoriteNumber", PI, Number.class);
+
+		// Get reflectively
+		assertEquals(Long.valueOf(99), getField(person, "id"));
+		assertEquals("Tom", getField(person, "name"));
+		assertEquals(Integer.valueOf(42), getField(person, "age"));
+		assertEquals("blue", getField(person, "eyeColor"));
+		assertEquals(Boolean.TRUE, getField(person, "likesPets"));
+		assertEquals(PI, getField(person, "favoriteNumber"));
+
+		// Get directly
+		assertEquals("ID (private field in a superclass)", 99, person.getId());
+		assertEquals("name (protected field)", "Tom", person.getName());
+		assertEquals("age (private field)", 42, person.getAge());
+		assertEquals("eye color (package private field)", "blue", person.getEyeColor());
+		assertEquals("'likes pets' flag (package private boolean field)", true, person.likesPets());
+		assertEquals("'favorite number' (package field)", PI, person.getFavoriteNumber());
+	}
+
+	private static void assertSetFieldAndGetFieldBehaviorForProxy(Person proxy, Person target) {
+		assertSetFieldAndGetFieldBehavior(proxy);
+
+		// Get directly from Target
+		assertEquals("ID (private field in a superclass)", 99, target.getId());
+		assertEquals("name (protected field)", "Tom", target.getName());
+		assertEquals("age (private field)", 42, target.getAge());
+		assertEquals("eye color (package private field)", "blue", target.getEyeColor());
+		assertEquals("'likes pets' flag (package private boolean field)", true, target.likesPets());
+		assertEquals("'favorite number' (package field)", PI, target.getFavoriteNumber());
+	}
 
 	@Before
 	public void resetStaticFields() {
@@ -129,44 +158,6 @@ public class ReflectionTestUtilsTests {
 		Person proxy = (Person) pf.getProxy();
 		assertTrue("Proxy is a CGLIB proxy", AopUtils.isCglibProxy(proxy));
 		assertSetFieldAndGetFieldBehaviorForProxy(proxy, this.person);
-	}
-
-	private static void assertSetFieldAndGetFieldBehavior(Person person) {
-		// Set reflectively
-		setField(person, "id", Long.valueOf(99), long.class);
-		setField(person, "name", "Tom");
-		setField(person, "age", Integer.valueOf(42));
-		setField(person, "eyeColor", "blue", String.class);
-		setField(person, "likesPets", Boolean.TRUE);
-		setField(person, "favoriteNumber", PI, Number.class);
-
-		// Get reflectively
-		assertEquals(Long.valueOf(99), getField(person, "id"));
-		assertEquals("Tom", getField(person, "name"));
-		assertEquals(Integer.valueOf(42), getField(person, "age"));
-		assertEquals("blue", getField(person, "eyeColor"));
-		assertEquals(Boolean.TRUE, getField(person, "likesPets"));
-		assertEquals(PI, getField(person, "favoriteNumber"));
-
-		// Get directly
-		assertEquals("ID (private field in a superclass)", 99, person.getId());
-		assertEquals("name (protected field)", "Tom", person.getName());
-		assertEquals("age (private field)", 42, person.getAge());
-		assertEquals("eye color (package private field)", "blue", person.getEyeColor());
-		assertEquals("'likes pets' flag (package private boolean field)", true, person.likesPets());
-		assertEquals("'favorite number' (package field)", PI, person.getFavoriteNumber());
-	}
-
-	private static void assertSetFieldAndGetFieldBehaviorForProxy(Person proxy, Person target) {
-		assertSetFieldAndGetFieldBehavior(proxy);
-
-		// Get directly from Target
-		assertEquals("ID (private field in a superclass)", 99, target.getId());
-		assertEquals("name (protected field)", "Tom", target.getName());
-		assertEquals("age (private field)", 42, target.getAge());
-		assertEquals("eye color (package private field)", "blue", target.getEyeColor());
-		assertEquals("'likes pets' flag (package private boolean field)", true, target.likesPets());
-		assertEquals("'favorite number' (package field)", PI, target.getFavoriteNumber());
 	}
 
 	@Test
@@ -337,7 +328,7 @@ public class ReflectionTestUtilsTests {
 	@Test
 	public void invokeMethodWithPrimitiveVarArgsAsSingleArgument() {
 		// IntelliJ IDEA 11 won't accept int assignment here
-		Integer sum = invokeMethod(component, "add", new int[] { 1, 2, 3, 4 });
+		Integer sum = invokeMethod(component, "add", new int[]{1, 2, 3, 4});
 		assertEquals("add(1,2,3,4)", 10, sum.intValue());
 	}
 

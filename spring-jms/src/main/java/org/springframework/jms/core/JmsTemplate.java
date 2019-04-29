@@ -16,19 +16,6 @@
 
 package org.springframework.jms.core;
 
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.DeliveryMode;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageProducer;
-import javax.jms.Queue;
-import javax.jms.QueueBrowser;
-import javax.jms.Session;
-import javax.jms.TemporaryQueue;
-
 import org.springframework.jms.JmsException;
 import org.springframework.jms.connection.ConnectionFactoryUtils;
 import org.springframework.jms.connection.JmsResourceHolder;
@@ -40,6 +27,9 @@ import org.springframework.jms.support.destination.JmsDestinationAccessor;
 import org.springframework.lang.Nullable;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
+
+import javax.jms.*;
+import java.lang.IllegalStateException;
 
 /**
  * Helper class that simplifies synchronous JMS access code.
@@ -78,17 +68,19 @@ import org.springframework.util.Assert;
  * @author Mark Pollack
  * @author Juergen Hoeller
  * @author Stephane Nicoll
- * @since 1.1
  * @see #setConnectionFactory
  * @see #setPubSubDomain
  * @see #setDestinationResolver
  * @see #setMessageConverter
  * @see javax.jms.MessageProducer
  * @see javax.jms.MessageConsumer
+ * @since 1.1
  */
 public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations {
 
-	/** Internal ResourceFactory adapter for interacting with ConnectionFactoryUtils */
+	/**
+	 * Internal ResourceFactory adapter for interacting with ConnectionFactoryUtils
+	 */
 	private final JmsTemplateResourceFactory transactionalResourceFactory = new JmsTemplateResourceFactory();
 
 
@@ -124,6 +116,7 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 	 * <p>Note: The ConnectionFactory has to be set before using the instance.
 	 * This constructor can be used to prepare a JmsTemplate via a BeanFactory,
 	 * typically setting the ConnectionFactory via setConnectionFactory.
+	 *
 	 * @see #setConnectionFactory
 	 */
 	public JmsTemplate() {
@@ -132,6 +125,7 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 
 	/**
 	 * Create a new JmsTemplate, given a ConnectionFactory.
+	 *
 	 * @param connectionFactory the ConnectionFactory to obtain Connections from
 	 */
 	public JmsTemplate(ConnectionFactory connectionFactory) {
@@ -143,6 +137,7 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 	/**
 	 * Initialize the default implementations for the template's strategies:
 	 * DynamicDestinationResolver and SimpleMessageConverter.
+	 *
 	 * @see #setDestinationResolver
 	 * @see #setMessageConverter
 	 * @see org.springframework.jms.support.destination.DynamicDestinationResolver
@@ -152,21 +147,6 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 		setMessageConverter(new SimpleMessageConverter());
 	}
 
-
-	/**
-	 * Set the destination to be used on send/receive operations that do not
-	 * have a destination parameter.
-	 * <p>Alternatively, specify a "defaultDestinationName", to be
-	 * dynamically resolved via the DestinationResolver.
-	 * @see #send(MessageCreator)
-	 * @see #convertAndSend(Object)
-	 * @see #convertAndSend(Object, MessagePostProcessor)
-	 * @see #setDefaultDestinationName(String)
-	 */
-	public void setDefaultDestination(@Nullable Destination destination) {
-		this.defaultDestination = destination;
-	}
-
 	/**
 	 * Return the destination to be used on send/receive operations that do not
 	 * have a destination parameter.
@@ -174,6 +154,21 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 	@Nullable
 	public Destination getDefaultDestination() {
 		return (this.defaultDestination instanceof Destination ? (Destination) this.defaultDestination : null);
+	}
+
+	/**
+	 * Set the destination to be used on send/receive operations that do not
+	 * have a destination parameter.
+	 * <p>Alternatively, specify a "defaultDestinationName", to be
+	 * dynamically resolved via the DestinationResolver.
+	 *
+	 * @see #send(MessageCreator)
+	 * @see #convertAndSend(Object)
+	 * @see #convertAndSend(Object, MessagePostProcessor)
+	 * @see #setDefaultDestinationName(String)
+	 */
+	public void setDefaultDestination(@Nullable Destination destination) {
+		this.defaultDestination = destination;
 	}
 
 	@Nullable
@@ -187,10 +182,20 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 	}
 
 	/**
+	 * Return the destination name to be used on send/receive operations that
+	 * do not have a destination parameter.
+	 */
+	@Nullable
+	public String getDefaultDestinationName() {
+		return (this.defaultDestination instanceof String ? (String) this.defaultDestination : null);
+	}
+
+	/**
 	 * Set the destination name to be used on send/receive operations that
 	 * do not have a destination parameter. The specified name will be
 	 * dynamically resolved via the DestinationResolver.
 	 * <p>Alternatively, specify a JMS Destination object as "defaultDestination".
+	 *
 	 * @see #send(MessageCreator)
 	 * @see #convertAndSend(Object)
 	 * @see #convertAndSend(Object, MessagePostProcessor)
@@ -199,15 +204,6 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 	 */
 	public void setDefaultDestinationName(@Nullable String destinationName) {
 		this.defaultDestination = destinationName;
-	}
-
-	/**
-	 * Return the destination name to be used on send/receive operations that
-	 * do not have a destination parameter.
-	 */
-	@Nullable
-	public String getDefaultDestinationName() {
-		return (this.defaultDestination instanceof String ? (String) this.defaultDestination : null);
 	}
 
 	private String getRequiredDefaultDestinationName() throws IllegalStateException {
@@ -220,25 +216,26 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 	}
 
 	/**
+	 * Return the message converter for this template.
+	 */
+	@Nullable
+	public MessageConverter getMessageConverter() {
+		return this.messageConverter;
+	}
+
+	/**
 	 * Set the message converter for this template. Used to resolve
 	 * Object parameters to convertAndSend methods and Object results
 	 * from receiveAndConvert methods.
 	 * <p>The default converter is a SimpleMessageConverter, which is able
 	 * to handle BytesMessages, TextMessages and ObjectMessages.
+	 *
 	 * @see #convertAndSend
 	 * @see #receiveAndConvert
 	 * @see org.springframework.jms.support.converter.SimpleMessageConverter
 	 */
 	public void setMessageConverter(@Nullable MessageConverter messageConverter) {
 		this.messageConverter = messageConverter;
-	}
-
-	/**
-	 * Return the message converter for this template.
-	 */
-	@Nullable
-	public MessageConverter getMessageConverter() {
-		return this.messageConverter;
 	}
 
 	private MessageConverter getRequiredMessageConverter() throws IllegalStateException {
@@ -249,17 +246,6 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 		return converter;
 	}
 
-
-	/**
-	 * Set whether message IDs are enabled. Default is "true".
-	 * <p>This is only a hint to the JMS producer.
-	 * See the JMS javadocs for details.
-	 * @see javax.jms.MessageProducer#setDisableMessageID
-	 */
-	public void setMessageIdEnabled(boolean messageIdEnabled) {
-		this.messageIdEnabled = messageIdEnabled;
-	}
-
 	/**
 	 * Return whether message IDs are enabled.
 	 */
@@ -268,13 +254,14 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 	}
 
 	/**
-	 * Set whether message timestamps are enabled. Default is "true".
+	 * Set whether message IDs are enabled. Default is "true".
 	 * <p>This is only a hint to the JMS producer.
 	 * See the JMS javadocs for details.
-	 * @see javax.jms.MessageProducer#setDisableMessageTimestamp
+	 *
+	 * @see javax.jms.MessageProducer#setDisableMessageID
 	 */
-	public void setMessageTimestampEnabled(boolean messageTimestampEnabled) {
-		this.messageTimestampEnabled = messageTimestampEnabled;
+	public void setMessageIdEnabled(boolean messageIdEnabled) {
+		this.messageIdEnabled = messageIdEnabled;
 	}
 
 	/**
@@ -285,12 +272,14 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 	}
 
 	/**
-	 * Set whether to inhibit the delivery of messages published by its own connection.
-	 * Default is "false".
-	 * @see javax.jms.Session#createConsumer(javax.jms.Destination, String, boolean)
+	 * Set whether message timestamps are enabled. Default is "true".
+	 * <p>This is only a hint to the JMS producer.
+	 * See the JMS javadocs for details.
+	 *
+	 * @see javax.jms.MessageProducer#setDisableMessageTimestamp
 	 */
-	public void setPubSubNoLocal(boolean pubSubNoLocal) {
-		this.pubSubNoLocal = pubSubNoLocal;
+	public void setMessageTimestampEnabled(boolean messageTimestampEnabled) {
+		this.messageTimestampEnabled = messageTimestampEnabled;
 	}
 
 	/**
@@ -301,12 +290,30 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 	}
 
 	/**
+	 * Set whether to inhibit the delivery of messages published by its own connection.
+	 * Default is "false".
+	 *
+	 * @see javax.jms.Session#createConsumer(javax.jms.Destination, String, boolean)
+	 */
+	public void setPubSubNoLocal(boolean pubSubNoLocal) {
+		this.pubSubNoLocal = pubSubNoLocal;
+	}
+
+	/**
+	 * Return the timeout to use for receive calls (in milliseconds).
+	 */
+	public long getReceiveTimeout() {
+		return this.receiveTimeout;
+	}
+
+	/**
 	 * Set the timeout to use for receive calls (in milliseconds).
 	 * <p>The default is {@link #RECEIVE_TIMEOUT_INDEFINITE_WAIT}, which indicates
 	 * a blocking receive without timeout.
 	 * <p>Specify {@link #RECEIVE_TIMEOUT_NO_WAIT} (or any other negative value)
 	 * to indicate that a receive operation should check if a message is
 	 * immediately available without blocking.
+	 *
 	 * @see #receiveFromConsumer(MessageConsumer, long)
 	 * @see javax.jms.MessageConsumer#receive(long)
 	 * @see javax.jms.MessageConsumer#receiveNoWait()
@@ -317,10 +324,10 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 	}
 
 	/**
-	 * Return the timeout to use for receive calls (in milliseconds).
+	 * Return the delivery delay to use for send calls (in milliseconds).
 	 */
-	public long getReceiveTimeout() {
-		return this.receiveTimeout;
+	public long getDeliveryDelay() {
+		return this.deliveryDelay;
 	}
 
 	/**
@@ -333,28 +340,10 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 	}
 
 	/**
-	 * Return the delivery delay to use for send calls (in milliseconds).
-	 */
-	public long getDeliveryDelay() {
-		return this.deliveryDelay;
-	}
-
-
-	/**
-	 * Set if the QOS values (deliveryMode, priority, timeToLive)
-	 * should be used for sending a message.
-	 * @see #setDeliveryMode
-	 * @see #setPriority
-	 * @see #setTimeToLive
-	 */
-	public void setExplicitQosEnabled(boolean explicitQosEnabled) {
-		this.explicitQosEnabled = explicitQosEnabled;
-	}
-
-	/**
 	 * If "true", then the values of deliveryMode, priority, and timeToLive
 	 * will be used when sending a message. Otherwise, the default values,
 	 * that may be set administratively, will be used.
+	 *
 	 * @return true if overriding default values of QOS parameters
 	 * (deliveryMode, priority, and timeToLive)
 	 * @see #setDeliveryMode
@@ -366,7 +355,20 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 	}
 
 	/**
+	 * Set if the QOS values (deliveryMode, priority, timeToLive)
+	 * should be used for sending a message.
+	 *
+	 * @see #setDeliveryMode
+	 * @see #setPriority
+	 * @see #setTimeToLive
+	 */
+	public void setExplicitQosEnabled(boolean explicitQosEnabled) {
+		this.explicitQosEnabled = explicitQosEnabled;
+	}
+
+	/**
 	 * Set the {@link QosSettings} to use when sending a message.
+	 *
 	 * @param settings the deliveryMode, priority, and timeToLive settings to use
 	 * @see #setExplicitQosEnabled(boolean)
 	 * @see #setDeliveryMode(int)
@@ -387,6 +389,7 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 	 * specified as boolean value ("true" or "false"). This will set the delivery
 	 * mode accordingly, to either "PERSISTENT" (2) or "NON_PERSISTENT" (1).
 	 * <p>Default is "true" a.k.a. delivery mode "PERSISTENT".
+	 *
 	 * @see #setDeliveryMode(int)
 	 * @see javax.jms.DeliveryMode#PERSISTENT
 	 * @see javax.jms.DeliveryMode#NON_PERSISTENT
@@ -396,10 +399,18 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 	}
 
 	/**
+	 * Return the delivery mode to use when sending a message.
+	 */
+	public int getDeliveryMode() {
+		return this.deliveryMode;
+	}
+
+	/**
 	 * Set the delivery mode to use when sending a message.
 	 * Default is the JMS Message default: "PERSISTENT".
 	 * <p>Since a default value may be defined administratively,
 	 * this is only used when "isExplicitQosEnabled" equals "true".
+	 *
 	 * @param deliveryMode the delivery mode to use
 	 * @see #isExplicitQosEnabled
 	 * @see javax.jms.DeliveryMode#PERSISTENT
@@ -412,16 +423,17 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 	}
 
 	/**
-	 * Return the delivery mode to use when sending a message.
+	 * Return the priority of a message when sending.
 	 */
-	public int getDeliveryMode() {
-		return this.deliveryMode;
+	public int getPriority() {
+		return this.priority;
 	}
 
 	/**
 	 * Set the priority of a message when sending.
 	 * <p>Since a default value may be defined administratively,
 	 * this is only used when "isExplicitQosEnabled" equals "true".
+	 *
 	 * @see #isExplicitQosEnabled
 	 * @see javax.jms.Message#DEFAULT_PRIORITY
 	 * @see javax.jms.MessageProducer#send(javax.jms.Message, int, int, long)
@@ -431,16 +443,17 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 	}
 
 	/**
-	 * Return the priority of a message when sending.
+	 * Return the time-to-live of the message when sending.
 	 */
-	public int getPriority() {
-		return this.priority;
+	public long getTimeToLive() {
+		return this.timeToLive;
 	}
 
 	/**
 	 * Set the time-to-live of the message when sending.
 	 * <p>Since a default value may be defined administratively,
 	 * this is only used when "isExplicitQosEnabled" equals "true".
+	 *
 	 * @param timeToLive the message's lifetime (in milliseconds)
 	 * @see #isExplicitQosEnabled
 	 * @see javax.jms.Message#DEFAULT_TIME_TO_LIVE
@@ -448,13 +461,6 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 	 */
 	public void setTimeToLive(long timeToLive) {
 		this.timeToLive = timeToLive;
-	}
-
-	/**
-	 * Return the time-to-live of the message when sending.
-	 */
-	public long getTimeToLive() {
-		return this.timeToLive;
 	}
 
 
@@ -475,7 +481,8 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 	 * <p>Use {@code execute(SessionCallback)} for the general case.
 	 * Starting the JMS Connection is just necessary for receiving messages,
 	 * which is preferably achieved through the {@code receive} methods.
-	 * @param action callback object that exposes the Session
+	 *
+	 * @param action          callback object that exposes the Session
 	 * @param startConnection whether to start the Connection
 	 * @return the result object from working with the Session
 	 * @throws JmsException if there is any problem
@@ -502,11 +509,9 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 				logger.debug("Executing callback on JMS Session: " + sessionToUse);
 			}
 			return action.doInJms(sessionToUse);
-		}
-		catch (JMSException ex) {
+		} catch (JMSException ex) {
 			throw convertJmsAccessException(ex);
-		}
-		finally {
+		} finally {
 			JmsUtils.closeSession(sessionToClose);
 			ConnectionFactoryUtils.releaseConnection(conToClose, getConnectionFactory(), startConnection);
 		}
@@ -518,8 +523,7 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 		String defaultDestinationName = getDefaultDestinationName();
 		if (defaultDestinationName != null) {
 			return execute(defaultDestinationName, action);
-		}
-		else {
+		} else {
 			return execute(getDefaultDestination(), action);
 		}
 	}
@@ -532,8 +536,7 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 			MessageProducer producer = createProducer(session, destination);
 			try {
 				return action.doInJms(session, producer);
-			}
-			finally {
+			} finally {
 				JmsUtils.closeMessageProducer(producer);
 			}
 		}, false);
@@ -548,8 +551,7 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 			MessageProducer producer = createProducer(session, destination);
 			try {
 				return action.doInJms(session, producer);
-			}
-			finally {
+			} finally {
 				JmsUtils.closeMessageProducer(producer);
 			}
 		}, false);
@@ -565,8 +567,7 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 		Destination defaultDestination = getDefaultDestination();
 		if (defaultDestination != null) {
 			send(defaultDestination, messageCreator);
-		}
-		else {
+		} else {
 			send(getRequiredDefaultDestinationName(), messageCreator);
 		}
 	}
@@ -590,8 +591,9 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 
 	/**
 	 * Send the given JMS message.
-	 * @param session the JMS Session to operate on
-	 * @param destination the JMS Destination to send to
+	 *
+	 * @param session        the JMS Session to operate on
+	 * @param destination    the JMS Destination to send to
 	 * @param messageCreator callback to create a JMS Message
 	 * @throws JMSException if thrown by JMS API methods
 	 */
@@ -611,16 +613,16 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 				// Transacted session created by this template -> commit.
 				JmsUtils.commitIfNecessary(session);
 			}
-		}
-		finally {
+		} finally {
 			JmsUtils.closeMessageProducer(producer);
 		}
 	}
 
 	/**
 	 * Actually send the given JMS message.
+	 *
 	 * @param producer the JMS MessageProducer to send with
-	 * @param message the JMS Message to send
+	 * @param message  the JMS Message to send
 	 * @throws JMSException if thrown by JMS API methods
 	 */
 	protected void doSend(MessageProducer producer, Message message) throws JMSException {
@@ -629,8 +631,7 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 		}
 		if (isExplicitQosEnabled()) {
 			producer.send(message, getDeliveryMode(), getPriority(), getTimeToLive());
-		}
-		else {
+		} else {
 			producer.send(message);
 		}
 	}
@@ -645,8 +646,7 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 		Destination defaultDestination = getDefaultDestination();
 		if (defaultDestination != null) {
 			convertAndSend(defaultDestination, message);
-		}
-		else {
+		} else {
 			convertAndSend(getRequiredDefaultDestinationName(), message);
 		}
 	}
@@ -666,8 +666,7 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 		Destination defaultDestination = getDefaultDestination();
 		if (defaultDestination != null) {
 			convertAndSend(defaultDestination, message, postProcessor);
-		}
-		else {
+		} else {
 			convertAndSend(getRequiredDefaultDestinationName(), message, postProcessor);
 		}
 	}
@@ -686,7 +685,7 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 	@Override
 	public void convertAndSend(
 			String destinationName, final Object message, final MessagePostProcessor postProcessor)
-		throws JmsException {
+			throws JmsException {
 
 		send(destinationName, session -> {
 			Message msg = getRequiredMessageConverter().toMessage(message, session);
@@ -705,8 +704,7 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 		Destination defaultDestination = getDefaultDestination();
 		if (defaultDestination != null) {
 			return receive(defaultDestination);
-		}
-		else {
+		} else {
 			return receive(getRequiredDefaultDestinationName());
 		}
 	}
@@ -723,14 +721,14 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 		return receiveSelected(destinationName, null);
 	}
 
-	@Override@Nullable
-	
+	@Override
+	@Nullable
+
 	public Message receiveSelected(String messageSelector) throws JmsException {
 		Destination defaultDestination = getDefaultDestination();
 		if (defaultDestination != null) {
 			return receiveSelected(defaultDestination, messageSelector);
-		}
-		else {
+		} else {
 			return receiveSelected(getRequiredDefaultDestinationName(), messageSelector);
 		}
 	}
@@ -752,8 +750,9 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 
 	/**
 	 * Receive a JMS message.
-	 * @param session the JMS Session to operate on
-	 * @param destination the JMS Destination to receive from
+	 *
+	 * @param session         the JMS Session to operate on
+	 * @param destination     the JMS Destination to receive from
 	 * @param messageSelector the message selector for this consumer (can be {@code null})
 	 * @return the JMS Message received, or {@code null} if none
 	 * @throws JMSException if thrown by JMS API methods
@@ -767,7 +766,8 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 
 	/**
 	 * Actually receive a JMS message.
-	 * @param session the JMS Session to operate on
+	 *
+	 * @param session  the JMS Session to operate on
 	 * @param consumer the JMS MessageConsumer to receive with
 	 * @return the JMS Message received, or {@code null} if none
 	 * @throws JMSException if thrown by JMS API methods
@@ -792,16 +792,14 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 					// Transacted session created by this template -> commit.
 					JmsUtils.commitIfNecessary(session);
 				}
-			}
-			else if (isClientAcknowledge(session)) {
+			} else if (isClientAcknowledge(session)) {
 				// Manually acknowledge message, if any.
 				if (message != null) {
 					message.acknowledge();
 				}
 			}
 			return message;
-		}
-		finally {
+		} finally {
 			JmsUtils.closeMessageConsumer(consumer);
 		}
 	}
@@ -849,6 +847,7 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 
 	/**
 	 * Extract the content from the given JMS message.
+	 *
 	 * @param message the JMS Message to convert (can be {@code null})
 	 * @return the content of the message, or {@code null} if none
 	 */
@@ -857,8 +856,7 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 		if (message != null) {
 			try {
 				return getRequiredMessageConverter().fromMessage(message);
-			}
-			catch (JMSException ex) {
+			} catch (JMSException ex) {
 				throw convertJmsAccessException(ex);
 			}
 		}
@@ -876,8 +874,7 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 		Destination defaultDestination = getDefaultDestination();
 		if (defaultDestination != null) {
 			return sendAndReceive(defaultDestination, messageCreator);
-		}
-		else {
+		} else {
 			return sendAndReceive(getRequiredDefaultDestinationName(), messageCreator);
 		}
 	}
@@ -901,6 +898,7 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 	 * Send a request message to the given {@link Destination} and block until
 	 * a reply has been received on a temporary queue created on-the-fly.
 	 * <p>Return the response message or {@code null} if no message has
+	 *
 	 * @throws JMSException if thrown by JMS API methods
 	 */
 	@Nullable
@@ -922,8 +920,7 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 			}
 			doSend(producer, requestMessage);
 			return receiveFromConsumer(consumer, getReceiveTimeout());
-		}
-		finally {
+		} finally {
 			JmsUtils.closeMessageConsumer(consumer);
 			JmsUtils.closeMessageProducer(producer);
 			if (responseQueue != null) {
@@ -952,11 +949,9 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 				logger.debug("Executing callback on JMS Session: " + session);
 			}
 			return action.doInJms(session);
-		}
-		catch (JMSException ex) {
+		} catch (JMSException ex) {
 			throw convertJmsAccessException(ex);
-		}
-		finally {
+		} finally {
 			JmsUtils.closeSession(session);
 			ConnectionFactoryUtils.releaseConnection(con, getConnectionFactory(), startConnection);
 		}
@@ -973,8 +968,7 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 		Queue defaultQueue = getDefaultQueue();
 		if (defaultQueue != null) {
 			return browse(defaultQueue, action);
-		}
-		else {
+		} else {
 			return browse(getRequiredDefaultDestinationName(), action);
 		}
 	}
@@ -997,8 +991,7 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 		Queue defaultQueue = getDefaultQueue();
 		if (defaultQueue != null) {
 			return browseSelected(defaultQueue, messageSelector, action);
-		}
-		else {
+		} else {
 			return browseSelected(getRequiredDefaultDestinationName(), messageSelector, action);
 		}
 	}
@@ -1013,8 +1006,7 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 			QueueBrowser browser = createBrowser(session, queue, messageSelector);
 			try {
 				return action.doInJms(session, browser);
-			}
-			finally {
+			} finally {
 				JmsUtils.closeQueueBrowser(browser);
 			}
 		}, true);
@@ -1031,8 +1023,7 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 			QueueBrowser browser = createBrowser(session, queue, messageSelector);
 			try {
 				return action.doInJms(session, browser);
-			}
-			finally {
+			} finally {
 				JmsUtils.closeQueueBrowser(browser);
 			}
 		}, true);
@@ -1042,6 +1033,7 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 	/**
 	 * Fetch an appropriate Connection from the given JmsResourceHolder.
 	 * <p>This implementation accepts any JMS 1.1 Connection.
+	 *
 	 * @param holder the JmsResourceHolder
 	 * @return an appropriate Connection fetched from the holder,
 	 * or {@code null} if none found
@@ -1054,6 +1046,7 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 	/**
 	 * Fetch an appropriate Session from the given JmsResourceHolder.
 	 * <p>This implementation accepts any JMS 1.1 Session.
+	 *
 	 * @param holder the JmsResourceHolder
 	 * @return an appropriate Session fetched from the holder,
 	 * or {@code null} if none found
@@ -1070,6 +1063,7 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 	 * <p>Note: The Session's own transacted flag will already have been checked
 	 * before. This method is about finding out whether the Session's transaction
 	 * is local or externally coordinated.
+	 *
 	 * @param session the Session to check
 	 * @return whether the given Session is locally transacted
 	 * @see #isSessionTransacted()
@@ -1085,7 +1079,8 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 	 * configuring it to disable message ids and/or timestamps (if necessary).
 	 * <p>Delegates to {@link #doCreateProducer} for creation of the raw
 	 * JMS MessageProducer.
-	 * @param session the JMS Session to create a MessageProducer for
+	 *
+	 * @param session     the JMS Session to create a MessageProducer for
 	 * @param destination the JMS Destination to create a MessageProducer for
 	 * @return the new JMS MessageProducer
 	 * @throws JMSException if thrown by JMS API methods
@@ -1106,7 +1101,8 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 	/**
 	 * Create a raw JMS MessageProducer for the given Session and Destination.
 	 * <p>This implementation uses JMS 1.1 API.
-	 * @param session the JMS Session to create a MessageProducer for
+	 *
+	 * @param session     the JMS Session to create a MessageProducer for
 	 * @param destination the JMS Destination to create a MessageProducer for
 	 * @return the new JMS MessageProducer
 	 * @throws JMSException if thrown by JMS API methods
@@ -1118,8 +1114,9 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 	/**
 	 * Create a JMS MessageConsumer for the given Session and Destination.
 	 * <p>This implementation uses JMS 1.1 API.
-	 * @param session the JMS Session to create a MessageConsumer for
-	 * @param destination the JMS Destination to create a MessageConsumer for
+	 *
+	 * @param session         the JMS Session to create a MessageConsumer for
+	 * @param destination     the JMS Destination to create a MessageConsumer for
 	 * @param messageSelector the message selector for this consumer (can be {@code null})
 	 * @return the new JMS MessageConsumer
 	 * @throws JMSException if thrown by JMS API methods
@@ -1132,8 +1129,7 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 		// in case of the NoLocal flag being specified for a Queue.
 		if (isPubSubDomain()) {
 			return session.createConsumer(destination, messageSelector, isPubSubNoLocal());
-		}
-		else {
+		} else {
 			return session.createConsumer(destination, messageSelector);
 		}
 	}
@@ -1143,8 +1139,9 @@ public class JmsTemplate extends JmsDestinationAccessor implements JmsOperations
 	 * configuring it to disable message ids and/or timestamps (if necessary).
 	 * <p>Delegates to {@link #doCreateProducer} for creation of the raw
 	 * JMS MessageProducer.
-	 * @param session the JMS Session to create a QueueBrowser for
-	 * @param queue the JMS Queue to create a QueueBrowser for
+	 *
+	 * @param session         the JMS Session to create a QueueBrowser for
+	 * @param queue           the JMS Queue to create a QueueBrowser for
 	 * @param messageSelector the message selector for this consumer (can be {@code null})
 	 * @return the new JMS QueueBrowser
 	 * @throws JMSException if thrown by JMS API methods

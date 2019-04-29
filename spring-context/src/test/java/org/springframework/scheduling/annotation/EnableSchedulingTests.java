@@ -16,13 +16,8 @@
 
 package org.springframework.scheduling.annotation;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.After;
 import org.junit.Test;
-
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,6 +29,10 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.scheduling.config.TaskManagementConfigUtils;
 import org.springframework.tests.Assume;
 import org.springframework.tests.TestGroup;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -186,7 +185,8 @@ public class EnableSchedulingTests {
 
 		@Override
 		public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-			taskRegistrar.addFixedRateTask(() -> {}, 100);
+			taskRegistrar.addFixedRateTask(() -> {
+			}, 100);
 		}
 
 		@Bean
@@ -456,7 +456,7 @@ public class EnableSchedulingTests {
 			ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
 			scheduler.initialize();
 			scheduler.schedule(() -> counter().incrementAndGet(),
-					triggerContext -> new Date(new Date().getTime()+10));
+					triggerContext -> new Date(new Date().getTime() + 10));
 			return scheduler;
 		}
 	}

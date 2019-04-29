@@ -16,18 +16,13 @@
 
 package org.springframework.web.socket;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 import org.springframework.util.StringUtils;
+
+import java.util.*;
 
 /**
  * Represents a WebSocket extension as defined in the RFC 6455.
@@ -46,8 +41,8 @@ import org.springframework.util.StringUtils;
  *
  * @author Brian Clozel
  * @author Juergen Hoeller
- * @since 4.0
  * @see <a href="https://tools.ietf.org/html/rfc6455#section-9">WebSocket Protocol Extensions, RFC 6455 - Section 9</a>
+ * @since 4.0
  */
 public class WebSocketExtension {
 
@@ -58,6 +53,7 @@ public class WebSocketExtension {
 
 	/**
 	 * Create a WebSocketExtension with the given name.
+	 *
 	 * @param name the name of the extension
 	 */
 	public WebSocketExtension(String name) {
@@ -66,7 +62,8 @@ public class WebSocketExtension {
 
 	/**
 	 * Create a WebSocketExtension with the given name and parameters.
-	 * @param name the name of the extension
+	 *
+	 * @param name       the name of the extension
 	 * @param parameters the parameters
 	 */
 	public WebSocketExtension(String name, @Nullable Map<String, String> parameters) {
@@ -76,57 +73,15 @@ public class WebSocketExtension {
 			Map<String, String> map = new LinkedCaseInsensitiveMap<>(parameters.size(), Locale.ENGLISH);
 			map.putAll(parameters);
 			this.parameters = Collections.unmodifiableMap(map);
-		}
-		else {
+		} else {
 			this.parameters = Collections.emptyMap();
 		}
 	}
 
-
-	/**
-	 * Return the name of the extension (never {@code null) or empty}.
-	 */
-	public String getName() {
-		return this.name;
-	}
-
-	/**
-	 * Return the parameters of the extension (never {@code null}).
-	 */
-	public Map<String, String> getParameters() {
-		return this.parameters;
-	}
-
-
-	@Override
-	public boolean equals(@Nullable Object other) {
-		if (this == other) {
-			return true;
-		}
-		if (other == null || getClass() != other.getClass()) {
-			return false;
-		}
-		WebSocketExtension otherExt = (WebSocketExtension) other;
-		return (this.name.equals(otherExt.name) && this.parameters.equals(otherExt.parameters));
-	}
-
-	@Override
-	public int hashCode() {
-		return this.name.hashCode() * 31 + this.parameters.hashCode();
-	}
-
-	@Override
-	public String toString() {
-		StringBuilder str = new StringBuilder();
-		str.append(this.name);
-		this.parameters.forEach((key, value) -> str.append(';').append(key).append('=').append(value));
-		return str.toString();
-	}
-
-
 	/**
 	 * Parse the given, comma-separated string into a list of {@code WebSocketExtension} objects.
 	 * <p>This method can be used to parse a "Sec-WebSocket-Extension" header.
+	 *
 	 * @param extensions the string to parse
 	 * @return the list of extensions
 	 * @throws IllegalArgumentException if the string cannot be parsed
@@ -139,8 +94,7 @@ public class WebSocketExtension {
 				result.add(parseExtension(token));
 			}
 			return result;
-		}
-		else {
+		} else {
 			return Collections.emptyList();
 		}
 	}
@@ -167,6 +121,45 @@ public class WebSocketExtension {
 		}
 
 		return new WebSocketExtension(name, parameters);
+	}
+
+	/**
+	 * Return the name of the extension (never {@code null) or empty}.
+	 */
+	public String getName() {
+		return this.name;
+	}
+
+	/**
+	 * Return the parameters of the extension (never {@code null}).
+	 */
+	public Map<String, String> getParameters() {
+		return this.parameters;
+	}
+
+	@Override
+	public boolean equals(@Nullable Object other) {
+		if (this == other) {
+			return true;
+		}
+		if (other == null || getClass() != other.getClass()) {
+			return false;
+		}
+		WebSocketExtension otherExt = (WebSocketExtension) other;
+		return (this.name.equals(otherExt.name) && this.parameters.equals(otherExt.parameters));
+	}
+
+	@Override
+	public int hashCode() {
+		return this.name.hashCode() * 31 + this.parameters.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder str = new StringBuilder();
+		str.append(this.name);
+		this.parameters.forEach((key, value) -> str.append(';').append(key).append('=').append(value));
+		return str.toString();
 	}
 
 }

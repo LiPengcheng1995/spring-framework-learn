@@ -22,7 +22,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Answers
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.times
+import org.mockito.Mockito.verify
 import org.mockito.junit.MockitoJUnitRunner
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
@@ -250,7 +251,7 @@ class RestOperationsExtensionsTests {
 		ReflectionUtils.doWithMethods(RestOperations::class.java) { method ->
 			arrayOf(ParameterizedTypeReference::class, Class::class).forEach { kClass ->
 				if (method.parameterTypes.contains(kClass.java)) {
-					val parameters = mutableListOf<Class<*>>(RestOperations::class.java).apply { addAll(method.parameterTypes.filter { it !=  kClass.java }) }
+					val parameters = mutableListOf<Class<*>>(RestOperations::class.java).apply { addAll(method.parameterTypes.filter { it != kClass.java }) }
 					val f = extensions.getDeclaredMethod(method.name, *parameters.toTypedArray()).kotlinFunction!!
 					Assert.assertEquals(1, f.typeParameters.size)
 					Assert.assertEquals(listOf(Any::class.createType()), f.typeParameters[0].upperBounds)

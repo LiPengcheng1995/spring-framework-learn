@@ -18,7 +18,6 @@ package org.springframework.context.annotation;
 
 import org.junit.Ignore;
 import org.junit.Test;
-
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
@@ -52,13 +51,12 @@ public class Spr16217Tests {
 		context.refresh();
 		try {
 			context.getBean("someBean");
-		}
-		finally {
+		} finally {
 			context.close();
 		}
 	}
 
- 
+
 	public static class RegisterBeanPhaseCondition implements ConfigurationCondition {
 
 		@Override
@@ -72,7 +70,7 @@ public class Spr16217Tests {
 		}
 	}
 
- 
+
 	public static class ParseConfigurationPhaseCondition implements ConfigurationCondition {
 
 		@Override
@@ -91,7 +89,7 @@ public class Spr16217Tests {
 	public static class RegisterBeanPhaseImportingConfiguration {
 	}
 
- 
+
 	@Import({ParseConfigurationPhaseConditionConfiguration.class, BarConfiguration.class})
 	public static class ParseConfigurationPhaseImportingConfiguration {
 	}
@@ -101,7 +99,7 @@ public class Spr16217Tests {
 	public static class UnconditionalImportingConfiguration {
 	}
 
- 
+
 	public static class BaseConfiguration {
 
 		@Bean

@@ -16,27 +16,22 @@
 
 package org.springframework.aop.support;
 
-import java.io.Serializable;
-
 import org.aopalliance.intercept.MethodInterceptor;
 import org.junit.Test;
-
 import org.springframework.aop.IntroductionAdvisor;
 import org.springframework.aop.IntroductionInterceptor;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.tests.TimeStamped;
 import org.springframework.tests.aop.interceptor.SerializableNopInterceptor;
-import org.springframework.tests.sample.beans.INestedTestBean;
-import org.springframework.tests.sample.beans.ITestBean;
-import org.springframework.tests.sample.beans.NestedTestBean;
-import org.springframework.tests.sample.beans.Person;
-import org.springframework.tests.sample.beans.SerializablePerson;
-import org.springframework.tests.sample.beans.TestBean;
+import org.springframework.tests.sample.beans.*;
 import org.springframework.util.SerializationTestUtils;
 
-import static org.hamcrest.Matchers.*;
+import java.io.Serializable;
+
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
 
 /**
  * @author Rod Johnson
@@ -54,7 +49,7 @@ public class DelegatingIntroductionInterceptorTests {
 	@Test
 	public void testIntroductionInterceptorWithDelegation() throws Exception {
 		TestBean raw = new TestBean();
-		assertTrue(! (raw instanceof TimeStamped));
+		assertTrue(!(raw instanceof TimeStamped));
 		ProxyFactory factory = new ProxyFactory(raw);
 
 		TimeStamped ts = mock(TimeStamped.class);
@@ -70,7 +65,7 @@ public class DelegatingIntroductionInterceptorTests {
 	@Test
 	public void testIntroductionInterceptorWithInterfaceHierarchy() throws Exception {
 		TestBean raw = new TestBean();
-		assertTrue(! (raw instanceof SubTimeStamped));
+		assertTrue(!(raw instanceof SubTimeStamped));
 		ProxyFactory factory = new ProxyFactory(raw);
 
 		TimeStamped ts = mock(SubTimeStamped.class);
@@ -86,7 +81,7 @@ public class DelegatingIntroductionInterceptorTests {
 	@Test
 	public void testIntroductionInterceptorWithSuperInterface() throws Exception {
 		TestBean raw = new TestBean();
-		assertTrue(! (raw instanceof TimeStamped));
+		assertTrue(!(raw instanceof TimeStamped));
 		ProxyFactory factory = new ProxyFactory(raw);
 
 		TimeStamped ts = mock(SubTimeStamped.class);
@@ -107,6 +102,7 @@ public class DelegatingIntroductionInterceptorTests {
 			@Override
 			public void foo() throws Exception {
 			}
+
 			@Override
 			public long getTimeStamp() {
 				return t;
@@ -138,6 +134,7 @@ public class DelegatingIntroductionInterceptorTests {
 			@Override
 			public void foo() throws Exception {
 			}
+
 			@Override
 			public long getTimeStamp() {
 				return t;
@@ -179,7 +176,7 @@ public class DelegatingIntroductionInterceptorTests {
 	@Test
 	public void testIntroductionInterceptorDoesntReplaceToString() throws Exception {
 		TestBean raw = new TestBean();
-		assertTrue(! (raw instanceof TimeStamped));
+		assertTrue(!(raw instanceof TimeStamped));
 		ProxyFactory factory = new ProxyFactory(raw);
 
 		TimeStamped ts = new SerializableTimeStamped(0);
@@ -268,6 +265,15 @@ public class DelegatingIntroductionInterceptorTests {
 	}
 
 
+	public interface ITester {
+
+		void foo() throws Exception;
+	}
+
+
+	private static interface SubTimeStamped extends TimeStamped {
+	}
+
 	@SuppressWarnings("serial")
 	private static class SerializableTimeStamped implements TimeStamped, Serializable {
 
@@ -283,7 +289,6 @@ public class DelegatingIntroductionInterceptorTests {
 		}
 	}
 
-
 	public static class TargetClass extends TestBean implements TimeStamped {
 
 		long t;
@@ -296,16 +301,6 @@ public class DelegatingIntroductionInterceptorTests {
 		public long getTimeStamp() {
 			return t;
 		}
-	}
-
-
-	public interface ITester {
-
-		void foo() throws Exception;
-	}
-
-
-	private static interface SubTimeStamped extends TimeStamped {
 	}
 
 }

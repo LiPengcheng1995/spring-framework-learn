@@ -16,6 +16,13 @@
 
 package org.springframework.jndi;
 
+import org.junit.Test;
+import org.springframework.tests.mock.jndi.SimpleNamingContext;
+import org.springframework.tests.mock.jndi.SimpleNamingContextBuilder;
+
+import javax.naming.*;
+import javax.naming.spi.InitialContextFactory;
+import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -23,20 +30,6 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.logging.Logger;
-import javax.naming.Binding;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NameClassPair;
-import javax.naming.NameNotFoundException;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.spi.InitialContextFactory;
-import javax.sql.DataSource;
-
-import org.junit.Test;
-
-import org.springframework.tests.mock.jndi.SimpleNamingContext;
-import org.springframework.tests.mock.jndi.SimpleNamingContextBuilder;
 
 import static org.junit.Assert.*;
 
@@ -87,8 +80,7 @@ public class SimpleNamingContextTests {
 		try {
 			context1.lookup("myobject");
 			fail("Should have thrown NameNotFoundException");
-		}
-		catch (NameNotFoundException ex) {
+		} catch (NameNotFoundException ex) {
 			// expected
 		}
 		assertTrue("Correct Integer registered", context1.lookup("myinteger") == i);
@@ -98,8 +90,7 @@ public class SimpleNamingContextTests {
 		try {
 			context2.lookup("myobject");
 			fail("Should have thrown NameNotFoundException");
-		}
-		catch (NameNotFoundException ex) {
+		} catch (NameNotFoundException ex) {
 			// expected
 		}
 		assertTrue("Correct Integer registered", context2.lookup("myinteger") == i);
@@ -109,8 +100,7 @@ public class SimpleNamingContextTests {
 		try {
 			context3.lookup("myobject");
 			fail("Should have thrown NameNotFoundException");
-		}
-		catch (NameNotFoundException ex) {
+		} catch (NameNotFoundException ex) {
 			// expected
 		}
 		assertTrue("Correct Integer registered", context3.lookup("myinteger") == i);
@@ -194,8 +184,7 @@ public class SimpleNamingContextTests {
 			ctx = new InitialContext();
 			ctx.lookup(name);
 			fail("Should have thrown NamingException");
-		}
-		catch (NamingException ex) {
+		} catch (NamingException ex) {
 			// expected
 		}
 
@@ -205,8 +194,7 @@ public class SimpleNamingContextTests {
 			ctx = new InitialContext();
 			ctx.lookup(name);
 			fail("Should have thrown NamingException");
-		}
-		catch (NamingException ex) {
+		} catch (NamingException ex) {
 			// expected
 		}
 		Object o2 = new Object();
@@ -233,13 +221,13 @@ public class SimpleNamingContextTests {
 		}
 
 		@Override
-		public int getLoginTimeout() throws SQLException {
-			return 0;
+		public void setLogWriter(PrintWriter arg0) throws SQLException {
+
 		}
 
 		@Override
-		public void setLogWriter(PrintWriter arg0) throws SQLException {
-
+		public int getLoginTimeout() throws SQLException {
+			return 0;
 		}
 
 		@Override

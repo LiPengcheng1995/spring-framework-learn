@@ -16,16 +16,15 @@
 
 package org.springframework.context.annotation;
 
-import java.io.Closeable;
-
 import org.junit.Test;
-
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import java.io.Closeable;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Chris Beams
@@ -129,6 +128,7 @@ public class DestroyMethodInferenceTests {
 				public void close() {
 					throw new IllegalStateException("close() should not be called");
 				}
+
 				@SuppressWarnings("unused")
 				public void other() {
 					this.closed = true;

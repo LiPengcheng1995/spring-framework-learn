@@ -16,11 +16,10 @@
 
 package org.springframework.beans.propertyeditors;
 
-import java.io.Reader;
-
 import org.junit.Test;
-
 import org.springframework.util.ClassUtils;
+
+import java.io.Reader;
 
 import static org.junit.Assert.*;
 
@@ -50,8 +49,7 @@ public class ReaderEditorTests {
 			assertTrue(value instanceof Reader);
 			reader = (Reader) value;
 			assertTrue(reader.ready());
-		}
-		finally {
+		} finally {
 			if (reader != null) {
 				reader.close();
 			}

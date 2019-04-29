@@ -17,7 +17,6 @@
 package org.springframework.cache.concurrent;
 
 import org.junit.Test;
-
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 
@@ -120,7 +119,7 @@ public class ConcurrentMapCacheManagerTests {
 		assertFalse(cm.isStoreByValue());
 		Cache cache1 = cm.getCache("c1");
 		assertTrue(cache1 instanceof ConcurrentMapCache);
-		assertFalse(((ConcurrentMapCache)cache1).isStoreByValue());
+		assertFalse(((ConcurrentMapCache) cache1).isStoreByValue());
 		cache1.put("key", "value");
 
 		cm.setStoreByValue(true);

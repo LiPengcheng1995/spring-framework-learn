@@ -16,16 +16,15 @@
 
 package org.springframework.context.annotation;
 
-import javax.annotation.PreDestroy;
-
 import org.junit.Test;
-
 import org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator;
 import org.springframework.aop.framework.autoproxy.target.LazyInitTargetSourceCreator;
 import org.springframework.aop.target.AbstractBeanFactoryBasedTargetSource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ApplicationContextEvent;
+
+import javax.annotation.PreDestroy;
 
 import static org.junit.Assert.*;
 
@@ -113,6 +112,12 @@ public class AutoProxyLazyInitTests {
 	public static class ConfigWithStatic {
 
 		@Bean
+		@Lazy
+		public static MyBean myBean() {
+			return new MyBeanImpl();
+		}
+
+		@Bean
 		public BeanNameAutoProxyCreator lazyInitAutoProxyCreator() {
 			BeanNameAutoProxyCreator autoProxyCreator = new BeanNameAutoProxyCreator();
 			autoProxyCreator.setCustomTargetSourceCreators(lazyInitTargetSourceCreator());
@@ -122,12 +127,6 @@ public class AutoProxyLazyInitTests {
 		@Bean
 		public LazyInitTargetSourceCreator lazyInitTargetSourceCreator() {
 			return new StrictLazyInitTargetSourceCreator();
-		}
-
-		@Bean
-		@Lazy
-		public static MyBean myBean() {
-			return new MyBeanImpl();
 		}
 	}
 
@@ -136,6 +135,12 @@ public class AutoProxyLazyInitTests {
 	public static class ConfigWithStaticAndInterface implements ApplicationListener<ApplicationContextEvent> {
 
 		@Bean
+		@Lazy
+		public static MyBean myBean() {
+			return new MyBeanImpl();
+		}
+
+		@Bean
 		public BeanNameAutoProxyCreator lazyInitAutoProxyCreator() {
 			BeanNameAutoProxyCreator autoProxyCreator = new BeanNameAutoProxyCreator();
 			autoProxyCreator.setCustomTargetSourceCreators(lazyInitTargetSourceCreator());
@@ -145,12 +150,6 @@ public class AutoProxyLazyInitTests {
 		@Bean
 		public LazyInitTargetSourceCreator lazyInitTargetSourceCreator() {
 			return new StrictLazyInitTargetSourceCreator();
-		}
-
-		@Bean
-		@Lazy
-		public static MyBean myBean() {
-			return new MyBeanImpl();
 		}
 
 		@Override

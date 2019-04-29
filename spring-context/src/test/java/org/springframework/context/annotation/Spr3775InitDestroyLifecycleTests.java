@@ -16,23 +16,22 @@
 
 package org.springframework.context.annotation;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
-
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.util.ObjectUtils;
 
-import static org.junit.Assert.*;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * <p>
@@ -59,7 +58,9 @@ public class Spr3775InitDestroyLifecycleTests {
 
 	private static final Log logger = LogFactory.getLog(Spr3775InitDestroyLifecycleTests.class);
 
-	/** LIFECYCLE_TEST_BEAN. */
+	/**
+	 * LIFECYCLE_TEST_BEAN.
+	 */
 	private static final String LIFECYCLE_TEST_BEAN = "lifecycleTestBean";
 
 
@@ -70,14 +71,14 @@ public class Spr3775InitDestroyLifecycleTests {
 	}
 
 	private void assertMethodOrdering(Class<?> clazz, String category, List<String> expectedMethods,
-			List<String> actualMethods) {
+									  List<String> actualMethods) {
 		debugMethods(clazz, category, actualMethods);
 		assertTrue("Verifying " + category + ": expected<" + expectedMethods + "> but got<" + actualMethods + ">.",
 				ObjectUtils.nullSafeEquals(expectedMethods, actualMethods));
 	}
 
 	private DefaultListableBeanFactory createBeanFactoryAndRegisterBean(final Class<?> beanClass,
-			final String initMethodName, final String destroyMethodName) {
+																		final String initMethodName, final String destroyMethodName) {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(beanClass);
 		beanDefinition.setInitMethodName(initMethodName);

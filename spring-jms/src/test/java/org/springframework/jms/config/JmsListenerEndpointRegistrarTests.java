@@ -20,26 +20,21 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.beans.factory.support.StaticListableBeanFactory;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Stephane Nicoll
  */
 public class JmsListenerEndpointRegistrarTests {
 
-	private final JmsListenerEndpointRegistrar registrar = new JmsListenerEndpointRegistrar();
-
-	private final JmsListenerEndpointRegistry registry = new JmsListenerEndpointRegistry();
-
-	private final JmsListenerContainerTestFactory containerFactory = new JmsListenerContainerTestFactory();
-
-
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();
-
+	private final JmsListenerEndpointRegistrar registrar = new JmsListenerEndpointRegistrar();
+	private final JmsListenerEndpointRegistry registry = new JmsListenerEndpointRegistry();
+	private final JmsListenerContainerTestFactory containerFactory = new JmsListenerContainerTestFactory();
 
 	@Before
 	public void setup() {

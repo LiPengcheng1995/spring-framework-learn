@@ -16,27 +16,15 @@
 
 package org.springframework.orm.jpa;
 
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.OptimisticLockException;
-import javax.persistence.PersistenceException;
-import javax.persistence.TransactionRequiredException;
-
 import org.junit.Test;
-
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.dao.*;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import javax.persistence.*;
+
 import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
 
 /**
  * @author Costin Leau
@@ -56,8 +44,7 @@ public class EntityManagerFactoryUtilsTests {
 		try {
 			EntityManagerFactoryUtils.doGetTransactionalEntityManager(null, null);
 			fail("expected exception");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// it's okay
 		}
 		EntityManagerFactory factory = mock(EntityManagerFactory.class);
@@ -78,9 +65,8 @@ public class EntityManagerFactoryUtilsTests {
 
 			// no tx active
 			assertSame(manager, EntityManagerFactoryUtils.doGetTransactionalEntityManager(factory, null));
-			assertSame(manager, ((EntityManagerHolder)TransactionSynchronizationManager.unbindResource(factory)).getEntityManager());
-		}
-		finally {
+			assertSame(manager, ((EntityManagerHolder) TransactionSynchronizationManager.unbindResource(factory)).getEntityManager());
+		} finally {
 			TransactionSynchronizationManager.clearSynchronization();
 		}
 

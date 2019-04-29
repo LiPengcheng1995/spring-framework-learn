@@ -16,15 +16,15 @@
 
 package org.springframework.core.codec;
 
-import java.nio.ByteBuffer;
-import java.util.Map;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
+
+import java.nio.ByteBuffer;
+import java.util.Map;
 
 /**
  * Decoder for {@link ByteBuffer}s.
@@ -49,7 +49,7 @@ public class ByteBufferDecoder extends AbstractDataBufferDecoder<ByteBuffer> {
 
 	@Override
 	protected ByteBuffer decodeDataBuffer(DataBuffer dataBuffer, ResolvableType elementType,
-			@Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
+										  @Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
 
 		ByteBuffer copy = ByteBuffer.allocate(dataBuffer.readableByteCount());
 		copy.put(dataBuffer.asByteBuffer());

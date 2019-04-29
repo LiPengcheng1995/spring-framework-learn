@@ -16,12 +16,9 @@
 
 package org.springframework.aop.aspectj;
 
-import java.lang.reflect.Method;
-
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.aop.MethodBeforeAdvice;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -29,7 +26,9 @@ import org.springframework.core.Ordered;
 import org.springframework.lang.Nullable;
 import org.springframework.tests.sample.beans.ITestBean;
 
-import static org.junit.Assert.*;
+import java.lang.reflect.Method;
+
+import static org.junit.Assert.fail;
 
 /**
  * @author Adrian Colyer
@@ -74,26 +73,26 @@ public class AspectAndAdvicePrecedenceTests {
 	private static class PrecedenceVerifyingCollaborator implements PrecedenceTestAspect.Collaborator {
 
 		private static final String[] EXPECTED = {
-			// this order confirmed by running the same aspects (minus the Spring AOP advisors)
-			// through AspectJ...
-			"beforeAdviceOne(highPrecedenceAspect)",  	       // 1
-			"beforeAdviceTwo(highPrecedenceAspect)",           // 2
-			"aroundAdviceOne(highPrecedenceAspect)",           // 3, before proceed
-			  "aroundAdviceTwo(highPrecedenceAspect)",         // 4, before proceed
-			    "beforeAdviceOne(highPrecedenceSpringAdvice)", // 5
-			    "beforeAdviceOne(lowPrecedenceSpringAdvice)",  // 6
-			    "beforeAdviceOne(lowPrecedenceAspect)",        // 7
-			    "beforeAdviceTwo(lowPrecedenceAspect)",        // 8
-			    "aroundAdviceOne(lowPrecedenceAspect)",        // 9, before proceed
-			      "aroundAdviceTwo(lowPrecedenceAspect)",      // 10, before proceed
-			      "aroundAdviceTwo(lowPrecedenceAspect)",      // 11, after proceed
-			    "aroundAdviceOne(lowPrecedenceAspect)",        // 12, after proceed
-			    "afterAdviceOne(lowPrecedenceAspect)",         // 13
-			    "afterAdviceTwo(lowPrecedenceAspect)",         // 14
-			  "aroundAdviceTwo(highPrecedenceAspect)",         // 15, after proceed
-			"aroundAdviceOne(highPrecedenceAspect)",           // 16, after proceed
-			"afterAdviceOne(highPrecedenceAspect)",            // 17
-			"afterAdviceTwo(highPrecedenceAspect)"             // 18
+				// this order confirmed by running the same aspects (minus the Spring AOP advisors)
+				// through AspectJ...
+				"beforeAdviceOne(highPrecedenceAspect)",           // 1
+				"beforeAdviceTwo(highPrecedenceAspect)",           // 2
+				"aroundAdviceOne(highPrecedenceAspect)",           // 3, before proceed
+				"aroundAdviceTwo(highPrecedenceAspect)",         // 4, before proceed
+				"beforeAdviceOne(highPrecedenceSpringAdvice)", // 5
+				"beforeAdviceOne(lowPrecedenceSpringAdvice)",  // 6
+				"beforeAdviceOne(lowPrecedenceAspect)",        // 7
+				"beforeAdviceTwo(lowPrecedenceAspect)",        // 8
+				"aroundAdviceOne(lowPrecedenceAspect)",        // 9, before proceed
+				"aroundAdviceTwo(lowPrecedenceAspect)",      // 10, before proceed
+				"aroundAdviceTwo(lowPrecedenceAspect)",      // 11, after proceed
+				"aroundAdviceOne(lowPrecedenceAspect)",        // 12, after proceed
+				"afterAdviceOne(lowPrecedenceAspect)",         // 13
+				"afterAdviceTwo(lowPrecedenceAspect)",         // 14
+				"aroundAdviceTwo(highPrecedenceAspect)",         // 15, after proceed
+				"aroundAdviceOne(highPrecedenceAspect)",           // 16, after proceed
+				"afterAdviceOne(highPrecedenceAspect)",            // 17
+				"afterAdviceTwo(highPrecedenceAspect)"             // 18
 		};
 
 		private int adviceInvocationNumber = 0;
@@ -159,13 +158,13 @@ class PrecedenceTestAspect implements BeanNameAware, Ordered {
 		this.name = name;
 	}
 
-	public void setOrder(int order) {
-		this.order = order;
-	}
-
 	@Override
 	public int getOrder() {
 		return order;
+	}
+
+	public void setOrder(int order) {
+		this.order = order;
 	}
 
 	public void setCollaborator(Collaborator collaborator) {
@@ -184,9 +183,8 @@ class PrecedenceTestAspect implements BeanNameAware, Ordered {
 		int ret = -1;
 		this.collaborator.aroundAdviceOne(this.name);
 		try {
-			ret = ((Integer)pjp.proceed()).intValue();
-		}
-		catch (Throwable t) {
+			ret = ((Integer) pjp.proceed()).intValue();
+		} catch (Throwable t) {
 			throw new RuntimeException(t);
 		}
 		this.collaborator.aroundAdviceOne(this.name);
@@ -197,9 +195,8 @@ class PrecedenceTestAspect implements BeanNameAware, Ordered {
 		int ret = -1;
 		this.collaborator.aroundAdviceTwo(this.name);
 		try {
-			ret = ((Integer)pjp.proceed()).intValue();
-		}
-		catch (Throwable t) {
+			ret = ((Integer) pjp.proceed()).intValue();
+		} catch (Throwable t) {
 			throw new RuntimeException(t);
 		}
 		this.collaborator.aroundAdviceTwo(this.name);
@@ -218,10 +215,15 @@ class PrecedenceTestAspect implements BeanNameAware, Ordered {
 	public interface Collaborator {
 
 		void beforeAdviceOne(String beanName);
+
 		void beforeAdviceTwo(String beanName);
+
 		void aroundAdviceOne(String beanName);
+
 		void aroundAdviceTwo(String beanName);
+
 		void afterAdviceOne(String beanName);
+
 		void afterAdviceTwo(String beanName);
 	}
 

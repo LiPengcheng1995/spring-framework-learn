@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xmlns:context="http://www.springframework.org/schema/context"
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns="http://www.springframework.org/schema/beans"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 				http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
 	<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
 		<property name="converters">
-			<bean class="org.springframework.context.conversionservice.StringToBarConverter" />
+			<bean class="org.springframework.context.conversionservice.StringToBarConverter"/>
 		</property>
 	</bean>
 
@@ -37,11 +37,11 @@
 	</bean>
 
 	<bean class="org.springframework.context.conversionservice.Bar">
-		<constructor-arg value ="value1" />
+		<constructor-arg value="value1"/>
 	</bean>
 
 	<bean class="org.springframework.context.conversionservice.Bar">
-		<constructor-arg value ="value2" />
+		<constructor-arg value="value2"/>
 	</bean>
 
 	<bean id="numValue" class="java.lang.Integer">
@@ -52,6 +52,6 @@
 		<constructor-arg value="222"/>
 	</bean>
 
-	<context:annotation-config />
+	<context:annotation-config/>
 
 </beans>

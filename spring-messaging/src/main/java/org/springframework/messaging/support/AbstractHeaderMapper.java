@@ -16,14 +16,13 @@
 
 package org.springframework.messaging.support;
 
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.util.StringUtils;
+
+import java.util.Map;
 
 /**
  * A base {@link HeaderMapper} implementation.
@@ -62,6 +61,7 @@ public abstract class AbstractHeaderMapper<T> implements HeaderMapper<T> {
 	/**
 	 * Generate the name to use to set the header defined by the specified
 	 * {@code headerName} to the protocol specific message.
+	 *
 	 * @see #setOutboundPrefix
 	 */
 	protected String fromHeaderName(String headerName) {
@@ -75,6 +75,7 @@ public abstract class AbstractHeaderMapper<T> implements HeaderMapper<T> {
 	/**
 	 * Generate the name to use to set the header defined by the specified
 	 * {@code propertyName} to the {@link MessageHeaders} instance.
+	 *
 	 * @see #setInboundPrefix(String)
 	 */
 	protected String toHeaderName(String propertyName) {
@@ -101,8 +102,7 @@ public abstract class AbstractHeaderMapper<T> implements HeaderMapper<T> {
 						value.getClass() + "]");
 			}
 			return null;
-		}
-		else {
+		} else {
 			return type.cast(value);
 		}
 	}

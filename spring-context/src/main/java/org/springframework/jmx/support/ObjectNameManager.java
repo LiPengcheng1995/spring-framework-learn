@@ -16,24 +16,25 @@
 
 package org.springframework.jmx.support;
 
-import java.util.Hashtable;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
+import java.util.Hashtable;
 
 /**
  * Helper class for the creation of {@link javax.management.ObjectName} instances.
  *
  * @author Rob Harrop
  * @author Juergen Hoeller
- * @since 1.2
  * @see javax.management.ObjectName#getInstance(String)
+ * @since 1.2
  */
 public class ObjectNameManager {
 
 	/**
 	 * Retrieve the {@code ObjectName} instance corresponding to the supplied name.
+	 *
 	 * @param objectName the {@code ObjectName} in {@code ObjectName} or
-	 * {@code String} format
+	 *                   {@code String} format
 	 * @return the {@code ObjectName} instance
 	 * @throws MalformedObjectNameException in case of an invalid object name specification
 	 * @see ObjectName#ObjectName(String)
@@ -52,6 +53,7 @@ public class ObjectNameManager {
 
 	/**
 	 * Retrieve the {@code ObjectName} instance corresponding to the supplied name.
+	 *
 	 * @param objectName the {@code ObjectName} in {@code String} format
 	 * @return the {@code ObjectName} instance
 	 * @throws MalformedObjectNameException in case of an invalid object name specification
@@ -65,9 +67,10 @@ public class ObjectNameManager {
 	/**
 	 * Retrieve an {@code ObjectName} instance for the specified domain and a
 	 * single property with the supplied key and value.
+	 *
 	 * @param domainName the domain name for the {@code ObjectName}
-	 * @param key the key for the single property in the {@code ObjectName}
-	 * @param value the value for the single property in the {@code ObjectName}
+	 * @param key        the key for the single property in the {@code ObjectName}
+	 * @param value      the value for the single property in the {@code ObjectName}
 	 * @return the {@code ObjectName} instance
 	 * @throws MalformedObjectNameException in case of an invalid object name specification
 	 * @see ObjectName#ObjectName(String, String, String)
@@ -82,6 +85,7 @@ public class ObjectNameManager {
 	/**
 	 * Retrieve an {@code ObjectName} instance with the specified domain name
 	 * and the supplied key/name properties.
+	 *
 	 * @param domainName the domain name for the {@code ObjectName}
 	 * @param properties the properties for the {@code ObjectName}
 	 * @return the {@code ObjectName} instance

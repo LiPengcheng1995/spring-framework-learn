@@ -17,16 +17,15 @@
 package org.springframework.context.expression;
 
 import org.junit.Test;
-
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.mock.env.MockPropertySource;
 import org.springframework.tests.sample.beans.TestBean;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.springframework.beans.factory.support.BeanDefinitionBuilder.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.springframework.beans.factory.support.BeanDefinitionBuilder.genericBeanDefinition;
 
 /**
  * Integration tests for {@link EnvironmentAccessor}, which is registered with
@@ -43,8 +42,8 @@ public class EnvironmentAccessorIntegrationTests {
 		DefaultListableBeanFactory bf = new DefaultListableBeanFactory();
 		bf.registerBeanDefinition("testBean",
 				genericBeanDefinition(TestBean.class)
-					.addPropertyValue("name", "#{environment['my.name']}")
-					.getBeanDefinition());
+						.addPropertyValue("name", "#{environment['my.name']}")
+						.getBeanDefinition());
 
 		GenericApplicationContext ctx = new GenericApplicationContext(bf);
 		ctx.getEnvironment().getPropertySources().addFirst(new MockPropertySource().withProperty("my.name", "myBean"));

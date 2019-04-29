@@ -16,12 +16,12 @@
 
 package org.springframework.format.number;
 
+import org.springframework.format.Formatter;
+
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.util.Locale;
-
-import org.springframework.format.Formatter;
 
 /**
  * Abstract formatter for Numbers,
@@ -70,6 +70,7 @@ public abstract class AbstractNumberFormatter implements Formatter<Number> {
 
 	/**
 	 * Obtain a concrete NumberFormat for the specified locale.
+	 *
 	 * @param locale the current locale
 	 * @return the NumberFormat instance (never {@code null})
 	 */

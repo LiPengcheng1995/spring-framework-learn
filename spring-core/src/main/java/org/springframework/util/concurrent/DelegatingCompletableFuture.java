@@ -16,10 +16,10 @@
 
 package org.springframework.util.concurrent;
 
+import org.springframework.util.Assert;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
-
-import org.springframework.util.Assert;
 
 /**
  * Extension of {@link CompletableFuture} which allows for cancelling

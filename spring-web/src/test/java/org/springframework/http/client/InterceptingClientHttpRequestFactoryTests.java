@@ -16,6 +16,13 @@
 
 package org.springframework.http.client;
 
+import org.junit.Test;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.client.support.HttpRequestWrapper;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,14 +32,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import org.junit.Test;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.client.support.HttpRequestWrapper;
 
 import static org.junit.Assert.*;
 
@@ -225,75 +224,6 @@ public class InterceptingClientHttpRequestFactoryTests {
 		}
 	}
 
-
-	private class RequestFactoryMock implements ClientHttpRequestFactory {
-
-		@Override
-		public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
-			requestMock.setURI(uri);
-			requestMock.setMethod(httpMethod);
-			return requestMock;
-		}
-
-	}
-
-
-	private class RequestMock implements ClientHttpRequest {
-
-		private URI uri;
-
-		private HttpMethod method;
-
-		private HttpHeaders headers = new HttpHeaders();
-
-		private ByteArrayOutputStream body = new ByteArrayOutputStream();
-
-		private boolean executed = false;
-
-		private RequestMock() {
-		}
-
-		@Override
-		public URI getURI() {
-			return uri;
-		}
-
-		public void setURI(URI uri) {
-			this.uri = uri;
-		}
-
-		@Override
-		public HttpMethod getMethod() {
-			return method;
-		}
-
-		@Override
-		public String getMethodValue() {
-			return method.name();
-		}
-
-		public void setMethod(HttpMethod method) {
-			this.method = method;
-		}
-
-		@Override
-		public HttpHeaders getHeaders() {
-			return headers;
-		}
-
-		@Override
-		public OutputStream getBody() throws IOException {
-			return body;
-		}
-
-		@Override
-		public ClientHttpResponse execute() throws IOException {
-			executed = true;
-			return responseMock;
-		}
-	}
-
-
 	private static class ResponseMock implements ClientHttpResponse {
 
 		private HttpStatus statusCode = HttpStatus.OK;
@@ -329,6 +259,72 @@ public class InterceptingClientHttpRequestFactoryTests {
 
 		@Override
 		public void close() {
+		}
+	}
+
+	private class RequestFactoryMock implements ClientHttpRequestFactory {
+
+		@Override
+		public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
+			requestMock.setURI(uri);
+			requestMock.setMethod(httpMethod);
+			return requestMock;
+		}
+
+	}
+
+	private class RequestMock implements ClientHttpRequest {
+
+		private URI uri;
+
+		private HttpMethod method;
+
+		private HttpHeaders headers = new HttpHeaders();
+
+		private ByteArrayOutputStream body = new ByteArrayOutputStream();
+
+		private boolean executed = false;
+
+		private RequestMock() {
+		}
+
+		@Override
+		public URI getURI() {
+			return uri;
+		}
+
+		public void setURI(URI uri) {
+			this.uri = uri;
+		}
+
+		@Override
+		public HttpMethod getMethod() {
+			return method;
+		}
+
+		public void setMethod(HttpMethod method) {
+			this.method = method;
+		}
+
+		@Override
+		public String getMethodValue() {
+			return method.name();
+		}
+
+		@Override
+		public HttpHeaders getHeaders() {
+			return headers;
+		}
+
+		@Override
+		public OutputStream getBody() throws IOException {
+			return body;
+		}
+
+		@Override
+		public ClientHttpResponse execute() throws IOException {
+			executed = true;
+			return responseMock;
 		}
 	}
 

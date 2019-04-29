@@ -16,14 +16,7 @@
 
 package org.springframework.beans;
 
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.core.BridgeMethodResolver;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.MethodParameter;
@@ -32,6 +25,12 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Extension of the standard JavaBeans {@link PropertyDescriptor} class,
@@ -50,21 +49,17 @@ final class GenericTypeAwarePropertyDescriptor extends PropertyDescriptor {
 
 	@Nullable
 	private final Method writeMethod;
-
+	private final Class<?> propertyEditorClass;
 	@Nullable
 	private volatile Set<Method> ambiguousWriteMethods;
-
 	@Nullable
 	private MethodParameter writeMethodParameter;
-
 	@Nullable
 	private Class<?> propertyType;
 
-	private final Class<?> propertyEditorClass;
-
 
 	public GenericTypeAwarePropertyDescriptor(Class<?> beanClass, String propertyName,
-			@Nullable Method readMethod, @Nullable Method writeMethod, Class<?> propertyEditorClass)
+											  @Nullable Method readMethod, @Nullable Method writeMethod, Class<?> propertyEditorClass)
 			throws IntrospectionException {
 
 		super(propertyName, null, null);
@@ -108,8 +103,7 @@ final class GenericTypeAwarePropertyDescriptor extends PropertyDescriptor {
 
 		if (this.readMethod != null) {
 			this.propertyType = GenericTypeResolver.resolveReturnType(this.readMethod, this.beanClass);
-		}
-		else if (this.writeMethodParameter != null) {
+		} else if (this.writeMethodParameter != null) {
 			this.propertyType = this.writeMethodParameter.getParameterType();
 		}
 

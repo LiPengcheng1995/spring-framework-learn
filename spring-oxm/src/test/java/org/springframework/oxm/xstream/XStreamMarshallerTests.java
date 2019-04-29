@@ -16,16 +16,25 @@
 
 package org.springframework.oxm.xstream;
 
-import java.io.ByteArrayOutputStream;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import com.thoughtworks.xstream.converters.extended.EncodedByteArrayConverter;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
+import com.thoughtworks.xstream.io.json.JsonHierarchicalStreamDriver;
+import com.thoughtworks.xstream.io.json.JsonWriter;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.mockito.InOrder;
+import org.springframework.util.xml.StaxUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.Text;
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xmlunit.builder.Input;
+import org.xmlunit.xpath.JAXPXPathEngine;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.stream.XMLEventWriter;
@@ -37,30 +46,16 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-
-import com.thoughtworks.xstream.converters.extended.EncodedByteArrayConverter;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
-import com.thoughtworks.xstream.io.json.JsonHierarchicalStreamDriver;
-import com.thoughtworks.xstream.io.json.JsonWriter;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.mockito.InOrder;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.Text;
-import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
-import org.xmlunit.builder.Input;
-import org.xmlunit.xpath.JAXPXPathEngine;
-
-import org.springframework.util.xml.StaxUtils;
+import java.io.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.*;
-import static org.xmlunit.matchers.CompareMatcher.*;
+import static org.xmlunit.matchers.CompareMatcher.isSimilarTo;
 
 /**
  * @author Arjen Poutsma
@@ -74,6 +69,24 @@ public class XStreamMarshallerTests {
 
 	private Flight flight;
 
+	private static void assertXpathExists(String xPathExpression, String inXMLString) {
+		Source source = Input.fromString(inXMLString).build();
+		Iterable<Node> nodes = new JAXPXPathEngine().selectNodes(xPathExpression, source);
+		assertTrue("Expecting to find matches for Xpath " + xPathExpression, count(nodes) > 0);
+	}
+
+	private static void assertXpathNotExists(String xPathExpression, String inXMLString) {
+		Source source = Input.fromString(inXMLString).build();
+		Iterable<Node> nodes = new JAXPXPathEngine().selectNodes(xPathExpression, source);
+		assertEquals("Should be zero matches for Xpath " + xPathExpression, 0, count(nodes));
+	}
+
+	private static int count(Iterable<Node> nodes) {
+		assertNotNull(nodes);
+		AtomicInteger count = new AtomicInteger();
+		nodes.forEach(n -> count.incrementAndGet());
+		return count.get();
+	}
 
 	@Before
 	public void createMarshaller() {
@@ -84,7 +97,6 @@ public class XStreamMarshallerTests {
 		flight = new Flight();
 		flight.setFlightNumber(42L);
 	}
-
 
 	@Test
 	public void marshalDOMResult() throws Exception {
@@ -270,7 +282,7 @@ public class XStreamMarshallerTests {
 	}
 
 	@Test
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public void omitFields() throws Exception {
 		Map omittedFieldsMap = Collections.singletonMap(Flight.class, "flightNumber");
 		marshaller.setOmittedFields(omittedFieldsMap);
@@ -280,7 +292,7 @@ public class XStreamMarshallerTests {
 	}
 
 	@Test
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public void implicitCollections() throws Exception {
 		Flights flights = new Flights();
 		flights.getFlights().add(flight);
@@ -342,26 +354,6 @@ public class XStreamMarshallerTests {
 		marshaller.marshal(flight, result);
 		String expected = "<flight><number>42</number></flight>";
 		assertThat("Marshaller writes invalid StreamResult", writer.toString(), isSimilarTo(expected));
-	}
-
-
-	private static void assertXpathExists(String xPathExpression, String inXMLString){
-		Source source = Input.fromString(inXMLString).build();
-		Iterable<Node> nodes = new JAXPXPathEngine().selectNodes(xPathExpression, source);
-		assertTrue("Expecting to find matches for Xpath " + xPathExpression, count(nodes) > 0);
-	}
-
-	private static void assertXpathNotExists(String xPathExpression, String inXMLString){
-		Source source = Input.fromString(inXMLString).build();
-		Iterable<Node> nodes = new JAXPXPathEngine().selectNodes(xPathExpression, source);
-		assertEquals("Should be zero matches for Xpath " + xPathExpression, 0, count(nodes));
-	}
-
-	private static int count(Iterable<Node> nodes) {
-		assertNotNull(nodes);
-		AtomicInteger count = new AtomicInteger();
-		nodes.forEach(n -> count.incrementAndGet());
-		return count.get();
 	}
 
 }

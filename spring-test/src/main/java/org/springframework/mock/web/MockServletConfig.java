@@ -16,15 +16,15 @@
 
 package org.springframework.mock.web;
 
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 
 /**
  * Mock implementation of the {@link javax.servlet.ServletConfig} interface.
@@ -51,6 +51,7 @@ public class MockServletConfig implements ServletConfig {
 
 	/**
 	 * Create a new MockServletConfig with a default {@link MockServletContext}.
+	 *
 	 * @param servletName the name of the servlet
 	 */
 	public MockServletConfig(String servletName) {
@@ -59,6 +60,7 @@ public class MockServletConfig implements ServletConfig {
 
 	/**
 	 * Create a new MockServletConfig.
+	 *
 	 * @param servletContext the ServletContext that the servlet runs in
 	 */
 	public MockServletConfig(@Nullable ServletContext servletContext) {
@@ -67,8 +69,9 @@ public class MockServletConfig implements ServletConfig {
 
 	/**
 	 * Create a new MockServletConfig.
+	 *
 	 * @param servletContext the ServletContext that the servlet runs in
-	 * @param servletName the name of the servlet
+	 * @param servletName    the name of the servlet
 	 */
 	public MockServletConfig(@Nullable ServletContext servletContext, String servletName) {
 		this.servletContext = (servletContext != null ? servletContext : new MockServletContext());

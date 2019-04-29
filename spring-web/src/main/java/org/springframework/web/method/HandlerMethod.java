@@ -16,12 +16,8 @@
 
 package org.springframework.web.method;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.core.BridgeMethodResolver;
 import org.springframework.core.GenericTypeResolver;
@@ -33,6 +29,9 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 
 /**
  * Encapsulates information about a handler method consisting of a
@@ -53,7 +52,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  */
 public class HandlerMethod {
 
-	/** Logger that is available to subclasses */
+	/**
+	 * Logger that is available to subclasses
+	 */
 	protected final Log logger = LogFactory.getLog(getClass());
 
 	private final Object bean;
@@ -96,6 +97,7 @@ public class HandlerMethod {
 
 	/**
 	 * Create an instance from a bean instance, method name, and parameter types.
+	 *
 	 * @throws NoSuchMethodException when the method cannot be found
 	 */
 	public HandlerMethod(Object bean, String methodName, Class<?>... parameterTypes) throws NoSuchMethodException {
@@ -229,8 +231,9 @@ public class HandlerMethod {
 
 	/**
 	 * Return the specified response status, if any.
-	 * @since 4.3.8
+	 *
 	 * @see ResponseStatus#code()
+	 * @since 4.3.8
 	 */
 	@Nullable
 	protected HttpStatus getResponseStatus() {
@@ -239,8 +242,9 @@ public class HandlerMethod {
 
 	/**
 	 * Return the associated response status reason, if any.
-	 * @since 4.3.8
+	 *
 	 * @see ResponseStatus#reason()
+	 * @since 4.3.8
 	 */
 	@Nullable
 	protected String getResponseStatusReason() {
@@ -273,6 +277,7 @@ public class HandlerMethod {
 	 * if no annotation can be found on the given method itself.
 	 * <p>Also supports <em>merged</em> composed annotations with attribute
 	 * overrides as of Spring Framework 4.2.2.
+	 *
 	 * @param annotationType the type of annotation to introspect the method for
 	 * @return the annotation, or {@code null} if none found
 	 * @see AnnotatedElementUtils#findMergedAnnotation
@@ -284,9 +289,10 @@ public class HandlerMethod {
 
 	/**
 	 * Return whether the parameter is declared with the given annotation type.
+	 *
 	 * @param annotationType the annotation type to look for
-	 * @since 4.3
 	 * @see AnnotatedElementUtils#hasAnnotation
+	 * @since 4.3
 	 */
 	public <A extends Annotation> boolean hasMethodAnnotation(Class<A> annotationType) {
 		return AnnotatedElementUtils.hasAnnotation(this.method, annotationType);
@@ -317,6 +323,7 @@ public class HandlerMethod {
 
 	/**
 	 * Return a short representation of this handler method for log message purposes.
+	 *
 	 * @since 4.3
 	 */
 	public String getShortLogMessage() {

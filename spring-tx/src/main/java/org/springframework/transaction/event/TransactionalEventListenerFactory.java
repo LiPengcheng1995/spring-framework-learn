@@ -16,12 +16,12 @@
 
 package org.springframework.transaction.event;
 
-import java.lang.reflect.Method;
-
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.EventListenerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+
+import java.lang.reflect.Method;
 
 /**
  * {@link EventListenerFactory} implementation that handles {@link TransactionalEventListener}
@@ -34,16 +34,14 @@ public class TransactionalEventListenerFactory implements EventListenerFactory, 
 
 	private int order = 50;
 
-
-	public void setOrder(int order) {
-		this.order = order;
-	}
-
 	@Override
 	public int getOrder() {
 		return this.order;
 	}
 
+	public void setOrder(int order) {
+		this.order = order;
+	}
 
 	@Override
 	public boolean supportsMethod(Method method) {

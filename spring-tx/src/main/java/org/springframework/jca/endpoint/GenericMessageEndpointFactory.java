@@ -16,19 +16,18 @@
 
 package org.springframework.jca.endpoint;
 
-import javax.resource.ResourceException;
-import javax.resource.spi.UnavailableException;
-import javax.resource.spi.endpoint.MessageEndpoint;
-import javax.transaction.xa.XAResource;
-
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aop.support.DelegatingIntroductionInterceptor;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
+
+import javax.resource.ResourceException;
+import javax.resource.spi.UnavailableException;
+import javax.resource.spi.endpoint.MessageEndpoint;
+import javax.transaction.xa.XAResource;
 
 /**
  * Generic implementation of the JCA 1.7
@@ -47,16 +46,25 @@ import org.springframework.util.ReflectionUtils;
  * {@link javax.resource.spi.ResourceAdapter} instance.
  *
  * @author Juergen Hoeller
- * @since 2.5
  * @see #setMessageListener
  * @see #setTransactionManager
  * @see GenericMessageEndpointManager
+ * @since 2.5
  */
 public class GenericMessageEndpointFactory extends AbstractMessageEndpointFactory {
 
 	@Nullable
 	private Object messageListener;
 
+	/**
+	 * Return the message listener object for this endpoint.
+	 *
+	 * @since 5.0
+	 */
+	protected Object getMessageListener() {
+		Assert.state(this.messageListener != null, "No message listener set");
+		return this.messageListener;
+	}
 
 	/**
 	 * Specify the message listener object that the endpoint should expose
@@ -65,15 +73,6 @@ public class GenericMessageEndpointFactory extends AbstractMessageEndpointFactor
 	 */
 	public void setMessageListener(Object messageListener) {
 		this.messageListener = messageListener;
-	}
-
-	/**
-	 * Return the message listener object for this endpoint.
-	 * @since 5.0
-	 */
-	protected Object getMessageListener() {
-		Assert.state(this.messageListener != null, "No message listener set");
-		return this.messageListener;
 	}
 
 	/**
@@ -99,6 +98,21 @@ public class GenericMessageEndpointFactory extends AbstractMessageEndpointFactor
 		return new GenericMessageEndpoint();
 	}
 
+	/**
+	 * Internal exception thrown when a ResourceException has been encountered
+	 * during the endpoint invocation.
+	 * <p>Will only be used if the ResourceAdapter does not invoke the
+	 * endpoint's {@code beforeDelivery} and {@code afterDelivery}
+	 * directly, leaving it up to the concrete endpoint to apply those -
+	 * and to handle any ResourceExceptions thrown from them.
+	 */
+	@SuppressWarnings("serial")
+	public static class InternalResourceException extends RuntimeException {
+
+		public InternalResourceException(ResourceException cause) {
+			super(cause);
+		}
+	}
 
 	/**
 	 * Private inner class that implements the concrete generic message endpoint,
@@ -113,25 +127,21 @@ public class GenericMessageEndpointFactory extends AbstractMessageEndpointFactor
 			if (applyDeliveryCalls) {
 				try {
 					beforeDelivery(null);
-				}
-				catch (ResourceException ex) {
+				} catch (ResourceException ex) {
 					throw adaptExceptionIfNecessary(methodInvocation, ex);
 				}
 			}
 			try {
 				return methodInvocation.proceed();
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				endpointEx = ex;
 				onEndpointException(ex);
 				throw ex;
-			}
-			finally {
+			} finally {
 				if (applyDeliveryCalls) {
 					try {
 						afterDelivery();
-					}
-					catch (ResourceException ex) {
+					} catch (ResourceException ex) {
 						if (endpointEx == null) {
 							throw adaptExceptionIfNecessary(methodInvocation, ex);
 						}
@@ -143,8 +153,7 @@ public class GenericMessageEndpointFactory extends AbstractMessageEndpointFactor
 		private Exception adaptExceptionIfNecessary(MethodInvocation methodInvocation, ResourceException ex) {
 			if (ReflectionUtils.declaresException(methodInvocation.getMethod(), ex.getClass())) {
 				return ex;
-			}
-			else {
+			} else {
 				return new InternalResourceException(ex);
 			}
 		}
@@ -152,23 +161,6 @@ public class GenericMessageEndpointFactory extends AbstractMessageEndpointFactor
 		@Override
 		protected ClassLoader getEndpointClassLoader() {
 			return getMessageListener().getClass().getClassLoader();
-		}
-	}
-
-
-	/**
-	 * Internal exception thrown when a ResourceException has been encountered
-	 * during the endpoint invocation.
-	 * <p>Will only be used if the ResourceAdapter does not invoke the
-	 * endpoint's {@code beforeDelivery} and {@code afterDelivery}
-	 * directly, leaving it up to the concrete endpoint to apply those -
-	 * and to handle any ResourceExceptions thrown from them.
-	 */
-	@SuppressWarnings("serial")
-	public static class InternalResourceException extends RuntimeException {
-
-		public InternalResourceException(ResourceException cause) {
-			super(cause);
 		}
 	}
 

@@ -16,6 +16,9 @@
 
 package org.springframework.http.client;
 
+import org.junit.Test;
+import org.springframework.http.HttpMethod;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,11 +26,7 @@ import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
 
-import org.junit.Test;
-
-import org.springframework.http.HttpMethod;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class BufferedSimpleHttpRequestFactoryTests extends AbstractHttpRequestFactoryTestCase {
 
@@ -41,8 +40,7 @@ public class BufferedSimpleHttpRequestFactoryTests extends AbstractHttpRequestFa
 	public void httpMethods() throws Exception {
 		try {
 			assertHttpMethod("patch", HttpMethod.PATCH);
-		}
-		catch (ProtocolException ex) {
+		} catch (ProtocolException ex) {
 			// Currently HttpURLConnection does not support HTTP PATCH
 		}
 	}

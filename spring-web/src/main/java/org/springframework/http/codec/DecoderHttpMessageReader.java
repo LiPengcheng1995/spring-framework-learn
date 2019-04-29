@@ -16,14 +16,6 @@
 
 package org.springframework.http.codec;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.codec.Decoder;
 import org.springframework.http.HttpMessage;
@@ -33,6 +25,13 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * {@code HttpMessageReader} that wraps and delegates to a {@link Decoder}.
@@ -103,7 +102,7 @@ public class DecoderHttpMessageReader<T> implements HttpMessageReader<T> {
 
 	@Override
 	public Flux<T> read(ResolvableType actualType, ResolvableType elementType,
-			ServerHttpRequest request, ServerHttpResponse response, Map<String, Object> hints) {
+						ServerHttpRequest request, ServerHttpResponse response, Map<String, Object> hints) {
 
 		Map<String, Object> allHints = new HashMap<>(4);
 		allHints.putAll(getReadHints(actualType, elementType, request, response));
@@ -114,7 +113,7 @@ public class DecoderHttpMessageReader<T> implements HttpMessageReader<T> {
 
 	@Override
 	public Mono<T> readMono(ResolvableType actualType, ResolvableType elementType,
-			ServerHttpRequest request, ServerHttpResponse response, Map<String, Object> hints) {
+							ServerHttpRequest request, ServerHttpResponse response, Map<String, Object> hints) {
 
 		Map<String, Object> allHints = new HashMap<>(4);
 		allHints.putAll(getReadHints(actualType, elementType, request, response));
@@ -129,7 +128,7 @@ public class DecoderHttpMessageReader<T> implements HttpMessageReader<T> {
 	 * the decoder if it is an instance of {@link HttpMessageDecoder}.
 	 */
 	protected Map<String, Object> getReadHints(ResolvableType actualType,
-			ResolvableType elementType, ServerHttpRequest request, ServerHttpResponse response) {
+											   ResolvableType elementType, ServerHttpRequest request, ServerHttpResponse response) {
 
 		if (this.decoder instanceof HttpMessageDecoder) {
 			HttpMessageDecoder<?> httpDecoder = (HttpMessageDecoder<?>) this.decoder;

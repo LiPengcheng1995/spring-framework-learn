@@ -16,9 +16,9 @@
 
 package org.springframework.web.servlet;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.lang.Nullable;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Strategy interface for translating an incoming
@@ -33,8 +33,9 @@ public interface RequestToViewNameTranslator {
 
 	/**
 	 * Translate the given {@link HttpServletRequest} into a view name.
+	 *
 	 * @param request the incoming {@link HttpServletRequest} providing
-	 * the context from which a view name is to be resolved
+	 *                the context from which a view name is to be resolved
 	 * @return the view name, or {@code null} if no default found
 	 * @throws Exception if view name translation fails
 	 */

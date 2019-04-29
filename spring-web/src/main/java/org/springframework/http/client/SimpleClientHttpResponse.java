@@ -16,14 +16,14 @@
 
 package org.springframework.http.client;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 
 /**
  * {@link ClientHttpResponse} implementation that uses standard JDK facilities.
@@ -95,8 +95,7 @@ final class SimpleClientHttpResponse extends AbstractClientHttpResponse {
 			try {
 				StreamUtils.drain(this.responseStream);
 				this.responseStream.close();
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				// ignore
 			}
 		}

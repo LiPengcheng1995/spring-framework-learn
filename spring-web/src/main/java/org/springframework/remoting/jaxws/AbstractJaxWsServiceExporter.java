@@ -16,25 +16,20 @@
 
 package org.springframework.remoting.jaxws;
 
+import org.springframework.beans.factory.*;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+
+import javax.jws.WebService;
+import javax.xml.ws.Endpoint;
+import javax.xml.ws.WebServiceFeature;
+import javax.xml.ws.WebServiceProvider;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executor;
-import javax.jws.WebService;
-import javax.xml.ws.Endpoint;
-import javax.xml.ws.WebServiceFeature;
-import javax.xml.ws.WebServiceProvider;
-
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.CannotLoadBeanClassException;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 
 /**
  * Abstract exporter for JAX-WS services, autodetecting annotated service beans
@@ -44,35 +39,30 @@ import org.springframework.util.Assert;
  * for actual endpoint exposure.
  *
  * @author Juergen Hoeller
- * @since 2.5.5
  * @see javax.jws.WebService
  * @see javax.xml.ws.Endpoint
  * @see SimpleJaxWsServiceExporter
  * @see SimpleHttpServerJaxWsServiceExporter
+ * @since 2.5.5
  */
 public abstract class AbstractJaxWsServiceExporter implements BeanFactoryAware, InitializingBean, DisposableBean {
 
+	private final Set<Endpoint> publishedEndpoints = new LinkedHashSet<>();
 	@Nullable
 	private Map<String, Object> endpointProperties;
-
 	@Nullable
 	private Executor executor;
-
 	@Nullable
 	private String bindingType;
-
 	@Nullable
 	private WebServiceFeature[] endpointFeatures;
-
 	@Nullable
 	private ListableBeanFactory beanFactory;
-
-	private final Set<Endpoint> publishedEndpoints = new LinkedHashSet<>();
-
 
 	/**
 	 * Set the property bag for the endpoint, including properties such as
 	 * "javax.xml.ws.wsdl.service" or "javax.xml.ws.wsdl.port".
+	 *
 	 * @see javax.xml.ws.Endpoint#setProperties
 	 * @see javax.xml.ws.Endpoint#WSDL_SERVICE
 	 * @see javax.xml.ws.Endpoint#WSDL_PORT
@@ -84,6 +74,7 @@ public abstract class AbstractJaxWsServiceExporter implements BeanFactoryAware, 
 	/**
 	 * Set the JDK concurrent executor to use for dispatching incoming requests
 	 * to exported service instances.
+	 *
 	 * @see javax.xml.ws.Endpoint#setExecutor
 	 */
 	public void setExecutor(Executor executor) {
@@ -101,6 +92,7 @@ public abstract class AbstractJaxWsServiceExporter implements BeanFactoryAware, 
 	/**
 	 * Specify WebServiceFeature objects (e.g. as inner bean definitions)
 	 * to apply to JAX-WS endpoint creation.
+	 *
 	 * @since 4.0
 	 */
 	public void setEndpointFeatures(WebServiceFeature... endpointFeatures) {
@@ -121,6 +113,7 @@ public abstract class AbstractJaxWsServiceExporter implements BeanFactoryAware, 
 
 	/**
 	 * Immediately publish all endpoints when fully configured.
+	 *
 	 * @see #publishEndpoints()
 	 */
 	@Override
@@ -131,6 +124,7 @@ public abstract class AbstractJaxWsServiceExporter implements BeanFactoryAware, 
 	/**
 	 * Publish all {@link javax.jws.WebService} annotated beans in the
 	 * containing BeanFactory.
+	 *
 	 * @see #publishEndpoint
 	 */
 	public void publishEndpoints() {
@@ -158,15 +152,13 @@ public abstract class AbstractJaxWsServiceExporter implements BeanFactoryAware, 
 						}
 						if (wsAnnotation != null) {
 							publishEndpoint(endpoint, wsAnnotation);
-						}
-						else {
+						} else {
 							publishEndpoint(endpoint, wsProviderAnnotation);
 						}
 						this.publishedEndpoints.add(endpoint);
 					}
 				}
-			}
-			catch (CannotLoadBeanClassException ex) {
+			} catch (CannotLoadBeanClassException ex) {
 				// ignore beans where the class is not resolvable
 			}
 		}
@@ -174,6 +166,7 @@ public abstract class AbstractJaxWsServiceExporter implements BeanFactoryAware, 
 
 	/**
 	 * Create the actual Endpoint instance.
+	 *
 	 * @param bean the service object to wrap
 	 * @return the Endpoint instance
 	 * @see Endpoint#create(Object)
@@ -188,14 +181,16 @@ public abstract class AbstractJaxWsServiceExporter implements BeanFactoryAware, 
 
 	/**
 	 * Actually publish the given endpoint. To be implemented by subclasses.
-	 * @param endpoint the JAX-WS Endpoint object
+	 *
+	 * @param endpoint   the JAX-WS Endpoint object
 	 * @param annotation the service bean's WebService annotation
 	 */
 	protected abstract void publishEndpoint(Endpoint endpoint, WebService annotation);
 
 	/**
 	 * Actually publish the given provider endpoint. To be implemented by subclasses.
-	 * @param endpoint the JAX-WS Provider Endpoint object
+	 *
+	 * @param endpoint   the JAX-WS Provider Endpoint object
 	 * @param annotation the service bean's WebServiceProvider annotation
 	 */
 	protected abstract void publishEndpoint(Endpoint endpoint, WebServiceProvider annotation);

@@ -16,12 +16,12 @@
 
 package org.springframework.transaction.interceptor;
 
+import org.springframework.beans.propertyeditors.PropertiesEditor;
+import org.springframework.util.StringUtils;
+
 import java.beans.PropertyEditorSupport;
 import java.util.Enumeration;
 import java.util.Properties;
-
-import org.springframework.beans.propertyeditors.PropertiesEditor;
-import org.springframework.util.StringUtils;
 
 /**
  * Property editor that converts a String into a {@link TransactionAttributeSource}.
@@ -43,8 +43,8 @@ import org.springframework.util.StringUtils;
  *
  * @author Rod Johnson
  * @author Juergen Hoeller
- * @since 26.04.2003
  * @see TransactionAttributeEditor
+ * @since 26.04.2003
  */
 public class TransactionAttributeSourceEditor extends PropertyEditorSupport {
 

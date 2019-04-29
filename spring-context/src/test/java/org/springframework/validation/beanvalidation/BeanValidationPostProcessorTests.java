@@ -16,17 +16,16 @@
 
 package org.springframework.validation.beanvalidation;
 
-import javax.annotation.PostConstruct;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
 import org.junit.Test;
-
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.CommonAnnotationBeanPostProcessor;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.tests.sample.beans.TestBean;
+
+import javax.annotation.PostConstruct;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import static org.junit.Assert.*;
 
@@ -44,8 +43,7 @@ public class BeanValidationPostProcessorTests {
 		try {
 			ac.refresh();
 			fail("Should have thrown BeanCreationException");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			assertTrue(ex.getRootCause().getMessage().contains("testBean"));
 			assertTrue(ex.getRootCause().getMessage().contains("invalid"));
 		}
@@ -87,8 +85,7 @@ public class BeanValidationPostProcessorTests {
 		try {
 			ac.refresh();
 			fail("Should have thrown BeanCreationException");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			assertTrue(ex.getRootCause().getMessage().contains("stringValue"));
 			assertTrue(ex.getRootCause().getMessage().contains("invalid"));
 		}

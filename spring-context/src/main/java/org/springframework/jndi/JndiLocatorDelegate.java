@@ -16,11 +16,11 @@
 
 package org.springframework.jndi;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
 import org.springframework.core.SpringProperties;
 import org.springframework.lang.Nullable;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 /**
  * {@link JndiLocatorSupport} subclass with public lookup methods,
@@ -43,9 +43,10 @@ public class JndiLocatorDelegate extends JndiLocatorSupport {
 	 * The flag literally just affects code which attempts JNDI searches based on the
 	 * {@code JndiLocatorDelegate.isDefaultJndiEnvironmentAvailable()} check: in particular,
 	 * {@code StandardServletEnvironment} and {@code StandardPortletEnvironment}.
-	 * @since 4.3
+	 *
 	 * @see #isDefaultJndiEnvironmentAvailable()
 	 * @see JndiPropertySource
+	 * @since 4.3
 	 */
 	public static final String IGNORE_JNDI_PROPERTY_NAME = "spring.jndi.ignore";
 
@@ -53,21 +54,10 @@ public class JndiLocatorDelegate extends JndiLocatorSupport {
 	private static final boolean shouldIgnoreDefaultJndiEnvironment =
 			SpringProperties.getFlag(IGNORE_JNDI_PROPERTY_NAME);
 
-
-	@Override
-	public Object lookup(String jndiName) throws NamingException {
-		return super.lookup(jndiName);
-	}
-
-	@Override
-	public <T> T lookup(String jndiName, @Nullable Class<T> requiredType) throws NamingException {
-		return super.lookup(jndiName, requiredType);
-	}
-
-
 	/**
 	 * Configure a {@code JndiLocatorDelegate} with its "resourceRef" property set to
 	 * {@code true}, meaning that all names will be prefixed with "java:comp/env/".
+	 *
 	 * @see #setResourceRef
 	 */
 	public static JndiLocatorDelegate createDefaultResourceRefLocator() {
@@ -79,6 +69,7 @@ public class JndiLocatorDelegate extends JndiLocatorSupport {
 	/**
 	 * Check whether a default JNDI environment, as in a Java EE environment,
 	 * is available on this JVM.
+	 *
 	 * @return {@code true} if a default InitialContext can be used,
 	 * {@code false} if not
 	 */
@@ -89,10 +80,19 @@ public class JndiLocatorDelegate extends JndiLocatorSupport {
 		try {
 			new InitialContext().getEnvironment();
 			return true;
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			return false;
 		}
+	}
+
+	@Override
+	public Object lookup(String jndiName) throws NamingException {
+		return super.lookup(jndiName);
+	}
+
+	@Override
+	public <T> T lookup(String jndiName, @Nullable Class<T> requiredType) throws NamingException {
+		return super.lookup(jndiName, requiredType);
 	}
 
 }

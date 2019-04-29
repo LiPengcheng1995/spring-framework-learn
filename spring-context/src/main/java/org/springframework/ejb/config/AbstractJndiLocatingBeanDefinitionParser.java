@@ -16,13 +16,12 @@
 
 package org.springframework.ejb.config;
 
-import org.w3c.dom.Element;
-
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractSimpleBeanDefinitionParser;
 import org.springframework.util.StringUtils;
 import org.springframework.util.xml.DomUtils;
+import org.w3c.dom.Element;
 
 import static org.springframework.beans.factory.xml.BeanDefinitionParserDelegate.*;
 
@@ -57,8 +56,7 @@ abstract class AbstractJndiLocatingBeanDefinitionParser extends AbstractSimpleBe
 		if (envValue != null) {
 			// Specific environment settings defined, overriding any shared properties.
 			definitionBuilder.addPropertyValue(JNDI_ENVIRONMENT, envValue);
-		}
-		else {
+		} else {
 			// Check whether there is a reference to shared environment properties...
 			String envRef = element.getAttribute(ENVIRONMENT_REF);
 			if (StringUtils.hasLength(envRef)) {

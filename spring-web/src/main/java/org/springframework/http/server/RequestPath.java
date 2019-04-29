@@ -15,9 +15,9 @@
  */
 package org.springframework.http.server;
 
-import java.net.URI;
-
 import org.springframework.lang.Nullable;
+
+import java.net.URI;
 
 /**
  * Represents the complete path for a request.
@@ -26,6 +26,13 @@ import org.springframework.lang.Nullable;
  * @since 5.0
  */
 public interface RequestPath extends PathContainer {
+
+	/**
+	 * Create a new {@code RequestPath} with the given parameters.
+	 */
+	static RequestPath parse(URI uri, @Nullable String contextPath) {
+		return new DefaultRequestPath(uri, contextPath);
+	}
 
 	/**
 	 * Returns the portion of the URL path that represents the application.
@@ -47,17 +54,10 @@ public interface RequestPath extends PathContainer {
 	/**
 	 * Return a new {@code RequestPath} instance with a modified context path.
 	 * The new context path must match 0 or more path segments at the start.
+	 *
 	 * @param contextPath the new context path
 	 * @return a new {@code RequestPath} instance
 	 */
 	RequestPath modifyContextPath(String contextPath);
-
-
-	/**
-	 * Create a new {@code RequestPath} with the given parameters.
-	 */
-	static RequestPath parse(URI uri, @Nullable String contextPath) {
-		return new DefaultRequestPath(uri, contextPath);
-	}
 
 }

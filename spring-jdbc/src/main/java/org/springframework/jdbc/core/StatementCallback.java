@@ -16,11 +16,11 @@
 
 package org.springframework.jdbc.core;
 
-import java.sql.SQLException;
-import java.sql.Statement;
-
 import org.springframework.dao.DataAccessException;
 import org.springframework.lang.Nullable;
+
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Generic callback interface for code that operates on a JDBC Statement.
@@ -31,8 +31,8 @@ import org.springframework.lang.Nullable;
  * <p>Used internally by JdbcTemplate, but also useful for application code.
  *
  * @author Juergen Hoeller
- * @since 16.03.2004
  * @see JdbcTemplate#execute(StatementCallback)
+ * @since 16.03.2004
  */
 @FunctionalInterface
 public interface StatementCallback<T> {
@@ -58,10 +58,11 @@ public interface StatementCallback<T> {
 	 * special support for single step actions: see JdbcTemplate.queryForObject etc.
 	 * A thrown RuntimeException is treated as application exception, it gets
 	 * propagated to the caller of the template.
+	 *
 	 * @param stmt active JDBC Statement
 	 * @return a result object, or {@code null} if none
-	 * @throws SQLException if thrown by a JDBC method, to be auto-converted
-	 * to a DataAccessException by a SQLExceptionTranslator
+	 * @throws SQLException        if thrown by a JDBC method, to be auto-converted
+	 *                             to a DataAccessException by a SQLExceptionTranslator
 	 * @throws DataAccessException in case of custom exceptions
 	 * @see JdbcTemplate#queryForObject(String, Class)
 	 * @see JdbcTemplate#queryForRowSet(String)

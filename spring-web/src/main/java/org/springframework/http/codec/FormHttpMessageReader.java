@@ -16,18 +16,6 @@
 
 package org.springframework.http.codec;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.MediaType;
@@ -37,6 +25,17 @@ import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Implementation of an {@link HttpMessageReader} to read HTML form data, i.e.
@@ -55,6 +54,12 @@ public class FormHttpMessageReader implements HttpMessageReader<MultiValueMap<St
 
 	private Charset defaultCharset = DEFAULT_CHARSET;
 
+	/**
+	 * Return the configured default charset.
+	 */
+	public Charset getDefaultCharset() {
+		return this.defaultCharset;
+	}
 
 	/**
 	 * Set the default character set to use for reading form data when the
@@ -66,14 +71,6 @@ public class FormHttpMessageReader implements HttpMessageReader<MultiValueMap<St
 		this.defaultCharset = charset;
 	}
 
-	/**
-	 * Return the configured default charset.
-	 */
-	public Charset getDefaultCharset() {
-		return this.defaultCharset;
-	}
-
-
 	@Override
 	public boolean canRead(ResolvableType elementType, @Nullable MediaType mediaType) {
 		return ((MULTIVALUE_TYPE.isAssignableFrom(elementType) ||
@@ -84,14 +81,14 @@ public class FormHttpMessageReader implements HttpMessageReader<MultiValueMap<St
 
 	@Override
 	public Flux<MultiValueMap<String, String>> read(ResolvableType elementType,
-			ReactiveHttpInputMessage message, Map<String, Object> hints) {
+													ReactiveHttpInputMessage message, Map<String, Object> hints) {
 
 		return Flux.from(readMono(elementType, message, hints));
 	}
 
 	@Override
 	public Mono<MultiValueMap<String, String>> readMono(ResolvableType elementType,
-			ReactiveHttpInputMessage message, Map<String, Object> hints) {
+														ReactiveHttpInputMessage message, Map<String, Object> hints) {
 
 		MediaType contentType = message.getHeaders().getContentType();
 		Charset charset = getMediaTypeCharset(contentType);
@@ -108,8 +105,7 @@ public class FormHttpMessageReader implements HttpMessageReader<MultiValueMap<St
 	private Charset getMediaTypeCharset(@Nullable MediaType mediaType) {
 		if (mediaType != null && mediaType.getCharset() != null) {
 			return mediaType.getCharset();
-		}
-		else {
+		} else {
 			return getDefaultCharset();
 		}
 	}
@@ -122,15 +118,13 @@ public class FormHttpMessageReader implements HttpMessageReader<MultiValueMap<St
 				int idx = pair.indexOf('=');
 				if (idx == -1) {
 					result.add(URLDecoder.decode(pair, charset.name()), null);
-				}
-				else {
-					String name = URLDecoder.decode(pair.substring(0, idx),  charset.name());
+				} else {
+					String name = URLDecoder.decode(pair.substring(0, idx), charset.name());
 					String value = URLDecoder.decode(pair.substring(idx + 1), charset.name());
 					result.add(name, value);
 				}
 			}
-		}
-		catch (UnsupportedEncodingException ex) {
+		} catch (UnsupportedEncodingException ex) {
 			throw new IllegalStateException(ex);
 		}
 		return result;

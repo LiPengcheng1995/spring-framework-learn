@@ -16,28 +16,10 @@
 
 package org.springframework.web.client;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.net.URI;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpInputMessage;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -47,26 +29,16 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.util.*;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
-import static org.mockito.BDDMockito.any;
-import static org.mockito.BDDMockito.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.mock;
-import static org.mockito.BDDMockito.verify;
-import static org.mockito.BDDMockito.willThrow;
-import static org.springframework.http.HttpMethod.DELETE;
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.HEAD;
-import static org.springframework.http.HttpMethod.OPTIONS;
-import static org.springframework.http.HttpMethod.PATCH;
-import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.http.HttpMethod.PUT;
+import static org.junit.Assert.*;
+import static org.mockito.BDDMockito.*;
+import static org.springframework.http.HttpMethod.*;
 import static org.springframework.http.MediaType.parseMediaType;
 
 /**
@@ -171,8 +143,7 @@ public class RestTemplateTests {
 		try {
 			template.execute(url, GET, null, null);
 			fail("HttpServerErrorException expected");
-		}
-		catch (HttpServerErrorException ex) {
+		} catch (HttpServerErrorException ex) {
 			// expected
 		}
 
@@ -212,8 +183,7 @@ public class RestTemplateTests {
 		try {
 			template.getForObject("https://example.com/{p}", String.class, "resource");
 			fail("UnsupportedMediaTypeException expected");
-		}
-		catch (RestClientException ex) {
+		} catch (RestClientException ex) {
 			// expected
 		}
 
@@ -550,8 +520,7 @@ public class RestTemplateTests {
 		try {
 			template.getForObject(url, String.class);
 			fail("RestClientException expected");
-		}
-		catch (ResourceAccessException ex) {
+		} catch (ResourceAccessException ex) {
 			assertEquals("I/O error on GET request for \"https://example.com/resource\": " +
 							"Socket failure; nested exception is java.io.IOException: Socket failure",
 					ex.getMessage());
@@ -573,10 +542,9 @@ public class RestTemplateTests {
 		try {
 			template.getForObject(uri, String.class);
 			fail("RestClientException expected");
-		}
-		catch (ResourceAccessException ex) {
+		} catch (ResourceAccessException ex) {
 			assertEquals("I/O error on GET request for \"https://example.com/resource\": " +
-					"Socket failure; nested exception is java.io.IOException: Socket failure",
+							"Socket failure; nested exception is java.io.IOException: Socket failure",
 					ex.getMessage());
 		}
 	}
@@ -608,7 +576,8 @@ public class RestTemplateTests {
 	public void exchangeParameterizedType() throws Exception {
 		GenericHttpMessageConverter converter = mock(GenericHttpMessageConverter.class);
 		template.setMessageConverters(Collections.<HttpMessageConverter<?>>singletonList(converter));
-		ParameterizedTypeReference<List<Integer>> intList = new ParameterizedTypeReference<List<Integer>>() {};
+		ParameterizedTypeReference<List<Integer>> intList = new ParameterizedTypeReference<List<Integer>>() {
+		};
 		given(converter.canRead(intList.getType(), null, null)).willReturn(true);
 		given(converter.getSupportedMediaTypes()).willReturn(Collections.singletonList(MediaType.TEXT_PLAIN));
 		given(converter.canWrite(String.class, String.class, null)).willReturn(true);

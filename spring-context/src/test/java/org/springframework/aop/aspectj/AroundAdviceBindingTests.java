@@ -19,7 +19,6 @@ package org.springframework.aop.aspectj;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.aop.aspectj.AroundAdviceBindingTestAspect.AroundAdviceBindingCollaborator;
 import org.springframework.aop.framework.Advised;
 import org.springframework.aop.support.AopUtils;
@@ -28,8 +27,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.tests.sample.beans.ITestBean;
 import org.springframework.tests.sample.beans.TestBean;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * Tests for various parameter binding scenarios with before advice.
@@ -39,19 +39,16 @@ import static org.mockito.BDDMockito.*;
  */
 public class AroundAdviceBindingTests {
 
-	private AroundAdviceBindingCollaborator mockCollaborator;
-
-	private ITestBean testBeanProxy;
-
-	private TestBean testBeanTarget;
-
 	protected ApplicationContext ctx;
+	private AroundAdviceBindingCollaborator mockCollaborator;
+	private ITestBean testBeanProxy;
+	private TestBean testBeanTarget;
 
 	@Before
 	public void onSetUp() throws Exception {
 		ctx = new ClassPathXmlApplicationContext(getClass().getSimpleName() + ".xml", getClass());
 
-		AroundAdviceBindingTestAspect  aroundAdviceAspect = ((AroundAdviceBindingTestAspect) ctx.getBean("testAspect"));
+		AroundAdviceBindingTestAspect aroundAdviceAspect = ((AroundAdviceBindingTestAspect) ctx.getBean("testAspect"));
 
 		ITestBean injectedTestBean = (ITestBean) ctx.getBean("testBean");
 		assertTrue(AopUtils.isAopProxy(injectedTestBean));
@@ -111,8 +108,8 @@ class AroundAdviceBindingTestAspect {
 		return ((Integer) pjp.proceed()).intValue();
 	}
 
-	public void oneIntAndOneObject(ProceedingJoinPoint pjp, int x , Object o) throws Throwable {
-		this.collaborator.oneIntAndOneObject(x,o);
+	public void oneIntAndOneObject(ProceedingJoinPoint pjp, int x, Object o) throws Throwable {
+		this.collaborator.oneIntAndOneObject(x, o);
 		pjp.proceed();
 	}
 

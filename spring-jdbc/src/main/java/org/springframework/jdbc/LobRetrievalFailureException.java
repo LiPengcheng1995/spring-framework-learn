@@ -16,9 +16,9 @@
 
 package org.springframework.jdbc;
 
-import java.io.IOException;
-
 import org.springframework.dao.DataRetrievalFailureException;
+
+import java.io.IOException;
 
 /**
  * Exception to be thrown when a LOB could not be retrieved.
@@ -31,6 +31,7 @@ public class LobRetrievalFailureException extends DataRetrievalFailureException 
 
 	/**
 	 * Constructor for LobRetrievalFailureException.
+	 *
 	 * @param msg the detail message
 	 */
 	public LobRetrievalFailureException(String msg) {
@@ -39,8 +40,9 @@ public class LobRetrievalFailureException extends DataRetrievalFailureException 
 
 	/**
 	 * Constructor for LobRetrievalFailureException.
+	 *
 	 * @param msg the detail message
-	 * @param ex IOException root cause
+	 * @param ex  IOException root cause
 	 */
 	public LobRetrievalFailureException(String msg, IOException ex) {
 		super(msg, ex);

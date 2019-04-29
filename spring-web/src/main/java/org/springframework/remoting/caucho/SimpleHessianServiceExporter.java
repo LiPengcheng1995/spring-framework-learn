@@ -16,14 +16,13 @@
 
 package org.springframework.remoting.caucho;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-
 import org.springframework.lang.UsesSunHttpServer;
 import org.springframework.util.FileCopyUtils;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  * HTTP request handler that exports the specified service bean as
@@ -40,10 +39,10 @@ import org.springframework.util.FileCopyUtils;
  * any Hessian client, as there isn't any special handling involved.
  *
  * @author Juergen Hoeller
- * @since 2.5.1
  * @see org.springframework.remoting.caucho.HessianClientInterceptor
  * @see org.springframework.remoting.caucho.HessianProxyFactoryBean
  * @see org.springframework.remoting.httpinvoker.SimpleHttpInvokerServiceExporter
+ * @since 2.5.1
  */
 @UsesSunHttpServer
 public class SimpleHessianServiceExporter extends HessianExporter implements HttpHandler {
@@ -62,8 +61,7 @@ public class SimpleHessianServiceExporter extends HessianExporter implements Htt
 		ByteArrayOutputStream output = new ByteArrayOutputStream(1024);
 		try {
 			invoke(exchange.getRequestBody(), output);
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			exchange.sendResponseHeaders(500, -1);
 			logger.error("Hessian skeleton invocation failed", ex);
 			return;

@@ -16,12 +16,12 @@
 
 package org.springframework.jndi;
 
-import javax.naming.NamingException;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import javax.naming.NamingException;
 
 /**
  * Convenient superclass for JNDI-based service locators,
@@ -40,12 +40,12 @@ import org.springframework.util.StringUtils;
  * initialization of the locator before the JNDI object is available.
  *
  * @author Juergen Hoeller
- * @since 1.1
  * @see #setJndiName
  * @see #setJndiTemplate
  * @see #setJndiEnvironment
  * @see #setResourceRef
  * @see #lookup()
+ * @since 1.1
  */
 public abstract class JndiObjectLocator extends JndiLocatorSupport implements InitializingBean {
 
@@ -54,17 +54,6 @@ public abstract class JndiObjectLocator extends JndiLocatorSupport implements In
 
 	@Nullable
 	private Class<?> expectedType;
-
-
-	/**
-	 * Specify the JNDI name to look up. If it doesn't begin with "java:comp/env/"
-	 * this prefix is added automatically if "resourceRef" is set to "true".
-	 * @param jndiName the JNDI name to look up
-	 * @see #setResourceRef
-	 */
-	public void setJndiName(@Nullable String jndiName) {
-		this.jndiName = jndiName;
-	}
 
 	/**
 	 * Return the JNDI name to look up.
@@ -75,11 +64,14 @@ public abstract class JndiObjectLocator extends JndiLocatorSupport implements In
 	}
 
 	/**
-	 * Specify the type that the located JNDI object is supposed
-	 * to be assignable to, if any.
+	 * Specify the JNDI name to look up. If it doesn't begin with "java:comp/env/"
+	 * this prefix is added automatically if "resourceRef" is set to "true".
+	 *
+	 * @param jndiName the JNDI name to look up
+	 * @see #setResourceRef
 	 */
-	public void setExpectedType(@Nullable Class<?> expectedType) {
-		this.expectedType = expectedType;
+	public void setJndiName(@Nullable String jndiName) {
+		this.jndiName = jndiName;
 	}
 
 	/**
@@ -89,6 +81,14 @@ public abstract class JndiObjectLocator extends JndiLocatorSupport implements In
 	@Nullable
 	public Class<?> getExpectedType() {
 		return this.expectedType;
+	}
+
+	/**
+	 * Specify the type that the located JNDI object is supposed
+	 * to be assignable to, if any.
+	 */
+	public void setExpectedType(@Nullable Class<?> expectedType) {
+		this.expectedType = expectedType;
 	}
 
 	@Override
@@ -101,9 +101,10 @@ public abstract class JndiObjectLocator extends JndiLocatorSupport implements In
 
 	/**
 	 * Perform the actual JNDI lookup for this locator's target resource.
+	 *
 	 * @return the located target object
 	 * @throws NamingException if the JNDI lookup failed or if the
-	 * located JNDI object is not assigable to the expected type
+	 *                         located JNDI object is not assigable to the expected type
 	 * @see #setJndiName
 	 * @see #setExpectedType
 	 * @see #lookup(String, Class)

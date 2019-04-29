@@ -22,6 +22,10 @@ public class ACATester implements ApplicationContextAware {
 
 	private ApplicationContext ac;
 
+	public ApplicationContext getApplicationContext() {
+		return ac;
+	}
+
 	@Override
 	public void setApplicationContext(ApplicationContext ctx) throws ApplicationContextException {
 		// check reinitialization
@@ -33,17 +37,12 @@ public class ACATester implements ApplicationContextAware {
 		if (ctx != null) {
 			try {
 				ctx.getMessage("code1", null, Locale.getDefault());
-			}
-			catch (NoSuchMessageException ex) {
+			} catch (NoSuchMessageException ex) {
 				// expected
 			}
 		}
 
 		this.ac = ctx;
-	}
-
-	public ApplicationContext getApplicationContext() {
-		return ac;
 	}
 
 }

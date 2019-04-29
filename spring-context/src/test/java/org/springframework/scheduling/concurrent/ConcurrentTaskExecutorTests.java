@@ -16,16 +16,15 @@
 
 package org.springframework.scheduling.concurrent;
 
+import org.junit.Test;
+import org.springframework.core.task.AsyncListenableTaskExecutor;
+import org.springframework.core.task.NoOpRunnable;
+
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
-import org.junit.Test;
-
-import org.springframework.core.task.AsyncListenableTaskExecutor;
-import org.springframework.core.task.NoOpRunnable;
 
 /**
  * @author Rick Evans

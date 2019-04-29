@@ -16,11 +16,8 @@
 
 package org.springframework.messaging.core;
 
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
@@ -30,6 +27,8 @@ import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.messaging.converter.SimpleMessageConverter;
 import org.springframework.messaging.converter.SmartMessageConverter;
 import org.springframework.util.Assert;
+
+import java.util.Map;
 
 /**
  * Abstract base class for implementations of {@link MessageSendingOperations}.
@@ -45,6 +44,7 @@ public abstract class AbstractMessageSendingTemplate<D> implements MessageSendin
 	 * Name of the header that can be set to provide further information
 	 * (e.g. a {@code MethodParameter} instance) about the origin of the
 	 * payload, to be taken into account as a conversion hint.
+	 *
 	 * @since 4.2
 	 */
 	public static final String CONVERSION_HINT_HEADER = "conversionHint";
@@ -57,6 +57,13 @@ public abstract class AbstractMessageSendingTemplate<D> implements MessageSendin
 
 	private MessageConverter converter = new SimpleMessageConverter();
 
+	/**
+	 * Return the configured default destination.
+	 */
+	@Nullable
+	public D getDefaultDestination() {
+		return this.defaultDestination;
+	}
 
 	/**
 	 * Configure the default destination to use in send methods that don't have
@@ -68,30 +75,22 @@ public abstract class AbstractMessageSendingTemplate<D> implements MessageSendin
 	}
 
 	/**
-	 * Return the configured default destination.
-	 */
-	@Nullable
-	public D getDefaultDestination() {
-		return this.defaultDestination;
-	}
-
-	/**
-	 * Set the {@link MessageConverter} to use in {@code convertAndSend} methods.
-	 * <p>By default, {@link SimpleMessageConverter} is used.
-	 * @param messageConverter the message converter to use
-	 */
-	public void setMessageConverter(MessageConverter messageConverter) {
-		Assert.notNull(messageConverter, "MessageConverter must not be null");
-		this.converter = messageConverter;
-	}
-
-	/**
 	 * Return the configured {@link MessageConverter}.
 	 */
 	public MessageConverter getMessageConverter() {
 		return this.converter;
 	}
 
+	/**
+	 * Set the {@link MessageConverter} to use in {@code convertAndSend} methods.
+	 * <p>By default, {@link SimpleMessageConverter} is used.
+	 *
+	 * @param messageConverter the message converter to use
+	 */
+	public void setMessageConverter(MessageConverter messageConverter) {
+		Assert.notNull(messageConverter, "MessageConverter must not be null");
+		this.converter = messageConverter;
+	}
 
 	@Override
 	public void send(Message<?> message) {
@@ -144,7 +143,7 @@ public abstract class AbstractMessageSendingTemplate<D> implements MessageSendin
 
 	@Override
 	public void convertAndSend(D destination, Object payload, @Nullable Map<String, Object> headers,
-			@Nullable MessagePostProcessor postProcessor) throws MessagingException {
+							   @Nullable MessagePostProcessor postProcessor) throws MessagingException {
 
 		Message<?> message = doConvert(payload, headers, postProcessor);
 		send(destination, message);
@@ -154,13 +153,14 @@ public abstract class AbstractMessageSendingTemplate<D> implements MessageSendin
 	 * Convert the given Object to serialized form, possibly using a
 	 * {@link MessageConverter}, wrap it as a message with the given
 	 * headers and apply the given post processor.
-	 * @param payload the Object to use as payload
-	 * @param headers headers for the message to send
+	 *
+	 * @param payload       the Object to use as payload
+	 * @param headers       headers for the message to send
 	 * @param postProcessor the post processor to apply to the message
 	 * @return the converted message
 	 */
 	protected Message<?> doConvert(Object payload, @Nullable Map<String, Object> headers,
-			@Nullable MessagePostProcessor postProcessor) {
+								   @Nullable MessagePostProcessor postProcessor) {
 
 		MessageHeaders messageHeaders = null;
 		Object conversionHint = (headers != null ? headers.get(CONVERSION_HINT_HEADER) : null);
@@ -169,8 +169,7 @@ public abstract class AbstractMessageSendingTemplate<D> implements MessageSendin
 		if (headersToUse != null) {
 			if (headersToUse instanceof MessageHeaders) {
 				messageHeaders = (MessageHeaders) headersToUse;
-			}
-			else {
+			} else {
 				messageHeaders = new MessageHeaders(headersToUse);
 			}
 		}
@@ -195,6 +194,7 @@ public abstract class AbstractMessageSendingTemplate<D> implements MessageSendin
 	 * Provides access to the map of input headers before a send operation.
 	 * Subclasses can modify the headers and then return the same or a different map.
 	 * <p>This default implementation in this class returns the input map.
+	 *
 	 * @param headers the headers to send (or {@code null} if none)
 	 * @return the actual headers to send (or {@code null} if none)
 	 */

@@ -16,20 +16,20 @@
 
 package org.springframework.web.filter;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.WebUtils;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Base class for {@code Filter}s that perform logging operations before and after a request
@@ -54,9 +54,9 @@ import org.springframework.web.util.WebUtils;
  * @author Rob Harrop
  * @author Juergen Hoeller
  * @author Rossen Stoyanchev
- * @since 1.2.5
  * @see #beforeRequest
  * @see #afterRequest
+ * @since 1.2.5
  */
 public abstract class AbstractRequestLoggingFilter extends OncePerRequestFilter {
 
@@ -89,6 +89,12 @@ public abstract class AbstractRequestLoggingFilter extends OncePerRequestFilter 
 
 	private String afterMessageSuffix = DEFAULT_AFTER_MESSAGE_SUFFIX;
 
+	/**
+	 * Return whether the query string should be included in the log message.
+	 */
+	protected boolean isIncludeQueryString() {
+		return this.includeQueryString;
+	}
 
 	/**
 	 * Set whether the query string should be included in the log message.
@@ -100,10 +106,11 @@ public abstract class AbstractRequestLoggingFilter extends OncePerRequestFilter 
 	}
 
 	/**
-	 * Return whether the query string should be included in the log message.
+	 * Return whether the client address and session id should be included in the
+	 * log message.
 	 */
-	protected boolean isIncludeQueryString() {
-		return this.includeQueryString;
+	protected boolean isIncludeClientInfo() {
+		return this.includeClientInfo;
 	}
 
 	/**
@@ -117,25 +124,8 @@ public abstract class AbstractRequestLoggingFilter extends OncePerRequestFilter 
 	}
 
 	/**
-	 * Return whether the client address and session id should be included in the
-	 * log message.
-	 */
-	protected boolean isIncludeClientInfo() {
-		return this.includeClientInfo;
-	}
-
-	/**
-	 * Set whether the request headers should be included in the log message.
-	 * <p>Should be configured using an {@code <init-param>} for parameter name
-	 * "includeHeaders" in the filter definition in {@code web.xml}.
-	 * @since 4.3
-	 */
-	public void setIncludeHeaders(boolean includeHeaders) {
-		this.includeHeaders = includeHeaders;
-	}
-
-	/**
 	 * Return whether the request headers should be included in the log message.
+	 *
 	 * @since 4.3
 	 */
 	protected boolean isIncludeHeaders() {
@@ -143,17 +133,19 @@ public abstract class AbstractRequestLoggingFilter extends OncePerRequestFilter 
 	}
 
 	/**
-	 * Set whether the request payload (body) should be included in the log message.
+	 * Set whether the request headers should be included in the log message.
 	 * <p>Should be configured using an {@code <init-param>} for parameter name
-	 * "includePayload" in the filter definition in {@code web.xml}.
-	 * @since 3.0
+	 * "includeHeaders" in the filter definition in {@code web.xml}.
+	 *
+	 * @since 4.3
 	 */
-	public void setIncludePayload(boolean includePayload) {
-		this.includePayload = includePayload;
+	public void setIncludeHeaders(boolean includeHeaders) {
+		this.includeHeaders = includeHeaders;
 	}
 
 	/**
 	 * Return whether the request payload (body) should be included in the log message.
+	 *
 	 * @since 3.0
 	 */
 	protected boolean isIncludePayload() {
@@ -161,21 +153,34 @@ public abstract class AbstractRequestLoggingFilter extends OncePerRequestFilter 
 	}
 
 	/**
+	 * Set whether the request payload (body) should be included in the log message.
+	 * <p>Should be configured using an {@code <init-param>} for parameter name
+	 * "includePayload" in the filter definition in {@code web.xml}.
+	 *
+	 * @since 3.0
+	 */
+	public void setIncludePayload(boolean includePayload) {
+		this.includePayload = includePayload;
+	}
+
+	/**
+	 * Return the maximum length of the payload body to be included in the log message.
+	 *
+	 * @since 3.0
+	 */
+	protected int getMaxPayloadLength() {
+		return this.maxPayloadLength;
+	}
+
+	/**
 	 * Set the maximum length of the payload body to be included in the log message.
 	 * Default is 50 characters.
+	 *
 	 * @since 3.0
 	 */
 	public void setMaxPayloadLength(int maxPayloadLength) {
 		Assert.isTrue(maxPayloadLength >= 0, "'maxPayloadLength' should be larger than or equal to 0");
 		this.maxPayloadLength = maxPayloadLength;
-	}
-
-	/**
-	 * Return the maximum length of the payload body to be included in the log message.
-	 * @since 3.0
-	 */
-	protected int getMaxPayloadLength() {
-		return this.maxPayloadLength;
 	}
 
 	/**
@@ -224,6 +229,7 @@ public abstract class AbstractRequestLoggingFilter extends OncePerRequestFilter 
 	/**
 	 * Forwards the request to the next filter in the chain and delegates down to the subclasses
 	 * to perform the actual request logging both before and after the request is processed.
+	 *
 	 * @see #beforeRequest
 	 * @see #afterRequest
 	 */
@@ -244,8 +250,7 @@ public abstract class AbstractRequestLoggingFilter extends OncePerRequestFilter 
 		}
 		try {
 			filterChain.doFilter(requestToUse, response);
-		}
-		finally {
+		} finally {
 			if (shouldLog && !isAsyncStarted(requestToUse)) {
 				afterRequest(requestToUse, getAfterMessage(requestToUse));
 			}
@@ -254,6 +259,7 @@ public abstract class AbstractRequestLoggingFilter extends OncePerRequestFilter 
 
 	/**
 	 * Get the message to write to the log before the request.
+	 *
 	 * @see #createMessage
 	 */
 	private String getBeforeMessage(HttpServletRequest request) {
@@ -262,6 +268,7 @@ public abstract class AbstractRequestLoggingFilter extends OncePerRequestFilter 
 
 	/**
 	 * Get the message to write to the log after the request.
+	 *
 	 * @see #createMessage
 	 */
 	private String getAfterMessage(HttpServletRequest request) {
@@ -322,6 +329,7 @@ public abstract class AbstractRequestLoggingFilter extends OncePerRequestFilter 
 	 * Extracts the message payload portion of the message created by
 	 * {@link #createMessage(HttpServletRequest, String, String)} when
 	 * {@link #isIncludePayload()} returns true.
+	 *
 	 * @since 5.0.3
 	 */
 	@Nullable
@@ -334,8 +342,7 @@ public abstract class AbstractRequestLoggingFilter extends OncePerRequestFilter 
 				int length = Math.min(buf.length, getMaxPayloadLength());
 				try {
 					return new String(buf, 0, length, wrapper.getCharacterEncoding());
-				}
-				catch (UnsupportedEncodingException ex) {
+				} catch (UnsupportedEncodingException ex) {
 					return "[unknown]";
 				}
 			}
@@ -350,6 +357,7 @@ public abstract class AbstractRequestLoggingFilter extends OncePerRequestFilter 
 	 * (and the log message is worth building).
 	 * <p>The default implementation always returns {@code true}. Subclasses may
 	 * override this with a log level check.
+	 *
 	 * @param request current HTTP request
 	 * @return {@code true} if the before/after method should get called;
 	 * {@code false} otherwise
@@ -362,6 +370,7 @@ public abstract class AbstractRequestLoggingFilter extends OncePerRequestFilter 
 	/**
 	 * Concrete subclasses should implement this method to write a log message
 	 * <i>before</i> the request is processed.
+	 *
 	 * @param request current HTTP request
 	 * @param message the message to log
 	 */
@@ -370,6 +379,7 @@ public abstract class AbstractRequestLoggingFilter extends OncePerRequestFilter 
 	/**
 	 * Concrete subclasses should implement this method to write a log message
 	 * <i>after</i> the request is processed.
+	 *
 	 * @param request current HTTP request
 	 * @param message the message to log
 	 */

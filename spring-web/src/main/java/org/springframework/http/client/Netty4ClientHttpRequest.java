@@ -16,11 +16,6 @@
 
 package org.springframework.http.client;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URI;
-import java.util.concurrent.ExecutionException;
-
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
@@ -32,11 +27,15 @@ import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpVersion;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.SettableListenableFuture;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URI;
+import java.util.concurrent.ExecutionException;
 
 /**
  * {@link ClientHttpRequest} implementation based on Netty 4.
@@ -69,6 +68,17 @@ class Netty4ClientHttpRequest extends AbstractAsyncClientHttpRequest implements 
 		this.body = new ByteBufOutputStream(Unpooled.buffer(1024));
 	}
 
+	private static int getPort(URI uri) {
+		int port = uri.getPort();
+		if (port == -1) {
+			if ("http".equalsIgnoreCase(uri.getScheme())) {
+				port = 80;
+			} else if ("https".equalsIgnoreCase(uri.getScheme())) {
+				port = 443;
+			}
+		}
+		return port;
+	}
 
 	@Override
 	public HttpMethod getMethod() {
@@ -89,16 +99,13 @@ class Netty4ClientHttpRequest extends AbstractAsyncClientHttpRequest implements 
 	public ClientHttpResponse execute() throws IOException {
 		try {
 			return executeAsync().get();
-		}
-		catch (InterruptedException ex) {
+		} catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();
 			throw new IOException("Interrupted during request execution", ex);
-		}
-		catch (ExecutionException ex) {
+		} catch (ExecutionException ex) {
 			if (ex.getCause() instanceof IOException) {
 				throw (IOException) ex.getCause();
-			}
-			else {
+			} else {
 				throw new IOException(ex.getMessage(), ex.getCause());
 			}
 		}
@@ -119,8 +126,7 @@ class Netty4ClientHttpRequest extends AbstractAsyncClientHttpRequest implements 
 				channel.pipeline().addLast(new RequestExecuteHandler(responseFuture));
 				FullHttpRequest nettyRequest = createFullHttpRequest(headers);
 				channel.writeAndFlush(nettyRequest);
-			}
-			else {
+			} else {
 				responseFuture.setException(future.cause());
 			}
 		};
@@ -147,20 +153,6 @@ class Netty4ClientHttpRequest extends AbstractAsyncClientHttpRequest implements 
 
 		return nettyRequest;
 	}
-
-	private static int getPort(URI uri) {
-		int port = uri.getPort();
-		if (port == -1) {
-			if ("http".equalsIgnoreCase(uri.getScheme())) {
-				port = 80;
-			}
-			else if ("https".equalsIgnoreCase(uri.getScheme())) {
-				port = 443;
-			}
-		}
-		return port;
-	}
-
 
 	/**
 	 * A SimpleChannelInboundHandler to update the given SettableListenableFuture.

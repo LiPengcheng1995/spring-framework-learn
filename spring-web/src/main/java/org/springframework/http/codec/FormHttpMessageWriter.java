@@ -16,19 +16,7 @@
 
 package org.springframework.http.codec;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.MediaType;
@@ -36,6 +24,16 @@ import org.springframework.http.ReactiveHttpOutputMessage;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.MultiValueMap;
+import reactor.core.publisher.Mono;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * {@link HttpMessageWriter} for writing a {@code MultiValueMap<String, String>}
@@ -54,8 +52,8 @@ import org.springframework.util.MultiValueMap;
  *
  * @author Sebastien Deleuze
  * @author Rossen Stoyanchev
- * @since 5.0
  * @see org.springframework.http.codec.multipart.MultipartHttpMessageWriter
+ * @since 5.0
  */
 public class FormHttpMessageWriter implements HttpMessageWriter<MultiValueMap<String, String>> {
 
@@ -73,6 +71,12 @@ public class FormHttpMessageWriter implements HttpMessageWriter<MultiValueMap<St
 
 	private Charset defaultCharset = DEFAULT_CHARSET;
 
+	/**
+	 * Return the configured default charset.
+	 */
+	public Charset getDefaultCharset() {
+		return this.defaultCharset;
+	}
 
 	/**
 	 * Set the default character set to use for writing form data when the response
@@ -83,14 +87,6 @@ public class FormHttpMessageWriter implements HttpMessageWriter<MultiValueMap<St
 		Assert.notNull(charset, "Charset must not be null");
 		this.defaultCharset = charset;
 	}
-
-	/**
-	 * Return the configured default charset.
-	 */
-	public Charset getDefaultCharset() {
-		return this.defaultCharset;
-	}
-
 
 	@Override
 	public List<MediaType> getWritableMediaTypes() {
@@ -117,8 +113,8 @@ public class FormHttpMessageWriter implements HttpMessageWriter<MultiValueMap<St
 
 	@Override
 	public Mono<Void> write(Publisher<? extends MultiValueMap<String, String>> inputStream,
-			ResolvableType elementType, @Nullable MediaType mediaType, ReactiveHttpOutputMessage message,
-			Map<String, Object> hints) {
+							ResolvableType elementType, @Nullable MediaType mediaType, ReactiveHttpOutputMessage message,
+							Map<String, Object> hints) {
 
 		mediaType = getMediaType(mediaType);
 		message.getHeaders().setContentType(mediaType);
@@ -127,22 +123,20 @@ public class FormHttpMessageWriter implements HttpMessageWriter<MultiValueMap<St
 		Assert.notNull(charset, "No charset"); // should never occur
 
 		return Mono.from(inputStream).flatMap(form -> {
-					String value = serializeForm(form, charset);
-					ByteBuffer byteBuffer = charset.encode(value);
-					DataBuffer buffer = message.bufferFactory().wrap(byteBuffer);
-					message.getHeaders().setContentLength(byteBuffer.remaining());
-					return message.writeWith(Mono.just(buffer));
-				});
+			String value = serializeForm(form, charset);
+			ByteBuffer byteBuffer = charset.encode(value);
+			DataBuffer buffer = message.bufferFactory().wrap(byteBuffer);
+			message.getHeaders().setContentLength(byteBuffer.remaining());
+			return message.writeWith(Mono.just(buffer));
+		});
 	}
 
 	private MediaType getMediaType(@Nullable MediaType mediaType) {
 		if (mediaType == null) {
 			return DEFAULT_FORM_DATA_MEDIA_TYPE;
-		}
-		else if (mediaType.getCharset() == null) {
+		} else if (mediaType.getCharset() == null) {
 			return new MediaType(mediaType, getDefaultCharset());
-		}
-		else {
+		} else {
 			return mediaType;
 		}
 	}
@@ -160,8 +154,7 @@ public class FormHttpMessageWriter implements HttpMessageWriter<MultiValueMap<St
 							builder.append('=');
 							builder.append(URLEncoder.encode(value, charset.name()));
 						}
-					}
-					catch (UnsupportedEncodingException ex) {
+					} catch (UnsupportedEncodingException ex) {
 						throw new IllegalStateException(ex);
 					}
 				}));

@@ -16,24 +16,17 @@
 
 package org.springframework.jms.listener;
 
-import java.util.HashSet;
-import java.util.Set;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.ExceptionListener;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageListener;
-import javax.jms.Session;
-
 import org.junit.Test;
-
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.jms.StubQueue;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ErrorHandler;
+
+import javax.jms.*;
+import java.lang.IllegalStateException;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.*;
@@ -69,8 +62,8 @@ public class SimpleMessageListenerContainerTests {
 	@Test
 	public void testSessionTransactedModeReallyDoesDefaultToFalse() {
 		assertFalse("The [pubSubLocal] property of SimpleMessageListenerContainer " +
-				"must default to false. Change this test (and the " +
-				"attendant Javadoc) if you have changed the default.",
+						"must default to false. Change this test (and the " +
+						"attendant Javadoc) if you have changed the default.",
 				this.container.isPubSubNoLocal());
 	}
 
@@ -179,8 +172,7 @@ public class SimpleMessageListenerContainerTests {
 				try {
 					// Check correct Session passed into SessionAwareMessageListener.
 					assertSame(sess, session);
-				}
-				catch (Throwable ex) {
+				} catch (Throwable ex) {
 					failure.add("MessageListener execution failed: " + ex);
 				}
 			}

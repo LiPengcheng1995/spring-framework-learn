@@ -16,11 +16,11 @@
 
 package org.springframework.transaction.interceptor;
 
-import java.io.Serializable;
-import java.lang.reflect.Method;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.io.Serializable;
+import java.lang.reflect.Method;
 
 /**
  * Composite {@link TransactionAttributeSource} implementation that iterates
@@ -37,6 +37,7 @@ public class CompositeTransactionAttributeSource implements TransactionAttribute
 
 	/**
 	 * Create a new CompositeTransactionAttributeSource for the given sources.
+	 *
 	 * @param transactionAttributeSources the TransactionAttributeSource instances to combine
 	 */
 	public CompositeTransactionAttributeSource(TransactionAttributeSource... transactionAttributeSources) {

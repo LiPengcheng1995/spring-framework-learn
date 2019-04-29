@@ -16,17 +16,18 @@
 
 package org.springframework.tests;
 
-import java.util.Arrays;
-
 import org.junit.After;
 import org.junit.AssumptionViolatedException;
 import org.junit.Before;
 import org.junit.Test;
 
-import static java.util.stream.Collectors.*;
+import java.util.Arrays;
+
+import static java.util.stream.Collectors.joining;
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.springframework.tests.Assume.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.springframework.tests.Assume.TEST_GROUPS_SYSTEM_PROPERTY;
 import static org.springframework.tests.TestGroup.*;
 
 /**
@@ -49,8 +50,7 @@ public class AssumeTests {
 	public void restoreOriginalTestGroups() {
 		if (this.originalTestGroups != null) {
 			setTestGroups(this.originalTestGroups);
-		}
-		else {
+		} else {
 			setTestGroups("");
 		}
 	}
@@ -74,8 +74,7 @@ public class AssumeTests {
 		setTestGroups(JMXMP);
 		try {
 			Assume.group(JMXMP);
-		}
-		catch (AssumptionViolatedException ex) {
+		} catch (AssumptionViolatedException ex) {
 			fail("assumption should NOT have failed");
 		}
 	}
@@ -101,15 +100,14 @@ public class AssumeTests {
 		try {
 			Assume.group(JMXMP);
 			fail("assumption should have failed");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertThat(ex.getMessage(),
-				startsWith("Failed to parse '" + TEST_GROUPS_SYSTEM_PROPERTY + "' system property: "));
+					startsWith("Failed to parse '" + TEST_GROUPS_SYSTEM_PROPERTY + "' system property: "));
 
 			assertThat(ex.getCause(), instanceOf(IllegalArgumentException.class));
 			assertThat(ex.getCause().getMessage(),
-				equalTo("Unable to find test group 'bogus' when parsing testGroups value: '" + testGroups
-						+ "'. Available groups include: [LONG_RUNNING,PERFORMANCE,JMXMP,CI]"));
+					equalTo("Unable to find test group 'bogus' when parsing testGroups value: '" + testGroups
+							+ "'. Available groups include: [LONG_RUNNING,PERFORMANCE,JMXMP,CI]"));
 		}
 	}
 

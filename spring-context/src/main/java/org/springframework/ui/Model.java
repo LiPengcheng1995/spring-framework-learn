@@ -16,10 +16,10 @@
 
 package org.springframework.ui;
 
+import org.springframework.lang.Nullable;
+
 import java.util.Collection;
 import java.util.Map;
-
-import org.springframework.lang.Nullable;
 
 /**
  * Java-5-specific interface that defines a holder for model attributes.
@@ -33,7 +33,8 @@ public interface Model {
 
 	/**
 	 * Add the supplied attribute under the supplied name.
-	 * @param attributeName the name of the model attribute (never {@code null})
+	 *
+	 * @param attributeName  the name of the model attribute (never {@code null})
 	 * @param attributeValue the model attribute value (can be {@code null})
 	 */
 	Model addAttribute(String attributeName, @Nullable Object attributeValue);
@@ -45,6 +46,7 @@ public interface Model {
 	 * the model when using this method because we cannot correctly determine
 	 * the true convention name. View code should check for {@code null} rather
 	 * than for empty collections as is already done by JSTL tags.</emphasis>
+	 *
 	 * @param attributeValue the model attribute value (never {@code null})
 	 */
 	Model addAttribute(Object attributeValue);
@@ -52,12 +54,14 @@ public interface Model {
 	/**
 	 * Copy all attributes in the supplied {@code Collection} into this
 	 * {@code Map}, using attribute name generation for each element.
+	 *
 	 * @see #addAttribute(Object)
 	 */
 	Model addAllAttributes(Collection<?> attributeValues);
 
 	/**
 	 * Copy all attributes in the supplied {@code Map} into this {@code Map}.
+	 *
 	 * @see #addAttribute(String, Object)
 	 */
 	Model addAllAttributes(Map<String, ?> attributes);
@@ -71,6 +75,7 @@ public interface Model {
 
 	/**
 	 * Does this model contain an attribute of the given name?
+	 *
 	 * @param attributeName the name of the model attribute (never {@code null})
 	 * @return whether this model contains a corresponding attribute
 	 */

@@ -16,9 +16,9 @@
 
 package org.springframework.web.servlet;
 
-import javax.servlet.ServletException;
-
 import org.springframework.util.Assert;
+
+import javax.servlet.ServletException;
 
 /**
  * Exception to be thrown on error conditions that should forward
@@ -41,6 +41,7 @@ public class ModelAndViewDefiningException extends ServletException {
 	/**
 	 * Create new ModelAndViewDefiningException with the given ModelAndView,
 	 * typically representing a specific error page.
+	 *
 	 * @param modelAndView ModelAndView with view to forward to and model to expose
 	 */
 	public ModelAndViewDefiningException(ModelAndView modelAndView) {

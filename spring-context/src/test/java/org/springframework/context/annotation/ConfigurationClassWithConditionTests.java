@@ -16,14 +16,7 @@
 
 package org.springframework.context.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.util.Map;
-
 import org.junit.Test;
-
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -31,7 +24,13 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.stereotype.Component;
 
-import static org.hamcrest.Matchers.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.Map;
+
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.*;
 
 /**
@@ -159,6 +158,27 @@ public class ConfigurationClassWithConditionTests {
 	}
 
 
+	@Conditional(MetaConditionalFilter.class)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	public @interface MetaConditional {
+
+		String value();
+	}
+
+	@Conditional(NeverCondition.class)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ElementType.TYPE, ElementType.METHOD})
+	public @interface Never {
+	}
+
+	@Conditional(AlwaysCondition.class)
+	@Never
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ElementType.TYPE, ElementType.METHOD})
+	public @interface MetaNever {
+	}
+
 	@Configuration
 	static class BeanOneConfiguration {
 
@@ -196,27 +216,6 @@ public class ConfigurationClassWithConditionTests {
 		public ExampleBean bean() {
 			return new ExampleBean();
 		}
-	}
-
-	@Conditional(MetaConditionalFilter.class)
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target(ElementType.TYPE)
-	public @interface MetaConditional {
-
-		String value();
-	}
-
-	@Conditional(NeverCondition.class)
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target({ElementType.TYPE, ElementType.METHOD})
-	public @interface Never {
-	}
-
-	@Conditional(AlwaysCondition.class)
-	@Never
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target({ElementType.TYPE, ElementType.METHOD})
-	public @interface MetaNever {
 	}
 
 	static class NoBeanOneCondition implements Condition {
@@ -312,7 +311,7 @@ public class ConfigurationClassWithConditionTests {
 
 		@Override
 		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
-				BeanDefinitionRegistry registry) {
+											BeanDefinitionRegistry registry) {
 		}
 	}
 
@@ -324,7 +323,7 @@ public class ConfigurationClassWithConditionTests {
 
 		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
-			return new String[] {};
+			return new String[]{};
 		}
 
 	}

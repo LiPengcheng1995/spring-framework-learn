@@ -16,13 +16,8 @@
 
 package org.springframework.messaging.support;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
@@ -31,6 +26,10 @@ import org.springframework.messaging.MessageDeliveryException;
 import org.springframework.messaging.MessagingException;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Abstract base class for {@link MessageChannel} implementations.
@@ -51,15 +50,6 @@ public abstract class AbstractMessageChannel implements MessageChannel, Intercep
 		this.beanName = getClass().getSimpleName() + "@" + ObjectUtils.getIdentityHexString(this);
 	}
 
-
-	/**
-	 * A message channel uses the bean name primarily for logging purposes.
-	 */
-	@Override
-	public void setBeanName(String name) {
-		this.beanName = name;
-	}
-
 	/**
 	 * Return the bean name for this message channel.
 	 */
@@ -67,11 +57,12 @@ public abstract class AbstractMessageChannel implements MessageChannel, Intercep
 		return this.beanName;
 	}
 
-
+	/**
+	 * A message channel uses the bean name primarily for logging purposes.
+	 */
 	@Override
-	public void setInterceptors(List<ChannelInterceptor> interceptors) {
-		this.interceptors.clear();
-		this.interceptors.addAll(interceptors);
+	public void setBeanName(String name) {
+		this.beanName = name;
 	}
 
 	@Override
@@ -87,6 +78,12 @@ public abstract class AbstractMessageChannel implements MessageChannel, Intercep
 	@Override
 	public List<ChannelInterceptor> getInterceptors() {
 		return Collections.unmodifiableList(this.interceptors);
+	}
+
+	@Override
+	public void setInterceptors(List<ChannelInterceptor> interceptors) {
+		this.interceptors.clear();
+		this.interceptors.addAll(interceptors);
 	}
 
 	@Override
@@ -120,15 +117,13 @@ public abstract class AbstractMessageChannel implements MessageChannel, Intercep
 			chain.applyPostSend(messageToUse, this, sent);
 			chain.triggerAfterSendCompletion(messageToUse, this, sent, null);
 			return sent;
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			chain.triggerAfterSendCompletion(messageToUse, this, sent, ex);
 			if (ex instanceof MessagingException) {
 				throw (MessagingException) ex;
 			}
-			throw new MessageDeliveryException(messageToUse,"Failed to send message to " + this, ex);
-		}
-		catch (Throwable err) {
+			throw new MessageDeliveryException(messageToUse, "Failed to send message to " + this, ex);
+		} catch (Throwable err) {
 			MessageDeliveryException ex2 =
 					new MessageDeliveryException(messageToUse, "Failed to send message to " + this, err);
 			chain.triggerAfterSendCompletion(messageToUse, this, sent, ex2);
@@ -180,14 +175,13 @@ public abstract class AbstractMessageChannel implements MessageChannel, Intercep
 		}
 
 		public void triggerAfterSendCompletion(Message<?> message, MessageChannel channel,
-				boolean sent, @Nullable Exception ex) {
+											   boolean sent, @Nullable Exception ex) {
 
 			for (int i = this.sendInterceptorIndex; i >= 0; i--) {
 				ChannelInterceptor interceptor = interceptors.get(i);
 				try {
 					interceptor.afterSendCompletion(message, channel, sent, ex);
-				}
-				catch (Throwable ex2) {
+				} catch (Throwable ex2) {
 					logger.error("Exception from afterSendCompletion in " + interceptor, ex2);
 				}
 			}
@@ -223,8 +217,7 @@ public abstract class AbstractMessageChannel implements MessageChannel, Intercep
 				ChannelInterceptor interceptor = interceptors.get(i);
 				try {
 					interceptor.afterReceiveCompletion(message, channel, ex);
-				}
-				catch (Throwable ex2) {
+				} catch (Throwable ex2) {
 					if (logger.isErrorEnabled()) {
 						logger.error("Exception from afterReceiveCompletion in " + interceptor, ex2);
 					}

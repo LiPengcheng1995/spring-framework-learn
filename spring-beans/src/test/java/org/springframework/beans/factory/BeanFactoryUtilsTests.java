@@ -16,28 +16,24 @@
 
 package org.springframework.beans.factory;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.StaticListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.cglib.proxy.NoOp;
 import org.springframework.core.io.Resource;
-import org.springframework.tests.sample.beans.AnnotatedBean;
-import org.springframework.tests.sample.beans.ITestBean;
-import org.springframework.tests.sample.beans.IndexedTestBean;
-import org.springframework.tests.sample.beans.TestAnnotation;
-import org.springframework.tests.sample.beans.TestBean;
+import org.springframework.tests.sample.beans.*;
 import org.springframework.tests.sample.beans.factory.DummyFactory;
 import org.springframework.util.ObjectUtils;
 
-import static org.junit.Assert.*;
-import static org.springframework.tests.TestResourceUtils.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.springframework.tests.TestResourceUtils.qualifiedResource;
 
 /**
  * @author Rod Johnson
@@ -304,19 +300,19 @@ public class BeanFactoryUtilsTests {
 	@Test
 	public void testBDependencies() {
 		String[] deps = this.dependentBeansFactory.getDependentBeans("b");
-		assertTrue(Arrays.equals(new String[] { "c" }, deps));
+		assertTrue(Arrays.equals(new String[]{"c"}, deps));
 	}
 
 	@Test
 	public void testCDependencies() {
 		String[] deps = this.dependentBeansFactory.getDependentBeans("c");
-		assertTrue(Arrays.equals(new String[] { "int", "long" }, deps));
+		assertTrue(Arrays.equals(new String[]{"int", "long"}, deps));
 	}
 
 	@Test
 	public void testIntDependencies() {
 		String[] deps = this.dependentBeansFactory.getDependentBeans("int");
-		assertTrue(Arrays.equals(new String[] { "buffer" }, deps));
+		assertTrue(Arrays.equals(new String[]{"buffer"}, deps));
 	}
 
 }

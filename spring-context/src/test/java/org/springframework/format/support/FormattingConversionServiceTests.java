@@ -16,22 +16,12 @@
 
 package org.springframework.format.support;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Properties;
-
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.ConfigurablePropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -55,7 +45,13 @@ import org.springframework.format.datetime.joda.JodaDateTimeFormatAnnotationForm
 import org.springframework.format.datetime.joda.ReadablePartialPrinter;
 import org.springframework.format.number.NumberStyleFormatter;
 
-import static org.junit.Assert.*;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.text.ParseException;
+import java.util.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Keith Donald
@@ -133,8 +129,7 @@ public class FormattingConversionServiceTests {
 			MetaValueBean valueBean = ac.getBean(MetaValueBean.class);
 			assertEquals(new LocalDate(2009, 10, 31), new LocalDate(valueBean.date));
 			assertEquals(Double.valueOf(0.9999), valueBean.number);
-		}
-		finally {
+		} finally {
 			System.clearProperty("myDate");
 			System.clearProperty("myNumber");
 		}
@@ -330,10 +325,12 @@ public class FormattingConversionServiceTests {
 			public T parse(String text, Locale locale) throws ParseException {
 				return defaultValue;
 			}
+
 			@Override
 			public String print(T t, Locale locale) {
 				return defaultValue.toString();
 			}
+
 			@Override
 			public String toString() {
 				return defaultValue.toString();
@@ -381,26 +378,8 @@ public class FormattingConversionServiceTests {
 	}
 
 
-	public static class ValueBean {
-
-		@Value("10-31-09")
-		@org.springframework.format.annotation.DateTimeFormat(pattern="MM-d-yy")
-		public Date date;
-	}
-
-
-	public static class MetaValueBean {
-
-		@MyDateAnn
-		public Date date;
-
-		@MyNumberAnn
-		public Double number;
-	}
-
-
 	@Value("${myDate}")
-	@org.springframework.format.annotation.DateTimeFormat(pattern="MM-d-yy")
+	@org.springframework.format.annotation.DateTimeFormat(pattern = "MM-d-yy")
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface MyDateAnn {
 	}
@@ -413,12 +392,33 @@ public class FormattingConversionServiceTests {
 	}
 
 
-	public static class Model {
+	@org.springframework.format.annotation.DateTimeFormat(pattern = "${datePattern}")
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface MyDatePattern {
+	}
 
-		@org.springframework.format.annotation.DateTimeFormat(style="S-")
+	public static class ValueBean {
+
+		@Value("10-31-09")
+		@org.springframework.format.annotation.DateTimeFormat(pattern = "MM-d-yy")
+		public Date date;
+	}
+
+	public static class MetaValueBean {
+
+		@MyDateAnn
 		public Date date;
 
-		@org.springframework.format.annotation.DateTimeFormat(pattern="M-d-yy")
+		@MyNumberAnn
+		public Double number;
+	}
+
+	public static class Model {
+
+		@org.springframework.format.annotation.DateTimeFormat(style = "S-")
+		public Date date;
+
+		@org.springframework.format.annotation.DateTimeFormat(pattern = "M-d-yy")
 		public List<Date> dates;
 
 		public List<Date> getDates() {
@@ -430,10 +430,9 @@ public class FormattingConversionServiceTests {
 		}
 	}
 
-
 	public static class ModelWithPlaceholders {
 
-		@org.springframework.format.annotation.DateTimeFormat(style="${dateStyle}")
+		@org.springframework.format.annotation.DateTimeFormat(style = "${dateStyle}")
 		public Date date;
 
 		@MyDatePattern
@@ -447,13 +446,6 @@ public class FormattingConversionServiceTests {
 			this.dates = dates;
 		}
 	}
-
-
-	@org.springframework.format.annotation.DateTimeFormat(pattern="${datePattern}")
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface MyDatePattern {
-	}
-
 
 	public static class NullReturningFormatter implements Formatter<Integer> {
 
@@ -497,8 +489,7 @@ public class FormattingConversionServiceTests {
 		public <T extends Number> Converter<String, T> getConverter(Class<T> targetType) {
 			if (Integer.class == targetType) {
 				return (Converter<String, T>) new IntegerConverter();
-			}
-			else {
+			} else {
 				throw new IllegalStateException();
 			}
 		}

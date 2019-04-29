@@ -16,15 +16,15 @@
 
 package org.springframework.web.bind;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.util.HtmlUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Errors wrapper that adds automatic HTML escaping to the wrapped instance,
@@ -36,9 +36,9 @@ import org.springframework.web.util.HtmlUtils;
  * that get copied into the respective BindStatus instance.
  *
  * @author Juergen Hoeller
- * @since 01.03.2003
  * @see org.springframework.web.servlet.support.RequestContext#getErrors
  * @see org.springframework.web.servlet.tags.BindTag
+ * @since 01.03.2003
  */
 public class EscapedErrors implements Errors {
 
@@ -64,13 +64,13 @@ public class EscapedErrors implements Errors {
 	}
 
 	@Override
-	public void setNestedPath(String nestedPath) {
-		this.source.setNestedPath(nestedPath);
+	public String getNestedPath() {
+		return this.source.getNestedPath();
 	}
 
 	@Override
-	public String getNestedPath() {
-		return this.source.getNestedPath();
+	public void setNestedPath(String nestedPath) {
+		this.source.setNestedPath(nestedPath);
 	}
 
 	@Override
@@ -111,7 +111,7 @@ public class EscapedErrors implements Errors {
 
 	@Override
 	public void rejectValue(@Nullable String field, String errorCode, @Nullable Object[] errorArgs,
-			@Nullable String defaultMessage) {
+							@Nullable String defaultMessage) {
 
 		this.source.rejectValue(field, errorCode, errorArgs, defaultMessage);
 	}
@@ -232,8 +232,7 @@ public class EscapedErrors implements Errors {
 			return (T) new FieldError(
 					fieldError.getObjectName(), fieldError.getField(), value, fieldError.isBindingFailure(),
 					fieldError.getCodes(), fieldError.getArguments(), defaultMessage);
-		}
-		else {
+		} else {
 			return (T) new ObjectError(
 					source.getObjectName(), source.getCodes(), source.getArguments(), defaultMessage);
 		}

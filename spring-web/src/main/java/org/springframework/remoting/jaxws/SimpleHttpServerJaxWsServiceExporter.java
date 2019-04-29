@@ -16,22 +16,21 @@
 
 package org.springframework.remoting.jaxws;
 
-import java.net.InetSocketAddress;
-import java.util.List;
-import javax.jws.WebService;
-import javax.xml.ws.Endpoint;
-import javax.xml.ws.WebServiceProvider;
-
 import com.sun.net.httpserver.Authenticator;
 import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpServer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.lang.Nullable;
 import org.springframework.lang.UsesSunHttpServer;
 import org.springframework.util.Assert;
+
+import javax.jws.WebService;
+import javax.xml.ws.Endpoint;
+import javax.xml.ws.WebServiceProvider;
+import java.net.InetSocketAddress;
+import java.util.List;
 
 /**
  * Simple exporter for JAX-WS services, autodetecting annotated service beans
@@ -45,10 +44,10 @@ import org.springframework.util.Assert;
  * For a portable JAX-WS exporter, have a look at {@link SimpleJaxWsServiceExporter}.
  *
  * @author Juergen Hoeller
- * @since 2.5.5
  * @see javax.jws.WebService
  * @see javax.xml.ws.Endpoint#publish(Object)
  * @see SimpleJaxWsServiceExporter
+ * @since 2.5.5
  */
 @UsesSunHttpServer
 public class SimpleHttpServerJaxWsServiceExporter extends AbstractJaxWsServiceExporter {
@@ -134,6 +133,7 @@ public class SimpleHttpServerJaxWsServiceExporter extends AbstractJaxWsServiceEx
 	 * <p>For each context publication path, the service name will be
 	 * appended to this base address. E.g. service name "OrderService"
 	 * -> "/OrderService".
+	 *
 	 * @see javax.xml.ws.Endpoint#publish(Object)
 	 * @see javax.jws.WebService#serviceName()
 	 */
@@ -186,7 +186,8 @@ public class SimpleHttpServerJaxWsServiceExporter extends AbstractJaxWsServiceEx
 
 	/**
 	 * Build the HttpContext for the given endpoint.
-	 * @param endpoint the JAX-WS Provider Endpoint object
+	 *
+	 * @param endpoint    the JAX-WS Provider Endpoint object
 	 * @param serviceName the given service name
 	 * @return the fully populated HttpContext
 	 */
@@ -205,7 +206,8 @@ public class SimpleHttpServerJaxWsServiceExporter extends AbstractJaxWsServiceEx
 
 	/**
 	 * Calculate the full endpoint path for the given endpoint.
-	 * @param endpoint the JAX-WS Provider Endpoint object
+	 *
+	 * @param endpoint    the JAX-WS Provider Endpoint object
 	 * @param serviceName the given service name
 	 * @return the full endpoint path
 	 */

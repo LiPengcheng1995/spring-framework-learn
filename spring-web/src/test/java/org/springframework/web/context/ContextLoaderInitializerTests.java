@@ -16,18 +16,17 @@
 
 package org.springframework.web.context;
 
-import java.util.EventListener;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletException;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.mock.web.test.MockServletContext;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import static org.junit.Assert.*;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletException;
+import java.util.EventListener;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test case for {@link AbstractContextLoaderInitializer}.
@@ -66,15 +65,6 @@ public class ContextLoaderInitializerTests {
 		assertTrue(applicationContext.getBean(BEAN_NAME) instanceof MyBean);
 	}
 
-	private class MyMockServletContext extends MockServletContext {
-
-		@Override
-		public <T extends EventListener> void addListener(T listener) {
-			eventListener = listener;
-		}
-
-	}
-
 	private static class MyContextLoaderInitializer
 			extends AbstractContextLoaderInitializer {
 
@@ -87,6 +77,15 @@ public class ContextLoaderInitializerTests {
 	}
 
 	private static class MyBean {
+
+	}
+
+	private class MyMockServletContext extends MockServletContext {
+
+		@Override
+		public <T extends EventListener> void addListener(T listener) {
+			eventListener = listener;
+		}
 
 	}
 }

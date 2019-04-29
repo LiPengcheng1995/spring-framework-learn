@@ -16,17 +16,8 @@
 
 package org.springframework.context.event;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.aop.framework.autoproxy.AutoProxyUtils;
 import org.springframework.aop.scope.ScopedObject;
 import org.springframework.aop.scope.ScopedProxyUtils;
@@ -44,6 +35,10 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * Registers {@link EventListener} methods as individual {@link ApplicationListener} instances.
  *
@@ -54,14 +49,15 @@ import org.springframework.util.CollectionUtils;
 public class EventListenerMethodProcessor implements SmartInitializingSingleton, ApplicationContextAware {
 
 	protected final Log logger = LogFactory.getLog(getClass());
-
+	private final EventExpressionEvaluator evaluator = new EventExpressionEvaluator();
+	private final Set<Class<?>> nonAnnotatedClasses = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
 	@Nullable
 	private ConfigurableApplicationContext applicationContext;
 
-	private final EventExpressionEvaluator evaluator = new EventExpressionEvaluator();
-
-	private final Set<Class<?>> nonAnnotatedClasses = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
-
+	private ConfigurableApplicationContext getApplicationContext() {
+		Assert.state(this.applicationContext != null, "No ApplicationContext set");
+		return this.applicationContext;
+	}
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) {
@@ -69,12 +65,6 @@ public class EventListenerMethodProcessor implements SmartInitializingSingleton,
 				"ApplicationContext does not implement ConfigurableApplicationContext");
 		this.applicationContext = (ConfigurableApplicationContext) applicationContext;
 	}
-
-	private ConfigurableApplicationContext getApplicationContext() {
-		Assert.state(this.applicationContext != null, "No ApplicationContext set");
-		return this.applicationContext;
-	}
-
 
 	@Override
 	public void afterSingletonsInstantiated() {
@@ -86,8 +76,7 @@ public class EventListenerMethodProcessor implements SmartInitializingSingleton,
 				Class<?> type = null;
 				try {
 					type = AutoProxyUtils.determineTargetClass(context.getBeanFactory(), beanName);
-				}
-				catch (Throwable ex) {
+				} catch (Throwable ex) {
 					// An unresolvable bean type, probably from a lazy bean - let's ignore it.
 					if (logger.isDebugEnabled()) {
 						logger.debug("Could not resolve target class for bean with name '" + beanName + "'", ex);
@@ -101,8 +90,7 @@ public class EventListenerMethodProcessor implements SmartInitializingSingleton,
 							if (targetClass != null) {
 								type = targetClass;
 							}
-						}
-						catch (Throwable ex) {
+						} catch (Throwable ex) {
 							// An invalid scoped proxy arrangement - let's ignore it.
 							if (logger.isDebugEnabled()) {
 								logger.debug("Could not resolve target bean for scoped proxy '" + beanName + "'", ex);
@@ -111,8 +99,7 @@ public class EventListenerMethodProcessor implements SmartInitializingSingleton,
 					}
 					try {
 						processBean(factories, beanName, type);
-					}
-					catch (Throwable ex) {
+					} catch (Throwable ex) {
 						throw new BeanInitializationException("Failed to process @EventListener " +
 								"annotation on bean with name '" + beanName + "'", ex);
 					}
@@ -142,8 +129,7 @@ public class EventListenerMethodProcessor implements SmartInitializingSingleton,
 				annotatedMethods = MethodIntrospector.selectMethods(targetType,
 						(MethodIntrospector.MetadataLookup<EventListener>) method ->
 								AnnotatedElementUtils.findMergedAnnotation(method, EventListener.class));
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				// An unresolvable type in a method signature, probably from a lazy bean - let's ignore it.
 				if (logger.isDebugEnabled()) {
 					logger.debug("Could not resolve methods for bean with name '" + beanName + "'", ex);
@@ -154,8 +140,7 @@ public class EventListenerMethodProcessor implements SmartInitializingSingleton,
 				if (logger.isTraceEnabled()) {
 					logger.trace("No @EventListener annotations found on bean class: " + targetType.getName());
 				}
-			}
-			else {
+			} else {
 				// Non-empty set of methods
 				ConfigurableApplicationContext context = getApplicationContext();
 				for (Method method : annotatedMethods.keySet()) {

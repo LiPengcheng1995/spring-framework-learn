@@ -16,19 +16,18 @@
 
 package org.springframework.jmx.access;
 
-import java.io.IOException;
-import java.util.Map;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.jmx.MBeanServerNotFoundException;
+import org.springframework.jmx.support.JmxUtils;
+import org.springframework.lang.Nullable;
+
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.springframework.jmx.MBeanServerNotFoundException;
-import org.springframework.jmx.support.JmxUtils;
-import org.springframework.lang.Nullable;
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * Internal helper class for managing a JMX connector.
@@ -47,9 +46,10 @@ class ConnectorDelegate {
 	/**
 	 * Connects to the remote {@code MBeanServer} using the configured {@code JMXServiceURL}:
 	 * to the specified JMX service, or to a local MBeanServer if no service URL specified.
-	 * @param serviceUrl the JMX service URL to connect to (may be {@code null})
+	 *
+	 * @param serviceUrl  the JMX service URL to connect to (may be {@code null})
 	 * @param environment the JMX environment for the connector (may be {@code null})
-	 * @param agentId the local JMX MBeanServer's agent id (may be {@code null})
+	 * @param agentId     the local JMX MBeanServer's agent id (may be {@code null})
 	 */
 	public MBeanServerConnection connect(@Nullable JMXServiceURL serviceUrl, @Nullable Map<String, ?> environment, @Nullable String agentId)
 			throws MBeanServerNotFoundException {
@@ -61,12 +61,10 @@ class ConnectorDelegate {
 			try {
 				this.connector = JMXConnectorFactory.connect(serviceUrl, environment);
 				return this.connector.getMBeanServerConnection();
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				throw new MBeanServerNotFoundException("Could not connect to remote MBeanServer [" + serviceUrl + "]", ex);
 			}
-		}
-		else {
+		} else {
 			logger.debug("Attempting to locate local MBeanServer");
 			return JmxUtils.locateMBeanServer(agentId);
 		}
@@ -79,8 +77,7 @@ class ConnectorDelegate {
 		if (this.connector != null) {
 			try {
 				this.connector.close();
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				logger.debug("Could not close JMX connector", ex);
 			}
 		}

@@ -16,17 +16,8 @@
 
 package org.springframework.remoting.httpinvoker;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.rmi.RemoteException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.lang.Nullable;
 import org.springframework.remoting.rmi.CodebaseAwareObjectInputStream;
@@ -35,6 +26,9 @@ import org.springframework.remoting.support.RemoteInvocationResult;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
+import java.io.*;
+import java.rmi.RemoteException;
+
 /**
  * Abstract base implementation of the HttpInvokerRequestExecutor interface.
  *
@@ -42,8 +36,8 @@ import org.springframework.util.ClassUtils;
  * deserialization of RemoteInvocationResults objects.
  *
  * @author Juergen Hoeller
- * @since 1.1
  * @see #doExecuteRequest
+ * @since 1.1
  */
 public abstract class AbstractHttpInvokerRequestExecutor implements HttpInvokerRequestExecutor, BeanClassLoaderAware {
 
@@ -51,25 +45,14 @@ public abstract class AbstractHttpInvokerRequestExecutor implements HttpInvokerR
 	 * Default content type: "application/x-java-serialized-object"
 	 */
 	public static final String CONTENT_TYPE_SERIALIZED_OBJECT = "application/x-java-serialized-object";
-
-	private static final int SERIALIZED_INVOCATION_BYTE_ARRAY_INITIAL_SIZE = 1024;
-
-
 	protected static final String HTTP_METHOD_POST = "POST";
-
 	protected static final String HTTP_HEADER_ACCEPT_LANGUAGE = "Accept-Language";
-
 	protected static final String HTTP_HEADER_ACCEPT_ENCODING = "Accept-Encoding";
-
 	protected static final String HTTP_HEADER_CONTENT_ENCODING = "Content-Encoding";
-
 	protected static final String HTTP_HEADER_CONTENT_TYPE = "Content-Type";
-
 	protected static final String HTTP_HEADER_CONTENT_LENGTH = "Content-Length";
-
 	protected static final String ENCODING_GZIP = "gzip";
-
-
+	private static final int SERIALIZED_INVOCATION_BYTE_ARRAY_INITIAL_SIZE = 1024;
 	protected final Log logger = LogFactory.getLog(getClass());
 
 	private String contentType = CONTENT_TYPE_SERIALIZED_OBJECT;
@@ -79,6 +62,12 @@ public abstract class AbstractHttpInvokerRequestExecutor implements HttpInvokerR
 	@Nullable
 	private ClassLoader beanClassLoader;
 
+	/**
+	 * Return the content type to use for sending HTTP invoker requests.
+	 */
+	public String getContentType() {
+		return this.contentType;
+	}
 
 	/**
 	 * Specify the content type to use for sending HTTP invoker requests.
@@ -90,10 +79,11 @@ public abstract class AbstractHttpInvokerRequestExecutor implements HttpInvokerR
 	}
 
 	/**
-	 * Return the content type to use for sending HTTP invoker requests.
+	 * Return whether to accept GZIP encoding, that is, whether to
+	 * send the HTTP "Accept-Encoding" header with "gzip" as value.
 	 */
-	public String getContentType() {
-		return this.contentType;
+	public boolean isAcceptGzipEncoding() {
+		return this.acceptGzipEncoding;
 	}
 
 	/**
@@ -107,19 +97,6 @@ public abstract class AbstractHttpInvokerRequestExecutor implements HttpInvokerR
 	}
 
 	/**
-	 * Return whether to accept GZIP encoding, that is, whether to
-	 * send the HTTP "Accept-Encoding" header with "gzip" as value.
-	 */
-	public boolean isAcceptGzipEncoding() {
-		return this.acceptGzipEncoding;
-	}
-
-	@Override
-	public void setBeanClassLoader(ClassLoader classLoader) {
-		this.beanClassLoader = classLoader;
-	}
-
-	/**
 	 * Return the bean ClassLoader that this executor is supposed to use.
 	 */
 	@Nullable
@@ -127,6 +104,10 @@ public abstract class AbstractHttpInvokerRequestExecutor implements HttpInvokerR
 		return this.beanClassLoader;
 	}
 
+	@Override
+	public void setBeanClassLoader(ClassLoader classLoader) {
+		this.beanClassLoader = classLoader;
+	}
 
 	@Override
 	public final RemoteInvocationResult executeRequest(
@@ -142,6 +123,7 @@ public abstract class AbstractHttpInvokerRequestExecutor implements HttpInvokerR
 
 	/**
 	 * Serialize the given RemoteInvocation into a ByteArrayOutputStream.
+	 *
 	 * @param invocation the RemoteInvocation object
 	 * @return a ByteArrayOutputStream with the serialized RemoteInvocation
 	 * @throws IOException if thrown by I/O methods
@@ -159,8 +141,9 @@ public abstract class AbstractHttpInvokerRequestExecutor implements HttpInvokerR
 	 * Creates an {@code ObjectOutputStream} for the final stream and calls
 	 * {@code doWriteRemoteInvocation} to actually write the object.
 	 * <p>Can be overridden for custom serialization of the invocation.
+	 *
 	 * @param invocation the RemoteInvocation object
-	 * @param os the OutputStream to write to
+	 * @param os         the OutputStream to write to
 	 * @throws IOException if thrown by I/O methods
 	 * @see #decorateOutputStream
 	 * @see #doWriteRemoteInvocation
@@ -169,8 +152,7 @@ public abstract class AbstractHttpInvokerRequestExecutor implements HttpInvokerR
 		ObjectOutputStream oos = new ObjectOutputStream(decorateOutputStream(os));
 		try {
 			doWriteRemoteInvocation(invocation, oos);
-		}
-		finally {
+		} finally {
 			oos.close();
 		}
 	}
@@ -180,6 +162,7 @@ public abstract class AbstractHttpInvokerRequestExecutor implements HttpInvokerR
 	 * potentially decorating the given original OutputStream.
 	 * <p>The default implementation returns the given stream as-is.
 	 * Can be overridden, for example, for custom encryption or compression.
+	 *
 	 * @param os the original OutputStream
 	 * @return the potentially decorated OutputStream
 	 */
@@ -193,8 +176,9 @@ public abstract class AbstractHttpInvokerRequestExecutor implements HttpInvokerR
 	 * <p>The default implementation simply calls {@code writeObject}.
 	 * Can be overridden for serialization of a custom wrapper object rather
 	 * than the plain invocation, for example an encryption-aware holder.
+	 *
 	 * @param invocation the RemoteInvocation object
-	 * @param oos the ObjectOutputStream to write to
+	 * @param oos        the ObjectOutputStream to write to
 	 * @throws IOException if thrown by I/O methods
 	 * @see java.io.ObjectOutputStream#writeObject
 	 */
@@ -207,14 +191,15 @@ public abstract class AbstractHttpInvokerRequestExecutor implements HttpInvokerR
 	 * Execute a request to send the given serialized remote invocation.
 	 * <p>Implementations will usually call {@code readRemoteInvocationResult}
 	 * to deserialize a returned RemoteInvocationResult object.
+	 *
 	 * @param config the HTTP invoker configuration that specifies the
-	 * target service
-	 * @param baos the ByteArrayOutputStream that contains the serialized
-	 * RemoteInvocation object
+	 *               target service
+	 * @param baos   the ByteArrayOutputStream that contains the serialized
+	 *               RemoteInvocation object
 	 * @return the RemoteInvocationResult object
-	 * @throws IOException if thrown by I/O operations
+	 * @throws IOException            if thrown by I/O operations
 	 * @throws ClassNotFoundException if thrown during deserialization
-	 * @throws Exception in case of general errors
+	 * @throws Exception              in case of general errors
 	 * @see #readRemoteInvocationResult(java.io.InputStream, String)
 	 */
 	protected abstract RemoteInvocationResult doExecuteRequest(
@@ -228,10 +213,11 @@ public abstract class AbstractHttpInvokerRequestExecutor implements HttpInvokerR
 	 * {@code ObjectInputStream} via {@code createObjectInputStream} and
 	 * calls {@code doReadRemoteInvocationResult} to actually read the object.
 	 * <p>Can be overridden for custom serialization of the invocation.
-	 * @param is the InputStream to read from
+	 *
+	 * @param is          the InputStream to read from
 	 * @param codebaseUrl the codebase URL to load classes from if not found locally
 	 * @return the RemoteInvocationResult object
-	 * @throws IOException if thrown by I/O methods
+	 * @throws IOException            if thrown by I/O methods
 	 * @throws ClassNotFoundException if thrown during deserialization
 	 * @see #decorateInputStream
 	 * @see #createObjectInputStream
@@ -243,8 +229,7 @@ public abstract class AbstractHttpInvokerRequestExecutor implements HttpInvokerR
 		ObjectInputStream ois = createObjectInputStream(decorateInputStream(is), codebaseUrl);
 		try {
 			return doReadRemoteInvocationResult(ois);
-		}
-		finally {
+		} finally {
 			ois.close();
 		}
 	}
@@ -254,6 +239,7 @@ public abstract class AbstractHttpInvokerRequestExecutor implements HttpInvokerR
 	 * potentially decorating the given original InputStream.
 	 * <p>The default implementation returns the given stream as-is.
 	 * Can be overridden, for example, for custom encryption or compression.
+	 *
 	 * @param is the original InputStream
 	 * @return the potentially decorated InputStream
 	 */
@@ -264,9 +250,10 @@ public abstract class AbstractHttpInvokerRequestExecutor implements HttpInvokerR
 	/**
 	 * Create an ObjectInputStream for the given InputStream and codebase.
 	 * The default implementation creates a CodebaseAwareObjectInputStream.
-	 * @param is the InputStream to read from
+	 *
+	 * @param is          the InputStream to read from
 	 * @param codebaseUrl the codebase URL to load classes from if not found locally
-	 * (can be {@code null})
+	 *                    (can be {@code null})
 	 * @return the new ObjectInputStream instance to use
 	 * @throws IOException if creation of the ObjectInputStream failed
 	 * @see org.springframework.remoting.rmi.CodebaseAwareObjectInputStream
@@ -281,11 +268,12 @@ public abstract class AbstractHttpInvokerRequestExecutor implements HttpInvokerR
 	 * <p>The default implementation simply calls {@code readObject}.
 	 * Can be overridden for deserialization of a custom wrapper object rather
 	 * than the plain invocation, for example an encryption-aware holder.
+	 *
 	 * @param ois the ObjectInputStream to read from
 	 * @return the RemoteInvocationResult object
-	 * @throws IOException if thrown by I/O methods
+	 * @throws IOException            if thrown by I/O methods
 	 * @throws ClassNotFoundException if the class name of a serialized object
-	 * couldn't get resolved
+	 *                                couldn't get resolved
 	 * @see java.io.ObjectOutputStream#writeObject
 	 */
 	protected RemoteInvocationResult doReadRemoteInvocationResult(ObjectInputStream ois)

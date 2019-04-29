@@ -16,18 +16,10 @@
 
 package org.springframework.http.converter;
 
-import java.io.ByteArrayInputStream;
-import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
-
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -38,10 +30,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.MockHttpOutputMessage;
 import org.springframework.util.StringUtils;
 
+import java.io.ByteArrayInputStream;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Test cases for {@link ResourceRegionHttpMessageConverter} class.
@@ -69,13 +66,15 @@ public class ResourceRegionHttpMessageConverterTests {
 
 	@Test
 	public void canWriteResourceCollection() {
-		Type resourceRegionList = new ParameterizedTypeReference<List<ResourceRegion>>() {}.getType();
+		Type resourceRegionList = new ParameterizedTypeReference<List<ResourceRegion>>() {
+		}.getType();
 		assertTrue(converter.canWrite(resourceRegionList, null, MediaType.APPLICATION_OCTET_STREAM));
 		assertTrue(converter.canWrite(resourceRegionList, null, MediaType.ALL));
 
 		assertFalse(converter.canWrite(List.class, MediaType.APPLICATION_OCTET_STREAM));
 		assertFalse(converter.canWrite(List.class, MediaType.ALL));
-		Type resourceObjectList = new ParameterizedTypeReference<List<Object>>() {}.getType();
+		Type resourceObjectList = new ParameterizedTypeReference<List<Object>>() {
+		}.getType();
 		assertFalse(converter.canWrite(resourceObjectList, null, MediaType.ALL));
 	}
 
@@ -115,7 +114,7 @@ public class ResourceRegionHttpMessageConverterTests {
 		Resource body = new ClassPathResource("byterangeresource.txt", getClass());
 		List<HttpRange> rangeList = HttpRange.parseRanges("bytes=0-5,7-15,17-20,22-38");
 		List<ResourceRegion> regions = new ArrayList<>();
-		for(HttpRange range : rangeList) {
+		for (HttpRange range : rangeList) {
 			regions.add(range.toResourceRegion(body));
 		}
 

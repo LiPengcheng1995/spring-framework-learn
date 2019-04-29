@@ -16,10 +16,10 @@
 
 package org.springframework.scheduling.annotation;
 
-import java.util.concurrent.Executor;
-
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.lang.Nullable;
+
+import java.util.concurrent.Executor;
 
 /**
  * A convenience {@link AsyncConfigurer} that implements all methods

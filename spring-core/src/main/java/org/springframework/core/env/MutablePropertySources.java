@@ -16,14 +16,13 @@
 
 package org.springframework.core.env;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.lang.Nullable;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.springframework.lang.Nullable;
 
 /**
  * The default implementation of the {@link PropertySources} interface.
@@ -36,8 +35,8 @@ import org.springframework.lang.Nullable;
  *
  * @author Chris Beams
  * @author Juergen Hoeller
- * @since 3.1
  * @see PropertySourcesPropertyResolver
+ * @since 3.1
  */
 public class MutablePropertySources implements PropertySources {
 
@@ -152,6 +151,7 @@ public class MutablePropertySources implements PropertySources {
 
 	/**
 	 * Remove and return the property source with the given name, {@code null} if not found.
+	 *
 	 * @param name the name of the property source to find and remove
 	 */
 	@Nullable
@@ -165,7 +165,8 @@ public class MutablePropertySources implements PropertySources {
 
 	/**
 	 * Replace the property source with the given name with the given property source object.
-	 * @param name the name of the property source to find and replace
+	 *
+	 * @param name           the name of the property source to find and replace
 	 * @param propertySource the replacement property source
 	 * @throws IllegalArgumentException if no property source with the given name is present
 	 * @see #contains
@@ -218,6 +219,7 @@ public class MutablePropertySources implements PropertySources {
 
 	/**
 	 * Assert that the named property source is present and return its index.
+	 *
 	 * @param name {@linkplain PropertySource#getName() name of the property source} to find
 	 * @throws IllegalArgumentException if the named property source is not present
 	 */

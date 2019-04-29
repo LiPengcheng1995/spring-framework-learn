@@ -49,10 +49,10 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Arjen Poutsma
  * @author Juergen Hoeller
- * @since 3.0.2
  * @see org.springframework.web.client.RestTemplate
  * @see #getBody()
  * @see #getHeaders()
+ * @since 3.0.2
  */
 public class HttpEntity<T> {
 
@@ -77,6 +77,7 @@ public class HttpEntity<T> {
 
 	/**
 	 * Create a new {@code HttpEntity} with the given body and no headers.
+	 *
 	 * @param body the entity body
 	 */
 	public HttpEntity(T body) {
@@ -85,6 +86,7 @@ public class HttpEntity<T> {
 
 	/**
 	 * Create a new {@code HttpEntity} with the given headers and no body.
+	 *
 	 * @param headers the entity headers
 	 */
 	public HttpEntity(MultiValueMap<String, String> headers) {
@@ -93,7 +95,8 @@ public class HttpEntity<T> {
 
 	/**
 	 * Create a new {@code HttpEntity} with the given body and headers.
-	 * @param body the entity body
+	 *
+	 * @param body    the entity body
 	 * @param headers the entity headers
 	 */
 	public HttpEntity(@Nullable T body, @Nullable MultiValueMap<String, String> headers) {

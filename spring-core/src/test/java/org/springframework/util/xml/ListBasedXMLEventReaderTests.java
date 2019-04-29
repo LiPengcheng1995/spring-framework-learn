@@ -16,22 +16,18 @@
 
 package org.springframework.util.xml;
 
+import org.junit.Test;
+
+import javax.xml.stream.*;
+import javax.xml.stream.events.XMLEvent;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLEventWriter;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.XMLEvent;
-
-import org.junit.Test;
 
 import static javax.xml.stream.XMLStreamConstants.*;
 import static org.junit.Assert.*;
-import static org.xmlunit.matchers.CompareMatcher.*;
+import static org.xmlunit.matchers.CompareMatcher.isSimilarTo;
 
 /**
  * @author Arjen Poutsma
@@ -85,8 +81,7 @@ public class ListBasedXMLEventReaderTests {
 		try {
 			reader.getElementText();
 			fail("Should have thrown XMLStreamException");
-		}
-		catch (XMLStreamException ex) {
+		} catch (XMLStreamException ex) {
 			// expected
 			assertTrue(ex.getMessage().startsWith("Not at START_ELEMENT"));
 		}

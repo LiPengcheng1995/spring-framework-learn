@@ -16,12 +16,12 @@
 
 package org.springframework.util;
 
+import org.junit.Test;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
-
-import org.junit.Test;
 
 import static org.junit.Assert.*;
 
@@ -41,8 +41,7 @@ public class CompositeIteratorTests {
 		try {
 			it.next();
 			fail();
-		}
-		catch (NoSuchElementException ex) {
+		} catch (NoSuchElementException ex) {
 			// expected
 		}
 	}
@@ -59,8 +58,7 @@ public class CompositeIteratorTests {
 		try {
 			it.next();
 			fail();
-		}
-		catch (NoSuchElementException ex) {
+		} catch (NoSuchElementException ex) {
 			// expected
 		}
 	}
@@ -79,8 +77,7 @@ public class CompositeIteratorTests {
 		try {
 			it.next();
 			fail();
-		}
-		catch (NoSuchElementException ex) {
+		} catch (NoSuchElementException ex) {
 			// expected
 		}
 	}
@@ -94,8 +91,7 @@ public class CompositeIteratorTests {
 		try {
 			it.add(list.iterator());
 			fail();
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			// expected
 		}
 		it = new CompositeIterator<>();
@@ -104,8 +100,7 @@ public class CompositeIteratorTests {
 		try {
 			it.add(list.iterator());
 			fail();
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			// expected
 		}
 	}
@@ -120,8 +115,7 @@ public class CompositeIteratorTests {
 		try {
 			it.add(iterator);
 			fail();
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// expected
 		}
 	}

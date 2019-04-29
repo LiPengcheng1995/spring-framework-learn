@@ -17,7 +17,6 @@
 package org.springframework.context.annotation;
 
 import org.junit.Test;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationContext;
@@ -52,8 +51,7 @@ public class ComponentScanParserWithUserDefinedStrategiesTests {
 			new ClassPathXmlApplicationContext(
 					"org/springframework/context/annotation/invalidConstructorNameGeneratorTests.xml");
 			fail("should have failed: no-arg constructor is required");
-		}
-		catch (BeansException ex) {
+		} catch (BeansException ex) {
 			// expected
 		}
 	}
@@ -64,8 +62,7 @@ public class ComponentScanParserWithUserDefinedStrategiesTests {
 			new ClassPathXmlApplicationContext(
 					"org/springframework/context/annotation/invalidClassNameScopeResolverTests.xml");
 			fail("should have failed: no such class");
-		}
-		catch (BeansException ex) {
+		} catch (BeansException ex) {
 			// expected
 		}
 	}

@@ -17,7 +17,6 @@
 package org.springframework.context.annotation;
 
 import org.junit.Test;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -25,7 +24,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.tests.sample.beans.TestBean;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests semantics of declaring {@link BeanFactoryPostProcessor}-returning @Bean
@@ -56,6 +55,13 @@ public class ConfigurationClassAndBFPPTests {
 		assertThat(ctx.getBean(AutowiredConfigWithBFPPAsStaticMethod.class).autowiredTestBean, notNullValue());
 	}
 
+	@Test
+	public void staticBeanMethodsDoNotRespectScoping() {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		ctx.register(ConfigWithStaticBeanMethod.class);
+		ctx.refresh();
+		assertThat(ConfigWithStaticBeanMethod.testBean(), not(sameInstance(ConfigWithStaticBeanMethod.testBean())));
+	}
 
 	@Configuration
 	static class TestBeanConfig {
@@ -65,10 +71,10 @@ public class ConfigurationClassAndBFPPTests {
 		}
 	}
 
-
 	@Configuration
 	static class AutowiredConfigWithBFPPAsInstanceMethod {
-		@Autowired TestBean autowiredTestBean;
+		@Autowired
+		TestBean autowiredTestBean;
 
 		@Bean
 		public BeanFactoryPostProcessor bfpp() {
@@ -81,10 +87,10 @@ public class ConfigurationClassAndBFPPTests {
 		}
 	}
 
-
 	@Configuration
 	static class AutowiredConfigWithBFPPAsStaticMethod {
-		@Autowired TestBean autowiredTestBean;
+		@Autowired
+		TestBean autowiredTestBean;
 
 		@Bean
 		public static final BeanFactoryPostProcessor bfpp() {
@@ -96,16 +102,6 @@ public class ConfigurationClassAndBFPPTests {
 			};
 		}
 	}
-
-
-	@Test
-	public void staticBeanMethodsDoNotRespectScoping() {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		ctx.register(ConfigWithStaticBeanMethod.class);
-		ctx.refresh();
-		assertThat(ConfigWithStaticBeanMethod.testBean(), not(sameInstance(ConfigWithStaticBeanMethod.testBean())));
-	}
-
 
 	@Configuration
 	static class ConfigWithStaticBeanMethod {

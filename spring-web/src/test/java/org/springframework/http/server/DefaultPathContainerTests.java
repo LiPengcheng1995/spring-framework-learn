@@ -15,22 +15,22 @@
  */
 package org.springframework.http.server;
 
+import org.junit.Test;
+import org.springframework.http.server.PathContainer.PathSegment;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.junit.Test;
-
-import org.springframework.http.server.PathContainer.PathSegment;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
 /**
  * Unit tests for {@link DefaultPathContainer}.
+ *
  * @author Rossen Stoyanchev
  */
 public class DefaultPathContainerTests {

@@ -16,19 +16,9 @@
 
 package org.springframework.util;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
 import org.junit.Test;
+
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -57,7 +47,7 @@ public class CollectionUtilsTests {
 
 	@Test
 	public void testMergeArrayIntoCollection() {
-		Object[] arr = new Object[] {"value1", "value2"};
+		Object[] arr = new Object[]{"value1", "value2"};
 		List<Comparable<?>> list = new LinkedList<>();
 		list.add("value3");
 
@@ -69,7 +59,7 @@ public class CollectionUtilsTests {
 
 	@Test
 	public void testMergePrimitiveArrayIntoCollection() {
-		int[] arr = new int[] {1, 2};
+		int[] arr = new int[]{1, 2};
 		List<Comparable<?>> list = new LinkedList<>();
 		list.add(Integer.valueOf(3));
 

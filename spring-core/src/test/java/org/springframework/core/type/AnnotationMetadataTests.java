@@ -16,26 +16,20 @@
 
 package org.springframework.core.type;
 
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.junit.Test;
-
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 import org.springframework.stereotype.Component;
+
+import java.io.Serializable;
+import java.lang.annotation.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -297,30 +291,30 @@ public class AnnotationMetadataTests {
 			AnnotationAttributes nestedAnno = specialAttrs.getAnnotation("nestedAnno");
 			assertThat("na", is(nestedAnno.getString("value")));
 			assertTrue(nestedAnno.getEnum("anEnum").equals(SomeEnum.LABEL1));
-			assertArrayEquals(new Class<?>[] {String.class}, (Class<?>[]) nestedAnno.get("classArray"));
+			assertArrayEquals(new Class<?>[]{String.class}, (Class<?>[]) nestedAnno.get("classArray"));
 
 			AnnotationAttributes[] nestedAnnoArray = specialAttrs.getAnnotationArray("nestedAnnoArray");
 			assertThat(nestedAnnoArray.length, is(2));
 			assertThat(nestedAnnoArray[0].getString("value"), is("default"));
 			assertTrue(nestedAnnoArray[0].getEnum("anEnum").equals(SomeEnum.DEFAULT));
-			assertArrayEquals(new Class<?>[] {Void.class}, (Class<?>[]) nestedAnnoArray[0].get("classArray"));
+			assertArrayEquals(new Class<?>[]{Void.class}, (Class<?>[]) nestedAnnoArray[0].get("classArray"));
 			assertThat(nestedAnnoArray[1].getString("value"), is("na1"));
 			assertTrue(nestedAnnoArray[1].getEnum("anEnum").equals(SomeEnum.LABEL2));
-			assertArrayEquals(new Class<?>[] {Number.class}, (Class<?>[]) nestedAnnoArray[1].get("classArray"));
-			assertArrayEquals(new Class<?>[] {Number.class}, nestedAnnoArray[1].getClassArray("classArray"));
+			assertArrayEquals(new Class<?>[]{Number.class}, (Class<?>[]) nestedAnnoArray[1].get("classArray"));
+			assertArrayEquals(new Class<?>[]{Number.class}, nestedAnnoArray[1].getClassArray("classArray"));
 
 			AnnotationAttributes optional = specialAttrs.getAnnotation("optional");
 			assertThat(optional.getString("value"), is("optional"));
 			assertTrue(optional.getEnum("anEnum").equals(SomeEnum.DEFAULT));
-			assertArrayEquals(new Class<?>[] {Void.class}, (Class<?>[]) optional.get("classArray"));
-			assertArrayEquals(new Class<?>[] {Void.class}, optional.getClassArray("classArray"));
+			assertArrayEquals(new Class<?>[]{Void.class}, (Class<?>[]) optional.get("classArray"));
+			assertArrayEquals(new Class<?>[]{Void.class}, optional.getClassArray("classArray"));
 
 			AnnotationAttributes[] optionalArray = specialAttrs.getAnnotationArray("optionalArray");
 			assertThat(optionalArray.length, is(1));
 			assertThat(optionalArray[0].getString("value"), is("optional"));
 			assertTrue(optionalArray[0].getEnum("anEnum").equals(SomeEnum.DEFAULT));
-			assertArrayEquals(new Class<?>[] {Void.class}, (Class<?>[]) optionalArray[0].get("classArray"));
-			assertArrayEquals(new Class<?>[] {Void.class}, optionalArray[0].getClassArray("classArray"));
+			assertArrayEquals(new Class<?>[]{Void.class}, (Class<?>[]) optionalArray[0].get("classArray"));
+			assertArrayEquals(new Class<?>[]{Void.class}, optionalArray[0].getClassArray("classArray"));
 
 			assertEquals("direct", metadata.getAnnotationAttributes(DirectAnnotation.class.getName()).get("value"));
 			allMeta = metadata.getAllAnnotationAttributes(DirectAnnotation.class.getName()).get("value");
@@ -332,28 +326,28 @@ public class AnnotationMetadataTests {
 		}
 		{ // perform tests with classValuesAsString = true
 			AnnotationAttributes specialAttrs = (AnnotationAttributes) metadata.getAnnotationAttributes(
-				SpecialAttr.class.getName(), true);
+					SpecialAttr.class.getName(), true);
 			assertThat(specialAttrs.size(), is(6));
 			assertThat(specialAttrs.get("clazz"), is((Object) String.class.getName()));
 			assertThat(specialAttrs.getString("clazz"), is(String.class.getName()));
 
 			AnnotationAttributes nestedAnno = specialAttrs.getAnnotation("nestedAnno");
-			assertArrayEquals(new String[] { String.class.getName() }, nestedAnno.getStringArray("classArray"));
-			assertArrayEquals(new String[] { String.class.getName() }, nestedAnno.getStringArray("classArray"));
+			assertArrayEquals(new String[]{String.class.getName()}, nestedAnno.getStringArray("classArray"));
+			assertArrayEquals(new String[]{String.class.getName()}, nestedAnno.getStringArray("classArray"));
 
 			AnnotationAttributes[] nestedAnnoArray = specialAttrs.getAnnotationArray("nestedAnnoArray");
-			assertArrayEquals(new String[] { Void.class.getName() }, (String[]) nestedAnnoArray[0].get("classArray"));
-			assertArrayEquals(new String[] { Void.class.getName() }, nestedAnnoArray[0].getStringArray("classArray"));
-			assertArrayEquals(new String[] { Number.class.getName() }, (String[]) nestedAnnoArray[1].get("classArray"));
-			assertArrayEquals(new String[] { Number.class.getName() }, nestedAnnoArray[1].getStringArray("classArray"));
+			assertArrayEquals(new String[]{Void.class.getName()}, (String[]) nestedAnnoArray[0].get("classArray"));
+			assertArrayEquals(new String[]{Void.class.getName()}, nestedAnnoArray[0].getStringArray("classArray"));
+			assertArrayEquals(new String[]{Number.class.getName()}, (String[]) nestedAnnoArray[1].get("classArray"));
+			assertArrayEquals(new String[]{Number.class.getName()}, nestedAnnoArray[1].getStringArray("classArray"));
 
 			AnnotationAttributes optional = specialAttrs.getAnnotation("optional");
-			assertArrayEquals(new String[] { Void.class.getName() }, (String[]) optional.get("classArray"));
-			assertArrayEquals(new String[] { Void.class.getName() }, optional.getStringArray("classArray"));
+			assertArrayEquals(new String[]{Void.class.getName()}, (String[]) optional.get("classArray"));
+			assertArrayEquals(new String[]{Void.class.getName()}, optional.getStringArray("classArray"));
 
 			AnnotationAttributes[] optionalArray = specialAttrs.getAnnotationArray("optionalArray");
-			assertArrayEquals(new String[] { Void.class.getName() }, (String[]) optionalArray[0].get("classArray"));
-			assertArrayEquals(new String[] { Void.class.getName() }, optionalArray[0].getStringArray("classArray"));
+			assertArrayEquals(new String[]{Void.class.getName()}, (String[]) optionalArray[0].get("classArray"));
+			assertArrayEquals(new String[]{Void.class.getName()}, optionalArray[0].getStringArray("classArray"));
 
 			assertEquals("direct", metadata.getAnnotationAttributes(DirectAnnotation.class.getName()).get("value"));
 			allMeta = metadata.getAllAnnotationAttributes(DirectAnnotation.class.getName()).get("value");
@@ -374,6 +368,16 @@ public class AnnotationMetadataTests {
 
 	public static enum SomeEnum {
 		LABEL1, LABEL2, DEFAULT
+	}
+
+	// SPR-10914
+	public enum SubclassEnum {
+		FOO {
+			/* Do not delete! This subclassing is intentional. */
+		},
+		BAR {
+			/* Do not delete! This subclassing is intentional. */
+		}
 	}
 
 	@Target({})
@@ -401,7 +405,7 @@ public class AnnotationMetadataTests {
 
 		NestedAnno optional() default @NestedAnno(value = "optional", anEnum = SomeEnum.DEFAULT, classArray = Void.class);
 
-		NestedAnno[] optionalArray() default { @NestedAnno(value = "optional", anEnum = SomeEnum.DEFAULT, classArray = Void.class) };
+		NestedAnno[] optionalArray() default {@NestedAnno(value = "optional", anEnum = SomeEnum.DEFAULT, classArray = Void.class)};
 	}
 
 	@Target({ElementType.TYPE, ElementType.METHOD})
@@ -446,14 +450,58 @@ public class AnnotationMetadataTests {
 		SubclassEnum[] value();
 	}
 
-	// SPR-10914
-	public enum SubclassEnum {
-		FOO {
-		/* Do not delete! This subclassing is intentional. */
-		},
-		BAR {
-		/* Do not delete! This subclassing is intentional. */
-		}
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Component
+	public @interface TestConfiguration {
+
+		String value() default "";
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	public @interface TestComponentScan {
+
+		String[] value() default {};
+
+		String[] basePackages() default {};
+
+		Class<?>[] basePackageClasses() default {};
+	}
+
+	@TestConfiguration
+	@TestComponentScan(basePackages = "bogus")
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	public @interface ComposedConfigurationWithAttributeOverrides {
+
+		String[] basePackages() default {};
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	public @interface NamedAnnotation1 {
+		String name() default "";
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	public @interface NamedAnnotation2 {
+		String name() default "";
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	public @interface NamedAnnotation3 {
+		String name() default "";
+	}
+
+	@NamedAnnotation1(name = "name 1")
+	@NamedAnnotation2(name = "name 2")
+	@NamedAnnotation3(name = "name 3")
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	public @interface NamedComposedAnnotation {
 	}
 
 	@Component("myName")
@@ -484,68 +532,14 @@ public class AnnotationMetadataTests {
 	private static class AnnotatedComponentSubClass extends AnnotatedComponent {
 	}
 
-	@Target(ElementType.TYPE)
-	@Retention(RetentionPolicy.RUNTIME)
-	@Component
-	public @interface TestConfiguration {
-
-		String value() default "";
-	}
-
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target(ElementType.TYPE)
-	public @interface TestComponentScan {
-
-		String[] value() default {};
-
-		String[] basePackages() default {};
-
-		Class<?>[] basePackageClasses() default {};
-	}
-
-	@TestConfiguration
-	@TestComponentScan(basePackages = "bogus")
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target(ElementType.TYPE)
-	public @interface ComposedConfigurationWithAttributeOverrides {
-
-		String[] basePackages() default {};
-	}
-
 	@ComposedConfigurationWithAttributeOverrides(basePackages = "org.example.componentscan")
 	public static class ComposedConfigurationWithAttributeOverridesClass {
-	}
-
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target(ElementType.TYPE)
-	public @interface NamedAnnotation1 {
-		String name() default "";
-	}
-
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target(ElementType.TYPE)
-	public @interface NamedAnnotation2 {
-		String name() default "";
-	}
-
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target(ElementType.TYPE)
-	public @interface NamedAnnotation3 {
-		String name() default "";
 	}
 
 	@NamedAnnotation1(name = "name 1")
 	@NamedAnnotation2(name = "name 2")
 	@NamedAnnotation3(name = "name 3")
 	public static class NamedAnnotationsClass {
-	}
-
-	@NamedAnnotation1(name = "name 1")
-	@NamedAnnotation2(name = "name 2")
-	@NamedAnnotation3(name = "name 3")
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target(ElementType.TYPE)
-	public @interface NamedComposedAnnotation {
 	}
 
 	@NamedComposedAnnotation

@@ -16,23 +16,17 @@
 
 package org.springframework.ui;
 
-import java.io.Serializable;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Test;
-
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.tests.sample.beans.TestBean;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
+
+import java.io.Serializable;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -276,7 +270,7 @@ public class ModelMapTests {
 		ModelMap map = new ModelMap();
 		Object proxy = Proxy.newProxyInstance(
 				getClass().getClassLoader(),
-				new Class<?>[] {Map.class},
+				new Class<?>[]{Map.class},
 				new InvocationHandler() {
 					@Override
 					public Object invoke(Object proxy, Method method, Object[] args) {

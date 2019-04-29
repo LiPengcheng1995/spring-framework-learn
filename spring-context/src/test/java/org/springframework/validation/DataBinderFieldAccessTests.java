@@ -16,19 +16,18 @@
 
 package org.springframework.validation;
 
-import java.beans.PropertyEditorSupport;
-import java.util.Map;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.beans.NullValueInNestedPathException;
 import org.springframework.beans.PropertyValue;
 import org.springframework.tests.sample.beans.FieldAccessBean;
 import org.springframework.tests.sample.beans.TestBean;
+
+import java.beans.PropertyEditorSupport;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -79,8 +78,7 @@ public class DataBinderFieldAccessTests {
 		try {
 			binder.bind(pvs);
 			fail("Should have thrown NotWritablePropertyException");
-		}
-		catch (NotWritablePropertyException ex) {
+		} catch (NotWritablePropertyException ex) {
 			// expected
 		}
 	}
@@ -98,8 +96,7 @@ public class DataBinderFieldAccessTests {
 		try {
 			binder.close();
 			fail("Should have thrown BindException");
-		}
-		catch (BindException ex) {
+		} catch (BindException ex) {
 			assertTrue("changed name correctly", rod.getName().equals("Rod"));
 			//assertTrue("changed age correctly", rod.getAge() == 32);
 
@@ -158,12 +155,13 @@ public class DataBinderFieldAccessTests {
 		binder.initDirectFieldAccess();
 		binder.registerCustomEditor(TestBean.class, "spouse", new PropertyEditorSupport() {
 			@Override
-			public void setAsText(String text) throws IllegalArgumentException {
-				setValue(new TestBean(text, 0));
-			}
-			@Override
 			public String getAsText() {
 				return ((TestBean) getValue()).getName();
+			}
+
+			@Override
+			public void setAsText(String text) throws IllegalArgumentException {
+				setValue(new TestBean(text, 0));
 			}
 		});
 		MutablePropertyValues pvs = new MutablePropertyValues();
@@ -175,8 +173,7 @@ public class DataBinderFieldAccessTests {
 		try {
 			binder.close();
 			fail("Should have thrown BindException");
-		}
-		catch (BindException ex) {
+		} catch (BindException ex) {
 			assertTrue("changed name correctly", rod.getName().equals("Rod"));
 			//assertTrue("changed age correctly", rod.getAge() == 32);
 

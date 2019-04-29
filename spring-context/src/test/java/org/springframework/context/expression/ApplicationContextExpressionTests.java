@@ -16,22 +16,9 @@
 
 package org.springframework.context.expression;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.Serializable;
-import java.net.URI;
-import java.net.URL;
-import java.security.AccessControlException;
-import java.security.Permission;
-import java.util.Optional;
-import java.util.Properties;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
-
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -58,6 +45,14 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.util.SerializationTestUtils;
 import org.springframework.util.StopWatch;
 
+import java.io.*;
+import java.net.URI;
+import java.net.URL;
+import java.security.AccessControlException;
+import java.security.Permission;
+import java.util.Optional;
+import java.util.Properties;
+
 import static org.junit.Assert.*;
 
 /**
@@ -80,22 +75,25 @@ public class ApplicationContextExpressionTests {
 			public Object get(String name, ObjectFactory<?> objectFactory) {
 				return objectFactory.getObject();
 			}
+
 			@Override
 			public Object remove(String name) {
 				return null;
 			}
+
 			@Override
 			public void registerDestructionCallback(String name, Runnable callback) {
 			}
+
 			@Override
 			public Object resolveContextualObject(String key) {
 				if (key.equals("mySpecialAttr")) {
 					return "42";
-				}
-				else {
+				} else {
 					return null;
 				}
 			}
+
 			@Override
 			public String getConversationId() {
 				return null;
@@ -203,8 +201,7 @@ public class ApplicationContextExpressionTests {
 			assertEquals(42, tb6.age);
 			assertEquals("123 UK", tb6.country);
 			assertSame(tb0, tb6.tb);
-		}
-		finally {
+		} finally {
 			System.getProperties().remove("country");
 		}
 	}
@@ -237,8 +234,7 @@ public class ApplicationContextExpressionTests {
 			assertEquals("juergen2", tb.getName());
 			assertEquals("UK2", tb.getCountry());
 			assertEquals("-UK2-", tb.getCountry2());
-		}
-		finally {
+		} finally {
 			System.getProperties().remove("name");
 			System.getProperties().remove("country");
 		}
@@ -266,8 +262,7 @@ public class ApplicationContextExpressionTests {
 				assertEquals("UK", tb.getCountry());
 			}
 			sw.stop();
-		}
-		finally {
+		} finally {
 			System.getProperties().remove("country");
 			System.getProperties().remove("name");
 		}
@@ -292,6 +287,7 @@ public class ApplicationContextExpressionTests {
 				public void checkPropertiesAccess() {
 					throw new AccessControlException("Not Allowed");
 				}
+
 				@Override
 				public void checkPermission(Permission perm) {
 					// allow everything else
@@ -303,8 +299,7 @@ public class ApplicationContextExpressionTests {
 			TestBean tb = ac.getBean("tb", TestBean.class);
 			assertEquals("NL", tb.getCountry());
 
-		}
-		finally {
+		} finally {
 			System.setSecurityManager(oldSecurityManager);
 			System.getProperties().remove("country");
 		}
@@ -338,8 +333,7 @@ public class ApplicationContextExpressionTests {
 					FileCopyUtils.copyToByteArray(resourceInjectionBean.inputStream));
 			assertEquals(FileCopyUtils.copyToString(new EncodedResource(resource).getReader()),
 					FileCopyUtils.copyToString(resourceInjectionBean.reader));
-		}
-		finally {
+		} finally {
 			System.getProperties().remove("logfile");
 		}
 	}
@@ -348,10 +342,12 @@ public class ApplicationContextExpressionTests {
 	@SuppressWarnings("serial")
 	public static class ValueTestBean implements Serializable {
 
-		@Autowired @Value("XXX#{tb0.name}YYY#{mySpecialAttr}ZZZ")
+		@Autowired
+		@Value("XXX#{tb0.name}YYY#{mySpecialAttr}ZZZ")
 		public String name;
 
-		@Autowired @Value("#{mySpecialAttr}")
+		@Autowired
+		@Value("#{mySpecialAttr}")
 		public int age;
 
 		@Value("#{mySpecialAttr}")
@@ -362,18 +358,15 @@ public class ApplicationContextExpressionTests {
 
 		@Value("${code} #{systemProperties.country}")
 		public ObjectFactory<String> countryFactory;
-
+		@Autowired
+		@Qualifier("original")
+		public transient TestBean tb;
 		@Value("${code}")
 		private transient Optional<String> optionalValue1;
-
 		@Value("${code:#{null}}")
 		private transient Optional<String> optionalValue2;
-
 		@Value("${codeX:#{null}}")
 		private transient Optional<String> optionalValue3;
-
-		@Autowired @Qualifier("original")
-		public transient TestBean tb;
 	}
 
 
@@ -450,7 +443,8 @@ public class ApplicationContextExpressionTests {
 			this.country = country;
 		}
 
-		@Autowired @Qualifier("original")
+		@Autowired
+		@Qualifier("original")
 		public void setTb(TestBean tb) {
 			this.tb = tb;
 		}
@@ -465,29 +459,29 @@ public class ApplicationContextExpressionTests {
 
 		public String country2;
 
-		@Value("#{systemProperties.name}")
-		public void setName(String name) {
-			this.name = name;
-		}
-
 		public String getName() {
 			return name;
 		}
 
-		public void setCountry(String country) {
-			this.country = country;
+		@Value("#{systemProperties.name}")
+		public void setName(String name) {
+			this.name = name;
 		}
 
 		public String getCountry() {
 			return country;
 		}
 
-		public void setCountry2(String country2) {
-			this.country2 = country2;
+		public void setCountry(String country) {
+			this.country = country;
 		}
 
 		public String getCountry2() {
 			return country2;
+		}
+
+		public void setCountry2(String country2) {
+			this.country2 = country2;
 		}
 	}
 

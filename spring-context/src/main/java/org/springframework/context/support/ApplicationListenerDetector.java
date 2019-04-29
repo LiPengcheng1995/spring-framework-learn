@@ -16,18 +16,17 @@
 
 package org.springframework.context.support;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor;
 import org.springframework.beans.factory.support.MergedBeanDefinitionPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.util.ObjectUtils;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * {@code BeanPostProcessor} that detects beans which implement the {@code ApplicationListener}
@@ -74,8 +73,7 @@ class ApplicationListenerDetector implements DestructionAwareBeanPostProcessor, 
 			if (Boolean.TRUE.equals(flag)) {
 				// singleton bean (top-level or inner): register on the fly
 				this.applicationContext.addApplicationListener((ApplicationListener<?>) bean);
-			}
-			else if (Boolean.FALSE.equals(flag)) {
+			} else if (Boolean.FALSE.equals(flag)) {
 				if (logger.isWarnEnabled() && !this.applicationContext.containsBean(beanName)) {
 					// inner bean with other scope - can't reliably process events
 					logger.warn("Inner bean '" + beanName + "' implements ApplicationListener interface " +
@@ -96,8 +94,7 @@ class ApplicationListenerDetector implements DestructionAwareBeanPostProcessor, 
 				ApplicationEventMulticaster multicaster = this.applicationContext.getApplicationEventMulticaster();
 				multicaster.removeApplicationListener((ApplicationListener<?>) bean);
 				multicaster.removeApplicationListenerBean(beanName);
-			}
-			catch (IllegalStateException ex) {
+			} catch (IllegalStateException ex) {
 				// ApplicationEventMulticaster not initialized yet - no need to remove a listener
 			}
 		}

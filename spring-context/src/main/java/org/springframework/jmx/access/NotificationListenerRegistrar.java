@@ -16,17 +16,8 @@
 
 package org.springframework.jmx.access;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.Arrays;
-import java.util.Map;
-import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
-import javax.management.remote.JMXServiceURL;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jmx.JmxException;
@@ -35,21 +26,31 @@ import org.springframework.jmx.support.NotificationListenerHolder;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+import javax.management.remote.JMXServiceURL;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.Arrays;
+import java.util.Map;
+
 /**
  * Registrar object that associates a specific {@link javax.management.NotificationListener}
  * with one or more MBeans in an {@link javax.management.MBeanServer}
  * (typically via a {@link javax.management.MBeanServerConnection}).
  *
  * @author Juergen Hoeller
- * @since 2.5.2
  * @see #setServer
  * @see #setMappedObjectNames
  * @see #setNotificationListener
+ * @since 2.5.2
  */
 public class NotificationListenerRegistrar extends NotificationListenerHolder
 		implements InitializingBean, DisposableBean {
 
-	/** Logger available to subclasses */
+	/**
+	 * Logger available to subclasses
+	 */
 	protected final Log logger = LogFactory.getLog(getClass());
 
 	private final ConnectorDelegate connector = new ConnectorDelegate();
@@ -79,14 +80,6 @@ public class NotificationListenerRegistrar extends NotificationListenerHolder
 	}
 
 	/**
-	 * Specify the environment for the JMX connector.
-	 * @see javax.management.remote.JMXConnectorFactory#connect(javax.management.remote.JMXServiceURL, java.util.Map)
-	 */
-	public void setEnvironment(@Nullable Map<String, ?> environment) {
-		this.environment = environment;
-	}
-
-	/**
 	 * Allow Map access to the environment to be set for the connector,
 	 * with the option to add or override specific entries.
 	 * <p>Useful for specifying entries directly, for example via
@@ -96,6 +89,15 @@ public class NotificationListenerRegistrar extends NotificationListenerHolder
 	@Nullable
 	public Map<String, ?> getEnvironment() {
 		return this.environment;
+	}
+
+	/**
+	 * Specify the environment for the JMX connector.
+	 *
+	 * @see javax.management.remote.JMXConnectorFactory#connect(javax.management.remote.JMXServiceURL, java.util.Map)
+	 */
+	public void setEnvironment(@Nullable Map<String, ?> environment) {
+		this.environment = environment;
 	}
 
 	/**
@@ -110,6 +112,7 @@ public class NotificationListenerRegistrar extends NotificationListenerHolder
 	 * <p>Default is none. If specified, this will result in an
 	 * attempt being made to locate the attendant MBeanServer, unless
 	 * the {@link #setServiceUrl "serviceUrl"} property has been set.
+	 *
 	 * @see javax.management.MBeanServerFactory#findMBeanServer(String)
 	 * <p>Specifying the empty String indicates the platform MBeanServer.
 	 */
@@ -149,12 +152,10 @@ public class NotificationListenerRegistrar extends NotificationListenerHolder
 							actualObjectName, getNotificationListener(), getNotificationFilter(), getHandback());
 				}
 			}
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			throw new MBeanServerNotFoundException(
 					"Could not connect to remote MBeanServer at URL [" + this.serviceUrl + "]", ex);
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new JmxException("Unable to register NotificationListener", ex);
 		}
 	}
@@ -170,16 +171,14 @@ public class NotificationListenerRegistrar extends NotificationListenerHolder
 					try {
 						this.server.removeNotificationListener(
 								actualObjectName, getNotificationListener(), getNotificationFilter(), getHandback());
-					}
-					catch (Exception ex) {
+					} catch (Exception ex) {
 						if (logger.isDebugEnabled()) {
 							logger.debug("Unable to unregister NotificationListener", ex);
 						}
 					}
 				}
 			}
-		}
-		finally {
+		} finally {
 			this.connector.close();
 		}
 	}

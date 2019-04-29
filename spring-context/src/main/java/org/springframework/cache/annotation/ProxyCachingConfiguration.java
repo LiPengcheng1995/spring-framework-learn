@@ -31,9 +31,9 @@ import org.springframework.context.annotation.Role;
  *
  * @author Chris Beams
  * @author Juergen Hoeller
- * @since 3.1
  * @see EnableCaching
  * @see CachingConfigurationSelector
+ * @since 3.1
  */
 @Configuration
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
@@ -64,8 +64,7 @@ public class ProxyCachingConfiguration extends AbstractCachingConfiguration {
 		interceptor.setCacheOperationSources(cacheOperationSource());
 		if (this.cacheResolver != null) {
 			interceptor.setCacheResolver(this.cacheResolver);
-		}
-		else if (this.cacheManager != null) {
+		} else if (this.cacheManager != null) {
 			interceptor.setCacheManager(this.cacheManager);
 		}
 		if (this.keyGenerator != null) {

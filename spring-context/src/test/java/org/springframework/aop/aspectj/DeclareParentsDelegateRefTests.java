@@ -18,10 +18,13 @@ package org.springframework.aop.aspectj;
 
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+interface NoMethodsBean {
+}
 
 /**
  * @author Ramnivas Laddad
@@ -51,16 +54,11 @@ public class DeclareParentsDelegateRefTests {
 
 	@Test
 	public void testIntroductionDelegation() {
-		((ICounter)noMethodsBean).increment();
+		((ICounter) noMethodsBean).increment();
 		assertEquals("Delegate's counter should be updated", 1, counter.getCount());
 	}
 
 }
-
-
-interface NoMethodsBean {
-}
-
 
 class NoMethodsBeanImpl implements NoMethodsBean {
 }

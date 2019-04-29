@@ -18,11 +18,11 @@ package org.springframework.web.servlet;
 
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.mock.web.test.MockHttpServletResponse;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.mockito.BDDMockito.*;
 
 /**
@@ -50,7 +50,7 @@ public class HandlerExecutionChainTests {
 	@Before
 	public void setup() {
 		this.request = new MockHttpServletRequest();
-		this.response= new MockHttpServletResponse() ;
+		this.response = new MockHttpServletResponse();
 
 		this.handler = new Object();
 		this.chain = new HandlerExecutionChain(this.handler);
@@ -128,8 +128,7 @@ public class HandlerExecutionChainTests {
 
 		try {
 			this.chain.applyPreHandle(request, response);
-		}
-		catch (Exception actual) {
+		} catch (Exception actual) {
 			assertSame(ex, actual);
 		}
 		this.chain.triggerAfterCompletion(this.request, this.response, ex);

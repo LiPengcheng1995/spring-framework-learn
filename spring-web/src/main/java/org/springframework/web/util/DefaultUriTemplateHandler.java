@@ -54,6 +54,7 @@ public class DefaultUriTemplateHandler extends AbstractUriTemplateHandler {
 	 * "/" characters percent encoded.
 	 * <p>By default this is set to {@code false} in which case the path is kept
 	 * as a full path and expanded URI variables will preserve "/" characters.
+	 *
 	 * @param parsePath whether to parse the path into path segments
 	 */
 	public void setParsePath(boolean parsePath) {
@@ -68,6 +69,13 @@ public class DefaultUriTemplateHandler extends AbstractUriTemplateHandler {
 	}
 
 	/**
+	 * Whether to strictly encode any character outside the unreserved set.
+	 */
+	public boolean isStrictEncoding() {
+		return this.strictEncoding;
+	}
+
+	/**
 	 * Whether to encode characters outside the unreserved set as defined in
 	 * <a href="https://tools.ietf.org/html/rfc3986#section-2">RFC 3986 Section 2</a>.
 	 * This ensures a URI variable value will not contain any characters with a
@@ -79,20 +87,13 @@ public class DefaultUriTemplateHandler extends AbstractUriTemplateHandler {
 	 * it has a reserved purpose.
 	 * <p><strong>Note:</strong> this property supersedes the need to also set
 	 * the {@link #setParsePath parsePath} property.
+	 *
 	 * @param strictEncoding whether to perform strict encoding
 	 * @since 4.3
 	 */
 	public void setStrictEncoding(boolean strictEncoding) {
 		this.strictEncoding = strictEncoding;
 	}
-
-	/**
-	 * Whether to strictly encode any character outside the unreserved set.
-	 */
-	public boolean isStrictEncoding() {
-		return this.strictEncoding;
-	}
-
 
 	@Override
 	protected URI expandInternal(String uriTemplate, Map<String, ?> uriVariables) {
@@ -128,8 +129,7 @@ public class DefaultUriTemplateHandler extends AbstractUriTemplateHandler {
 	protected UriComponents expandAndEncode(UriComponentsBuilder builder, Map<String, ?> uriVariables) {
 		if (!isStrictEncoding()) {
 			return builder.buildAndExpand(uriVariables).encode();
-		}
-		else {
+		} else {
 			Map<String, ?> encodedUriVars = UriUtils.encodeUriVariables(uriVariables);
 			return builder.buildAndExpand(encodedUriVars);
 		}
@@ -138,8 +138,7 @@ public class DefaultUriTemplateHandler extends AbstractUriTemplateHandler {
 	protected UriComponents expandAndEncode(UriComponentsBuilder builder, Object[] uriVariables) {
 		if (!isStrictEncoding()) {
 			return builder.buildAndExpand(uriVariables).encode();
-		}
-		else {
+		} else {
 			Object[] encodedUriVars = UriUtils.encodeUriVariables(uriVariables);
 			return builder.buildAndExpand(encodedUriVars);
 		}
@@ -149,8 +148,7 @@ public class DefaultUriTemplateHandler extends AbstractUriTemplateHandler {
 		try {
 			// Avoid further encoding (in the case of strictEncoding=true)
 			return new URI(uriComponents.toUriString());
-		}
-		catch (URISyntaxException ex) {
+		} catch (URISyntaxException ex) {
 			throw new IllegalStateException("Could not create URI object: " + ex.getMessage(), ex);
 		}
 	}

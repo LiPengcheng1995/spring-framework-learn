@@ -16,20 +16,19 @@
 
 package org.springframework.web.accept;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.context.request.NativeWebRequest;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Base class for {@code ContentNegotiationStrategy} implementations with the
@@ -66,6 +65,9 @@ public abstract class AbstractMappingContentNegotiationStrategy extends MappingM
 		super(mediaTypes);
 	}
 
+	public boolean isUseRegisteredExtensionsOnly() {
+		return this.useRegisteredExtensionsOnly;
+	}
 
 	/**
 	 * Whether to only use the registered mappings to look up file extensions,
@@ -76,8 +78,8 @@ public abstract class AbstractMappingContentNegotiationStrategy extends MappingM
 		this.useRegisteredExtensionsOnly = useRegisteredExtensionsOnly;
 	}
 
-	public boolean isUseRegisteredExtensionsOnly() {
-		return this.useRegisteredExtensionsOnly;
+	public boolean isIgnoreUnknownExtensions() {
+		return this.ignoreUnknownExtensions;
 	}
 
 	/**
@@ -90,11 +92,6 @@ public abstract class AbstractMappingContentNegotiationStrategy extends MappingM
 		this.ignoreUnknownExtensions = ignoreUnknownExtensions;
 	}
 
-	public boolean isIgnoreUnknownExtensions() {
-		return this.ignoreUnknownExtensions;
-	}
-
-
 	@Override
 	public List<MediaType> resolveMediaTypes(NativeWebRequest webRequest)
 			throws HttpMediaTypeNotAcceptableException {
@@ -105,6 +102,7 @@ public abstract class AbstractMappingContentNegotiationStrategy extends MappingM
 	/**
 	 * An alternative to {@link #resolveMediaTypes(NativeWebRequest)} that accepts
 	 * an already extracted key.
+	 *
 	 * @since 3.2.16
 	 */
 	public List<MediaType> resolveMediaTypeKey(NativeWebRequest webRequest, @Nullable String key)
@@ -128,6 +126,7 @@ public abstract class AbstractMappingContentNegotiationStrategy extends MappingM
 
 	/**
 	 * Extract a key from the request to use to look up media types.
+	 *
 	 * @return the lookup key, or {@code null} if none
 	 */
 	@Nullable

@@ -17,7 +17,6 @@
 package org.springframework.scripting.groovy;
 
 import org.junit.Test;
-
 import org.springframework.aop.Advisor;
 import org.springframework.aop.aspectj.AspectJExpressionPointcut;
 import org.springframework.aop.framework.ProxyFactory;
@@ -26,7 +25,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.scripting.support.ResourceScriptSource;
 import org.springframework.util.ClassUtils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * @author Dave Syer
@@ -84,7 +84,7 @@ public class GroovyAspectTests {
 	}
 
 	private void testAdvice(Advisor advisor, LogUserAdvice logAdvice, TestService target, String message,
-			boolean proxyTargetClass) throws Exception {
+							boolean proxyTargetClass) throws Exception {
 
 		logAdvice.reset();
 
@@ -97,8 +97,7 @@ public class GroovyAspectTests {
 		try {
 			bean.sayHello();
 			fail("Expected exception");
-		}
-		catch (TestException ex) {
+		} catch (TestException ex) {
 			assertEquals(message, ex.getMessage());
 		}
 		assertEquals(1, logAdvice.getCountThrows());

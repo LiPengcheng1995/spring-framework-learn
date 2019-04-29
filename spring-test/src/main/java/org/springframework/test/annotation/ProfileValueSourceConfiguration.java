@@ -16,12 +16,7 @@
 
 package org.springframework.test.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * {@code ProfileValueSourceConfiguration} is a class-level annotation which
@@ -33,10 +28,10 @@ import java.lang.annotation.Target;
  * <em>meta-annotation</em> to create custom <em>composed annotations</em>.
  *
  * @author Sam Brannen
- * @since 2.5
  * @see ProfileValueSource
  * @see IfProfileValue
  * @see ProfileValueUtils
+ * @since 2.5
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

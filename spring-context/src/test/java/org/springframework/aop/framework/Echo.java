@@ -29,13 +29,13 @@ public class Echo implements IEcho {
 	}
 
 	@Override
-	public void setA(int a) {
-		this.a = a;
+	public int getA() {
+		return a;
 	}
 
 	@Override
-	public int getA() {
-		return a;
+	public void setA(int a) {
+		this.a = a;
 	}
 
 }

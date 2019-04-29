@@ -17,7 +17,6 @@
 package test.mixin;
 
 import org.aopalliance.intercept.MethodInvocation;
-
 import org.springframework.aop.support.DelegatingIntroductionInterceptor;
 
 /**
@@ -31,7 +30,9 @@ import org.springframework.aop.support.DelegatingIntroductionInterceptor;
 @SuppressWarnings("serial")
 public class LockMixin extends DelegatingIntroductionInterceptor implements Lockable {
 
-	/** This field demonstrates additional state in the mixin */
+	/**
+	 * This field demonstrates additional state in the mixin
+	 */
 	private boolean locked;
 
 	@Override
@@ -57,6 +58,7 @@ public class LockMixin extends DelegatingIntroductionInterceptor implements Lock
 	 * If the method is a setter and we're locked, prevent execution.
 	 * Otherwise let super.invoke() handle it, and do normal
 	 * Lockable(this) then target behaviour.
+	 *
 	 * @see org.aopalliance.MethodInterceptor#invoke(org.aopalliance.MethodInvocation)
 	 */
 	@Override

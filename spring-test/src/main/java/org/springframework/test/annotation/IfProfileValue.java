@@ -16,12 +16,7 @@
 
 package org.springframework.test.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Test annotation to indicate whether a test is enabled or disabled for a
@@ -84,7 +79,6 @@ import java.lang.annotation.Target;
  *
  * @author Rod Johnson
  * @author Sam Brannen
- * @since 2.0
  * @see ProfileValueSource
  * @see SystemProfileValueSource
  * @see ProfileValueSourceConfiguration
@@ -94,6 +88,7 @@ import java.lang.annotation.Target;
  * @see org.springframework.test.context.junit4.statements.ProfileValueChecker
  * @see org.springframework.context.annotation.Profile
  * @see org.springframework.test.context.ActiveProfiles
+ * @since 2.0
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

@@ -15,32 +15,22 @@
  */
 package org.springframework.web.method;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.function.Predicate;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.MatrixVariable;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.ValueConstants;
+import org.springframework.web.bind.annotation.*;
+
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.function.Predicate;
 
 /**
  * Predicates for {@code @MVC} annotations.
  *
  * @author Rossen Stoyanchev
- * @since 5.0
- *
  * @see ResolvableMethod#annot(Predicate[])
  * @see ResolvableMethod.Builder#annot(Predicate[])
+ * @since 5.0
  */
 public class MvcAnnotationPredicates {
 
@@ -114,7 +104,6 @@ public class MvcAnnotationPredicates {
 	}
 
 
-
 	public static class ModelAttributePredicate implements Predicate<MethodParameter> {
 
 		private String name;
@@ -172,7 +161,6 @@ public class MvcAnnotationPredicates {
 		private boolean required = true;
 
 		private String defaultValue = ValueConstants.DEFAULT_NONE;
-
 
 
 		public RequestParamPredicate name(String name) {

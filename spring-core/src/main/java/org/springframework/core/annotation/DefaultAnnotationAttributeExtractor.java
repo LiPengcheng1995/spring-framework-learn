@@ -16,31 +16,32 @@
 
 package org.springframework.core.annotation;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.ReflectionUtils;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 
 /**
  * Default implementation of the {@link AnnotationAttributeExtractor} strategy
  * that is backed by an {@link Annotation}.
  *
  * @author Sam Brannen
- * @since 4.2
  * @see Annotation
  * @see AliasFor
  * @see AbstractAliasAwareAnnotationAttributeExtractor
  * @see MapAnnotationAttributeExtractor
  * @see AnnotationUtils#synthesizeAnnotation
+ * @since 4.2
  */
 class DefaultAnnotationAttributeExtractor extends AbstractAliasAwareAnnotationAttributeExtractor<Annotation> {
 
 	/**
 	 * Construct a new {@code DefaultAnnotationAttributeExtractor}.
-	 * @param annotation the annotation to synthesize; never {@code null}
+	 *
+	 * @param annotation       the annotation to synthesize; never {@code null}
 	 * @param annotatedElement the element that is annotated with the supplied
-	 * annotation; may be {@code null} if unknown
+	 *                         annotation; may be {@code null} if unknown
 	 */
 	DefaultAnnotationAttributeExtractor(Annotation annotation, @Nullable Object annotatedElement) {
 		super(annotation.annotationType(), annotatedElement, annotation);

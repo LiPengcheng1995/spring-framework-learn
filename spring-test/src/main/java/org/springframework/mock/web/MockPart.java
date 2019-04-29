@@ -16,26 +16,26 @@
 
 package org.springframework.mock.web;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+
+import javax.servlet.http.Part;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
-import javax.servlet.http.Part;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 
 /**
  * Mock implementation of {@code javax.servlet.http.Part}.
  *
  * @author Rossen Stoyanchev
  * @author Juergen Hoeller
- * @since 4.3.12
  * @see MockHttpServletRequest#addPart
  * @see MockMultipartFile
+ * @since 4.3.12
  */
 public class MockPart implements Part {
 
@@ -51,6 +51,7 @@ public class MockPart implements Part {
 
 	/**
 	 * Constructor for a part with byte[] content only.
+	 *
 	 * @see #getHeaders()
 	 */
 	public MockPart(String name, @Nullable byte[] content) {
@@ -59,6 +60,7 @@ public class MockPart implements Part {
 
 	/**
 	 * Constructor for a part with a filename and byte[] content.
+	 *
 	 * @see #getHeaders()
 	 */
 	public MockPart(String name, @Nullable String filename, @Nullable byte[] content) {

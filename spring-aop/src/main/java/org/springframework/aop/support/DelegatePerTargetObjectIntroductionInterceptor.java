@@ -16,16 +16,15 @@
 
 package org.springframework.aop.support;
 
-import java.util.Map;
-import java.util.WeakHashMap;
-
 import org.aopalliance.intercept.MethodInvocation;
-
 import org.springframework.aop.DynamicIntroductionAdvice;
 import org.springframework.aop.IntroductionInterceptor;
 import org.springframework.aop.ProxyMethodInvocation;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ReflectionUtils;
+
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * Convenient implementation of the
@@ -48,9 +47,9 @@ import org.springframework.util.ReflectionUtils;
  *
  * @author Adrian Colyer
  * @author Juergen Hoeller
- * @since 2.0
  * @see #suppressInterface
  * @see DelegatingIntroductionInterceptor
+ * @since 2.0
  */
 @SuppressWarnings("serial")
 public class DelegatePerTargetObjectIntroductionInterceptor extends IntroductionInfoSupport
@@ -123,8 +122,7 @@ public class DelegatePerTargetObjectIntroductionInterceptor extends Introduction
 		synchronized (this.delegateMap) {
 			if (this.delegateMap.containsKey(targetObject)) {
 				return this.delegateMap.get(targetObject);
-			}
-			else {
+			} else {
 				Object delegate = createNewDelegate();
 				this.delegateMap.put(targetObject, delegate);
 				return delegate;
@@ -135,8 +133,7 @@ public class DelegatePerTargetObjectIntroductionInterceptor extends Introduction
 	private Object createNewDelegate() {
 		try {
 			return ReflectionUtils.accessibleConstructor(this.defaultImplType).newInstance();
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			throw new IllegalArgumentException("Cannot create default implementation for '" +
 					this.interfaceType.getName() + "' mixin (" + this.defaultImplType.getName() + "): " + ex);
 		}

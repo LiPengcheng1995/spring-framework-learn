@@ -16,23 +16,17 @@
 
 package org.springframework.mock.web;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import javax.servlet.AsyncContext;
-import javax.servlet.AsyncEvent;
-import javax.servlet.AsyncListener;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.web.util.WebUtils;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Mock implementation of the {@link AsyncContext} interface.
@@ -48,13 +42,10 @@ public class MockAsyncContext implements AsyncContext {
 	private final HttpServletResponse response;
 
 	private final List<AsyncListener> listeners = new ArrayList<>();
-
+	private final List<Runnable> dispatchHandlers = new ArrayList<>();
 	@Nullable
 	private String dispatchedPath;
-
-	private long timeout = 10 * 1000L;	// 10 seconds is Tomcat's default
-
-	private final List<Runnable> dispatchHandlers = new ArrayList<>();
+	private long timeout = 10 * 1000L;    // 10 seconds is Tomcat's default
 
 
 	public MockAsyncContext(ServletRequest request, @Nullable ServletResponse response) {
@@ -68,8 +59,7 @@ public class MockAsyncContext implements AsyncContext {
 		synchronized (this) {
 			if (this.dispatchedPath == null) {
 				this.dispatchHandlers.add(handler);
-			}
-			else {
+			} else {
 				handler.run();
 			}
 		}
@@ -94,7 +84,7 @@ public class MockAsyncContext implements AsyncContext {
 	@Override
 	public void dispatch() {
 		dispatch(this.request.getRequestURI());
- 	}
+	}
 
 	@Override
 	public void dispatch(String path) {
@@ -123,8 +113,7 @@ public class MockAsyncContext implements AsyncContext {
 		for (AsyncListener listener : this.listeners) {
 			try {
 				listener.onComplete(new AsyncEvent(this, this.request, this.response));
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				throw new IllegalStateException("AsyncListener failure", ex);
 			}
 		}
@@ -154,6 +143,11 @@ public class MockAsyncContext implements AsyncContext {
 		return BeanUtils.instantiateClass(clazz);
 	}
 
+	@Override
+	public long getTimeout() {
+		return this.timeout;
+	}
+
 	/**
 	 * By default this is set to 10000 (10 seconds) even though the Servlet API
 	 * specifies a default async request timeout of 30 seconds. Keep in mind the
@@ -162,17 +156,13 @@ public class MockAsyncContext implements AsyncContext {
 	 * {@link org.springframework.web.context.request.async.DeferredResult DeferredResult}
 	 * or on
 	 * {@link org.springframework.web.servlet.mvc.method.annotation.SseEmitter SseEmitter}.
+	 *
 	 * @param timeout the timeout value to use.
 	 * @see AsyncContext#setTimeout(long)
 	 */
 	@Override
 	public void setTimeout(long timeout) {
 		this.timeout = timeout;
-	}
-
-	@Override
-	public long getTimeout() {
-		return this.timeout;
 	}
 
 }

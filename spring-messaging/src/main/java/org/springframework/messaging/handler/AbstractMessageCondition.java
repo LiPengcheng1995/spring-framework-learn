@@ -16,10 +16,10 @@
 
 package org.springframework.messaging.handler;
 
+import org.springframework.lang.Nullable;
+
 import java.util.Collection;
 import java.util.Iterator;
-
-import org.springframework.lang.Nullable;
 
 /**
  * Base class for {@code MessageCondition's} that pre-declares abstract methods
@@ -51,7 +51,7 @@ public abstract class AbstractMessageCondition<T extends AbstractMessageConditio
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder("[");
-		for (Iterator<?> iterator = getContent().iterator(); iterator.hasNext();) {
+		for (Iterator<?> iterator = getContent().iterator(); iterator.hasNext(); ) {
 			Object expression = iterator.next();
 			builder.append(expression.toString());
 			if (iterator.hasNext()) {

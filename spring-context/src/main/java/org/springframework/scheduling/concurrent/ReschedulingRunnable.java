@@ -16,20 +16,15 @@
 
 package org.springframework.scheduling.concurrent;
 
-import java.util.Date;
-import java.util.concurrent.Delayed;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.support.DelegatingErrorHandlingRunnable;
 import org.springframework.scheduling.support.SimpleTriggerContext;
 import org.springframework.util.Assert;
 import org.springframework.util.ErrorHandler;
+
+import java.util.Date;
+import java.util.concurrent.*;
 
 /**
  * Internal adapter that reschedules an underlying {@link Runnable} according
@@ -50,14 +45,11 @@ class ReschedulingRunnable extends DelegatingErrorHandlingRunnable implements Sc
 	private final SimpleTriggerContext triggerContext = new SimpleTriggerContext();
 
 	private final ScheduledExecutorService executor;
-
+	private final Object triggerContextMonitor = new Object();
 	@Nullable
 	private ScheduledFuture<?> currentFuture;
-
 	@Nullable
 	private Date scheduledExecutionTime;
-
-	private final Object triggerContextMonitor = new Object();
 
 
 	public ReschedulingRunnable(
@@ -156,7 +148,7 @@ class ReschedulingRunnable extends DelegatingErrorHandlingRunnable implements Sc
 			return 0;
 		}
 		long diff = getDelay(TimeUnit.MILLISECONDS) - other.getDelay(TimeUnit.MILLISECONDS);
-		return (diff == 0 ? 0 : ((diff < 0)? -1 : 1));
+		return (diff == 0 ? 0 : ((diff < 0) ? -1 : 1));
 	}
 
 }

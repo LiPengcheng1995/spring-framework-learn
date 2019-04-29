@@ -16,10 +16,6 @@
 
 package org.springframework.context.event;
 
-import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.expression.AnnotatedElementKey;
@@ -29,13 +25,17 @@ import org.springframework.context.expression.MethodBasedEvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.lang.Nullable;
 
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * Utility class handling the SpEL expression parsing. Meant to be used
  * as a reusable, thread-safe component.
  *
  * @author Stephane Nicoll
- * @since 4.2
  * @see CachedExpressionEvaluator
+ * @since 4.2
  */
 class EventExpressionEvaluator extends CachedExpressionEvaluator {
 
@@ -46,7 +46,7 @@ class EventExpressionEvaluator extends CachedExpressionEvaluator {
 	 * Specify if the condition defined by the specified expression matches.
 	 */
 	public boolean condition(String conditionExpression, ApplicationEvent event, Method targetMethod,
-			AnnotatedElementKey methodKey, Object[] args, @Nullable BeanFactory beanFactory) {
+							 AnnotatedElementKey methodKey, Object[] args, @Nullable BeanFactory beanFactory) {
 
 		EventExpressionRootObject root = new EventExpressionRootObject(event, args);
 		MethodBasedEvaluationContext evaluationContext = new MethodBasedEvaluationContext(

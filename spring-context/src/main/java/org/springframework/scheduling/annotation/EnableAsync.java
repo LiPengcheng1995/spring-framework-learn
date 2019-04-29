@@ -16,17 +16,12 @@
 
 package org.springframework.scheduling.annotation;
 
-import java.lang.annotation.Annotation;
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
+
+import java.lang.annotation.*;
 
 /**
  * Enables Spring's asynchronous method execution capability, similar to functionality
@@ -41,7 +36,7 @@ import org.springframework.core.Ordered;
  * public class AppConfig {
  *
  * }</pre>
- *
+ * <p>
  * {@code MyAsyncBean} is a user-defined type with one or more methods annotated with
  * either Spring's {@code @Async} annotation, the EJB 3.1 {@code @javax.ejb.Asynchronous}
  * annotation, or any custom annotation specified via the {@link #annotation} attribute.
@@ -130,7 +125,7 @@ import org.springframework.core.Ordered;
  *
  * </beans>
  * }</pre>
- *
+ * <p>
  * The above XML-based and JavaConfig-based examples are equivalent except for the
  * setting of the <em>thread name prefix</em> of the {@code Executor}; this is because
  * the {@code <task:executor>} element does not expose such an attribute. This
@@ -152,10 +147,10 @@ import org.springframework.core.Ordered;
  * @author Juergen Hoeller
  * @author Stephane Nicoll
  * @author Sam Brannen
- * @since 3.1
  * @see Async
  * @see AsyncConfigurer
  * @see AsyncConfigurationSelector
+ * @since 3.1
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

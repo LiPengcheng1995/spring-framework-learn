@@ -16,16 +16,6 @@
 
 package org.springframework.util.xml;
 
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.net.Socket;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.transform.Result;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.stream.StreamResult;
-
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,8 +25,18 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xmlunit.util.Predicate;
 
-import static org.junit.Assert.*;
-import static org.xmlunit.matchers.CompareMatcher.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.transform.Result;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.stream.StreamResult;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.net.Socket;
+
+import static org.junit.Assert.assertThat;
+import static org.xmlunit.matchers.CompareMatcher.isSimilarTo;
 
 /**
  * @author Arjen Poutsma
@@ -52,8 +52,8 @@ public abstract class AbstractStaxHandlerTestCase {
 					"</root>";
 
 	private static final String SIMPLE_XML = "<?xml version='1.0' encoding='UTF-8'?>" +
-					"<?pi content?><root xmlns='namespace'><prefix:child xmlns:prefix='namespace2' prefix:attr='value'>content</prefix:child>" +
-					"</root>";
+			"<?pi content?><root xmlns='namespace'><prefix:child xmlns:prefix='namespace2' prefix:attr='value'>content</prefix:child>" +
+			"</root>";
 
 	private static final Predicate<Node> nodeFilter = (n -> n.getNodeType() != Node.COMMENT_NODE &&
 			n.getNodeType() != Node.DOCUMENT_TYPE_NODE && n.getNodeType() != Node.PROCESSING_INSTRUCTION_NODE);
@@ -61,13 +61,20 @@ public abstract class AbstractStaxHandlerTestCase {
 
 	private XMLReader xmlReader;
 
+	private static boolean wwwSpringframeworkOrgIsAccessible() {
+		try {
+			new Socket("www.springframework.org", 80).close();
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
+	}
 
 	@Before
 	@SuppressWarnings("deprecation")  // on JDK 9
 	public void createXMLReader() throws Exception {
 		xmlReader = org.xml.sax.helpers.XMLReaderFactory.createXMLReader();
 	}
-
 
 	@Test
 	public void noNamespacePrefixes() throws Exception {
@@ -84,16 +91,6 @@ public abstract class AbstractStaxHandlerTestCase {
 		xmlReader.parse(new InputSource(new StringReader(COMPLEX_XML)));
 
 		assertThat(stringWriter.toString(), isSimilarTo(COMPLEX_XML).withNodeFilter(nodeFilter));
-	}
-
-	private static boolean wwwSpringframeworkOrgIsAccessible() {
-		try {
-			new Socket("www.springframework.org", 80).close();
-		}
-		catch (Exception e) {
-			return false;
-		}
-		return true;
 	}
 
 	@Test

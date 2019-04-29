@@ -16,14 +16,9 @@
 
 package org.springframework.format.number;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Locale;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.convert.support.DefaultConversionService;
@@ -33,7 +28,11 @@ import org.springframework.format.support.FormattingConversionService;
 import org.springframework.util.StringValueResolver;
 import org.springframework.validation.DataBinder;
 
-import static org.junit.Assert.*;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Locale;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Keith Donald
@@ -54,8 +53,7 @@ public class NumberFormattingTests {
 			public String resolveStringValue(String strVal) {
 				if ("${pattern}".equals(strVal)) {
 					return "#,##.00";
-				}
-				else {
+				} else {
 					return strVal;
 				}
 			}
@@ -121,7 +119,7 @@ public class NumberFormattingTests {
 	@Test
 	public void testPatternArrayFormatting() {
 		MutablePropertyValues propertyValues = new MutablePropertyValues();
-		propertyValues.add("patternArray", new String[] { "1,25.00", "2,35.00" });
+		propertyValues.add("patternArray", new String[]{"1,25.00", "2,35.00"});
 		binder.bind(propertyValues);
 		assertEquals(0, binder.getBindingResult().getErrorCount());
 		assertEquals("1,25.00", binder.getBindingResult().getFieldValue("patternArray[0]"));
@@ -139,7 +137,7 @@ public class NumberFormattingTests {
 	@Test
 	public void testPatternListFormatting() {
 		MutablePropertyValues propertyValues = new MutablePropertyValues();
-		propertyValues.add("patternList", new String[] { "1,25.00", "2,35.00" });
+		propertyValues.add("patternList", new String[]{"1,25.00", "2,35.00"});
 		binder.bind(propertyValues);
 		assertEquals(0, binder.getBindingResult().getErrorCount());
 		assertEquals("1,25.00", binder.getBindingResult().getFieldValue("patternList[0]"));

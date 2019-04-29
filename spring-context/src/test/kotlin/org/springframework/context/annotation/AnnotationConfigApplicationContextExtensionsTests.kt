@@ -27,7 +27,7 @@ import org.springframework.context.support.registerBean
  * @author Sebastien Deleuze
  */
 class AnnotationConfigApplicationContextExtensionsTests {
- 
+
 	@Test
 	fun `Instantiate AnnotationConfigApplicationContext`() {
 		val applicationContext = AnnotationConfigApplicationContext {

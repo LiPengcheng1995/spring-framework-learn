@@ -16,30 +16,13 @@
 
 package org.springframework.context.annotation;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.Set;
-import java.util.regex.Pattern;
-
 import example.profilescan.DevComponent;
 import example.profilescan.ProfileAnnotatedComponent;
 import example.profilescan.ProfileMetaAnnotatedComponent;
-import example.scannable.AutowiredQualifierFooService;
-import example.scannable.CustomStereotype;
-import example.scannable.DefaultNamedComponent;
-import example.scannable.FooDao;
-import example.scannable.FooService;
-import example.scannable.FooServiceImpl;
-import example.scannable.MessageBean;
-import example.scannable.NamedComponent;
-import example.scannable.NamedStubDao;
-import example.scannable.ScopedProxyTestBean;
-import example.scannable.ServiceInvocationCounter;
-import example.scannable.StubFooDao;
+import example.scannable.*;
 import example.scannable.sub.BarComponent;
 import org.aspectj.lang.annotation.Aspect;
 import org.junit.Test;
-
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.index.CandidateComponentsTestClassLoader;
@@ -55,7 +38,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
-import static org.hamcrest.CoreMatchers.*;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.Set;
+import java.util.regex.Pattern;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 /**
@@ -91,7 +80,7 @@ public class ClassPathScanningCandidateComponentProviderTests {
 	}
 
 	private void testDefault(ClassPathScanningCandidateComponentProvider provider,
-			Class<? extends BeanDefinition> expectedBeanDefinitionType) {
+							 Class<? extends BeanDefinition> expectedBeanDefinitionType) {
 		Set<BeanDefinition> candidates = provider.findCandidateComponents(TEST_BASE_PACKAGE);
 		assertTrue(containsBeanClass(candidates, DefaultNamedComponent.class));
 		assertTrue(containsBeanClass(candidates, NamedComponent.class));
@@ -120,7 +109,7 @@ public class ClassPathScanningCandidateComponentProviderTests {
 	}
 
 	private void testAntStyle(ClassPathScanningCandidateComponentProvider provider,
-			Class<? extends BeanDefinition> expectedBeanDefinitionType) {
+							  Class<? extends BeanDefinition> expectedBeanDefinitionType) {
 		Set<BeanDefinition> candidates = provider.findCandidateComponents(TEST_BASE_PACKAGE + ".**.sub");
 		assertTrue(containsBeanClass(candidates, BarComponent.class));
 		assertEquals(1, candidates.size());
@@ -170,7 +159,7 @@ public class ClassPathScanningCandidateComponentProviderTests {
 	}
 
 	private void testCustomAnnotationTypeIncludeFilter(ClassPathScanningCandidateComponentProvider provider,
-			Class<? extends BeanDefinition> expectedBeanDefinitionType) {
+													   Class<? extends BeanDefinition> expectedBeanDefinitionType) {
 		provider.addIncludeFilter(new AnnotationTypeFilter(Component.class));
 		testDefault(provider, expectedBeanDefinitionType);
 	}
@@ -191,7 +180,7 @@ public class ClassPathScanningCandidateComponentProviderTests {
 	}
 
 	private void testCustomAssignableTypeIncludeFilter(ClassPathScanningCandidateComponentProvider provider,
-			Class<? extends BeanDefinition> expectedBeanDefinitionType) {
+													   Class<? extends BeanDefinition> expectedBeanDefinitionType) {
 		provider.addIncludeFilter(new AssignableTypeFilter(FooService.class));
 		Set<BeanDefinition> candidates = provider.findCandidateComponents(TEST_BASE_PACKAGE);
 		// Interfaces/Abstract class are filtered out automatically.
@@ -218,7 +207,7 @@ public class ClassPathScanningCandidateComponentProviderTests {
 	}
 
 	private void testCustomSupportedIncludeAndExcludeFilter(ClassPathScanningCandidateComponentProvider provider,
-			Class<? extends BeanDefinition> expectedBeanDefinitionType) {
+															Class<? extends BeanDefinition> expectedBeanDefinitionType) {
 		provider.addIncludeFilter(new AnnotationTypeFilter(Component.class));
 		provider.addExcludeFilter(new AnnotationTypeFilter(Service.class));
 		provider.addExcludeFilter(new AnnotationTypeFilter(Repository.class));
@@ -272,7 +261,7 @@ public class ClassPathScanningCandidateComponentProviderTests {
 	}
 
 	private void testExclude(ClassPathScanningCandidateComponentProvider provider,
-			Class<? extends BeanDefinition> expectedBeanDefinitionType) {
+							 Class<? extends BeanDefinition> expectedBeanDefinitionType) {
 		Set<BeanDefinition> candidates = provider.findCandidateComponents(TEST_BASE_PACKAGE);
 		assertTrue(containsBeanClass(candidates, FooServiceImpl.class));
 		assertTrue(containsBeanClass(candidates, StubFooDao.class));
@@ -511,12 +500,22 @@ public class ClassPathScanningCandidateComponentProviderTests {
 	}
 
 	private void assertBeanDefinitionType(Set<BeanDefinition> candidates,
-			Class<? extends BeanDefinition> expectedType) {
+										  Class<? extends BeanDefinition> expectedType) {
 		candidates.forEach(c -> {
 			assertThat(c, is(instanceOf(expectedType)));
 		});
 	}
 
+
+	@Profile(TEST_DEFAULT_PROFILE_NAME)
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface DefaultProfile {
+	}
+
+	@Profile("dev")
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface DevProfile {
+	}
 
 	@Profile(TEST_DEFAULT_PROFILE_NAME)
 	@Component(DefaultProfileAnnotatedComponent.BEAN_NAME)
@@ -530,20 +529,11 @@ public class ClassPathScanningCandidateComponentProviderTests {
 		static final String BEAN_NAME = "defaultAndDevProfileAnnotatedComponent";
 	}
 
-	@DefaultProfile @DevProfile
+	@DefaultProfile
+	@DevProfile
 	@Component(MetaProfileAnnotatedComponent.BEAN_NAME)
 	private static class MetaProfileAnnotatedComponent {
 		static final String BEAN_NAME = "metaProfileAnnotatedComponent";
-	}
-
-	@Profile(TEST_DEFAULT_PROFILE_NAME)
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface DefaultProfile {
-	}
-
-	@Profile("dev")
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface DevProfile {
 	}
 
 }

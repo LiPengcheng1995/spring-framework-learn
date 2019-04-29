@@ -16,29 +16,14 @@
 
 package org.springframework.jmx.export;
 
-import javax.management.Attribute;
-import javax.management.AttributeList;
-import javax.management.AttributeNotFoundException;
-import javax.management.DynamicMBean;
-import javax.management.InvalidAttributeValueException;
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanConstructorInfo;
-import javax.management.MBeanException;
-import javax.management.MBeanInfo;
-import javax.management.MBeanNotificationInfo;
-import javax.management.MBeanOperationInfo;
-import javax.management.Notification;
-import javax.management.NotificationBroadcasterSupport;
-import javax.management.NotificationListener;
-import javax.management.ReflectionException;
-
 import org.junit.Test;
-
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.jmx.AbstractMBeanServerTests;
 import org.springframework.jmx.export.notification.NotificationPublisher;
 import org.springframework.jmx.export.notification.NotificationPublisherAware;
 import org.springframework.jmx.support.ObjectNameManager;
+
+import javax.management.*;
 
 import static org.junit.Assert.*;
 
@@ -122,6 +107,11 @@ public class NotificationPublisherTests extends AbstractMBeanServerTests {
 		assertEquals("Notification not sent", 1, listener.count);
 	}
 
+	public interface MyMBean {
+
+		void sendNotification();
+	}
+
 	private static class CountingNotificationListener implements NotificationListener {
 
 		private int count;
@@ -149,13 +139,13 @@ public class NotificationPublisherTests extends AbstractMBeanServerTests {
 
 		private NotificationPublisher notificationPublisher;
 
+		public NotificationPublisher getNotificationPublisher() {
+			return notificationPublisher;
+		}
+
 		@Override
 		public void setNotificationPublisher(NotificationPublisher notificationPublisher) {
 			this.notificationPublisher = notificationPublisher;
-		}
-
-		public NotificationPublisher getNotificationPublisher() {
-			return notificationPublisher;
 		}
 
 		public void sendNotification() {
@@ -213,11 +203,6 @@ public class NotificationPublisherTests extends AbstractMBeanServerTests {
 		public void sendNotification() {
 			sendNotification(new Notification("test", this, 1));
 		}
-	}
-
-	public interface MyMBean {
-
-		void sendNotification();
 	}
 
 }

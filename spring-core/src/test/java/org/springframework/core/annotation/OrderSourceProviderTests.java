@@ -16,16 +16,16 @@
 
 package org.springframework.core.annotation;
 
+import org.junit.Test;
+import org.springframework.core.Ordered;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Test;
-
-import org.springframework.core.Ordered;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 /**
  * @author Stephane Nicoll
@@ -102,7 +102,7 @@ public class OrderSourceProviderTests {
 		C c = new C(-50);
 		B b = new B();
 
-		Object[] items = new Object[] {a, c, b};
+		Object[] items = new Object[]{a, c, b};
 		Arrays.sort(items, comparator.withSourceProvider(obj -> null));
 		assertOrder(items, c, a, b);
 	}
@@ -113,7 +113,7 @@ public class OrderSourceProviderTests {
 		C c = new C(3);
 		B b = new B();
 
-		Object[] items = new Object[] {a, c, b};
+		Object[] items = new Object[]{a, c, b};
 		Arrays.sort(items, comparator.withSourceProvider(obj -> {
 			if (obj == a) {
 				return new C(4);
@@ -132,7 +132,7 @@ public class OrderSourceProviderTests {
 		C c = new C(5);
 		C c2 = new C(-5);
 
-		Object[] items = new Object[] {a, c, c2};
+		Object[] items = new Object[]{a, c, c2};
 		Arrays.sort(items, comparator.withSourceProvider(obj -> {
 			if (obj == a) {
 				return 4;

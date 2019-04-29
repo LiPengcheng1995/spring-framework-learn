@@ -16,12 +16,12 @@
 
 package org.springframework.jms.connection;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.util.Assert;
+
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
-
-import org.springframework.util.Assert;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implementation of the JMS ExceptionListener interface that supports chaining,
@@ -32,7 +32,9 @@ import org.springframework.util.Assert;
  */
 public class ChainedExceptionListener implements ExceptionListener {
 
-	/** List of ExceptionListeners */
+	/**
+	 * List of ExceptionListeners
+	 */
 	private final List<ExceptionListener> delegates = new ArrayList<>(2);
 
 

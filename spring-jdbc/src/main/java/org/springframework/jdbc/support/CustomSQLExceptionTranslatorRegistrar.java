@@ -16,10 +16,10 @@
 
 package org.springframework.jdbc.support;
 
+import org.springframework.beans.factory.InitializingBean;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Registry for custom {@link SQLExceptionTranslator} instances for specific databases.

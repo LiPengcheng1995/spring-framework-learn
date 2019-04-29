@@ -16,12 +16,12 @@
 
 package org.springframework.jms.config;
 
-import java.util.concurrent.Executor;
-
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.lang.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.backoff.BackOff;
+
+import java.util.concurrent.Executor;
 
 /**
  * A {@link JmsListenerContainerFactory} implementation to build a regular
@@ -144,8 +144,7 @@ public class DefaultJmsListenerContainerFactory
 
 		if (this.cacheLevel != null) {
 			container.setCacheLevel(this.cacheLevel);
-		}
-		else if (this.cacheLevelName != null) {
+		} else if (this.cacheLevelName != null) {
 			container.setCacheLevelName(this.cacheLevelName);
 		}
 
@@ -164,8 +163,7 @@ public class DefaultJmsListenerContainerFactory
 			if (this.recoveryInterval != null) {
 				logger.warn("Ignoring recovery interval in DefaultJmsListenerContainerFactory in favor of BackOff");
 			}
-		}
-		else if (this.recoveryInterval != null) {
+		} else if (this.recoveryInterval != null) {
 			container.setRecoveryInterval(this.recoveryInterval);
 		}
 	}

@@ -16,14 +16,14 @@
 
 package org.springframework.cache.annotation;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.AdviceModeImportSelector;
 import org.springframework.context.annotation.AutoProxyRegistrar;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Selects which implementation of {@link AbstractCachingConfiguration} should
@@ -34,9 +34,9 @@ import org.springframework.util.StringUtils;
  *
  * @author Chris Beams
  * @author Stephane Nicoll
- * @since 3.1
  * @see EnableCaching
  * @see ProxyCachingConfiguration
+ * @since 3.1
  */
 public class CachingConfigurationSelector extends AdviceModeImportSelector<EnableCaching> {
 

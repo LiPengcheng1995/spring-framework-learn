@@ -16,12 +16,12 @@
 
 package org.springframework.core;
 
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 
 /**
  * Base class for decorating ClassLoaders such as {@link OverridingClassLoader}
@@ -63,6 +63,7 @@ public abstract class DecoratingClassLoader extends ClassLoader {
 	 * Add a package name to exclude from decoration (e.g. overriding).
 	 * <p>Any class whose fully-qualified name starts with the name registered
 	 * here will be handled by the parent ClassLoader in the usual fashion.
+	 *
 	 * @param packageName the package name to exclude
 	 */
 	public void excludePackage(String packageName) {
@@ -74,6 +75,7 @@ public abstract class DecoratingClassLoader extends ClassLoader {
 	 * Add a class name to exclude from decoration (e.g. overriding).
 	 * <p>Any class name registered here will be handled by the parent
 	 * ClassLoader in the usual fashion.
+	 *
 	 * @param className the class name to exclude
 	 */
 	public void excludeClass(String className) {
@@ -85,6 +87,7 @@ public abstract class DecoratingClassLoader extends ClassLoader {
 	 * Determine whether the specified class is excluded from decoration
 	 * by this class loader.
 	 * <p>The default implementation checks against excluded packages and classes.
+	 *
 	 * @param className the class name to check
 	 * @return whether the specified class is eligible
 	 * @see #excludePackage

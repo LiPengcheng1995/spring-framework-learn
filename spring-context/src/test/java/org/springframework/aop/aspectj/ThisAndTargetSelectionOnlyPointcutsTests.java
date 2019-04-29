@@ -18,10 +18,13 @@ package org.springframework.aop.aspectj;
 
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
+interface TestInterface {
+	public void doIt();
+}
 
 /**
  * @author Ramnivas Laddad
@@ -106,12 +109,6 @@ public class ThisAndTargetSelectionOnlyPointcutsTests {
 	}
 
 }
-
-
-interface TestInterface {
-	public void doIt();
-}
-
 
 class TestImpl implements TestInterface {
 	@Override

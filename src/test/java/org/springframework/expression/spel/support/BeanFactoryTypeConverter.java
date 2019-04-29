@@ -16,8 +16,6 @@
 
 package org.springframework.expression.spel.support;
 
-import java.beans.PropertyEditor;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.beans.factory.BeanFactory;
@@ -28,16 +26,16 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.expression.TypeConverter;
 
+import java.beans.PropertyEditor;
+
 /**
  * Copied from Spring Integration for purposes of reproducing
  * {@link Spr7538Tests}.
  */
 class BeanFactoryTypeConverter implements TypeConverter, BeanFactoryAware {
 
-	private SimpleTypeConverter delegate = new SimpleTypeConverter();
-
 	private static ConversionService defaultConversionService;
-
+	private SimpleTypeConverter delegate = new SimpleTypeConverter();
 	private ConversionService conversionService;
 
 	public BeanFactoryTypeConverter() {

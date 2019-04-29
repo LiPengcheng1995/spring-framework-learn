@@ -16,12 +16,12 @@
 
 package org.springframework.http;
 
-import java.time.Duration;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+
+import java.time.Duration;
 
 /**
  * An {@code HttpCookie} subclass with the additional attributes allowed in
@@ -29,8 +29,8 @@ import org.springframework.util.StringUtils;
  * static method.
  *
  * @author Rossen Stoyanchev
- * @since 5.0
  * @see <a href="https://tools.ietf.org/html/rfc6265">RFC 6265</a>
+ * @since 5.0
  */
 public final class ResponseCookie extends HttpCookie {
 
@@ -51,7 +51,7 @@ public final class ResponseCookie extends HttpCookie {
 	 * Private constructor. See {@link #from(String, String)}.
 	 */
 	private ResponseCookie(String name, String value, Duration maxAge, @Nullable String domain,
-			@Nullable String path, boolean secure, boolean httpOnly) {
+						   @Nullable String path, boolean secure, boolean httpOnly) {
 
 		super(name, value);
 		Assert.notNull(maxAge, "Max age must not be null");
@@ -62,103 +62,11 @@ public final class ResponseCookie extends HttpCookie {
 		this.httpOnly = httpOnly;
 	}
 
-
-	/**
-	 * Return the cookie "Max-Age" attribute in seconds.
-	 * <p>A positive value indicates when the cookie expires relative to the
-	 * current time. A value of 0 means the cookie should expire immediately.
-	 * A negative value means no "Max-Age" attribute in which case the cookie
-	 * is removed when the browser is closed.
-	 */
-	public Duration getMaxAge() {
-		return this.maxAge;
-	}
-
-	/**
-	 * Return the cookie "Domain" attribute, or {@code null} if not set.
-	 */
-	@Nullable
-	public String getDomain() {
-		return this.domain;
-	}
-
-	/**
-	 * Return the cookie "Path" attribute, or {@code null} if not set.
-	 */
-	@Nullable
-	public String getPath() {
-		return this.path;
-	}
-
-	/**
-	 * Return {@code true} if the cookie has the "Secure" attribute.
-	 */
-	public boolean isSecure() {
-		return this.secure;
-	}
-
-	/**
-	 * Return {@code true} if the cookie has the "HttpOnly" attribute.
-	 * @see <a href="https://www.owasp.org/index.php/HTTPOnly">https://www.owasp.org/index.php/HTTPOnly</a>
-	 */
-	public boolean isHttpOnly() {
-		return this.httpOnly;
-	}
-
-
-	@Override
-	public boolean equals(Object other) {
-		if (this == other) {
-			return true;
-		}
-		if (!(other instanceof ResponseCookie)) {
-			return false;
-		}
-		ResponseCookie otherCookie = (ResponseCookie) other;
-		return (getName().equalsIgnoreCase(otherCookie.getName()) &&
-				ObjectUtils.nullSafeEquals(this.path, otherCookie.getPath()) &&
-				ObjectUtils.nullSafeEquals(this.domain, otherCookie.getDomain()));
-	}
-
-	@Override
-	public int hashCode() {
-		int result = super.hashCode();
-		result = 31 * result + ObjectUtils.nullSafeHashCode(this.domain);
-		result = 31 * result + ObjectUtils.nullSafeHashCode(this.path);
-		return result;
-	}
-
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(getName()).append('=').append(getValue());
-		if (StringUtils.hasText(getPath())) {
-			sb.append("; Path=").append(getPath());
-		}
-		if (StringUtils.hasText(this.domain)) {
-			sb.append("; Domain=").append(this.domain);
-		}
-		if (!this.maxAge.isNegative()) {
-			sb.append("; Max-Age=").append(this.maxAge.getSeconds());
-			sb.append("; Expires=");
-			long millis = this.maxAge.getSeconds() > 0 ? System.currentTimeMillis() + this.maxAge.toMillis() : 0;
-			sb.append(HttpHeaders.formatDate(millis));
-		}
-
-		if (this.secure) {
-			sb.append("; Secure");
-		}
-		if (this.httpOnly) {
-			sb.append("; HttpOnly");
-		}
-		return sb.toString();
-	}
-
-
 	/**
 	 * Factory method to obtain a builder for a server-defined cookie that starts
 	 * with a name-value pair and may also include attributes.
-	 * @param name the cookie name
+	 *
+	 * @param name  the cookie name
 	 * @param value the cookie value
 	 * @return the created cookie instance
 	 */
@@ -222,6 +130,97 @@ public final class ResponseCookie extends HttpCookie {
 		};
 	}
 
+	/**
+	 * Return the cookie "Max-Age" attribute in seconds.
+	 * <p>A positive value indicates when the cookie expires relative to the
+	 * current time. A value of 0 means the cookie should expire immediately.
+	 * A negative value means no "Max-Age" attribute in which case the cookie
+	 * is removed when the browser is closed.
+	 */
+	public Duration getMaxAge() {
+		return this.maxAge;
+	}
+
+	/**
+	 * Return the cookie "Domain" attribute, or {@code null} if not set.
+	 */
+	@Nullable
+	public String getDomain() {
+		return this.domain;
+	}
+
+	/**
+	 * Return the cookie "Path" attribute, or {@code null} if not set.
+	 */
+	@Nullable
+	public String getPath() {
+		return this.path;
+	}
+
+	/**
+	 * Return {@code true} if the cookie has the "Secure" attribute.
+	 */
+	public boolean isSecure() {
+		return this.secure;
+	}
+
+	/**
+	 * Return {@code true} if the cookie has the "HttpOnly" attribute.
+	 *
+	 * @see <a href="https://www.owasp.org/index.php/HTTPOnly">https://www.owasp.org/index.php/HTTPOnly</a>
+	 */
+	public boolean isHttpOnly() {
+		return this.httpOnly;
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (this == other) {
+			return true;
+		}
+		if (!(other instanceof ResponseCookie)) {
+			return false;
+		}
+		ResponseCookie otherCookie = (ResponseCookie) other;
+		return (getName().equalsIgnoreCase(otherCookie.getName()) &&
+				ObjectUtils.nullSafeEquals(this.path, otherCookie.getPath()) &&
+				ObjectUtils.nullSafeEquals(this.domain, otherCookie.getDomain()));
+	}
+
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		result = 31 * result + ObjectUtils.nullSafeHashCode(this.domain);
+		result = 31 * result + ObjectUtils.nullSafeHashCode(this.path);
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getName()).append('=').append(getValue());
+		if (StringUtils.hasText(getPath())) {
+			sb.append("; Path=").append(getPath());
+		}
+		if (StringUtils.hasText(this.domain)) {
+			sb.append("; Domain=").append(this.domain);
+		}
+		if (!this.maxAge.isNegative()) {
+			sb.append("; Max-Age=").append(this.maxAge.getSeconds());
+			sb.append("; Expires=");
+			long millis = this.maxAge.getSeconds() > 0 ? System.currentTimeMillis() + this.maxAge.toMillis() : 0;
+			sb.append(HttpHeaders.formatDate(millis));
+		}
+
+		if (this.secure) {
+			sb.append("; Secure");
+		}
+		if (this.httpOnly) {
+			sb.append("; HttpOnly");
+		}
+		return sb.toString();
+	}
+
 
 	/**
 	 * A builder for a server-defined HttpCookie with attributes.
@@ -260,6 +259,7 @@ public final class ResponseCookie extends HttpCookie {
 
 		/**
 		 * Add the "HttpOnly" attribute to the cookie.
+		 *
 		 * @see <a href="https://www.owasp.org/index.php/HTTPOnly">https://www.owasp.org/index.php/HTTPOnly</a>
 		 */
 		ResponseCookieBuilder httpOnly(boolean httpOnly);

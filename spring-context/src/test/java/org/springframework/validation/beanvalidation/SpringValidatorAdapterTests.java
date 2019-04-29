@@ -16,34 +16,8 @@
 
 package org.springframework.validation.beanvalidation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Repeatable;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import javax.validation.Constraint;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
-import javax.validation.ConstraintViolation;
-import javax.validation.Payload;
-import javax.validation.Valid;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.context.support.StaticMessageSource;
@@ -51,9 +25,18 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
 
-import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.*;
-import static org.hamcrest.core.Is.*;
+import javax.validation.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+import java.lang.annotation.*;
+import java.lang.reflect.Field;
+import java.util.*;
+
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 
 /**
@@ -209,6 +192,53 @@ public class SpringValidatorAdapterTests {
 	}
 
 
+	@Documented
+	@Constraint(validatedBy = {SameValidator.class})
+	@Target({TYPE, ANNOTATION_TYPE})
+	@Retention(RUNTIME)
+	@Repeatable(SameGroup.class)
+	@interface Same {
+
+		String message() default "{org.springframework.validation.beanvalidation.Same.message}";
+
+		Class<?>[] groups() default {};
+
+		Class<? extends Payload>[] payload() default {};
+
+		String field();
+
+		String comparingField();
+
+		@Target({TYPE, ANNOTATION_TYPE})
+		@Retention(RUNTIME)
+		@Documented
+		@interface List {
+			Same[] value();
+		}
+	}
+
+
+	@Documented
+	@Inherited
+	@Retention(RUNTIME)
+	@Target({TYPE, ANNOTATION_TYPE})
+	@interface SameGroup {
+
+		Same[] value();
+	}
+
+
+	@Constraint(validatedBy = AnythingValidator.class)
+	@Retention(RUNTIME)
+	public @interface AnythingValid {
+
+		String message() default "{AnythingValid.message}";
+
+		Class<?>[] groups() default {};
+
+		Class<? extends Payload>[] payload() default {};
+	}
+
 	@Same(field = "password", comparingField = "confirmPassword")
 	@Same(field = "email", comparingField = "confirmEmail")
 	static class TestBean {
@@ -256,43 +286,6 @@ public class SpringValidatorAdapterTests {
 		}
 	}
 
-
-	@Documented
-	@Constraint(validatedBy = {SameValidator.class})
-	@Target({TYPE, ANNOTATION_TYPE})
-	@Retention(RUNTIME)
-	@Repeatable(SameGroup.class)
-	@interface Same {
-
-		String message() default "{org.springframework.validation.beanvalidation.Same.message}";
-
-		Class<?>[] groups() default {};
-
-		Class<? extends Payload>[] payload() default {};
-
-		String field();
-
-		String comparingField();
-
-		@Target({TYPE, ANNOTATION_TYPE})
-		@Retention(RUNTIME)
-		@Documented
-		@interface List {
-			Same[] value();
-		}
-	}
-
-
-	@Documented
-	@Inherited
-	@Retention(RUNTIME)
-	@Target({TYPE, ANNOTATION_TYPE})
-	@interface SameGroup {
-
-		Same[] value();
-	}
-
-
 	public static class SameValidator implements ConstraintValidator<Same, Object> {
 
 		private String field;
@@ -314,8 +307,7 @@ public class SpringValidatorAdapterTests {
 			boolean matched = ObjectUtils.nullSafeEquals(fieldValue, comparingFieldValue);
 			if (matched) {
 				return true;
-			}
-			else {
+			} else {
 				context.disableDefaultConstraintViolation();
 				context.buildConstraintViolationWithTemplate(message)
 						.addPropertyNode(field)
@@ -324,7 +316,6 @@ public class SpringValidatorAdapterTests {
 			}
 		}
 	}
-
 
 	public static class Parent {
 
@@ -372,7 +363,6 @@ public class SpringValidatorAdapterTests {
 		}
 	}
 
-
 	@AnythingValid
 	public static class Child {
 
@@ -419,19 +409,6 @@ public class SpringValidatorAdapterTests {
 			this.parent = parent;
 		}
 	}
-
-
-	@Constraint(validatedBy = AnythingValidator.class)
-	@Retention(RUNTIME)
-	public @interface AnythingValid {
-
-		String message() default "{AnythingValid.message}";
-
-		Class<?>[] groups() default {};
-
-		Class<? extends Payload>[] payload() default {};
-	}
-
 
 	public static class AnythingValidator implements ConstraintValidator<AnythingValid, Object> {
 

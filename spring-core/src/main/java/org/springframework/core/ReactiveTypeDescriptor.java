@@ -16,10 +16,10 @@
 
 package org.springframework.core;
 
-import java.util.function.Supplier;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.util.function.Supplier;
 
 /**
  * Describes the semantics of a reactive type including boolean checks for
@@ -44,7 +44,7 @@ public class ReactiveTypeDescriptor {
 	 * Private constructor. See static factory methods.
 	 */
 	private ReactiveTypeDescriptor(Class<?> reactiveType, @Nullable Supplier<?> emptySupplier,
-			boolean multiValue, boolean noValue) {
+								   boolean multiValue, boolean noValue) {
 
 		Assert.notNull(reactiveType, "'reactiveType' must not be null");
 		this.reactiveType = reactiveType;
@@ -53,6 +53,44 @@ public class ReactiveTypeDescriptor {
 		this.noValue = noValue;
 	}
 
+	/**
+	 * Descriptor for a reactive type that can produce 0..N values.
+	 *
+	 * @param type          the reactive type
+	 * @param emptySupplier a supplier of an empty-value instance of the reactive type
+	 */
+	public static ReactiveTypeDescriptor multiValue(Class<?> type, Supplier<?> emptySupplier) {
+		return new ReactiveTypeDescriptor(type, emptySupplier, true, false);
+	}
+
+	/**
+	 * Descriptor for a reactive type that can produce 0..1 values.
+	 *
+	 * @param type          the reactive type
+	 * @param emptySupplier a supplier of an empty-value instance of the reactive type
+	 */
+	public static ReactiveTypeDescriptor singleOptionalValue(Class<?> type, Supplier<?> emptySupplier) {
+		return new ReactiveTypeDescriptor(type, emptySupplier, false, false);
+	}
+
+	/**
+	 * Descriptor for a reactive type that must produce 1 value to complete.
+	 *
+	 * @param type the reactive type
+	 */
+	public static ReactiveTypeDescriptor singleRequiredValue(Class<?> type) {
+		return new ReactiveTypeDescriptor(type, null, false, false);
+	}
+
+	/**
+	 * Descriptor for a reactive type that does not produce any values.
+	 *
+	 * @param type          the reactive type
+	 * @param emptySupplier a supplier of an empty-value instance of the reactive type
+	 */
+	public static ReactiveTypeDescriptor noValue(Class<?> type, Supplier<?> emptySupplier) {
+		return new ReactiveTypeDescriptor(type, emptySupplier, false, true);
+	}
 
 	/**
 	 * Return the reactive type for this descriptor.
@@ -95,7 +133,6 @@ public class ReactiveTypeDescriptor {
 		return this.emptyValueSupplier.get();
 	}
 
-
 	@Override
 	public boolean equals(@Nullable Object other) {
 		if (this == other) {
@@ -110,42 +147,6 @@ public class ReactiveTypeDescriptor {
 	@Override
 	public int hashCode() {
 		return this.reactiveType.hashCode();
-	}
-
-
-	/**
-	 * Descriptor for a reactive type that can produce 0..N values.
-	 * @param type the reactive type
-	 * @param emptySupplier a supplier of an empty-value instance of the reactive type
-	 */
-	public static ReactiveTypeDescriptor multiValue(Class<?> type, Supplier<?> emptySupplier) {
-		return new ReactiveTypeDescriptor(type, emptySupplier, true, false);
-	}
-
-	/**
-	 * Descriptor for a reactive type that can produce 0..1 values.
-	 * @param type the reactive type
-	 * @param emptySupplier a supplier of an empty-value instance of the reactive type
-	 */
-	public static ReactiveTypeDescriptor singleOptionalValue(Class<?> type, Supplier<?> emptySupplier) {
-		return new ReactiveTypeDescriptor(type, emptySupplier, false, false);
-	}
-
-	/**
-	 * Descriptor for a reactive type that must produce 1 value to complete.
-	 * @param type the reactive type
-	 */
-	public static ReactiveTypeDescriptor singleRequiredValue(Class<?> type) {
-		return new ReactiveTypeDescriptor(type, null, false, false);
-	}
-
-	/**
-	 * Descriptor for a reactive type that does not produce any values.
-	 * @param type the reactive type
-	 * @param emptySupplier a supplier of an empty-value instance of the reactive type
-	 */
-	public static ReactiveTypeDescriptor noValue(Class<?> type, Supplier<?> emptySupplier) {
-		return new ReactiveTypeDescriptor(type, emptySupplier, false, true);
 	}
 
 }

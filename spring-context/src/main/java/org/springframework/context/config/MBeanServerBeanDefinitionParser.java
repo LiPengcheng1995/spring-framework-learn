@@ -16,8 +16,6 @@
 
 package org.springframework.context.config;
 
-import org.w3c.dom.Element;
-
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -29,6 +27,7 @@ import org.springframework.jndi.JndiObjectFactoryBean;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
+import org.w3c.dom.Element;
 
 /**
  * Parser for the &lt;context:mbean-server/&gt; element.
@@ -39,8 +38,8 @@ import org.springframework.util.StringUtils;
  *
  * @author Mark Fisher
  * @author Juergen Hoeller
- * @since 2.5
  * @see org.springframework.jmx.export.annotation.AnnotationMBeanExporter
+ * @since 2.5
  */
 class MBeanServerBeanDefinitionParser extends AbstractBeanDefinitionParser {
 
@@ -55,6 +54,18 @@ class MBeanServerBeanDefinitionParser extends AbstractBeanDefinitionParser {
 	private static final boolean webspherePresent = ClassUtils.isPresent(
 			"com.ibm.websphere.management.AdminServiceFactory", MBeanServerBeanDefinitionParser.class.getClassLoader());
 
+	@Nullable
+	static AbstractBeanDefinition findServerForSpecialEnvironment() {
+		if (weblogicPresent) {
+			RootBeanDefinition bd = new RootBeanDefinition(JndiObjectFactoryBean.class);
+			bd.getPropertyValues().add("jndiName", "java:comp/env/jmx/runtime");
+			return bd;
+		} else if (webspherePresent) {
+			return new RootBeanDefinition(WebSphereMBeanServerFactoryBean.class);
+		} else {
+			return null;
+		}
+	}
 
 	@Override
 	protected String resolveId(Element element, AbstractBeanDefinition definition, ParserContext parserContext) {
@@ -81,21 +92,6 @@ class MBeanServerBeanDefinitionParser extends AbstractBeanDefinitionParser {
 		bd.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 		bd.setSource(parserContext.extractSource(element));
 		return bd;
-	}
-
-	@Nullable
-	static AbstractBeanDefinition findServerForSpecialEnvironment() {
-		if (weblogicPresent) {
-			RootBeanDefinition bd = new RootBeanDefinition(JndiObjectFactoryBean.class);
-			bd.getPropertyValues().add("jndiName", "java:comp/env/jmx/runtime");
-			return bd;
-		}
-		else if (webspherePresent) {
-			return new RootBeanDefinition(WebSphereMBeanServerFactoryBean.class);
-		}
-		else {
-			return null;
-		}
 	}
 
 }

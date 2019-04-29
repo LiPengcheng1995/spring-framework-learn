@@ -16,14 +16,14 @@
 
 package org.springframework.web.util;
 
-import java.io.UnsupportedEncodingException;
-
 import org.junit.Ignore;
 import org.junit.Test;
-
 import org.springframework.mock.web.test.MockHttpServletRequest;
 
-import static org.junit.Assert.*;
+import java.io.UnsupportedEncodingException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Unit tests for {@link UrlPathHelper}.
@@ -279,8 +279,7 @@ public class UrlPathHelperTests {
 		try {
 			request.setAttribute(WEBSPHERE_URI_ATTRIBUTE, "/test/foo/");
 			tomcatDefaultServletFolder();
-		}
-		finally {
+		} finally {
 			UrlPathHelper.websphereComplianceFlag = false;
 		}
 	}
@@ -301,7 +300,8 @@ public class UrlPathHelperTests {
 	}
 
 	// test the root mapping for /foo/* w/o a trailing slash - <host>/<context>/foo
-	@Test @Ignore
+	@Test
+	@Ignore
 	public void tomcatCasualServletRootWithMissingSlash() throws Exception {
 		request.setContextPath("/test");
 		request.setPathInfo(null);

@@ -16,14 +16,13 @@
 
 package org.springframework.web.server;
 
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+import reactor.core.publisher.Mono;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
-
-import reactor.core.publisher.Mono;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 
 /**
  * Main contract for using a server-side session that provides access to session
@@ -51,8 +50,9 @@ public interface WebSession {
 
 	/**
 	 * Return the session attribute value if present.
+	 *
 	 * @param name the attribute name
-	 * @param <T> the attribute type
+	 * @param <T>  the attribute type
 	 * @return the attribute value
 	 */
 	@SuppressWarnings("unchecked")
@@ -64,8 +64,9 @@ public interface WebSession {
 	/**
 	 * Return the session attribute value or if not present raise an
 	 * {@link IllegalArgumentException}.
+	 *
 	 * @param name the attribute name
-	 * @param <T> the attribute type
+	 * @param <T>  the attribute type
 	 * @return the attribute value
 	 */
 	@SuppressWarnings("unchecked")
@@ -77,9 +78,10 @@ public interface WebSession {
 
 	/**
 	 * Return the session attribute value, or a default, fallback value.
-	 * @param name the attribute name
+	 *
+	 * @param name         the attribute name
 	 * @param defaultValue a default value to return instead
-	 * @param <T> the attribute type
+	 * @param <T>          the attribute type
 	 * @return the attribute value
 	 */
 	@SuppressWarnings("unchecked")
@@ -105,12 +107,14 @@ public interface WebSession {
 	 * Generate a new id for the session and update the underlying session
 	 * storage to reflect the new id. After a successful call {@link #getId()}
 	 * reflects the new session id.
+	 *
 	 * @return completion notification (success or error)
 	 */
 	Mono<Void> changeSessionId();
 
 	/**
 	 * Invalidate the current session and clear session storage.
+	 *
 	 * @return completion notification (success or error)
 	 */
 	Mono<Void> invalidate();
@@ -128,6 +132,7 @@ public interface WebSession {
 	 * <p>Note that this method is not intended for direct use by applications.
 	 * Instead it is automatically invoked just before the response is
 	 * committed.
+	 *
 	 * @return {@code Mono} to indicate completion with success or error
 	 */
 	Mono<Void> save();
@@ -156,17 +161,17 @@ public interface WebSession {
 	Instant getLastAccessTime();
 
 	/**
-	 * Configure the max amount of time that may elapse after the
-	 * {@link #getLastAccessTime() lastAccessTime} before a session is considered
-	 * expired. A negative value indicates the session should not expire.
-	 */
-	void setMaxIdleTime(Duration maxIdleTime);
-
-	/**
 	 * Return the maximum time after the {@link #getLastAccessTime()
 	 * lastAccessTime} before a session expires. A negative time indicates the
 	 * session doesn't expire.
 	 */
 	Duration getMaxIdleTime();
+
+	/**
+	 * Configure the max amount of time that may elapse after the
+	 * {@link #getLastAccessTime() lastAccessTime} before a session is considered
+	 * expired. A negative value indicates the session should not expire.
+	 */
+	void setMaxIdleTime(Duration maxIdleTime);
 
 }

@@ -54,9 +54,9 @@ package org.springframework.context;
  * lazy-init flag has very limited actual effect on {@code SmartLifecycle} beans.
  *
  * @author Mark Fisher
- * @since 3.0
  * @see LifecycleProcessor
  * @see ConfigurableApplicationContext
+ * @since 3.0
  */
 public interface SmartLifecycle extends Lifecycle, Phased {
 
@@ -67,6 +67,7 @@ public interface SmartLifecycle extends Lifecycle, Phased {
 	 * <p>A value of {@code false} indicates that the component is intended to
 	 * be started through an explicit {@link #start()} call instead, analogous
 	 * to a plain {@link Lifecycle} implementation.
+	 *
 	 * @see #start()
 	 * @see #getPhase()
 	 * @see LifecycleProcessor#onRefresh()
@@ -84,6 +85,7 @@ public interface SmartLifecycle extends Lifecycle, Phased {
 	 * {@code stop} method; i.e. {@link Lifecycle#stop()} will not be called for
 	 * {@code SmartLifecycle} implementations unless explicitly delegated to within
 	 * the implementation of this method.
+	 *
 	 * @see #stop()
 	 * @see #getPhase()
 	 */

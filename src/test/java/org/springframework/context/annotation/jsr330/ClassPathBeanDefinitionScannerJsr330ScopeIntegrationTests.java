@@ -16,18 +16,9 @@
 
 package org.springframework.context.annotation.jsr330;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
 import org.junit.After;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -41,6 +32,15 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.context.support.GenericWebApplicationContext;
+
+import javax.inject.Named;
+import javax.inject.Singleton;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Mark Fisher
@@ -310,13 +310,11 @@ public class ClassPathBeanDefinitionScannerJsr330ScopeIntegrationTests {
 						if (type.equals(javax.inject.Singleton.class.getName())) {
 							metadata.setScopeName(BeanDefinition.SCOPE_SINGLETON);
 							break;
-						}
-						else if (annDef.getMetadata().getMetaAnnotationTypes(type).contains(javax.inject.Scope.class.getName())) {
+						} else if (annDef.getMetadata().getMetaAnnotationTypes(type).contains(javax.inject.Scope.class.getName())) {
 							metadata.setScopeName(type.substring(type.length() - 13, type.length() - 6).toLowerCase());
 							metadata.setScopedProxyMode(scopedProxyMode);
 							break;
-						}
-						else if (type.startsWith("javax.inject")) {
+						} else if (type.startsWith("javax.inject")) {
 							metadata.setScopeName(BeanDefinition.SCOPE_PROTOTYPE);
 						}
 					}
@@ -335,50 +333,15 @@ public class ClassPathBeanDefinitionScannerJsr330ScopeIntegrationTests {
 	}
 
 
- 	public static interface IScopedTestBean {
+	public static interface IScopedTestBean {
 
- 		String getName();
+		String getName();
 
- 		void setName(String name);
- 	}
-
-
-	public static abstract class ScopedTestBean implements IScopedTestBean {
-
-		private String name = DEFAULT_NAME;
-
-		@Override
-		public String getName() { return this.name; }
-
-		@Override
-		public void setName(String name) { this.name = name; }
-	}
-
-
-	@Named("prototype")
-	public static class PrototypeScopedTestBean extends ScopedTestBean {
-	}
-
-
-	@Named("singleton")
-	@Singleton
-	public static class SingletonScopedTestBean extends ScopedTestBean {
+		void setName(String name);
 	}
 
 
 	public static interface AnotherScopeTestInterface {
-	}
-
-
-	@Named("request")
-	@RequestScoped
-	public static class RequestScopedTestBean extends ScopedTestBean implements AnotherScopeTestInterface {
-	}
-
-
-	@Named
-	@SessionScoped
-	public static class SessionScopedTestBean extends ScopedTestBean implements AnotherScopeTestInterface {
 	}
 
 
@@ -393,6 +356,40 @@ public class ClassPathBeanDefinitionScannerJsr330ScopeIntegrationTests {
 	@Retention(RetentionPolicy.RUNTIME)
 	@javax.inject.Scope
 	public static @interface SessionScoped {
+	}
+
+	public static abstract class ScopedTestBean implements IScopedTestBean {
+
+		private String name = DEFAULT_NAME;
+
+		@Override
+		public String getName() {
+			return this.name;
+		}
+
+		@Override
+		public void setName(String name) {
+			this.name = name;
+		}
+	}
+
+	@Named("prototype")
+	public static class PrototypeScopedTestBean extends ScopedTestBean {
+	}
+
+	@Named("singleton")
+	@Singleton
+	public static class SingletonScopedTestBean extends ScopedTestBean {
+	}
+
+	@Named("request")
+	@RequestScoped
+	public static class RequestScopedTestBean extends ScopedTestBean implements AnotherScopeTestInterface {
+	}
+
+	@Named
+	@SessionScoped
+	public static class SessionScopedTestBean extends ScopedTestBean implements AnotherScopeTestInterface {
 	}
 
 }

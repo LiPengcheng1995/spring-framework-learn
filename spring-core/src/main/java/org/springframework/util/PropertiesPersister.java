@@ -16,11 +16,7 @@
 
 package org.springframework.util;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.*;
 import java.util.Properties;
 
 /**
@@ -33,17 +29,18 @@ import java.util.Properties;
  * (which allows to specify an encoding for a properties file).
  *
  * @author Juergen Hoeller
- * @since 10.03.2004
  * @see DefaultPropertiesPersister
  * @see java.util.Properties
+ * @since 10.03.2004
  */
 public interface PropertiesPersister {
 
 	/**
 	 * Load properties from the given InputStream into the given
 	 * Properties object.
+	 *
 	 * @param props the Properties object to load into
-	 * @param is the InputStream to load from
+	 * @param is    the InputStream to load from
 	 * @throws IOException in case of I/O errors
 	 * @see java.util.Properties#load
 	 */
@@ -52,7 +49,8 @@ public interface PropertiesPersister {
 	/**
 	 * Load properties from the given Reader into the given
 	 * Properties object.
-	 * @param props the Properties object to load into
+	 *
+	 * @param props  the Properties object to load into
 	 * @param reader the Reader to load from
 	 * @throws IOException in case of I/O errors
 	 */
@@ -61,8 +59,9 @@ public interface PropertiesPersister {
 	/**
 	 * Write the contents of the given Properties object to the
 	 * given OutputStream.
-	 * @param props the Properties object to store
-	 * @param os the OutputStream to write to
+	 *
+	 * @param props  the Properties object to store
+	 * @param os     the OutputStream to write to
 	 * @param header the description of the property list
 	 * @throws IOException in case of I/O errors
 	 * @see java.util.Properties#store
@@ -72,7 +71,8 @@ public interface PropertiesPersister {
 	/**
 	 * Write the contents of the given Properties object to the
 	 * given Writer.
-	 * @param props the Properties object to store
+	 *
+	 * @param props  the Properties object to store
 	 * @param writer the Writer to write to
 	 * @param header the description of the property list
 	 * @throws IOException in case of I/O errors
@@ -82,8 +82,9 @@ public interface PropertiesPersister {
 	/**
 	 * Load properties from the given XML InputStream into the
 	 * given Properties object.
+	 *
 	 * @param props the Properties object to load into
-	 * @param is the InputStream to load from
+	 * @param is    the InputStream to load from
 	 * @throws IOException in case of I/O errors
 	 * @see java.util.Properties#loadFromXML(java.io.InputStream)
 	 */
@@ -92,8 +93,9 @@ public interface PropertiesPersister {
 	/**
 	 * Write the contents of the given Properties object to the
 	 * given XML OutputStream.
-	 * @param props the Properties object to store
-	 * @param os the OutputStream to write to
+	 *
+	 * @param props  the Properties object to store
+	 * @param os     the OutputStream to write to
 	 * @param header the description of the property list
 	 * @throws IOException in case of I/O errors
 	 * @see java.util.Properties#storeToXML(java.io.OutputStream, String)
@@ -103,10 +105,11 @@ public interface PropertiesPersister {
 	/**
 	 * Write the contents of the given Properties object to the
 	 * given XML OutputStream.
-	 * @param props the Properties object to store
-	 * @param os the OutputStream to write to
+	 *
+	 * @param props    the Properties object to store
+	 * @param os       the OutputStream to write to
 	 * @param encoding the encoding to use
-	 * @param header the description of the property list
+	 * @param header   the description of the property list
 	 * @throws IOException in case of I/O errors
 	 * @see java.util.Properties#storeToXML(java.io.OutputStream, String, String)
 	 */

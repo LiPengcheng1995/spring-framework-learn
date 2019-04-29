@@ -16,11 +16,7 @@
 
 package org.springframework.format.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Declares that a field or method parameter should be formatted as a number.
@@ -41,8 +37,8 @@ import java.lang.annotation.Target;
  *
  * @author Keith Donald
  * @author Juergen Hoeller
- * @since 3.0
  * @see java.text.NumberFormat
+ * @since 3.0
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
@@ -75,6 +71,7 @@ public @interface NumberFormat {
 		/**
 		 * The default format for the annotated type: typically 'number' but possibly
 		 * 'currency' for a money type (e.g. {@code javax.money.MonetaryAmount)}.
+		 *
 		 * @since 4.2
 		 */
 		DEFAULT,

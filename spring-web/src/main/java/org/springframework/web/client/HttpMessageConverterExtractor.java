@@ -16,13 +16,8 @@
 
 package org.springframework.web.client;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.converter.GenericHttpMessageConverter;
@@ -31,13 +26,17 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.List;
+
 /**
  * Response extractor that uses the given {@linkplain HttpMessageConverter entity converters}
  * to convert the response into a type {@code T}.
  *
  * @author Arjen Poutsma
- * @since 3.0
  * @see RestTemplate
+ * @since 3.0
  */
 public class HttpMessageConverterExtractor<T> implements ResponseExtractor<T> {
 
@@ -110,8 +109,7 @@ public class HttpMessageConverterExtractor<T> implements ResponseExtractor<T> {
 					}
 				}
 			}
-		}
-		catch (IOException | HttpMessageNotReadableException ex) {
+		} catch (IOException | HttpMessageNotReadableException ex) {
 			throw new RestClientException("Error while extracting response for type [" +
 					this.responseType + "] and content type [" + contentType + "]", ex);
 		}

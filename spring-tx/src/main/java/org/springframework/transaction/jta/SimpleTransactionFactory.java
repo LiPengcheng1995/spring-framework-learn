@@ -16,13 +16,13 @@
 
 package org.springframework.transaction.jta;
 
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+
 import javax.transaction.NotSupportedException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 
 /**
  * Default implementation of the {@link TransactionFactory} strategy interface,
@@ -31,10 +31,10 @@ import org.springframework.util.Assert;
  * <p>Does not support transaction names; simply ignores any specified name.
  *
  * @author Juergen Hoeller
- * @since 2.5
  * @see javax.transaction.TransactionManager#setTransactionTimeout(int)
  * @see javax.transaction.TransactionManager#begin()
  * @see javax.transaction.TransactionManager#getTransaction()
+ * @since 2.5
  */
 public class SimpleTransactionFactory implements TransactionFactory {
 
@@ -43,6 +43,7 @@ public class SimpleTransactionFactory implements TransactionFactory {
 
 	/**
 	 * Create a new SimpleTransactionFactory for the given TransactionManager
+	 *
 	 * @param transactionManager the JTA TransactionManager to wrap
 	 */
 	public SimpleTransactionFactory(TransactionManager transactionManager) {

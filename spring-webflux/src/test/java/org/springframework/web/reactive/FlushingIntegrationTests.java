@@ -16,16 +16,9 @@
 
 package org.springframework.web.reactive;
 
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.http.server.reactive.AbstractHttpHandlerIntegrationTests;
@@ -33,8 +26,14 @@ import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import static org.junit.Assert.*;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * Integration tests for server response flushing behavior.
@@ -83,8 +82,7 @@ public class FlushingIntegrationTests extends AbstractHttpHandlerIntegrationTest
 					.consumeNextWith(value -> assertTrue(value.length() == 20000 * "0123456789".length()))
 					.expectComplete()
 					.verify(Duration.ofSeconds(10L));
-		}
-		catch (AssertionError err) {
+		} catch (AssertionError err) {
 			String os = System.getProperty("os.name").toLowerCase();
 			if (os.contains("windows") && err.getMessage() != null &&
 					err.getMessage().startsWith("VerifySubscriber timed out")) {
@@ -127,15 +125,13 @@ public class FlushingIntegrationTests extends AbstractHttpHandlerIntegrationTest
 						.map(l -> toDataBuffer("data" + l + "\n", response.bufferFactory()))
 						.map(Flux::just);
 				return response.writeAndFlushWith(responseBody.concatWith(Flux.never()));
-			}
-			else if (path.endsWith("write-and-complete")) {
+			} else if (path.endsWith("write-and-complete")) {
 				Flux<DataBuffer> responseBody = Flux
 						.just("0123456789")
 						.repeat(20000)
 						.map(value -> toDataBuffer(value + "\n", response.bufferFactory()));
 				return response.writeWith(responseBody);
-			}
-			else if (path.endsWith("write-and-never-complete")) {
+			} else if (path.endsWith("write-and-never-complete")) {
 				Flux<DataBuffer> responseBody = Flux
 						.just("0123456789")
 						.repeat(20000)

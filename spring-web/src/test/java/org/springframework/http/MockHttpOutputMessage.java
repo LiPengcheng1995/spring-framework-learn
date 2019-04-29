@@ -32,11 +32,8 @@ public class MockHttpOutputMessage implements HttpOutputMessage {
 	private final HttpHeaders headers = new HttpHeaders();
 
 	private final ByteArrayOutputStream body = spy(new ByteArrayOutputStream());
-
-	private boolean headersWritten = false;
-
 	private final HttpHeaders writtenHeaders = new HttpHeaders();
-
+	private boolean headersWritten = false;
 
 	@Override
 	public HttpHeaders getHeaders() {

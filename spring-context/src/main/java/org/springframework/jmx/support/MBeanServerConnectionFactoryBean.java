@@ -16,16 +16,6 @@
 
 package org.springframework.jmx.support;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import javax.management.MBeanServerConnection;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
-
 import org.springframework.aop.TargetSource;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aop.target.AbstractLazyCreationTargetSource;
@@ -38,6 +28,16 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 
+import javax.management.MBeanServerConnection;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
 /**
  * {@link FactoryBean} that creates a JMX 1.2 {@code MBeanServerConnection}
  * to a remote {@code MBeanServer} exposed via a {@code JMXServerConnector}.
@@ -45,11 +45,11 @@ import org.springframework.util.CollectionUtils;
  *
  * @author Rob Harrop
  * @author Juergen Hoeller
- * @since 1.2
  * @see MBeanServerFactoryBean
  * @see ConnectorServerFactoryBean
  * @see org.springframework.jmx.access.MBeanClientInterceptor#setServer
  * @see org.springframework.jmx.access.NotificationListenerRegistrar#setServer
+ * @since 1.2
  */
 public class MBeanServerConnectionFactoryBean
 		implements FactoryBean<MBeanServerConnection>, BeanClassLoaderAware, InitializingBean, DisposableBean {
@@ -126,8 +126,7 @@ public class MBeanServerConnectionFactoryBean
 
 		if (this.connectOnStartup) {
 			connect();
-		}
-		else {
+		} else {
 			createLazyConnection();
 		}
 	}
@@ -188,6 +187,7 @@ public class MBeanServerConnectionFactoryBean
 	/**
 	 * Lazily creates a {@code JMXConnector} using the configured service URL
 	 * and environment properties.
+	 *
 	 * @see MBeanServerConnectionFactoryBean#setServiceUrl(String)
 	 * @see MBeanServerConnectionFactoryBean#setEnvironment(java.util.Properties)
 	 */

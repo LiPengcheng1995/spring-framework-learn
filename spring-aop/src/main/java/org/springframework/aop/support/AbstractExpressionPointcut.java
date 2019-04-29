@@ -16,9 +16,9 @@
 
 package org.springframework.aop.support;
 
-import java.io.Serializable;
-
 import org.springframework.lang.Nullable;
+
+import java.io.Serializable;
 
 /**
  * Abstract superclass for expression pointcuts,
@@ -26,9 +26,9 @@ import org.springframework.lang.Nullable;
  *
  * @author Rod Johnson
  * @author Rob Harrop
- * @since 2.0
  * @see #setLocation
  * @see #setExpression
+ * @since 2.0
  */
 @SuppressWarnings("serial")
 public abstract class AbstractExpressionPointcut implements ExpressionPointcut, Serializable {
@@ -39,6 +39,17 @@ public abstract class AbstractExpressionPointcut implements ExpressionPointcut, 
 	@Nullable
 	private String expression;
 
+	/**
+	 * Return location information about the pointcut expression
+	 * if available. This is useful in debugging.
+	 *
+	 * @return location information as a human-readable String,
+	 * or {@code null} if none is available
+	 */
+	@Nullable
+	public String getLocation() {
+		return this.location;
+	}
 
 	/**
 	 * Set the location for debugging.
@@ -48,36 +59,10 @@ public abstract class AbstractExpressionPointcut implements ExpressionPointcut, 
 	}
 
 	/**
-	 * Return location information about the pointcut expression
-	 * if available. This is useful in debugging.
-	 * @return location information as a human-readable String,
-	 * or {@code null} if none is available
-	 */
-	@Nullable
-	public String getLocation() {
-		return this.location;
-	}
-
-	public void setExpression(@Nullable String expression) {
-		this.expression = expression;
-		try {
-			onSetExpression(expression);
-		}
-		catch (IllegalArgumentException ex) {
-			// Fill in location information if possible.
-			if (this.location != null) {
-				throw new IllegalArgumentException("Invalid expression at location [" + this.location + "]: " + ex);
-			}
-			else {
-				throw ex;
-			}
-		}
-	}
-
-	/**
 	 * Called when a new pointcut expression is set.
 	 * The expression should be parsed at this point if possible.
 	 * <p>This implementation is empty.
+	 *
 	 * @param expression expression to set
 	 * @throws IllegalArgumentException if the expression is invalid
 	 * @see #setExpression
@@ -92,6 +77,20 @@ public abstract class AbstractExpressionPointcut implements ExpressionPointcut, 
 	@Nullable
 	public String getExpression() {
 		return this.expression;
+	}
+
+	public void setExpression(@Nullable String expression) {
+		this.expression = expression;
+		try {
+			onSetExpression(expression);
+		} catch (IllegalArgumentException ex) {
+			// Fill in location information if possible.
+			if (this.location != null) {
+				throw new IllegalArgumentException("Invalid expression at location [" + this.location + "]: " + ex);
+			} else {
+				throw ex;
+			}
+		}
 	}
 
 }

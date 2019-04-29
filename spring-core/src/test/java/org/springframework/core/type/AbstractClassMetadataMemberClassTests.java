@@ -18,8 +18,8 @@ package org.springframework.core.type;
 
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
 
 /**
  * Abstract base class for testing implementations of
@@ -39,21 +39,12 @@ public abstract class AbstractClassMetadataMemberClassTests {
 		assertThat(nestedClasses, equalTo(new String[]{}));
 	}
 
-	public static class L0_a {
-	}
-
-
 	@Test
 	public void withPublicMemberClasses() {
 		ClassMetadata metadata = getClassMetadataFor(L0_b.class);
 		String[] nestedClasses = metadata.getMemberClassNames();
 		assertThat(nestedClasses, equalTo(new String[]{L0_b.L1.class.getName()}));
 	}
-
-	public static class L0_b {
-		public static class L1 { }
-	}
-
 
 	@Test
 	public void withNonPublicMemberClasses() {
@@ -62,15 +53,23 @@ public abstract class AbstractClassMetadataMemberClassTests {
 		assertThat(nestedClasses, equalTo(new String[]{L0_c.L1.class.getName()}));
 	}
 
-	public static class L0_c {
-		private static class L1 { }
-	}
-
-
 	@Test
 	public void againstMemberClass() {
 		ClassMetadata metadata = getClassMetadataFor(L0_b.L1.class);
 		String[] nestedClasses = metadata.getMemberClassNames();
 		assertThat(nestedClasses, equalTo(new String[]{}));
+	}
+
+	public static class L0_a {
+	}
+
+	public static class L0_b {
+		public static class L1 {
+		}
+	}
+
+	public static class L0_c {
+		private static class L1 {
+		}
 	}
 }

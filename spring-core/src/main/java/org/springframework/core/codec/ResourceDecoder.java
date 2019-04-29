@@ -16,12 +16,7 @@
 
 package org.springframework.core.codec;
 
-import java.io.ByteArrayInputStream;
-import java.util.Map;
-
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamResource;
@@ -32,6 +27,10 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
+import reactor.core.publisher.Flux;
+
+import java.io.ByteArrayInputStream;
+import java.util.Map;
 
 /**
  * Decoder for {@link Resource}s.
@@ -56,14 +55,14 @@ public class ResourceDecoder extends AbstractDataBufferDecoder<Resource> {
 
 	@Override
 	public Flux<Resource> decode(Publisher<DataBuffer> inputStream, ResolvableType elementType,
-			@Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
+								 @Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
 
 		return Flux.from(decodeToMono(inputStream, elementType, mimeType, hints));
 	}
 
 	@Override
 	protected Resource decodeDataBuffer(DataBuffer dataBuffer, ResolvableType elementType,
-			@Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
+										@Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
 
 		byte[] bytes = new byte[dataBuffer.readableByteCount()];
 		dataBuffer.read(bytes);
@@ -74,11 +73,9 @@ public class ResourceDecoder extends AbstractDataBufferDecoder<Resource> {
 
 		if (clazz == InputStreamResource.class) {
 			return new InputStreamResource(new ByteArrayInputStream(bytes));
-		}
-		else if (Resource.class.isAssignableFrom(clazz)) {
+		} else if (Resource.class.isAssignableFrom(clazz)) {
 			return new ByteArrayResource(bytes);
-		}
-		else {
+		} else {
 			throw new IllegalStateException("Unsupported resource class: " + clazz);
 		}
 	}

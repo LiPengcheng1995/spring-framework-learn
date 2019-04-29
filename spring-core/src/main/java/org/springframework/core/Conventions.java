@@ -16,14 +16,14 @@
 
 package org.springframework.core;
 
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Collection;
 import java.util.Iterator;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 
 /**
  * Provides methods to support various naming and other conventions used
@@ -54,6 +54,7 @@ public abstract class Conventions {
 	 * <p>For arrays the pluralized version of the array component type is used.
 	 * For {@code Collection}s an attempt is made to 'peek ahead' to determine
 	 * the component type and return its pluralized version.
+	 *
 	 * @param value the value to generate a variable name for
 	 * @return the generated variable name
 	 */
@@ -65,8 +66,7 @@ public abstract class Conventions {
 		if (value.getClass().isArray()) {
 			valueClass = value.getClass().getComponentType();
 			pluralize = true;
-		}
-		else if (value instanceof Collection) {
+		} else if (value instanceof Collection) {
 			Collection<?> collection = (Collection<?>) value;
 			if (collection.isEmpty()) {
 				throw new IllegalArgumentException(
@@ -75,8 +75,7 @@ public abstract class Conventions {
 			Object valueToCheck = peekAhead(collection);
 			valueClass = getClassForValue(valueToCheck);
 			pluralize = true;
-		}
-		else {
+		} else {
 			valueClass = getClassForValue(value);
 		}
 
@@ -91,6 +90,7 @@ public abstract class Conventions {
 	 * {@code Mono<com.myapp.Product>} becomes {@code "productMono"}<br>
 	 * {@code Flux<com.myapp.MyProduct>} becomes {@code "myProductFlux"}<br>
 	 * {@code Observable<com.myapp.MyProduct>} becomes {@code "myProductObservable"}<br>
+	 *
 	 * @param parameter the method or constructor parameter
 	 * @return the generated variable name
 	 */
@@ -103,16 +103,14 @@ public abstract class Conventions {
 		if (parameter.getParameterType().isArray()) {
 			valueClass = parameter.getParameterType().getComponentType();
 			pluralize = true;
-		}
-		else if (Collection.class.isAssignableFrom(parameter.getParameterType())) {
+		} else if (Collection.class.isAssignableFrom(parameter.getParameterType())) {
 			valueClass = ResolvableType.forMethodParameter(parameter).asCollection().resolveGeneric();
 			if (valueClass == null) {
 				throw new IllegalArgumentException(
 						"Cannot generate variable name for non-typed Collection parameter type");
 			}
 			pluralize = true;
-		}
-		else {
+		} else {
 			valueClass = parameter.getParameterType();
 			ReactiveAdapterRegistry reactiveAdapterRegistry = ReactiveAdapterRegistry.getSharedInstance();
 			if (reactiveAdapterRegistry.hasAdapters()) {
@@ -131,6 +129,7 @@ public abstract class Conventions {
 	/**
 	 * Determine the conventional variable name for the return type of the
 	 * given method, taking the generic collection type, if any, into account.
+	 *
 	 * @param method the method to generate a variable name for
 	 * @return the generated variable name
 	 */
@@ -143,8 +142,9 @@ public abstract class Conventions {
 	 * method, taking the generic collection type, if any, into account, falling
 	 * back on the given actual return value if the method declaration is not
 	 * specific enough, e.g. {@code Object} return type or untyped collection.
+	 *
 	 * @param method the method to generate a variable name for
-	 * @param value the return value (may be {@code null} if not available)
+	 * @param value  the return value (may be {@code null} if not available)
 	 * @return the generated variable name
 	 */
 	public static String getVariableNameForReturnType(Method method, @Nullable Object value) {
@@ -160,9 +160,10 @@ public abstract class Conventions {
 	 * {@code Mono<com.myapp.Product>} becomes {@code "productMono"}<br>
 	 * {@code Flux<com.myapp.MyProduct>} becomes {@code "myProductFlux"}<br>
 	 * {@code Observable<com.myapp.MyProduct>} becomes {@code "myProductObservable"}<br>
-	 * @param method the method to generate a variable name for
+	 *
+	 * @param method       the method to generate a variable name for
 	 * @param resolvedType the resolved return type of the method
-	 * @param value the return value (may be {@code null} if not available)
+	 * @param value        the return value (may be {@code null} if not available)
 	 * @return the generated variable name
 	 */
 	public static String getVariableNameForReturnType(Method method, Class<?> resolvedType, @Nullable Object value) {
@@ -183,8 +184,7 @@ public abstract class Conventions {
 		if (resolvedType.isArray()) {
 			valueClass = resolvedType.getComponentType();
 			pluralize = true;
-		}
-		else if (Collection.class.isAssignableFrom(resolvedType)) {
+		} else if (Collection.class.isAssignableFrom(resolvedType)) {
 			valueClass = ResolvableType.forMethodReturnType(method).asCollection().resolveGeneric();
 			if (valueClass == null) {
 				if (!(value instanceof Collection)) {
@@ -200,8 +200,7 @@ public abstract class Conventions {
 				valueClass = getClassForValue(valueToCheck);
 			}
 			pluralize = true;
-		}
-		else {
+		} else {
 			valueClass = resolvedType;
 			ReactiveAdapterRegistry reactiveAdapterRegistry = ReactiveAdapterRegistry.getSharedInstance();
 			if (reactiveAdapterRegistry.hasAdapters()) {
@@ -228,18 +227,16 @@ public abstract class Conventions {
 			return attributeName;
 		}
 		char[] chars = attributeName.toCharArray();
-		char[] result = new char[chars.length -1]; // not completely accurate but good guess
+		char[] result = new char[chars.length - 1]; // not completely accurate but good guess
 		int currPos = 0;
 		boolean upperCaseNext = false;
 		for (char c : chars) {
 			if (c == '-') {
 				upperCaseNext = true;
-			}
-			else if (upperCaseNext) {
+			} else if (upperCaseNext) {
 				result[currPos++] = Character.toUpperCase(c);
 				upperCaseNext = false;
-			}
-			else {
+			} else {
 				result[currPos++] = c;
 			}
 		}
@@ -263,6 +260,7 @@ public abstract class Conventions {
 	 * <p>Will return the class of the given value, except when encountering a
 	 * JDK proxy, in which case it will determine the 'primary' interface
 	 * implemented by that proxy.
+	 *
 	 * @param value the value to check
 	 * @return the class to use for naming a variable
 	 */
@@ -275,8 +273,7 @@ public abstract class Conventions {
 					return ifc;
 				}
 			}
-		}
-		else if (valueClass.getName().lastIndexOf('$') != -1 && valueClass.getDeclaringClass() == null) {
+		} else if (valueClass.getName().lastIndexOf('$') != -1 && valueClass.getDeclaringClass() == null) {
 			// '$' in the class name but no inner class -
 			// assuming it's a special subclass (e.g. by OpenJPA)
 			valueClass = valueClass.getSuperclass();

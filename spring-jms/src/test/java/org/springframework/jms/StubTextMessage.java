@@ -16,11 +16,11 @@
 
 package org.springframework.jms;
 
-import java.util.Enumeration;
-import java.util.concurrent.ConcurrentHashMap;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
+import java.util.Enumeration;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Stub JMS Message implementation intended for testing purposes only.
@@ -114,49 +114,98 @@ public class StubTextMessage implements TextMessage {
 		return this.correlationId;
 	}
 
+	public void setJMSCorrelationID(String correlationId) throws JMSException {
+		this.correlationId = correlationId;
+	}
+
 	public byte[] getJMSCorrelationIDAsBytes() throws JMSException {
 		return this.correlationId.getBytes();
+	}
+
+	public void setJMSCorrelationIDAsBytes(byte[] correlationID) throws JMSException {
+		this.correlationId = new String(correlationID);
 	}
 
 	public int getJMSDeliveryMode() throws JMSException {
 		return this.deliveryMode;
 	}
 
+	public void setJMSDeliveryMode(int deliveryMode) throws JMSException {
+		this.deliveryMode = deliveryMode;
+	}
+
 	public Destination getJMSDestination() throws JMSException {
 		return this.destination;
+	}
+
+	public void setJMSDestination(Destination destination) throws JMSException {
+		this.destination = destination;
 	}
 
 	public long getJMSExpiration() throws JMSException {
 		return this.expiration;
 	}
 
+	public void setJMSExpiration(long expiration) throws JMSException {
+		this.expiration = expiration;
+	}
+
 	public String getJMSMessageID() throws JMSException {
 		return this.messageId;
+	}
+
+	public void setJMSMessageID(String id) throws JMSException {
+		this.messageId = id;
 	}
 
 	public int getJMSPriority() throws JMSException {
 		return this.priority;
 	}
 
+	public void setJMSPriority(int priority) throws JMSException {
+		this.priority = priority;
+	}
+
 	public boolean getJMSRedelivered() throws JMSException {
 		return this.redelivered;
+	}
+
+	public void setJMSRedelivered(boolean redelivered) throws JMSException {
+		this.redelivered = redelivered;
 	}
 
 	public Destination getJMSReplyTo() throws JMSException {
 		return this.replyTo;
 	}
 
+	public void setJMSReplyTo(Destination replyTo) throws JMSException {
+		this.replyTo = replyTo;
+	}
+
 	public long getJMSTimestamp() throws JMSException {
 		return this.timestamp;
+	}
+
+	public void setJMSTimestamp(long timestamp) throws JMSException {
+		this.timestamp = timestamp;
 	}
 
 	public String getJMSType() throws JMSException {
 		return this.type;
 	}
 
+	public void setJMSType(String type) throws JMSException {
+		this.type = type;
+	}
+
 	@Override
 	public long getJMSDeliveryTime() throws JMSException {
 		return this.deliveryTime;
+	}
+
+	@Override
+	public void setJMSDeliveryTime(long deliveryTime) throws JMSException {
+		this.deliveryTime = deliveryTime;
 	}
 
 	public long getLongProperty(String name) throws JMSException {
@@ -204,55 +253,6 @@ public class StubTextMessage implements TextMessage {
 
 	public void setIntProperty(String name, int value) throws JMSException {
 		this.properties.put(name, value);
-	}
-
-	public void setJMSCorrelationID(String correlationId) throws JMSException {
-		this.correlationId = correlationId;
-	}
-
-	public void setJMSCorrelationIDAsBytes(byte[] correlationID) throws JMSException {
-		this.correlationId = new String(correlationID);
-	}
-
-	public void setJMSDeliveryMode(int deliveryMode) throws JMSException {
-		this.deliveryMode = deliveryMode;
-	}
-
-	public void setJMSDestination(Destination destination) throws JMSException {
-		this.destination = destination;
-	}
-
-	public void setJMSExpiration(long expiration) throws JMSException {
-		this.expiration = expiration;
-	}
-
-	public void setJMSMessageID(String id) throws JMSException {
-		this.messageId = id;
-	}
-
-	public void setJMSPriority(int priority) throws JMSException {
-		this.priority = priority;
-	}
-
-	public void setJMSRedelivered(boolean redelivered) throws JMSException {
-		this.redelivered = redelivered;
-	}
-
-	public void setJMSReplyTo(Destination replyTo) throws JMSException {
-		this.replyTo = replyTo;
-	}
-
-	public void setJMSTimestamp(long timestamp) throws JMSException {
-		this.timestamp = timestamp;
-	}
-
-	public void setJMSType(String type) throws JMSException {
-		this.type = type;
-	}
-
-	@Override
-	public void setJMSDeliveryTime(long deliveryTime) throws JMSException {
-		this.deliveryTime = deliveryTime;
 	}
 
 	public void setLongProperty(String name, long value) throws JMSException {

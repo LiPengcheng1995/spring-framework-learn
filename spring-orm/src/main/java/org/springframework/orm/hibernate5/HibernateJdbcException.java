@@ -16,19 +16,18 @@
 
 package org.springframework.orm.hibernate5;
 
-import java.sql.SQLException;
-
 import org.hibernate.JDBCException;
-
 import org.springframework.dao.UncategorizedDataAccessException;
+
+import java.sql.SQLException;
 
 /**
  * Hibernate-specific subclass of UncategorizedDataAccessException,
  * for JDBC exceptions that Hibernate wrapped.
  *
  * @author Juergen Hoeller
- * @since 4.2
  * @see SessionFactoryUtils#convertHibernateAccessException
+ * @since 4.2
  */
 @SuppressWarnings("serial")
 public class HibernateJdbcException extends UncategorizedDataAccessException {

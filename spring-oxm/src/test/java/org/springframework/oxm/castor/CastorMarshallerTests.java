@@ -16,30 +16,29 @@
 
 package org.springframework.oxm.castor;
 
-import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import javax.xml.transform.Source;
-import javax.xml.transform.sax.SAXResult;
-import javax.xml.transform.stream.StreamResult;
-
 import org.castor.xml.XMLProperties;
 import org.exolab.castor.xml.XercesXMLSerializerFactory;
 import org.junit.Test;
 import org.mockito.InOrder;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.oxm.AbstractMarshallerTests;
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xmlunit.builder.Input;
 import org.xmlunit.xpath.JAXPXPathEngine;
 
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.oxm.AbstractMarshallerTests;
+import javax.xml.transform.Source;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.stream.StreamResult;
+import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static org.xmlunit.matchers.CompareMatcher.*;
+import static org.xmlunit.matchers.CompareMatcher.isSimilarTo;
 
 /**
  * Tests the {@link CastorMarshaller} class.
@@ -268,10 +267,11 @@ public class CastorMarshallerTests extends AbstractMarshallerTests<CastorMarshal
 	 * Assert the values of xpath expression evaluation is exactly the same as expected value.
 	 * <p>The xpath may contain the xml namespace prefixes, since namespaces from flight example
 	 * are being registered.
-	 * @param msg the error message that will be used in case of test failure
+	 *
+	 * @param msg      the error message that will be used in case of test failure
 	 * @param expected the expected value
-	 * @param xpath the xpath to evaluate
-	 * @param xmlDoc the xml to use
+	 * @param xpath    the xpath to evaluate
+	 * @param xmlDoc   the xml to use
 	 * @throws Exception if any error occurs during xpath evaluation
 	 */
 	private void assertXpathEvaluatesTo(String msg, String expected, String xpath, String xmlDoc) throws Exception {

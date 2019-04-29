@@ -16,26 +16,8 @@
 
 package org.springframework.remoting.httpinvoker;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.aopalliance.intercept.MethodInvocation;
-
 import org.junit.Test;
-
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.mock.web.test.MockHttpServletResponse;
@@ -46,6 +28,15 @@ import org.springframework.remoting.support.RemoteInvocationFactory;
 import org.springframework.remoting.support.RemoteInvocationResult;
 import org.springframework.tests.sample.beans.ITestBean;
 import org.springframework.tests.sample.beans.TestBean;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import static org.junit.Assert.*;
 
@@ -100,33 +91,31 @@ public class HttpInvokerTests {
 		assertEquals(99, proxy.getAge());
 		proxy.setAge(50);
 		assertEquals(50, proxy.getAge());
-		proxy.setStringArray(new String[] {"str1", "str2"});
-		assertTrue(Arrays.equals(new String[] {"str1", "str2"}, proxy.getStringArray()));
-		proxy.setSomeIntegerArray(new Integer[] {1, 2, 3});
-		assertTrue(Arrays.equals(new Integer[] {1, 2, 3}, proxy.getSomeIntegerArray()));
-		proxy.setNestedIntegerArray(new Integer[][] {{1, 2, 3}, {4, 5, 6}});
+		proxy.setStringArray(new String[]{"str1", "str2"});
+		assertTrue(Arrays.equals(new String[]{"str1", "str2"}, proxy.getStringArray()));
+		proxy.setSomeIntegerArray(new Integer[]{1, 2, 3});
+		assertTrue(Arrays.equals(new Integer[]{1, 2, 3}, proxy.getSomeIntegerArray()));
+		proxy.setNestedIntegerArray(new Integer[][]{{1, 2, 3}, {4, 5, 6}});
 		Integer[][] integerArray = proxy.getNestedIntegerArray();
-		assertTrue(Arrays.equals(new Integer[] {1, 2, 3}, integerArray[0]));
-		assertTrue(Arrays.equals(new Integer[] {4, 5, 6}, integerArray[1]));
-		proxy.setSomeIntArray(new int[] {1, 2, 3});
-		assertTrue(Arrays.equals(new int[] {1, 2, 3}, proxy.getSomeIntArray()));
-		proxy.setNestedIntArray(new int[][] {{1, 2, 3}, {4, 5, 6}});
+		assertTrue(Arrays.equals(new Integer[]{1, 2, 3}, integerArray[0]));
+		assertTrue(Arrays.equals(new Integer[]{4, 5, 6}, integerArray[1]));
+		proxy.setSomeIntArray(new int[]{1, 2, 3});
+		assertTrue(Arrays.equals(new int[]{1, 2, 3}, proxy.getSomeIntArray()));
+		proxy.setNestedIntArray(new int[][]{{1, 2, 3}, {4, 5, 6}});
 		int[][] intArray = proxy.getNestedIntArray();
-		assertTrue(Arrays.equals(new int[] {1, 2, 3}, intArray[0]));
-		assertTrue(Arrays.equals(new int[] {4, 5, 6}, intArray[1]));
+		assertTrue(Arrays.equals(new int[]{1, 2, 3}, intArray[0]));
+		assertTrue(Arrays.equals(new int[]{4, 5, 6}, intArray[1]));
 
 		try {
 			proxy.exceptional(new IllegalStateException());
 			fail("Should have thrown IllegalStateException");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			// expected
 		}
 		try {
 			proxy.exceptional(new IllegalAccessException());
 			fail("Should have thrown IllegalAccessException");
-		}
-		catch (IllegalAccessException ex) {
+		} catch (IllegalAccessException ex) {
 			// expected
 		}
 	}
@@ -157,8 +146,7 @@ public class HttpInvokerTests {
 		try {
 			proxy.setAge(50);
 			fail("Should have thrown RemoteAccessException");
-		}
-		catch (RemoteAccessException ex) {
+		} catch (RemoteAccessException ex) {
 			// expected
 			assertTrue(ex.getCause() instanceof IOException);
 		}
@@ -173,18 +161,17 @@ public class HttpInvokerTests {
 			protected InputStream decorateInputStream(HttpServletRequest request, InputStream is) throws IOException {
 				if ("gzip".equals(request.getHeader("Compression"))) {
 					return new GZIPInputStream(is);
-				}
-				else {
+				} else {
 					return is;
 				}
 			}
+
 			@Override
 			protected OutputStream decorateOutputStream(
 					HttpServletRequest request, HttpServletResponse response, OutputStream os) throws IOException {
 				if ("gzip".equals(request.getHeader("Compression"))) {
 					return new GZIPOutputStream(os);
-				}
-				else {
+				} else {
 					return os;
 				}
 			}
@@ -209,17 +196,18 @@ public class HttpInvokerTests {
 				request.setContent(baos.toByteArray());
 				try {
 					exporter.handleRequest(request, response);
-				}
-				catch (ServletException ex) {
+				} catch (ServletException ex) {
 					throw new IOException(ex.toString());
 				}
 				return readRemoteInvocationResult(
 						new ByteArrayInputStream(response.getContentAsByteArray()), config.getCodebaseUrl());
 			}
+
 			@Override
 			protected OutputStream decorateOutputStream(OutputStream os) throws IOException {
 				return new GZIPOutputStream(os);
 			}
+
 			@Override
 			protected InputStream decorateInputStream(InputStream is) throws IOException {
 				return new GZIPInputStream(is);
@@ -236,15 +224,13 @@ public class HttpInvokerTests {
 		try {
 			proxy.exceptional(new IllegalStateException());
 			fail("Should have thrown IllegalStateException");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			// expected
 		}
 		try {
 			proxy.exceptional(new IllegalAccessException());
 			fail("Should have thrown IllegalAccessException");
-		}
-		catch (IllegalAccessException ex) {
+		} catch (IllegalAccessException ex) {
 			// expected
 		}
 	}
@@ -264,6 +250,7 @@ public class HttpInvokerTests {
 				}
 				return ((TestRemoteInvocationWrapper) obj).remoteInvocation;
 			}
+
 			@Override
 			protected void doWriteRemoteInvocationResult(RemoteInvocationResult result, ObjectOutputStream oos)
 					throws IOException {
@@ -290,10 +277,12 @@ public class HttpInvokerTests {
 				return readRemoteInvocationResult(
 						new ByteArrayInputStream(response.getContentAsByteArray()), config.getCodebaseUrl());
 			}
+
 			@Override
 			protected void doWriteRemoteInvocation(RemoteInvocation invocation, ObjectOutputStream oos) throws IOException {
 				oos.writeObject(new TestRemoteInvocationWrapper(invocation));
 			}
+
 			@Override
 			protected RemoteInvocationResult doReadRemoteInvocationResult(ObjectInputStream ois)
 					throws IOException, ClassNotFoundException {
@@ -316,15 +305,13 @@ public class HttpInvokerTests {
 		try {
 			proxy.exceptional(new IllegalStateException());
 			fail("Should have thrown IllegalStateException");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			// expected
 		}
 		try {
 			proxy.exceptional(new IllegalAccessException());
 			fail("Should have thrown IllegalAccessException");
-		}
-		catch (IllegalAccessException ex) {
+		} catch (IllegalAccessException ex) {
 			// expected
 		}
 	}
@@ -360,8 +347,7 @@ public class HttpInvokerTests {
 				try {
 					invocation.addAttribute("myKey", "myValue");
 					fail("Should have thrown IllegalStateException");
-				}
-				catch (IllegalStateException ex) {
+				} catch (IllegalStateException ex) {
 					// expected: already defined
 				}
 				assertNotNull(invocation.getAttributes());
@@ -472,8 +458,7 @@ public class HttpInvokerTests {
 		try {
 			proxy.setAge(50);
 			fail("Should have thrown RemoteAccessException");
-		}
-		catch (RemoteAccessException ex) {
+		} catch (RemoteAccessException ex) {
 			// expected
 			assertTrue(ex.getCause() instanceof IOException);
 		}

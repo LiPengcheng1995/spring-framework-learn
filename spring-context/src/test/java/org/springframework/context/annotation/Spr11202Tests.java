@@ -16,14 +16,7 @@
 
 package org.springframework.context.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.junit.Test;
-
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -31,7 +24,9 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.Assert;
 
-import static org.junit.Assert.*;
+import java.lang.annotation.*;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Dave Syer
@@ -51,20 +46,24 @@ public class Spr11202Tests {
 	}
 
 
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	@Target(ElementType.TYPE)
+	protected @interface Bar {
+	}
+
 	@Configuration
 	@Import(Selector.class)
 	protected static class Wrapper {
 	}
 
-
 	protected static class Selector implements ImportSelector {
 
 		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
-			return new String[] {Config.class.getName()};
+			return new String[]{Config.class.getName()};
 		}
 	}
-
 
 	@Configuration
 	protected static class Config {
@@ -88,7 +87,6 @@ public class Spr11202Tests {
 		}
 	}
 
-
 	protected static class NoBarCondition implements Condition {
 
 		@Override
@@ -99,14 +97,6 @@ public class Spr11202Tests {
 			return true;
 		}
 	}
-
-
-	@Retention(RetentionPolicy.RUNTIME)
-	@Documented
-	@Target(ElementType.TYPE)
-	protected @interface Bar {
-	}
-
 
 	protected static class FooFactoryBean implements FactoryBean<Foo>, InitializingBean {
 

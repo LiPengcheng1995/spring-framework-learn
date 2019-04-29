@@ -20,16 +20,16 @@ import org.junit.Assert.*
 import org.junit.Test
 import org.springframework.beans.factory.NoSuchBeanDefinitionException
 import org.springframework.beans.factory.getBean
-import org.springframework.context.support.BeanDefinitionDsl.*
+import org.springframework.context.support.BeanDefinitionDsl.Scope
 import org.springframework.core.env.SimpleCommandLinePropertySource
 import org.springframework.core.env.get
 
 @Suppress("UNUSED_EXPRESSION")
 class BeanDefinitionDslTests {
-	
+
 	@Test
 	fun `Declare beans with the functional Kotlin DSL`() {
-		val beans = beans { 
+		val beans = beans {
 			bean<Foo>()
 			bean<Bar>("bar", scope = Scope.PROTOTYPE)
 			bean { Baz(ref()) }
@@ -40,7 +40,7 @@ class BeanDefinitionDslTests {
 			beans.initialize(this)
 			refresh()
 		}
-		
+
 		assertNotNull(context.getBean<Foo>())
 		assertNotNull(context.getBean<Bar>("bar"))
 		assertTrue(context.isPrototype("bar"))
@@ -68,11 +68,12 @@ class BeanDefinitionDslTests {
 
 		assertNotNull(context.getBean<Foo>())
 		assertNotNull(context.getBean<Bar>("bar"))
-		try { 
+		try {
 			context.getBean<Baz>()
 			fail("Expect NoSuchBeanDefinitionException to be thrown")
+		} catch (ex: NoSuchBeanDefinitionException) {
+			null
 		}
-		catch(ex: NoSuchBeanDefinitionException) { null }
 	}
 
 	@Test
@@ -81,13 +82,13 @@ class BeanDefinitionDslTests {
 			bean<Foo>()
 			bean<Bar>("bar")
 			bean { FooFoo(env["name"]) }
-			environment( { activeProfiles.contains("baz") } ) {
+			environment({ activeProfiles.contains("baz") }) {
 				bean { Baz(ref()) }
 				bean { Baz(ref("bar")) }
 			}
 		}
 
-		val context = GenericApplicationContext().apply { 
+		val context = GenericApplicationContext().apply {
 			environment.propertySources.addFirst(SimpleCommandLinePropertySource("--name=foofoo"))
 			beans.initialize(this)
 			refresh()
@@ -98,12 +99,13 @@ class BeanDefinitionDslTests {
 		try {
 			context.getBean<Baz>()
 			fail("Expect NoSuchBeanDefinitionException to be thrown")
+		} catch (ex: NoSuchBeanDefinitionException) {
+			null
 		}
-		catch(ex: NoSuchBeanDefinitionException) { null }
 		val foofoo = context.getBean<FooFoo>()
 		assertEquals("foofoo", foofoo.name)
 	}
-	
+
 }
 
 class Foo

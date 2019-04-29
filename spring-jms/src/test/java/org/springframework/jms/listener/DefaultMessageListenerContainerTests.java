@@ -16,21 +16,20 @@
 
 package org.springframework.jms.listener;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.springframework.util.backoff.BackOff;
+import org.springframework.util.backoff.BackOffExecution;
+
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
-import org.springframework.util.backoff.BackOff;
-import org.springframework.util.backoff.BackOffExecution;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.*;
 
 /**
@@ -111,7 +110,8 @@ public class DefaultMessageListenerContainerTests {
 	}
 
 	private DefaultMessageListenerContainer createContainer(ConnectionFactory connectionFactory) {
-		Destination destination = new Destination() {};
+		Destination destination = new Destination() {
+		};
 
 		DefaultMessageListenerContainer container = new DefaultMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
@@ -127,8 +127,7 @@ public class DefaultMessageListenerContainerTests {
 				throw new JMSException("Test exception");
 			});
 			return connectionFactory;
-		}
-		catch (JMSException ex) {
+		} catch (JMSException ex) {
 			throw new IllegalStateException(ex);  // never happen
 		}
 	}
@@ -138,20 +137,19 @@ public class DefaultMessageListenerContainerTests {
 			ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 			given(connectionFactory.createConnection()).will(new Answer<Object>() {
 				int currentAttempts = 0;
+
 				@Override
 				public Object answer(InvocationOnMock invocation) throws Throwable {
 					currentAttempts++;
 					if (currentAttempts <= failingAttempts) {
 						throw new JMSException("Test exception (attempt " + currentAttempts + ")");
-					}
-					else {
+					} else {
 						return mock(Connection.class);
 					}
 				}
 			});
 			return connectionFactory;
-		}
-		catch (JMSException ex) {
+		} catch (JMSException ex) {
 			throw new IllegalStateException(ex);  // never happen
 		}
 	}
@@ -161,8 +159,7 @@ public class DefaultMessageListenerContainerTests {
 			ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 			given(connectionFactory.createConnection()).willReturn(mock(Connection.class));
 			return connectionFactory;
-		}
-		catch (JMSException ex) {
+		} catch (JMSException ex) {
 			throw new IllegalStateException(ex);  // never happen
 		}
 	}

@@ -16,24 +16,19 @@
 
 package org.springframework.messaging.core;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.lang.Nullable;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.MessageDeliveryException;
-import org.springframework.messaging.MessageHeaders;
-import org.springframework.messaging.PollableChannel;
+import org.springframework.messaging.*;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.util.Assert;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A messaging template that resolves destinations names to {@link MessageChannel}'s
@@ -61,17 +56,6 @@ public class GenericMessagingTemplate extends AbstractDestinationResolvingMessag
 
 	private volatile boolean throwExceptionOnLateReply = false;
 
-
-	/**
-	 * Configure the default timeout value to use for send operations.
-	 * May be overridden for individual messages.
-	 * @param sendTimeout the send timeout in milliseconds
-	 * @see #setSendTimeoutHeader(String)
-	 */
-	public void setSendTimeout(long sendTimeout) {
-		this.sendTimeout = sendTimeout;
-	}
-
 	/**
 	 * Return the configured default send operation timeout value.
 	 */
@@ -80,14 +64,14 @@ public class GenericMessagingTemplate extends AbstractDestinationResolvingMessag
 	}
 
 	/**
-	 * Configure the default timeout value to use for receive operations.
-	 * May be overridden for individual messages when using sendAndReceive
-	 * operations.
-	 * @param receiveTimeout the receive timeout in milliseconds
-	 * @see #setReceiveTimeoutHeader(String)
+	 * Configure the default timeout value to use for send operations.
+	 * May be overridden for individual messages.
+	 *
+	 * @param sendTimeout the send timeout in milliseconds
+	 * @see #setSendTimeoutHeader(String)
 	 */
-	public void setReceiveTimeout(long receiveTimeout) {
-		this.receiveTimeout = receiveTimeout;
+	public void setSendTimeout(long sendTimeout) {
+		this.sendTimeout = sendTimeout;
 	}
 
 	/**
@@ -98,18 +82,20 @@ public class GenericMessagingTemplate extends AbstractDestinationResolvingMessag
 	}
 
 	/**
-	 * Set the name of the header used to determine the send timeout (if present).
-	 * Default {@value #DEFAULT_SEND_TIMEOUT_HEADER}.
-	 * <p>The header is removed before sending the message to avoid propagation.
-	 * @since 5.0
+	 * Configure the default timeout value to use for receive operations.
+	 * May be overridden for individual messages when using sendAndReceive
+	 * operations.
+	 *
+	 * @param receiveTimeout the receive timeout in milliseconds
+	 * @see #setReceiveTimeoutHeader(String)
 	 */
-	public void setSendTimeoutHeader(String sendTimeoutHeader) {
-		Assert.notNull(sendTimeoutHeader, "'sendTimeoutHeader' cannot be null");
-		this.sendTimeoutHeader = sendTimeoutHeader;
+	public void setReceiveTimeout(long receiveTimeout) {
+		this.receiveTimeout = receiveTimeout;
 	}
 
 	/**
 	 * Return the configured send-timeout header.
+	 *
 	 * @since 5.0
 	 */
 	public String getSendTimeoutHeader() {
@@ -118,21 +104,35 @@ public class GenericMessagingTemplate extends AbstractDestinationResolvingMessag
 
 	/**
 	 * Set the name of the header used to determine the send timeout (if present).
+	 * Default {@value #DEFAULT_SEND_TIMEOUT_HEADER}.
+	 * <p>The header is removed before sending the message to avoid propagation.
+	 *
+	 * @since 5.0
+	 */
+	public void setSendTimeoutHeader(String sendTimeoutHeader) {
+		Assert.notNull(sendTimeoutHeader, "'sendTimeoutHeader' cannot be null");
+		this.sendTimeoutHeader = sendTimeoutHeader;
+	}
+
+	/**
+	 * Return the configured receive-timeout header.
+	 *
+	 * @since 5.0
+	 */
+	public String getReceiveTimeoutHeader() {
+		return this.receiveTimeoutHeader;
+	}
+
+	/**
+	 * Set the name of the header used to determine the send timeout (if present).
 	 * Default {@value #DEFAULT_RECEIVE_TIMEOUT_HEADER}.
 	 * The header is removed before sending the message to avoid propagation.
+	 *
 	 * @since 5.0
 	 */
 	public void setReceiveTimeoutHeader(String receiveTimeoutHeader) {
 		Assert.notNull(receiveTimeoutHeader, "'receiveTimeoutHeader' cannot be null");
 		this.receiveTimeoutHeader = receiveTimeoutHeader;
-	}
-
-	/**
-	 * Return the configured receive-timeout header.
-	 * @since 5.0
-	 */
-	public String getReceiveTimeoutHeader() {
-		return this.receiveTimeoutHeader;
 	}
 
 	/**
@@ -143,6 +143,7 @@ public class GenericMessagingTemplate extends AbstractDestinationResolvingMessag
 	 * <p>The default value is {@code false} in which case only a WARN message is logged.
 	 * If set to {@code true} a {@link MessageDeliveryException} is raised in addition
 	 * to the log message.
+	 *
 	 * @param throwExceptionOnLateReply whether to throw an exception or not
 	 */
 	public void setThrowExceptionOnLateReply(boolean throwExceptionOnLateReply) {
@@ -169,8 +170,7 @@ public class GenericMessagingTemplate extends AbstractDestinationResolvingMessag
 			accessor.removeHeader(this.sendTimeoutHeader);
 			accessor.removeHeader(this.receiveTimeoutHeader);
 			accessor.setImmutable();
-		}
-		else if (message.getHeaders().containsKey(this.sendTimeoutHeader)
+		} else if (message.getHeaders().containsKey(this.sendTimeoutHeader)
 				|| message.getHeaders().containsKey(this.receiveTimeoutHeader)) {
 			messageToSend = MessageBuilder.fromMessage(message)
 					.setHeader(this.sendTimeoutHeader, null)
@@ -225,8 +225,7 @@ public class GenericMessagingTemplate extends AbstractDestinationResolvingMessag
 
 		try {
 			doSend(channel, requestMessage, sendTimeout);
-		}
-		catch (RuntimeException ex) {
+		} catch (RuntimeException ex) {
 			tempReplyChannel.setSendFailed(true);
 			throw ex;
 		}
@@ -256,11 +255,9 @@ public class GenericMessagingTemplate extends AbstractDestinationResolvingMessag
 	private Long headerToLong(@Nullable Object headerValue) {
 		if (headerValue instanceof Number) {
 			return ((Number) headerValue).longValue();
-		}
-		else if (headerValue instanceof String) {
+		} else if (headerValue instanceof String) {
 			return Long.parseLong((String) headerValue);
-		}
-		else {
+		} else {
 			return null;
 		}
 	}
@@ -307,17 +304,14 @@ public class GenericMessagingTemplate extends AbstractDestinationResolvingMessag
 				if (timeout < 0) {
 					this.replyLatch.await();
 					this.hasReceived = true;
-				}
-				else {
+				} else {
 					if (this.replyLatch.await(timeout, TimeUnit.MILLISECONDS)) {
 						this.hasReceived = true;
-					}
-					else {
+					} else {
 						this.hasTimedOut = true;
 					}
 				}
-			}
-			catch (InterruptedException ex) {
+			} catch (InterruptedException ex) {
 				Thread.currentThread().interrupt();
 			}
 			return this.replyMessage;
@@ -337,11 +331,9 @@ public class GenericMessagingTemplate extends AbstractDestinationResolvingMessag
 			String errorDescription = null;
 			if (this.hasTimedOut) {
 				errorDescription = "Reply message received but the receiving thread has exited due to a timeout";
-			}
-			else if (alreadyReceivedReply) {
+			} else if (alreadyReceivedReply) {
 				errorDescription = "Reply message received but the receiving thread has already received a reply";
-			}
-			else if (this.hasSendFailed) {
+			} else if (this.hasSendFailed) {
 				errorDescription = "Reply message received but the receiving thread has exited due to " +
 						"an exception while sending the request message";
 			}

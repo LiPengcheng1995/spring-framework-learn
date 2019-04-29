@@ -16,16 +16,8 @@
 
 package org.springframework.scheduling.annotation;
 
-import java.lang.reflect.Method;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
 import org.aopalliance.intercept.MethodInterceptor;
 import org.junit.Test;
-
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.aop.support.AopUtils;
@@ -41,6 +33,9 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.concurrent.ListenableFuture;
+
+import java.lang.reflect.Method;
+import java.util.concurrent.*;
 
 import static org.junit.Assert.*;
 
@@ -213,15 +208,13 @@ public class AsyncAnnotationBeanPostProcessorTests {
 	}
 
 	private void assertFutureWithException(Future<Object> result,
-			TestableAsyncUncaughtExceptionHandler exceptionHandler) {
+										   TestableAsyncUncaughtExceptionHandler exceptionHandler) {
 
 		try {
 			result.get();
-		}
-		catch (InterruptedException ex) {
+		} catch (InterruptedException ex) {
 			fail("Should not have failed with InterruptedException: " + ex);
-		}
-		catch (ExecutionException ex) {
+		} catch (ExecutionException ex) {
 			// expected
 			assertEquals("Wrong exception cause", UnsupportedOperationException.class, ex.getCause().getClass());
 		}
@@ -261,8 +254,7 @@ public class AsyncAnnotationBeanPostProcessorTests {
 		try {
 			testBean.failWithVoid();
 			exceptionHandler.assertCalledWith(m, UnsupportedOperationException.class);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			fail("No unexpected exception should have been received");
 		}
 	}
@@ -296,9 +288,8 @@ public class AsyncAnnotationBeanPostProcessorTests {
 
 	public static class TestBean implements ITestBean {
 
-		private Thread thread;
-
 		private final CountDownLatch latch = new CountDownLatch(1);
+		private Thread thread;
 
 		@Override
 		public Thread getThread() {
@@ -334,8 +325,7 @@ public class AsyncAnnotationBeanPostProcessorTests {
 		public void await(long timeout) {
 			try {
 				this.latch.await(timeout, TimeUnit.MILLISECONDS);
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				Thread.currentThread().interrupt();
 			}
 		}

@@ -16,15 +16,10 @@
 
 package org.springframework.core.env;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
+
+import java.util.*;
 
 /**
  * Composite {@link PropertySource} implementation that iterates over a set of
@@ -47,6 +42,7 @@ public class CompositePropertySource extends EnumerablePropertySource<Object> {
 
 	/**
 	 * Create a new {@code CompositePropertySource}.
+	 *
 	 * @param name the name of the property source
 	 */
 	public CompositePropertySource(String name) {
@@ -92,6 +88,7 @@ public class CompositePropertySource extends EnumerablePropertySource<Object> {
 
 	/**
 	 * Add the given {@link PropertySource} to the end of the chain.
+	 *
 	 * @param propertySource the PropertySource to add
 	 */
 	public void addPropertySource(PropertySource<?> propertySource) {
@@ -100,6 +97,7 @@ public class CompositePropertySource extends EnumerablePropertySource<Object> {
 
 	/**
 	 * Add the given {@link PropertySource} to the start of the chain.
+	 *
 	 * @param propertySource the PropertySource to add
 	 * @since 4.1
 	 */
@@ -112,6 +110,7 @@ public class CompositePropertySource extends EnumerablePropertySource<Object> {
 
 	/**
 	 * Return all property sources that this composite source holds.
+	 *
 	 * @since 4.1.1
 	 */
 	public Collection<PropertySource<?>> getPropertySources() {

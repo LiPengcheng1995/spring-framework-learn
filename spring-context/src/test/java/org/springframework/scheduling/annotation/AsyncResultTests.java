@@ -16,17 +16,17 @@
 
 package org.springframework.scheduling.annotation;
 
+import org.junit.Test;
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.util.concurrent.ListenableFutureCallback;
+
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
-import org.junit.Test;
-
-import org.springframework.util.concurrent.ListenableFuture;
-import org.springframework.util.concurrent.ListenableFutureCallback;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
 /**
  * @author Juergen Hoeller
@@ -43,6 +43,7 @@ public class AsyncResultTests {
 			public void onSuccess(String result) {
 				values.add(result);
 			}
+
 			@Override
 			public void onFailure(Throwable ex) {
 				fail("Failure callback not expected: " + ex);
@@ -64,6 +65,7 @@ public class AsyncResultTests {
 			public void onSuccess(String result) {
 				fail("Success callback not expected: " + result);
 			}
+
 			@Override
 			public void onFailure(Throwable ex) {
 				values.add(ex);
@@ -73,15 +75,13 @@ public class AsyncResultTests {
 		try {
 			future.get();
 			fail("Should have thrown ExecutionException");
-		}
-		catch (ExecutionException ex2) {
+		} catch (ExecutionException ex2) {
 			assertSame(ex, ex2.getCause());
 		}
 		try {
 			future.completable().get();
 			fail("Should have thrown ExecutionException");
-		}
-		catch (ExecutionException ex2) {
+		} catch (ExecutionException ex2) {
 			assertSame(ex, ex2.getCause());
 		}
 	}
@@ -108,15 +108,13 @@ public class AsyncResultTests {
 		try {
 			future.get();
 			fail("Should have thrown ExecutionException");
-		}
-		catch (ExecutionException ex2) {
+		} catch (ExecutionException ex2) {
 			assertSame(ex, ex2.getCause());
 		}
 		try {
 			future.completable().get();
 			fail("Should have thrown ExecutionException");
-		}
-		catch (ExecutionException ex2) {
+		} catch (ExecutionException ex2) {
 			assertSame(ex, ex2.getCause());
 		}
 	}

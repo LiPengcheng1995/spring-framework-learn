@@ -16,13 +16,13 @@
 
 package org.springframework.cache.interceptor;
 
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 
 /**
  * Composite {@link CacheOperationSource} implementation that iterates
@@ -40,6 +40,7 @@ public class CompositeCacheOperationSource implements CacheOperationSource, Seri
 
 	/**
 	 * Create a new CompositeCacheOperationSource for the given sources.
+	 *
 	 * @param cacheOperationSources the CacheOperationSource instances to combine
 	 */
 	public CompositeCacheOperationSource(CacheOperationSource... cacheOperationSources) {

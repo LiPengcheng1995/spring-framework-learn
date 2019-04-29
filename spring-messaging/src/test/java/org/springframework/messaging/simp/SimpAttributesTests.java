@@ -16,18 +16,19 @@
 
 package org.springframework.messaging.simp;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Unit tests for
@@ -38,13 +39,10 @@ import static org.mockito.Mockito.*;
  */
 public class SimpAttributesTests {
 
-	private SimpAttributes simpAttributes;
-
-	private Map<String, Object> map;
-
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
-
+	private SimpAttributes simpAttributes;
+	private Map<String, Object> map;
 
 	@Before
 	public void setup() {

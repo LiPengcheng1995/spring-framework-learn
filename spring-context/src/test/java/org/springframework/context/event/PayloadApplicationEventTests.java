@@ -16,17 +16,16 @@
 
 package org.springframework.context.event;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.PayloadApplicationEvent;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 
-import static org.junit.Assert.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Juergen Hoeller

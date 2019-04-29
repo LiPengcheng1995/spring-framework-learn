@@ -16,8 +16,6 @@
 
 package org.springframework.jms.config;
 
-import org.w3c.dom.Element;
-
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.parsing.BeanComponentDefinition;
@@ -28,6 +26,7 @@ import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
+import org.w3c.dom.Element;
 
 /**
  * Parser for the 'annotation-driven' element of the 'jms' namespace.
@@ -36,6 +35,22 @@ import org.springframework.util.StringUtils;
  * @since 4.1
  */
 class AnnotationDrivenJmsBeanDefinitionParser implements BeanDefinitionParser {
+
+	private static void registerDefaultEndpointRegistry(@Nullable Object source, ParserContext parserContext) {
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(
+				"org.springframework.jms.config.JmsListenerEndpointRegistry");
+		builder.getRawBeanDefinition().setSource(source);
+		registerInfrastructureBean(parserContext, builder, JmsListenerConfigUtils.JMS_LISTENER_ENDPOINT_REGISTRY_BEAN_NAME);
+	}
+
+	private static void registerInfrastructureBean(
+			ParserContext parserContext, BeanDefinitionBuilder builder, String beanName) {
+
+		builder.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+		parserContext.getRegistry().registerBeanDefinition(beanName, builder.getBeanDefinition());
+		BeanDefinitionHolder holder = new BeanDefinitionHolder(builder.getBeanDefinition(), beanName);
+		parserContext.registerComponent(new BeanComponentDefinition(holder));
+	}
 
 	@Override
 	@Nullable
@@ -52,16 +67,14 @@ class AnnotationDrivenJmsBeanDefinitionParser implements BeanDefinitionParser {
 		if (registry.containsBeanDefinition(JmsListenerConfigUtils.JMS_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			parserContext.getReaderContext().error(
 					"Only one JmsListenerAnnotationBeanPostProcessor may exist within the context.", source);
-		}
-		else {
+		} else {
 			BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(
 					"org.springframework.jms.annotation.JmsListenerAnnotationBeanPostProcessor");
 			builder.getRawBeanDefinition().setSource(source);
 			String endpointRegistry = element.getAttribute("registry");
 			if (StringUtils.hasText(endpointRegistry)) {
 				builder.addPropertyReference("endpointRegistry", endpointRegistry);
-			}
-			else {
+			} else {
 				registerDefaultEndpointRegistry(source, parserContext);
 			}
 
@@ -83,22 +96,6 @@ class AnnotationDrivenJmsBeanDefinitionParser implements BeanDefinitionParser {
 		parserContext.popAndRegisterContainingComponent();
 
 		return null;
-	}
-
-	private static void registerDefaultEndpointRegistry(@Nullable Object source, ParserContext parserContext) {
-		BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(
-				"org.springframework.jms.config.JmsListenerEndpointRegistry");
-		builder.getRawBeanDefinition().setSource(source);
-		registerInfrastructureBean(parserContext, builder, JmsListenerConfigUtils.JMS_LISTENER_ENDPOINT_REGISTRY_BEAN_NAME);
-	}
-
-	private static void registerInfrastructureBean(
-			ParserContext parserContext, BeanDefinitionBuilder builder, String beanName) {
-
-		builder.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-		parserContext.getRegistry().registerBeanDefinition(beanName, builder.getBeanDefinition());
-		BeanDefinitionHolder holder = new BeanDefinitionHolder(builder.getBeanDefinition(), beanName);
-		parserContext.registerComponent(new BeanComponentDefinition(holder));
 	}
 
 }

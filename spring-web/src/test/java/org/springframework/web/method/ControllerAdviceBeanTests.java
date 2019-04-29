@@ -16,13 +16,12 @@
 
 package org.springframework.web.method;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 import org.junit.Test;
-
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 import static org.junit.Assert.*;
 
@@ -113,48 +112,63 @@ public class ControllerAdviceBeanTests {
 
 	// ControllerAdvice classes
 
+	@Retention(RetentionPolicy.RUNTIME)
+	static @interface ControllerAnnotation {
+	}
+
+	static interface ControllerInterface {
+	}
+
 	@ControllerAdvice
-	static class SimpleControllerAdvice {}
+	static class SimpleControllerAdvice {
+	}
 
 	@ControllerAdvice(annotations = ControllerAnnotation.class)
-	static class AnnotationSupport {}
+	static class AnnotationSupport {
+	}
 
 	@ControllerAdvice(basePackageClasses = MarkerClass.class)
-	static class MarkerClassSupport {}
+	static class MarkerClassSupport {
+	}
 
 	@ControllerAdvice(assignableTypes = {ControllerInterface.class,
 			AbstractController.class})
-	static class AssignableTypesSupport {}
+	static class AssignableTypesSupport {
+	}
 
 	@ControllerAdvice(basePackages = "org.springframework.web.method")
-	static class BasePackageSupport {}
+	static class BasePackageSupport {
+	}
 
 	@ControllerAdvice("org.springframework.web.method")
-	static class BasePackageValueSupport {}
-
-	@ControllerAdvice(annotations = ControllerAnnotation.class, assignableTypes = ControllerInterface.class)
-	static class MultipleSelectorsSupport {}
-
-	@ControllerAdvice(basePackages = "java.util", annotations = {RestController.class})
-	static class ShouldNotMatch {}
+	static class BasePackageValueSupport {
+	}
 
 
 	// Support classes
 
-	static class MarkerClass {}
+	@ControllerAdvice(annotations = ControllerAnnotation.class, assignableTypes = ControllerInterface.class)
+	static class MultipleSelectorsSupport {
+	}
 
-	@Retention(RetentionPolicy.RUNTIME)
-	static @interface ControllerAnnotation {}
+	@ControllerAdvice(basePackages = "java.util", annotations = {RestController.class})
+	static class ShouldNotMatch {
+	}
+
+	static class MarkerClass {
+	}
 
 	@ControllerAnnotation
-	public static class AnnotatedController {}
+	public static class AnnotatedController {
+	}
 
-	static interface ControllerInterface {}
+	static class ImplementationController implements ControllerInterface {
+	}
 
-	static class ImplementationController implements ControllerInterface {}
+	static abstract class AbstractController {
+	}
 
-	static abstract class AbstractController {}
-
-	static class InheritanceController extends AbstractController {}
+	static class InheritanceController extends AbstractController {
+	}
 
 }

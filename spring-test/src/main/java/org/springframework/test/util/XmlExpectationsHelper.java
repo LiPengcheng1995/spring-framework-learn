@@ -16,13 +16,6 @@
 
 package org.springframework.test.util;
 
-import java.io.StringReader;
-import java.util.Map;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMSource;
-
 import org.hamcrest.Matcher;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -32,7 +25,14 @@ import org.xmlunit.diff.DefaultNodeMatcher;
 import org.xmlunit.diff.Diff;
 import org.xmlunit.diff.ElementSelectors;
 
-import static org.hamcrest.MatcherAssert.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
+import java.io.StringReader;
+import java.util.Map;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * A helper class for assertions on XML content.
@@ -50,7 +50,7 @@ public class XmlExpectationsHelper {
 		assertThat("Body content", document, matcher);
 	}
 
-	private Document parseXmlString(String xml) throws Exception  {
+	private Document parseXmlString(String xml) throws Exception {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		factory.setNamespaceAware(true);
 		DocumentBuilder documentBuilder = factory.newDocumentBuilder();
@@ -60,6 +60,7 @@ public class XmlExpectationsHelper {
 
 	/**
 	 * Parse the content as {@link DOMSource} and apply a {@link Matcher}.
+	 *
 	 * @see <a href="https://github.com/davidehringer/xml-matchers">xml-matchers</a>
 	 */
 	public void assertSource(String content, Matcher<? super Source> matcher) throws Exception {
@@ -73,8 +74,9 @@ public class XmlExpectationsHelper {
 	 * regardless of order.
 	 * <p>Use of this method assumes the
 	 * <a href="https://github.com/xmlunit/xmlunit">XMLUnit<a/> library is available.
+	 *
 	 * @param expected the expected XML content
-	 * @param actual the actual XML content
+	 * @param actual   the actual XML content
 	 * @see org.springframework.test.web.servlet.result.MockMvcResultMatchers#xpath(String, Object...)
 	 * @see org.springframework.test.web.servlet.result.MockMvcResultMatchers#xpath(String, Map, Object...)
 	 */

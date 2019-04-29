@@ -16,10 +16,10 @@
 
 package org.springframework.util.comparator;
 
+import org.springframework.util.Assert;
+
 import java.io.Serializable;
 import java.util.Comparator;
-
-import org.springframework.util.Assert;
 
 /**
  * A decorator for a comparator, with an "ascending" flag denoting
@@ -44,6 +44,7 @@ public class InvertibleComparator<T> implements Comparator<T>, Serializable {
 	/**
 	 * Create an InvertibleComparator that sorts ascending by default.
 	 * For the actual comparison, the specified Comparator will be used.
+	 *
 	 * @param comparator the comparator to decorate
 	 */
 	public InvertibleComparator(Comparator<T> comparator) {
@@ -54,8 +55,9 @@ public class InvertibleComparator<T> implements Comparator<T>, Serializable {
 	/**
 	 * Create an InvertibleComparator that sorts based on the provided order.
 	 * For the actual comparison, the specified Comparator will be used.
+	 *
 	 * @param comparator the comparator to decorate
-	 * @param ascending the sort order: ascending (true) or descending (false)
+	 * @param ascending  the sort order: ascending (true) or descending (false)
 	 */
 	public InvertibleComparator(Comparator<T> comparator, boolean ascending) {
 		Assert.notNull(comparator, "Comparator must not be null");
@@ -63,19 +65,18 @@ public class InvertibleComparator<T> implements Comparator<T>, Serializable {
 		setAscending(ascending);
 	}
 
+	/**
+	 * Return the sort order: ascending (true) or descending (false).
+	 */
+	public boolean isAscending() {
+		return this.ascending;
+	}
 
 	/**
 	 * Specify the sort order: ascending (true) or descending (false).
 	 */
 	public void setAscending(boolean ascending) {
 		this.ascending = ascending;
-	}
-
-	/**
-	 * Return the sort order: ascending (true) or descending (false).
-	 */
-	public boolean isAscending() {
-		return this.ascending;
 	}
 
 	/**
@@ -95,8 +96,7 @@ public class InvertibleComparator<T> implements Comparator<T>, Serializable {
 			if (!this.ascending) {
 				if (Integer.MIN_VALUE == result) {
 					result = Integer.MAX_VALUE;
-				}
-				else {
+				} else {
 					result *= -1;
 				}
 			}

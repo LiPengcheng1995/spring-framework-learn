@@ -16,20 +16,7 @@
 
 package org.springframework.orm.jpa;
 
-import java.util.Map;
-import java.util.Properties;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.OptimisticLockException;
-import javax.persistence.PersistenceException;
-import javax.persistence.spi.PersistenceProvider;
-import javax.persistence.spi.PersistenceUnitInfo;
-import javax.persistence.spi.PersistenceUnitTransactionType;
-import javax.persistence.spi.ProviderUtil;
-
 import org.junit.Test;
-
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -38,6 +25,14 @@ import org.springframework.orm.jpa.persistenceunit.MutablePersistenceUnitInfo;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 import org.springframework.util.SerializationTestUtils;
+
+import javax.persistence.*;
+import javax.persistence.spi.PersistenceProvider;
+import javax.persistence.spi.PersistenceUnitInfo;
+import javax.persistence.spi.PersistenceUnitTransactionType;
+import javax.persistence.spi.ProviderUtil;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.*;
@@ -189,8 +184,7 @@ public class LocalContainerEntityManagerFactoryBeanTests extends AbstractEntityM
 		try {
 			jpatm.commit(txStatus);
 			fail("Should have thrown OptimisticLockingFailureException");
-		}
-		catch (OptimisticLockingFailureException ex) {
+		} catch (OptimisticLockingFailureException ex) {
 			// expected
 		}
 
@@ -252,8 +246,7 @@ public class LocalContainerEntityManagerFactoryBeanTests extends AbstractEntityM
 		try {
 			createEntityManagerFactoryBean("org/springframework/orm/jpa/domain/persistence.xml", null, "call me Bob");
 			fail("Should not create factory with this name");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// Ok
 		}
 	}
@@ -299,8 +292,7 @@ public class LocalContainerEntityManagerFactoryBeanTests extends AbstractEntityM
 		try {
 			containerEmfb.afterPropertiesSet();
 			fail();
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// Ok
 		}
 	}

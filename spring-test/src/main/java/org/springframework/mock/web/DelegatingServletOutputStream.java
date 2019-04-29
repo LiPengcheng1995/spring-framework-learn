@@ -16,12 +16,12 @@
 
 package org.springframework.mock.web;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import org.springframework.util.Assert;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;
-
-import org.springframework.util.Assert;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * Delegating implementation of {@link javax.servlet.ServletOutputStream}.
@@ -30,8 +30,8 @@ import org.springframework.util.Assert;
  * used for testing application controllers.
  *
  * @author Juergen Hoeller
- * @since 1.0.2
  * @see MockHttpServletResponse
+ * @since 1.0.2
  */
 public class DelegatingServletOutputStream extends ServletOutputStream {
 
@@ -40,6 +40,7 @@ public class DelegatingServletOutputStream extends ServletOutputStream {
 
 	/**
 	 * Create a DelegatingServletOutputStream for the given target stream.
+	 *
 	 * @param targetStream the target stream (never {@code null})
 	 */
 	public DelegatingServletOutputStream(OutputStream targetStream) {

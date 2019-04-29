@@ -16,13 +16,12 @@
 
 package org.springframework.transaction.interceptor;
 
-import java.io.IOException;
-
 import org.junit.Test;
-
 import org.springframework.beans.FatalBeanException;
 
-import static org.hamcrest.CoreMatchers.*;
+import java.io.IOException;
+
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.*;
 
 /**
@@ -66,7 +65,7 @@ public class RollbackRuleTests {
 		RollbackRuleAttribute rr = new RollbackRuleAttribute(java.lang.Throwable.class.getName());
 		assertTrue(rr.getDepth(new MyRuntimeException("")) > 0);
 		assertTrue(rr.getDepth(new IOException()) > 0);
-		assertTrue(rr.getDepth(new FatalBeanException(null,null)) > 0);
+		assertTrue(rr.getDepth(new FatalBeanException(null, null)) > 0);
 		assertTrue(rr.getDepth(new RuntimeException()) > 0);
 	}
 

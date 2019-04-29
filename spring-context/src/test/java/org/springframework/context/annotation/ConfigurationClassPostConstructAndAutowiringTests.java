@@ -16,15 +16,14 @@
 
 package org.springframework.context.annotation;
 
-import javax.annotation.PostConstruct;
-
 import org.junit.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.tests.sample.beans.TestBean;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import javax.annotation.PostConstruct;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests cornering the issue reported in SPR-8080. If the product of a @Bean method
@@ -33,7 +32,7 @@ import static org.junit.Assert.*;
  * (or other initializer) method, the container would become confused about the
  * 'currently in creation' status of the autowired bean and result in creating multiple
  * instances of the given @Bean, violating container scoping / singleton semantics.
- *
+ * <p>
  * This is resolved through no longer relying on 'currently in creation' status, but
  * rather on a thread local that informs the enhanced bean method implementation whether
  * the factory is the caller or not.

@@ -16,14 +16,11 @@
 
 package org.springframework.aop.target;
 
-import java.util.NoSuchElementException;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.aop.framework.Advised;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
@@ -33,6 +30,8 @@ import org.springframework.tests.sample.beans.Person;
 import org.springframework.tests.sample.beans.SerializablePerson;
 import org.springframework.tests.sample.beans.SideEffectBean;
 import org.springframework.util.SerializationTestUtils;
+
+import java.util.NoSuchElementException;
 
 import static org.junit.Assert.*;
 
@@ -48,14 +47,12 @@ import static org.junit.Assert.*;
  */
 public class CommonsPool2TargetSourceTests {
 
-	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
-
 	/**
 	 * Initial count value set in bean factory XML
 	 */
 	private static final int INITIAL_COUNT = 10;
-
+	@Rule
+	public final ExpectedException thrown = ExpectedException.none();
 	private DefaultListableBeanFactory beanFactory;
 
 	@Before
@@ -156,8 +153,7 @@ public class CommonsPool2TargetSourceTests {
 		try {
 			targetSource.getTarget();
 			fail("Should throw NoSuchElementException");
-		}
-		catch (NoSuchElementException ex) {
+		} catch (NoSuchElementException ex) {
 			// desired
 		}
 
@@ -189,8 +185,7 @@ public class CommonsPool2TargetSourceTests {
 		try {
 			targetSource.getTarget();
 			fail("Should throw NoSuchElementException");
-		}
-		catch (NoSuchElementException ex) {
+		} catch (NoSuchElementException ex) {
 			// desired
 		}
 

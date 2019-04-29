@@ -16,9 +16,6 @@
 
 package org.springframework.web.accept;
 
-import java.util.Map;
-import javax.servlet.ServletContext;
-
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
@@ -26,6 +23,9 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.context.request.NativeWebRequest;
+
+import javax.servlet.ServletContext;
+import java.util.Map;
 
 /**
  * Extends {@code PathExtensionContentNegotiationStrategy} that also uses
@@ -89,6 +89,7 @@ public class ServletPathExtensionContentNegotiationStrategy extends PathExtensio
 	 * Extends the base class
 	 * {@link PathExtensionContentNegotiationStrategy#getMediaTypeForResource}
 	 * with the ability to also look up through the ServletContext.
+	 *
 	 * @param resource the resource to look up
 	 * @return the MediaType for the extension, or {@code null} if none found
 	 * @since 4.3

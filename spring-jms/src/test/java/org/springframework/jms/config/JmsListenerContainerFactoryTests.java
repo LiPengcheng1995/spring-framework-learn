@@ -16,15 +16,9 @@
 
 package org.springframework.jms.config;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.MessageListener;
-import javax.jms.Session;
-import javax.transaction.TransactionManager;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.jms.StubConnectionFactory;
 import org.springframework.jms.listener.AbstractMessageListenerContainer;
@@ -42,26 +36,25 @@ import org.springframework.jms.support.destination.DynamicDestinationResolver;
 import org.springframework.util.backoff.BackOff;
 import org.springframework.util.backoff.FixedBackOff;
 
+import javax.jms.ConnectionFactory;
+import javax.jms.MessageListener;
+import javax.jms.Session;
+import javax.transaction.TransactionManager;
+
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * @author Stephane Nicoll
  */
 public class JmsListenerContainerFactoryTests {
 
-	private final ConnectionFactory connectionFactory = new StubConnectionFactory();
-
-	private final DestinationResolver destinationResolver = new DynamicDestinationResolver();
-
-	private final MessageConverter messageConverter = new SimpleMessageConverter();
-
-	private final TransactionManager transactionManager = mock(TransactionManager.class);
-
-
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();
-
+	private final ConnectionFactory connectionFactory = new StubConnectionFactory();
+	private final DestinationResolver destinationResolver = new DynamicDestinationResolver();
+	private final MessageConverter messageConverter = new SimpleMessageConverter();
+	private final TransactionManager transactionManager = mock(TransactionManager.class);
 
 	@Test
 	public void createSimpleContainer() {

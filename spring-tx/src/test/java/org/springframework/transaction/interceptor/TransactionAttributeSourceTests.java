@@ -16,12 +16,11 @@
 
 package org.springframework.transaction.interceptor;
 
+import org.junit.Test;
+import org.springframework.transaction.TransactionDefinition;
+
 import java.io.IOException;
 import java.util.Properties;
-
-import org.junit.Test;
-
-import org.springframework.transaction.TransactionDefinition;
 
 import static org.junit.Assert.*;
 
@@ -32,8 +31,8 @@ import static org.junit.Assert.*;
  * @author Juergen Hoeller
  * @author Rick Evans
  * @author Chris Beams
- * @since 15.10.2003
  * @see org.springframework.transaction.interceptor.TransactionProxyFactoryBean
+ * @since 15.10.2003
  */
 public class TransactionAttributeSourceTests {
 

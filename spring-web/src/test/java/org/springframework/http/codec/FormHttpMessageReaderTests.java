@@ -16,11 +16,7 @@
 
 package org.springframework.http.codec;
 
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Test;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -28,6 +24,9 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -99,9 +98,9 @@ public class FormHttpMessageReaderTests {
 
 	private MockServerHttpRequest request(String body) {
 		return MockServerHttpRequest
-					.method(HttpMethod.GET, "/")
-					.header(HttpHeaders.CONTENT_TYPE,  MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-					.body(body);
+				.method(HttpMethod.GET, "/")
+				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+				.body(body);
 	}
 
 }

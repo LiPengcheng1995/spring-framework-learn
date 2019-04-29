@@ -16,13 +16,8 @@
 
 package org.springframework.remoting.httpinvoker;
 
-import java.io.IOException;
-import java.io.InvalidClassException;
-import java.net.ConnectException;
-
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-
 import org.springframework.aop.support.AopUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.remoting.RemoteAccessException;
@@ -31,6 +26,10 @@ import org.springframework.remoting.RemoteInvocationFailureException;
 import org.springframework.remoting.support.RemoteInvocation;
 import org.springframework.remoting.support.RemoteInvocationBasedAccessor;
 import org.springframework.remoting.support.RemoteInvocationResult;
+
+import java.io.IOException;
+import java.io.InvalidClassException;
+import java.net.ConnectException;
 
 /**
  * {@link org.aopalliance.intercept.MethodInterceptor} for accessing an
@@ -61,7 +60,6 @@ import org.springframework.remoting.support.RemoteInvocationResult;
  * In general, we strongly recommend any other message format (e.g. JSON) instead.
  *
  * @author Juergen Hoeller
- * @since 1.1
  * @see #setServiceUrl
  * @see #setCodebaseUrl
  * @see #setRemoteInvocationFactory
@@ -69,6 +67,7 @@ import org.springframework.remoting.support.RemoteInvocationResult;
  * @see HttpInvokerServiceExporter
  * @see HttpInvokerProxyFactoryBean
  * @see java.rmi.server.RMIClassLoader
+ * @since 1.1
  */
 public class HttpInvokerClientInterceptor extends RemoteInvocationBasedAccessor
 		implements MethodInterceptor, HttpInvokerClientConfiguration {
@@ -78,23 +77,6 @@ public class HttpInvokerClientInterceptor extends RemoteInvocationBasedAccessor
 
 	@Nullable
 	private HttpInvokerRequestExecutor httpInvokerRequestExecutor;
-
-
-	/**
-	 * Set the codebase URL to download classes from if not found locally.
-	 * Can consists of multiple URLs, separated by spaces.
-	 * <p>Follows RMI's codebase conventions for dynamic class download.
-	 * In contrast to RMI, where the server determines the URL for class download
-	 * (via the "java.rmi.server.codebase" system property), it's the client
-	 * that determines the codebase URL here. The server will usually be the
-	 * same as for the service URL, just pointing to a different path there.
-	 * @see #setServiceUrl
-	 * @see org.springframework.remoting.rmi.CodebaseAwareObjectInputStream
-	 * @see java.rmi.server.RMIClassLoader
-	 */
-	public void setCodebaseUrl(@Nullable String codebaseUrl) {
-		this.codebaseUrl = codebaseUrl;
-	}
 
 	/**
 	 * Return the codebase URL to download classes from if not found locally.
@@ -106,16 +88,20 @@ public class HttpInvokerClientInterceptor extends RemoteInvocationBasedAccessor
 	}
 
 	/**
-	 * Set the HttpInvokerRequestExecutor implementation to use for executing
-	 * remote invocations.
-	 * <p>Default is {@link SimpleHttpInvokerRequestExecutor}. Alternatively,
-	 * consider using {@link HttpComponentsHttpInvokerRequestExecutor} for more
-	 * sophisticated needs.
-	 * @see SimpleHttpInvokerRequestExecutor
-	 * @see HttpComponentsHttpInvokerRequestExecutor
+	 * Set the codebase URL to download classes from if not found locally.
+	 * Can consists of multiple URLs, separated by spaces.
+	 * <p>Follows RMI's codebase conventions for dynamic class download.
+	 * In contrast to RMI, where the server determines the URL for class download
+	 * (via the "java.rmi.server.codebase" system property), it's the client
+	 * that determines the codebase URL here. The server will usually be the
+	 * same as for the service URL, just pointing to a different path there.
+	 *
+	 * @see #setServiceUrl
+	 * @see org.springframework.remoting.rmi.CodebaseAwareObjectInputStream
+	 * @see java.rmi.server.RMIClassLoader
 	 */
-	public void setHttpInvokerRequestExecutor(HttpInvokerRequestExecutor httpInvokerRequestExecutor) {
-		this.httpInvokerRequestExecutor = httpInvokerRequestExecutor;
+	public void setCodebaseUrl(@Nullable String codebaseUrl) {
+		this.codebaseUrl = codebaseUrl;
 	}
 
 	/**
@@ -130,6 +116,20 @@ public class HttpInvokerClientInterceptor extends RemoteInvocationBasedAccessor
 			this.httpInvokerRequestExecutor = executor;
 		}
 		return this.httpInvokerRequestExecutor;
+	}
+
+	/**
+	 * Set the HttpInvokerRequestExecutor implementation to use for executing
+	 * remote invocations.
+	 * <p>Default is {@link SimpleHttpInvokerRequestExecutor}. Alternatively,
+	 * consider using {@link HttpComponentsHttpInvokerRequestExecutor} for more
+	 * sophisticated needs.
+	 *
+	 * @see SimpleHttpInvokerRequestExecutor
+	 * @see HttpComponentsHttpInvokerRequestExecutor
+	 */
+	public void setHttpInvokerRequestExecutor(HttpInvokerRequestExecutor httpInvokerRequestExecutor) {
+		this.httpInvokerRequestExecutor = httpInvokerRequestExecutor;
 	}
 
 	@Override
@@ -152,20 +152,17 @@ public class HttpInvokerClientInterceptor extends RemoteInvocationBasedAccessor
 
 		try {
 			result = executeRequest(invocation, methodInvocation);
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			RemoteAccessException rae = convertHttpInvokerAccessException(ex);
 			throw (rae != null ? rae : ex);
 		}
 
 		try {
 			return recreateRemoteInvocationResult(result);
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			if (result.hasInvocationTargetException()) {
 				throw ex;
-			}
-			else {
+			} else {
 				throw new RemoteInvocationFailureException("Invocation of method [" + methodInvocation.getMethod() +
 						"] failed in HTTP invoker remote service at [" + getServiceUrl() + "]", ex);
 			}
@@ -176,9 +173,10 @@ public class HttpInvokerClientInterceptor extends RemoteInvocationBasedAccessor
 	 * Execute the given remote invocation via the {@link HttpInvokerRequestExecutor}.
 	 * <p>This implementation delegates to {@link #executeRequest(RemoteInvocation)}.
 	 * Can be overridden to react to the specific original MethodInvocation.
-	 * @param invocation the RemoteInvocation to execute
+	 *
+	 * @param invocation         the RemoteInvocation to execute
 	 * @param originalInvocation the original MethodInvocation (can e.g. be cast
-	 * to the ProxyMethodInvocation interface for accessing user attributes)
+	 *                           to the ProxyMethodInvocation interface for accessing user attributes)
 	 * @return the RemoteInvocationResult object
 	 * @throws Exception in case of errors
 	 */
@@ -194,11 +192,12 @@ public class HttpInvokerClientInterceptor extends RemoteInvocationBasedAccessor
 	 * to the executor. Alternatively, add further configuration properties in a
 	 * subclass of this accessor: By default, the accessor passed itself as
 	 * configuration object to the executor.
+	 *
 	 * @param invocation the RemoteInvocation to execute
 	 * @return the RemoteInvocationResult object
-	 * @throws IOException if thrown by I/O operations
+	 * @throws IOException            if thrown by I/O operations
 	 * @throws ClassNotFoundException if thrown during deserialization
-	 * @throws Exception in case of general errors
+	 * @throws Exception              in case of general errors
 	 * @see #getHttpInvokerRequestExecutor
 	 * @see HttpInvokerClientConfiguration
 	 */
@@ -209,6 +208,7 @@ public class HttpInvokerClientInterceptor extends RemoteInvocationBasedAccessor
 	/**
 	 * Convert the given HTTP invoker access exception to an appropriate
 	 * Spring {@link RemoteAccessException}.
+	 *
 	 * @param ex the exception to convert
 	 * @return the RemoteAccessException to throw, or {@code null} to have the
 	 * original exception propagated to the caller

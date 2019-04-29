@@ -18,7 +18,6 @@ package org.springframework.orm.hibernate5;
 
 import org.hibernate.UnresolvableObjectException;
 import org.hibernate.WrongClassException;
-
 import org.springframework.orm.ObjectRetrievalFailureException;
 
 /**
@@ -26,8 +25,8 @@ import org.springframework.orm.ObjectRetrievalFailureException;
  * Converts Hibernate's UnresolvableObjectException and WrongClassException.
  *
  * @author Juergen Hoeller
- * @since 4.2
  * @see SessionFactoryUtils#convertHibernateAccessException
+ * @since 4.2
  */
 @SuppressWarnings("serial")
 public class HibernateObjectRetrievalFailureException extends ObjectRetrievalFailureException {

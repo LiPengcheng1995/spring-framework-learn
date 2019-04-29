@@ -16,10 +16,10 @@
 
 package org.springframework.cache.interceptor;
 
+import org.springframework.cache.Cache;
+
 import java.lang.reflect.Method;
 import java.util.Collection;
-
-import org.springframework.cache.Cache;
 
 /**
  * Class describing the root object used during the expression evaluation.

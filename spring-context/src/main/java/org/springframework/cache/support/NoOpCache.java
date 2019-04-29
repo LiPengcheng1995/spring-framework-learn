@@ -16,11 +16,11 @@
 
 package org.springframework.cache.support;
 
-import java.util.concurrent.Callable;
-
 import org.springframework.cache.Cache;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.util.concurrent.Callable;
 
 /**
  * A no operation {@link Cache} implementation suitable for disabling caching.
@@ -38,6 +38,7 @@ public class NoOpCache implements Cache {
 
 	/**
 	 * Create a {@link NoOpCache} instance with the specified name
+	 *
 	 * @param name the name of the cache
 	 */
 	public NoOpCache(String name) {
@@ -73,8 +74,7 @@ public class NoOpCache implements Cache {
 	public <T> T get(Object key, Callable<T> valueLoader) {
 		try {
 			return valueLoader.call();
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new ValueRetrievalException(key, valueLoader, ex);
 		}
 	}

@@ -17,10 +17,9 @@
 package org.springframework.context.annotation;
 
 import org.junit.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertSame;
 
 /**
  * @author Juergen Hoeller
@@ -43,6 +42,23 @@ public class Spr16179Tests {
 	}
 
 
+	interface Assembler<T> {
+	}
+
+
+	interface PageAssembler<T> extends Assembler<Page<T>> {
+	}
+
+
+	interface Page<T> {
+	}
+
+	interface SomeType {
+	}
+
+	interface SomeOtherType {
+	}
+
 	@Configuration
 	static class AssemblerConfig {
 
@@ -53,10 +69,10 @@ public class Spr16179Tests {
 
 		@Bean
 		Assembler<SomeType> someAssembler() {
-			return new Assembler<SomeType>() {};
+			return new Assembler<SomeType>() {
+			};
 		}
 	}
-
 
 	public static class AssemblerInjection {
 
@@ -82,17 +98,7 @@ public class Spr16179Tests {
 		PageAssembler<String> assembler6;
 	}
 
-
-	interface Assembler<T> {}
-
-	interface PageAssembler<T> extends Assembler<Page<T>> {}
-
-	static class PageAssemblerImpl<T> implements PageAssembler<T> {}
-
-	interface Page<T> {}
-
-	interface SomeType {}
-
-	interface SomeOtherType {}
+	static class PageAssemblerImpl<T> implements PageAssembler<T> {
+	}
 
 }

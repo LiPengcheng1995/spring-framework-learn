@@ -16,8 +16,6 @@
 
 package org.springframework.context.config;
 
-import org.w3c.dom.Element;
-
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.parsing.BeanComponentDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -29,6 +27,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.weaving.AspectJWeavingEnabler;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
+import org.w3c.dom.Element;
 
 /**
  * Parser for the &lt;context:load-time-weaver/&gt; element.
@@ -40,6 +39,7 @@ class LoadTimeWeaverBeanDefinitionParser extends AbstractSingleBeanDefinitionPar
 
 	/**
 	 * The bean name of the internally managed AspectJ weaving enabler.
+	 *
 	 * @since 4.3.1
 	 */
 	public static final String ASPECTJ_WEAVING_ENABLER_BEAN_NAME =
@@ -89,11 +89,9 @@ class LoadTimeWeaverBeanDefinitionParser extends AbstractSingleBeanDefinitionPar
 	protected boolean isAspectJWeavingEnabled(String value, ParserContext parserContext) {
 		if ("on".equals(value)) {
 			return true;
-		}
-		else if ("off".equals(value)) {
+		} else if ("off".equals(value)) {
 			return false;
-		}
-		else {
+		} else {
 			// Determine default...
 			ClassLoader cl = parserContext.getReaderContext().getBeanClassLoader();
 			return (cl != null && cl.getResource(AspectJWeavingEnabler.ASPECTJ_AOP_XML_RESOURCE) != null);

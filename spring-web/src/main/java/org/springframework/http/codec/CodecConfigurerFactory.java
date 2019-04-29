@@ -16,15 +16,15 @@
 
 package org.springframework.http.codec;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.util.ClassUtils;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Internal delegate for loading the default codec configurer class names.
@@ -32,9 +32,9 @@ import org.springframework.util.ClassUtils;
  * package, literally only needing to know the default class name to use.
  *
  * @author Juergen Hoeller
- * @since 5.0.1
  * @see ClientCodecConfigurer#create()
  * @see ServerCodecConfigurer#create()
+ * @since 5.0.1
  */
 class CodecConfigurerFactory {
 
@@ -52,8 +52,7 @@ class CodecConfigurerFactory {
 				Class<?> impl = ClassUtils.forName(implName, CodecConfigurerFactory.class.getClassLoader());
 				defaultCodecConfigurers.put(ifc, impl);
 			}
-		}
-		catch (IOException | ClassNotFoundException ex) {
+		} catch (IOException | ClassNotFoundException ex) {
 			throw new IllegalStateException(ex);
 		}
 	}

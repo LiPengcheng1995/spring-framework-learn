@@ -16,8 +16,6 @@
 
 package org.springframework.cache.annotation;
 
-import java.util.Collection;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.interceptor.CacheErrorHandler;
@@ -30,14 +28,16 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Collection;
+
 /**
  * Abstract base {@code @Configuration} class providing common structure
  * for enabling Spring's annotation-driven cache management capability.
  *
  * @author Chris Beams
  * @author Stephane Nicoll
- * @since 3.1
  * @see EnableCaching
+ * @since 3.1
  */
 @Configuration
 public abstract class AbstractCachingConfiguration implements ImportAware {

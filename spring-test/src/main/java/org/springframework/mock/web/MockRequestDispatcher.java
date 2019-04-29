@@ -16,15 +16,14 @@
 
 package org.springframework.mock.web;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.util.Assert;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.springframework.util.Assert;
 
 /**
  * Mock implementation of the {@link javax.servlet.RequestDispatcher} interface.
@@ -43,8 +42,9 @@ public class MockRequestDispatcher implements RequestDispatcher {
 
 	/**
 	 * Create a new MockRequestDispatcher for the given resource.
+	 *
 	 * @param resource the server resource to dispatch to, located at a
-	 * particular path or given by a particular name
+	 *                 particular path or given by a particular name
 	 */
 	public MockRequestDispatcher(String resource) {
 		Assert.notNull(resource, "Resource must not be null");

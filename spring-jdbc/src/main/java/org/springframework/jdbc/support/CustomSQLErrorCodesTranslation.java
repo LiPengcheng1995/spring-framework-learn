@@ -26,8 +26,8 @@ import org.springframework.util.StringUtils;
  * thrown for the list of error codes specified in the errorCodes property.
  *
  * @author Thomas Risberg
- * @since 1.1
  * @see SQLErrorCodeSQLExceptionTranslator
+ * @since 1.1
  */
 public class CustomSQLErrorCodesTranslation {
 
@@ -36,6 +36,12 @@ public class CustomSQLErrorCodesTranslation {
 	@Nullable
 	private Class<?> exceptionClass;
 
+	/**
+	 * Return the SQL error codes to match.
+	 */
+	public String[] getErrorCodes() {
+		return this.errorCodes;
+	}
 
 	/**
 	 * Set the SQL error codes to match.
@@ -45,10 +51,11 @@ public class CustomSQLErrorCodesTranslation {
 	}
 
 	/**
-	 * Return the SQL error codes to match.
+	 * Return the exception class for the specified error codes.
 	 */
-	public String[] getErrorCodes() {
-		return this.errorCodes;
+	@Nullable
+	public Class<?> getExceptionClass() {
+		return this.exceptionClass;
 	}
 
 	/**
@@ -60,14 +67,6 @@ public class CustomSQLErrorCodesTranslation {
 					"]: needs to be a subclass of [org.springframework.dao.DataAccessException]");
 		}
 		this.exceptionClass = exceptionClass;
-	}
-
-	/**
-	 * Return the exception class for the specified error codes.
-	 */
-	@Nullable
-	public Class<?> getExceptionClass() {
-		return this.exceptionClass;
 	}
 
 }

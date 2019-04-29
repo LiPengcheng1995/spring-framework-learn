@@ -16,11 +16,11 @@
 
 package org.springframework.util;
 
-import java.util.Properties;
-
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import java.util.Properties;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Rob Harrop
@@ -87,8 +87,7 @@ public class PropertyPlaceholderHelperTests {
 					public String resolvePlaceholder(String placeholderName) {
 						if ("foo".equals(placeholderName)) {
 							return "bar";
-						}
-						else {
+						} else {
 							return null;
 						}
 					}

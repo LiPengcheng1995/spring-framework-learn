@@ -16,15 +16,15 @@
 
 package org.springframework.format.datetime;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.format.FormatterRegistrar;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Configures basic date formatting for use with Spring, primarily for
@@ -36,16 +36,29 @@ import org.springframework.util.Assert;
  * ad-hoc use against any {@code ConverterRegistry} instance.
  *
  * @author Phillip Webb
- * @since 3.2
  * @see org.springframework.format.datetime.standard.DateTimeFormatterRegistrar
  * @see org.springframework.format.datetime.joda.JodaTimeFormatterRegistrar
  * @see FormatterRegistrar#registerFormatters
+ * @since 3.2
  */
 public class DateFormatterRegistrar implements FormatterRegistrar {
 
 	@Nullable
 	private DateFormatter dateFormatter;
 
+	/**
+	 * Add date converters to the specified registry.
+	 *
+	 * @param converterRegistry the registry of converters to add to
+	 */
+	public static void addDateConverters(ConverterRegistry converterRegistry) {
+		converterRegistry.addConverter(new DateToLongConverter());
+		converterRegistry.addConverter(new DateToCalendarConverter());
+		converterRegistry.addConverter(new CalendarToDateConverter());
+		converterRegistry.addConverter(new CalendarToLongConverter());
+		converterRegistry.addConverter(new LongToDateConverter());
+		converterRegistry.addConverter(new LongToCalendarConverter());
+	}
 
 	/**
 	 * Set a global date formatter to register.
@@ -56,7 +69,6 @@ public class DateFormatterRegistrar implements FormatterRegistrar {
 		Assert.notNull(dateFormatter, "DateFormatter must not be null");
 		this.dateFormatter = dateFormatter;
 	}
-
 
 	@Override
 	public void registerFormatters(FormatterRegistry registry) {
@@ -70,20 +82,6 @@ public class DateFormatterRegistrar implements FormatterRegistrar {
 			registry.addFormatterForFieldType(Calendar.class, this.dateFormatter);
 		}
 	}
-
-	/**
-	 * Add date converters to the specified registry.
-	 * @param converterRegistry the registry of converters to add to
-	 */
-	public static void addDateConverters(ConverterRegistry converterRegistry) {
-		converterRegistry.addConverter(new DateToLongConverter());
-		converterRegistry.addConverter(new DateToCalendarConverter());
-		converterRegistry.addConverter(new CalendarToDateConverter());
-		converterRegistry.addConverter(new CalendarToLongConverter());
-		converterRegistry.addConverter(new LongToDateConverter());
-		converterRegistry.addConverter(new LongToCalendarConverter());
-	}
-
 
 	private static class DateToLongConverter implements Converter<Date, Long> {
 

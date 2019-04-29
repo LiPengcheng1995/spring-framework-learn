@@ -25,7 +25,8 @@ import org.springframework.aop.framework.Advised;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Check that an aspect that depends on another bean, where the referenced bean
@@ -67,7 +68,7 @@ public class PropertyDependentAspectTests {
 		assertTrue("Proxy didn't get created", counter instanceof Advised);
 
 		counter.increment();
-		JoinPointMonitorAspect callCountingAspect = (JoinPointMonitorAspect)context.getBean("monitoringAspect");
+		JoinPointMonitorAspect callCountingAspect = (JoinPointMonitorAspect) context.getBean("monitoringAspect");
 		assertEquals("Advise didn't get executed", 1, callCountingAspect.beforeExecutions);
 		assertEquals("Advise didn't get executed", 1, callCountingAspect.aroundExecutions);
 	}
@@ -78,7 +79,7 @@ public class PropertyDependentAspectTests {
 		assertTrue("Proxy didn't get created", counter instanceof Advised);
 
 		counter.increment();
-		JoinPointMonitorAtAspectJAspect callCountingAspect = (JoinPointMonitorAtAspectJAspect)context.getBean("monitoringAspect");
+		JoinPointMonitorAtAspectJAspect callCountingAspect = (JoinPointMonitorAtAspectJAspect) context.getBean("monitoringAspect");
 		assertEquals("Advise didn't get executed", 1, callCountingAspect.beforeExecutions);
 		assertEquals("Advise didn't get executed", 1, callCountingAspect.aroundExecutions);
 	}
@@ -88,15 +89,14 @@ public class PropertyDependentAspectTests {
 
 class JoinPointMonitorAspect {
 
+	int beforeExecutions;
+	int aroundExecutions;
 	/**
 	 * The counter property is purposefully not used in the aspect to avoid distraction
 	 * from the main bug -- merely needing a dependency on an advised bean
 	 * is sufficient to reproduce the bug.
 	 */
 	private ICounter counter;
-
-	int beforeExecutions;
-	int aroundExecutions;
 
 	public void before() {
 		beforeExecutions++;
@@ -120,14 +120,13 @@ class JoinPointMonitorAspect {
 
 @Aspect
 class JoinPointMonitorAtAspectJAspect {
+	int beforeExecutions;
+	int aroundExecutions;
 	/* The counter property is purposefully not used in the aspect to avoid distraction
 	 * from the main bug -- merely needing a dependency on an advised bean
 	 * is sufficient to reproduce the bug.
 	 */
 	private ICounter counter;
-
-	int beforeExecutions;
-	int aroundExecutions;
 
 	@Before("execution(* increment*())")
 	public void before() {

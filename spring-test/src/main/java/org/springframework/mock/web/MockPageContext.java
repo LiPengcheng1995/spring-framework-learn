@@ -16,28 +16,19 @@
 
 package org.springframework.mock.web;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+
 import javax.el.ELContext;
-import javax.servlet.Servlet;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
 
 /**
  * Mock implementation of the {@link javax.servlet.jsp.PageContext} interface.
@@ -78,8 +69,9 @@ public class MockPageContext extends PageContext {
 	/**
 	 * Create new MockPageContext with a default {@link MockHttpServletRequest},
 	 * {@link MockHttpServletResponse}, {@link MockServletConfig}.
+	 *
 	 * @param servletContext the ServletContext that the JSP page runs in
-	 * (only necessary when actually accessing the ServletContext)
+	 *                       (only necessary when actually accessing the ServletContext)
 	 */
 	public MockPageContext(@Nullable ServletContext servletContext) {
 		this(servletContext, null, null, null);
@@ -88,9 +80,10 @@ public class MockPageContext extends PageContext {
 	/**
 	 * Create new MockPageContext with a MockHttpServletResponse,
 	 * MockServletConfig.
+	 *
 	 * @param servletContext the ServletContext that the JSP page runs in
-	 * @param request the current HttpServletRequest
-	 * (only necessary when actually accessing the request)
+	 * @param request        the current HttpServletRequest
+	 *                       (only necessary when actually accessing the request)
 	 */
 	public MockPageContext(@Nullable ServletContext servletContext, @Nullable HttpServletRequest request) {
 		this(servletContext, request, null, null);
@@ -98,26 +91,28 @@ public class MockPageContext extends PageContext {
 
 	/**
 	 * Create new MockPageContext with a MockServletConfig.
+	 *
 	 * @param servletContext the ServletContext that the JSP page runs in
-	 * @param request the current HttpServletRequest
-	 * @param response the current HttpServletResponse
-	 * (only necessary when actually writing to the response)
+	 * @param request        the current HttpServletRequest
+	 * @param response       the current HttpServletResponse
+	 *                       (only necessary when actually writing to the response)
 	 */
 	public MockPageContext(@Nullable ServletContext servletContext, @Nullable HttpServletRequest request,
-			@Nullable HttpServletResponse response) {
+						   @Nullable HttpServletResponse response) {
 
 		this(servletContext, request, response, null);
 	}
 
 	/**
 	 * Create new MockServletConfig.
+	 *
 	 * @param servletContext the ServletContext that the JSP page runs in
-	 * @param request the current HttpServletRequest
-	 * @param response the current HttpServletResponse
-	 * @param servletConfig the ServletConfig (hardly ever accessed from within a tag)
+	 * @param request        the current HttpServletRequest
+	 * @param response       the current HttpServletResponse
+	 * @param servletConfig  the ServletConfig (hardly ever accessed from within a tag)
 	 */
 	public MockPageContext(@Nullable ServletContext servletContext, @Nullable HttpServletRequest request,
-			@Nullable HttpServletResponse response, @Nullable ServletConfig servletConfig) {
+						   @Nullable HttpServletResponse response, @Nullable ServletConfig servletConfig) {
 
 		this.servletContext = (servletContext != null ? servletContext : new MockServletContext());
 		this.request = (request != null ? request : new MockHttpServletRequest(servletContext));
@@ -143,8 +138,7 @@ public class MockPageContext extends PageContext {
 		Assert.notNull(name, "Attribute name must not be null");
 		if (value != null) {
 			this.attributes.put(name, value);
-		}
-		else {
+		} else {
 			this.attributes.remove(name);
 		}
 	}
@@ -246,17 +240,13 @@ public class MockPageContext extends PageContext {
 	public int getAttributesScope(String name) {
 		if (getAttribute(name) != null) {
 			return PAGE_SCOPE;
-		}
-		else if (getAttribute(name, REQUEST_SCOPE) != null) {
+		} else if (getAttribute(name, REQUEST_SCOPE) != null) {
 			return REQUEST_SCOPE;
-		}
-		else if (getAttribute(name, SESSION_SCOPE) != null) {
+		} else if (getAttribute(name, SESSION_SCOPE) != null) {
 			return SESSION_SCOPE;
-		}
-		else if (getAttribute(name, APPLICATION_SCOPE) != null) {
+		} else if (getAttribute(name, APPLICATION_SCOPE) != null) {
 			return APPLICATION_SCOPE;
-		}
-		else {
+		} else {
 			return 0;
 		}
 	}

@@ -16,11 +16,10 @@
 
 package org.springframework.transaction.interceptor;
 
-import java.lang.reflect.Method;
-
 import org.junit.Test;
-
 import org.springframework.transaction.TransactionDefinition;
+
+import java.lang.reflect.Method;
 
 import static org.junit.Assert.*;
 
@@ -55,11 +54,11 @@ public class TransactionAttributeSourceEditorTests {
 	@Test
 	public void matchesSpecific() throws Exception {
 		editor.setAsText(
-			"java.lang.Object.hashCode=PROPAGATION_REQUIRED\n" +
-			"java.lang.Object.equals=PROPAGATION_MANDATORY\n" +
-			"java.lang.Object.*it=PROPAGATION_SUPPORTS\n" +
-			"java.lang.Object.notify=PROPAGATION_SUPPORTS\n" +
-			"java.lang.Object.not*=PROPAGATION_REQUIRED");
+				"java.lang.Object.hashCode=PROPAGATION_REQUIRED\n" +
+						"java.lang.Object.equals=PROPAGATION_MANDATORY\n" +
+						"java.lang.Object.*it=PROPAGATION_SUPPORTS\n" +
+						"java.lang.Object.notify=PROPAGATION_SUPPORTS\n" +
+						"java.lang.Object.not*=PROPAGATION_REQUIRED");
 		TransactionAttributeSource tas = (TransactionAttributeSource) editor.getValue();
 
 		checkTransactionProperties(tas, Object.class.getMethod("hashCode"),
@@ -108,8 +107,7 @@ public class TransactionAttributeSourceEditorTests {
 			assertNotNull(ta);
 			assertEquals(TransactionDefinition.ISOLATION_DEFAULT, ta.getIsolationLevel());
 			assertEquals(propagationBehavior, ta.getPropagationBehavior());
-		}
-		else {
+		} else {
 			assertNull(ta);
 		}
 	}

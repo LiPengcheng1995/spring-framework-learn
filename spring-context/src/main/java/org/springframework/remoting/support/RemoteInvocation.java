@@ -16,16 +16,15 @@
 
 package org.springframework.remoting.support;
 
+import org.aopalliance.intercept.MethodInvocation;
+import org.springframework.lang.Nullable;
+import org.springframework.util.ClassUtils;
+
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.aopalliance.intercept.MethodInvocation;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.ClassUtils;
 
 /**
  * Encapsulates a remote invocation, providing core method invocation properties
@@ -38,7 +37,6 @@ import org.springframework.util.ClassUtils;
  * for use with standard Java serialization as well as JavaBean-style serialization.
  *
  * @author Juergen Hoeller
- * @since 25.02.2004
  * @see RemoteInvocationResult
  * @see RemoteInvocationFactory
  * @see RemoteInvocationExecutor
@@ -46,10 +44,13 @@ import org.springframework.util.ClassUtils;
  * @see org.springframework.remoting.rmi.RmiServiceExporter
  * @see org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean
  * @see org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter
+ * @since 25.02.2004
  */
 public class RemoteInvocation implements Serializable {
 
-	/** use serialVersionUID from Spring 1.1 for interoperability */
+	/**
+	 * use serialVersionUID from Spring 1.1 for interoperability
+	 */
 	private static final long serialVersionUID = 6876024250231820554L;
 
 
@@ -64,6 +65,7 @@ public class RemoteInvocation implements Serializable {
 
 	/**
 	 * Create a new RemoteInvocation for the given AOP method invocation.
+	 *
 	 * @param methodInvocation the AOP invocation to convert
 	 */
 	public RemoteInvocation(MethodInvocation methodInvocation) {
@@ -74,9 +76,10 @@ public class RemoteInvocation implements Serializable {
 
 	/**
 	 * Create a new RemoteInvocation for the given parameters.
-	 * @param methodName the name of the method to invoke
+	 *
+	 * @param methodName     the name of the method to invoke
 	 * @param parameterTypes the parameter types of the method
-	 * @param arguments the arguments for the invocation
+	 * @param arguments      the arguments for the invocation
 	 */
 	public RemoteInvocation(String methodName, Class<?>[] parameterTypes, Object[] arguments) {
 		this.methodName = methodName;
@@ -91,6 +94,12 @@ public class RemoteInvocation implements Serializable {
 	public RemoteInvocation() {
 	}
 
+	/**
+	 * Return the name of the target method.
+	 */
+	public String getMethodName() {
+		return this.methodName;
+	}
 
 	/**
 	 * Set the name of the target method.
@@ -101,10 +110,10 @@ public class RemoteInvocation implements Serializable {
 	}
 
 	/**
-	 * Return the name of the target method.
+	 * Return the parameter types of the target method.
 	 */
-	public String getMethodName() {
-		return this.methodName;
+	public Class<?>[] getParameterTypes() {
+		return this.parameterTypes;
 	}
 
 	/**
@@ -116,10 +125,10 @@ public class RemoteInvocation implements Serializable {
 	}
 
 	/**
-	 * Return the parameter types of the target method.
+	 * Return the arguments for the target method call.
 	 */
-	public Class<?>[] getParameterTypes() {
-		return this.parameterTypes;
+	public Object[] getArguments() {
+		return this.arguments;
 	}
 
 	/**
@@ -131,21 +140,14 @@ public class RemoteInvocation implements Serializable {
 	}
 
 	/**
-	 * Return the arguments for the target method call.
-	 */
-	public Object[] getArguments() {
-		return this.arguments;
-	}
-
-
-	/**
 	 * Add an additional invocation attribute. Useful to add additional
 	 * invocation context without having to subclass RemoteInvocation.
 	 * <p>Attribute keys have to be unique, and no overriding of existing
 	 * attributes is allowed.
 	 * <p>The implementation avoids to unnecessarily create the attributes
 	 * Map, to minimize serialization size.
-	 * @param key the attribute key
+	 *
+	 * @param key   the attribute key
 	 * @param value the attribute value
 	 * @throws IllegalStateException if the key is already bound
 	 */
@@ -163,6 +165,7 @@ public class RemoteInvocation implements Serializable {
 	 * Retrieve the attribute for the given key, if any.
 	 * <p>The implementation avoids to unnecessarily create the attributes
 	 * Map, to minimize serialization size.
+	 *
 	 * @param key the attribute key
 	 * @return the attribute value, or {@code null} if not defined
 	 */
@@ -175,19 +178,9 @@ public class RemoteInvocation implements Serializable {
 	}
 
 	/**
-	 * Set the attributes Map. Only here for special purposes:
-	 * Preferably, use {@link #addAttribute} and {@link #getAttribute}.
-	 * @param attributes the attributes Map
-	 * @see #addAttribute
-	 * @see #getAttribute
-	 */
-	public void setAttributes(@Nullable Map<String, Serializable> attributes) {
-		this.attributes = attributes;
-	}
-
-	/**
 	 * Return the attributes Map. Mainly here for debugging purposes:
 	 * Preferably, use {@link #addAttribute} and {@link #getAttribute}.
+	 *
 	 * @return the attributes Map, or {@code null} if none created
 	 * @see #addAttribute
 	 * @see #getAttribute
@@ -197,14 +190,26 @@ public class RemoteInvocation implements Serializable {
 		return this.attributes;
 	}
 
+	/**
+	 * Set the attributes Map. Only here for special purposes:
+	 * Preferably, use {@link #addAttribute} and {@link #getAttribute}.
+	 *
+	 * @param attributes the attributes Map
+	 * @see #addAttribute
+	 * @see #getAttribute
+	 */
+	public void setAttributes(@Nullable Map<String, Serializable> attributes) {
+		this.attributes = attributes;
+	}
 
 	/**
 	 * Perform this invocation on the given target object.
 	 * Typically called when a RemoteInvocation is received on the server.
+	 *
 	 * @param targetObject the target object to apply the invocation to
 	 * @return the invocation result
-	 * @throws NoSuchMethodException if the method name could not be resolved
-	 * @throws IllegalAccessException if the method could not be accessed
+	 * @throws NoSuchMethodException     if the method name could not be resolved
+	 * @throws IllegalAccessException    if the method could not be accessed
 	 * @throws InvocationTargetException if the method invocation resulted in an exception
 	 * @see java.lang.reflect.Method#invoke
 	 */

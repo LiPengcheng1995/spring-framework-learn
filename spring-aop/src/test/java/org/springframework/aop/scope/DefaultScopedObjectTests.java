@@ -17,10 +17,9 @@
 package org.springframework.aop.scope;
 
 import org.junit.Test;
-
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.mock;
 
 /**
  * Unit tests for the {@link DefaultScopedObject} class.
@@ -32,6 +31,10 @@ public class DefaultScopedObjectTests {
 
 	private static final String GOOD_BEAN_NAME = "foo";
 
+	private static void testBadTargetBeanName(final String badTargetBeanName) {
+		ConfigurableBeanFactory factory = mock(ConfigurableBeanFactory.class);
+		new DefaultScopedObject(factory, badTargetBeanName);
+	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testCtorWithNullBeanFactory() throws Exception {
@@ -51,11 +54,6 @@ public class DefaultScopedObjectTests {
 	@Test(expected = IllegalArgumentException.class)
 	public void testCtorWithJustWhitespacedTargetBeanName() throws Exception {
 		testBadTargetBeanName("   ");
-	}
-
-	private static void testBadTargetBeanName(final String badTargetBeanName) {
-		ConfigurableBeanFactory factory = mock(ConfigurableBeanFactory.class);
-		new DefaultScopedObject(factory, badTargetBeanName);
 	}
 
 }

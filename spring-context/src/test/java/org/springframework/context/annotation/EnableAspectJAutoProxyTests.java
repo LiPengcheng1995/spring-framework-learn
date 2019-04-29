@@ -16,9 +16,6 @@
 
 package org.springframework.context.annotation;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 import example.scannable.FooDao;
 import example.scannable.FooService;
 import example.scannable.FooServiceImpl;
@@ -26,13 +23,15 @@ import example.scannable.ServiceInvocationCounter;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.junit.Test;
-
 import org.springframework.aop.framework.AopContext;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import static org.hamcrest.CoreMatchers.*;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 /**
@@ -107,17 +106,19 @@ public class EnableAspectJAutoProxyTests {
 	}
 
 
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface Loggable {
+	}
+
 	@ComponentScan("example.scannable")
 	@EnableAspectJAutoProxy
 	static class ConfigWithJdkProxy {
 	}
 
-
 	@ComponentScan("example.scannable")
 	@EnableAspectJAutoProxy(proxyTargetClass = true)
 	static class ConfigWithCglibProxy {
 	}
-
 
 	@ComponentScan("example.scannable")
 	@EnableAspectJAutoProxy(exposeProxy = true)
@@ -131,6 +132,7 @@ public class EnableAspectJAutoProxyTests {
 					assertNotNull(AopContext.currentProxy());
 					return super.foo(id);
 				}
+
 				@Override
 				protected FooDao fooDao() {
 					return context.getBean(FooDao.class);
@@ -138,12 +140,6 @@ public class EnableAspectJAutoProxyTests {
 			};
 		}
 	}
-
-
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface Loggable {
-	}
-
 
 	@Loggable
 	public static class SampleDto {

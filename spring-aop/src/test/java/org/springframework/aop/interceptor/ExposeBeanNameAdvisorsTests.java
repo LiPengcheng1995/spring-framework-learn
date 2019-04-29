@@ -17,7 +17,6 @@
 package org.springframework.aop.interceptor;
 
 import org.junit.Test;
-
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.NamedBean;
 import org.springframework.tests.sample.beans.ITestBean;
@@ -30,20 +29,6 @@ import static org.junit.Assert.*;
  * @author Chris Beams
  */
 public class ExposeBeanNameAdvisorsTests {
-
-	private class RequiresBeanNameBoundTestBean extends TestBean {
-		private final String beanName;
-
-		public RequiresBeanNameBoundTestBean(String beanName) {
-			this.beanName = beanName;
-		}
-
-		@Override
-		public int getAge() {
-			assertEquals(beanName, ExposeBeanNameAdvisors.getBeanName());
-			return super.getAge();
-		}
-	}
 
 	@Test
 	public void testNoIntroduction() {
@@ -74,6 +59,20 @@ public class ExposeBeanNameAdvisorsTests {
 
 		NamedBean nb = (NamedBean) proxy;
 		assertEquals("Name returned correctly", beanName, nb.getBeanName());
+	}
+
+	private class RequiresBeanNameBoundTestBean extends TestBean {
+		private final String beanName;
+
+		public RequiresBeanNameBoundTestBean(String beanName) {
+			this.beanName = beanName;
+		}
+
+		@Override
+		public int getAge() {
+			assertEquals(beanName, ExposeBeanNameAdvisors.getBeanName());
+			return super.getAge();
+		}
 	}
 
 }

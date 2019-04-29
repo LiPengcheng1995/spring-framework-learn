@@ -16,11 +16,11 @@
 
 package org.springframework.beans;
 
-import java.io.Serializable;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+
+import java.io.Serializable;
 
 /**
  * Object to hold information and value for an individual bean property.
@@ -35,9 +35,9 @@ import org.springframework.util.ObjectUtils;
  * @author Rod Johnson
  * @author Rob Harrop
  * @author Juergen Hoeller
- * @since 13 May 2001
  * @see PropertyValues
  * @see BeanWrapper
+ * @since 13 May 2001
  */
 @SuppressWarnings("serial")
 public class PropertyValue extends BeanMetadataAttributeAccessor implements Serializable {
@@ -46,26 +46,26 @@ public class PropertyValue extends BeanMetadataAttributeAccessor implements Seri
 
 	@Nullable
 	private final Object value;
-
-	private boolean optional = false;
-
-	private boolean converted = false;
-
-	@Nullable
-	private Object convertedValue;
-
-	/** Package-visible field that indicates whether conversion is necessary */
+	/**
+	 * Package-visible field that indicates whether conversion is necessary
+	 */
 	@Nullable
 	volatile Boolean conversionNecessary;
-
-	/** Package-visible field for caching the resolved property path tokens */
+	/**
+	 * Package-visible field for caching the resolved property path tokens
+	 */
 	@Nullable
 	transient volatile Object resolvedTokens;
+	private boolean optional = false;
+	private boolean converted = false;
+	@Nullable
+	private Object convertedValue;
 
 
 	/**
 	 * Create a new PropertyValue instance.
-	 * @param name the name of the property (never {@code null})
+	 *
+	 * @param name  the name of the property (never {@code null})
 	 * @param value the value of the property (possibly before type conversion)
 	 */
 	public PropertyValue(String name, @Nullable Object value) {
@@ -76,6 +76,7 @@ public class PropertyValue extends BeanMetadataAttributeAccessor implements Seri
 
 	/**
 	 * Copy constructor.
+	 *
 	 * @param original the PropertyValue to copy (never {@code null})
 	 */
 	public PropertyValue(PropertyValue original) {
@@ -94,6 +95,7 @@ public class PropertyValue extends BeanMetadataAttributeAccessor implements Seri
 	/**
 	 * Constructor that exposes a new value for an original value holder.
 	 * The original holder will be exposed as source of the new holder.
+	 *
 	 * @param original the PropertyValue to link to (never {@code null})
 	 * @param newValue the new value to apply
 	 */
@@ -129,6 +131,7 @@ public class PropertyValue extends BeanMetadataAttributeAccessor implements Seri
 
 	/**
 	 * Return the original PropertyValue instance for this value holder.
+	 *
 	 * @return the original PropertyValue (either a source of this
 	 * value holder or this value holder itself).
 	 */
@@ -143,21 +146,23 @@ public class PropertyValue extends BeanMetadataAttributeAccessor implements Seri
 	}
 
 	/**
-	 * Set whether this is an optional value, that is, to be ignored
-	 * when no corresponding property exists on the target class.
-	 * @since 3.0
-	 */
-	public void setOptional(boolean optional) {
-		this.optional = optional;
-	}
-
-	/**
 	 * Return whether this is an optional value, that is, to be ignored
 	 * when no corresponding property exists on the target class.
+	 *
 	 * @since 3.0
 	 */
 	public boolean isOptional() {
 		return this.optional;
+	}
+
+	/**
+	 * Set whether this is an optional value, that is, to be ignored
+	 * when no corresponding property exists on the target class.
+	 *
+	 * @since 3.0
+	 */
+	public void setOptional(boolean optional) {
+		this.optional = optional;
 	}
 
 	/**
@@ -169,15 +174,6 @@ public class PropertyValue extends BeanMetadataAttributeAccessor implements Seri
 	}
 
 	/**
-	 * Set the converted value of the constructor argument,
-	 * after processed type conversion.
-	 */
-	public synchronized void setConvertedValue(@Nullable Object value) {
-		this.converted = true;
-		this.convertedValue = value;
-	}
-
-	/**
 	 * Return the converted value of the constructor argument,
 	 * after processed type conversion.
 	 */
@@ -186,6 +182,14 @@ public class PropertyValue extends BeanMetadataAttributeAccessor implements Seri
 		return this.convertedValue;
 	}
 
+	/**
+	 * Set the converted value of the constructor argument,
+	 * after processed type conversion.
+	 */
+	public synchronized void setConvertedValue(@Nullable Object value) {
+		this.converted = true;
+		this.convertedValue = value;
+	}
 
 	@Override
 	public boolean equals(Object other) {

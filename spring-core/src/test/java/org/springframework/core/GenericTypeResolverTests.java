@@ -16,6 +16,8 @@
 
 package org.springframework.core;
 
+import org.junit.Test;
+
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -25,12 +27,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.*;
 import static org.springframework.core.GenericTypeResolver.*;
-import static org.springframework.util.ReflectionUtils.*;
+import static org.springframework.util.ReflectionUtils.findMethod;
 
 /**
  * @author Juergen Hoeller
@@ -130,8 +130,7 @@ public class GenericTypeResolverTests {
 		for (Map.Entry<TypeVariable, Type> entry : map.entrySet()) {
 			if (entry.getKey().toString().equals("T")) {
 				t = entry.getValue();
-			}
-			else {
+			} else {
 				x = entry.getValue();
 			}
 		}
@@ -179,46 +178,13 @@ public class GenericTypeResolverTests {
 	public interface MyInterfaceType<T> {
 	}
 
-	public class MySimpleInterfaceType implements MyInterfaceType<String> {
+	interface Repository<T, ID extends Serializable> {
 	}
 
-	public class MyCollectionInterfaceType implements MyInterfaceType<Collection<String>> {
-	}
-
-	public abstract class MySuperclassType<T> {
-	}
-
-	public class MySimpleSuperclassType extends MySuperclassType<String> {
-	}
-
-	public class MyCollectionSuperclassType extends MySuperclassType<Collection<String>> {
+	interface IdFixingRepository<T> extends Repository<T, Long> {
 	}
 
 	public static class MyTypeWithMethods<T> {
-
-		public MyInterfaceType<Integer> integer() {
-			return null;
-		}
-
-		public MySimpleInterfaceType string() {
-			return null;
-		}
-
-		public Object object() {
-			return null;
-		}
-
-		public MyInterfaceType raw() {
-			return null;
-		}
-
-		public String notParameterized() {
-			return null;
-		}
-
-		public String notParameterizedWithArguments(Integer x, Boolean b) {
-			return null;
-		}
 
 		/**
 		 * Simulates a factory method that wraps the supplied object in a proxy of the
@@ -275,6 +241,30 @@ public class GenericTypeResolverTests {
 			return null;
 		}
 
+		public MyInterfaceType<Integer> integer() {
+			return null;
+		}
+
+		public MySimpleInterfaceType string() {
+			return null;
+		}
+
+		public Object object() {
+			return null;
+		}
+
+		public MyInterfaceType raw() {
+			return null;
+		}
+
+		public String notParameterized() {
+			return null;
+		}
+
+		public String notParameterizedWithArguments(Integer x, Boolean b) {
+			return null;
+		}
+
 		public void readIntegerInputMessage(MyInterfaceType<Integer> message) {
 		}
 
@@ -289,15 +279,6 @@ public class GenericTypeResolverTests {
 	}
 
 	static class GenericClass<T> {
-	}
-
-	class A{}
-
-	class B<T>{}
-
-	class TestIfc<T>{}
-
-	class TestImpl<I extends A, T extends B<I>> extends TestIfc<T>{
 	}
 
 	static class TopLevelClass<T> {
@@ -318,10 +299,31 @@ public class GenericTypeResolverTests {
 	static abstract class WithArray<T> extends WithArrayBase<T> {
 	}
 
-	interface Repository<T, ID extends Serializable> {
+	public class MySimpleInterfaceType implements MyInterfaceType<String> {
 	}
 
-	interface IdFixingRepository<T> extends Repository<T, Long> {
+	public class MyCollectionInterfaceType implements MyInterfaceType<Collection<String>> {
+	}
+
+	public abstract class MySuperclassType<T> {
+	}
+
+	public class MySimpleSuperclassType extends MySuperclassType<String> {
+	}
+
+	public class MyCollectionSuperclassType extends MySuperclassType<Collection<String>> {
+	}
+
+	class A {
+	}
+
+	class B<T> {
+	}
+
+	class TestIfc<T> {
+	}
+
+	class TestImpl<I extends A, T extends B<I>> extends TestIfc<T> {
 	}
 
 }

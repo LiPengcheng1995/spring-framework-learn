@@ -16,12 +16,7 @@
 
 package org.springframework.context.support;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-
 import org.junit.Test;
-
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.support.PropertiesBeanDefinitionReader;
 import org.springframework.context.ACATester;
@@ -30,6 +25,10 @@ import org.springframework.context.BeanThatListens;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.tests.sample.beans.TestBean;
+
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Tests for static application context.
@@ -49,7 +48,7 @@ public class StaticApplicationContextTests extends AbstractApplicationContextTes
 		m.put("name", "Albert");
 		parent.registerPrototype("father", TestBean.class, new MutablePropertyValues(m));
 		parent.refresh();
-		parent.addApplicationListener(parentListener) ;
+		parent.addApplicationListener(parentListener);
 
 		parent.getStaticMessageSource().addMessage("code1", Locale.getDefault(), "message1");
 

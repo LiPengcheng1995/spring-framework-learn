@@ -19,7 +19,8 @@ package org.springframework.jndi;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Rod Johnson
@@ -32,8 +33,7 @@ public class JndiTemplateEditorTests {
 		try {
 			new JndiTemplateEditor().setAsText(null);
 			fail("Null is illegal");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// OK
 		}
 	}

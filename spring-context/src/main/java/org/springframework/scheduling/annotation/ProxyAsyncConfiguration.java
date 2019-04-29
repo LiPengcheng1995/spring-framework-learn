@@ -16,8 +16,6 @@
 
 package org.springframework.scheduling.annotation;
 
-import java.lang.annotation.Annotation;
-
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,15 +24,17 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.scheduling.config.TaskManagementConfigUtils;
 import org.springframework.util.Assert;
 
+import java.lang.annotation.Annotation;
+
 /**
  * {@code @Configuration} class that registers the Spring infrastructure beans necessary
  * to enable proxy-based asynchronous method execution.
  *
  * @author Chris Beams
  * @author Stephane Nicoll
- * @since 3.1
  * @see EnableAsync
  * @see AsyncConfigurationSelector
+ * @since 3.1
  */
 @Configuration
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)

@@ -37,6 +37,13 @@ public class IdTimestampMessageHeaderInitializer implements MessageHeaderInitial
 
 	private boolean enableTimestamp;
 
+	/**
+	 * Return the configured {@code IdGenerator}, if any.
+	 */
+	@Nullable
+	public IdGenerator getIdGenerator() {
+		return this.idGenerator;
+	}
 
 	/**
 	 * Configure the IdGenerator strategy to initialize {@code MessageHeaderAccessor}
@@ -50,19 +57,18 @@ public class IdTimestampMessageHeaderInitializer implements MessageHeaderInitial
 	}
 
 	/**
-	 * Return the configured {@code IdGenerator}, if any.
-	 */
-	@Nullable
-	public IdGenerator getIdGenerator() {
-		return this.idGenerator;
-	}
-
-	/**
 	 * A shortcut for calling {@link #setIdGenerator} with an id generation strategy
 	 * to disable id generation completely.
 	 */
 	public void setDisableIdGeneration() {
 		this.idGenerator = ID_VALUE_NONE_GENERATOR;
+	}
+
+	/**
+	 * Return whether the timestamp header is enabled or not.
+	 */
+	public boolean isEnableTimestamp() {
+		return this.enableTimestamp;
 	}
 
 	/**
@@ -74,14 +80,6 @@ public class IdTimestampMessageHeaderInitializer implements MessageHeaderInitial
 	public void setEnableTimestamp(boolean enableTimestamp) {
 		this.enableTimestamp = enableTimestamp;
 	}
-
-	/**
-	 * Return whether the timestamp header is enabled or not.
-	 */
-	public boolean isEnableTimestamp() {
-		return this.enableTimestamp;
-	}
-
 
 	@Override
 	public void initHeaders(MessageHeaderAccessor headerAccessor) {

@@ -16,17 +16,17 @@
 
 package org.springframework.http.client;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.Iterator;
-import java.util.List;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.concurrent.ListenableFuture;
+
+import java.io.IOException;
+import java.net.URI;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * An {@link AsyncClientHttpRequest} wrapper that enriches it proceeds the actual
@@ -51,13 +51,14 @@ class InterceptingAsyncClientHttpRequest extends AbstractBufferingAsyncClientHtt
 
 	/**
 	 * Create new instance of {@link InterceptingAsyncClientHttpRequest}.
+	 *
 	 * @param requestFactory the async request factory
-	 * @param interceptors the list of interceptors
-	 * @param uri the request URI
-	 * @param httpMethod the HTTP method
+	 * @param interceptors   the list of interceptors
+	 * @param uri            the request URI
+	 * @param httpMethod     the HTTP method
 	 */
 	public InterceptingAsyncClientHttpRequest(AsyncClientHttpRequestFactory requestFactory,
-			List<AsyncClientHttpRequestInterceptor> interceptors, URI uri, HttpMethod httpMethod) {
+											  List<AsyncClientHttpRequestInterceptor> interceptors, URI uri, HttpMethod httpMethod) {
 
 		this.requestFactory = requestFactory;
 		this.interceptors = interceptors;
@@ -104,8 +105,7 @@ class InterceptingAsyncClientHttpRequest extends AbstractBufferingAsyncClientHtt
 			if (this.iterator.hasNext()) {
 				AsyncClientHttpRequestInterceptor interceptor = this.iterator.next();
 				return interceptor.intercept(request, body, this);
-			}
-			else {
+			} else {
 				URI uri = request.getURI();
 				HttpMethod method = request.getMethod();
 				HttpHeaders headers = request.getHeaders();

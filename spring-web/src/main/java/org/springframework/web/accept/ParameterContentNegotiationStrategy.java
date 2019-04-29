@@ -16,12 +16,12 @@
 
 package org.springframework.web.accept;
 
-import java.util.Map;
-
 import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.web.context.request.NativeWebRequest;
+
+import java.util.Map;
 
 /**
  * Strategy that resolves the requested content type from a query parameter.
@@ -47,6 +47,9 @@ public class ParameterContentNegotiationStrategy extends AbstractMappingContentN
 		super(mediaTypes);
 	}
 
+	public String getParameterName() {
+		return this.parameterName;
+	}
 
 	/**
 	 * Set the name of the parameter to use to determine requested media types.
@@ -56,11 +59,6 @@ public class ParameterContentNegotiationStrategy extends AbstractMappingContentN
 		Assert.notNull(parameterName, "'parameterName' is required");
 		this.parameterName = parameterName;
 	}
-
-	public String getParameterName() {
-		return this.parameterName;
-	}
-
 
 	@Override
 	@Nullable

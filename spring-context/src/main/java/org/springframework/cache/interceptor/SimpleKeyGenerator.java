@@ -30,16 +30,11 @@ import java.lang.reflect.Method;
  *
  * @author Phillip Webb
  * @author Juergen Hoeller
- * @since 4.0
  * @see SimpleKey
  * @see org.springframework.cache.annotation.CachingConfigurer
+ * @since 4.0
  */
 public class SimpleKeyGenerator implements KeyGenerator {
-
-	@Override
-	public Object generate(Object target, Method method, Object... params) {
-		return generateKey(params);
-	}
 
 	/**
 	 * Generate a key based on the specified parameters.
@@ -55,6 +50,11 @@ public class SimpleKeyGenerator implements KeyGenerator {
 			}
 		}
 		return new SimpleKey(params);
+	}
+
+	@Override
+	public Object generate(Object target, Method method, Object... params) {
+		return generateKey(params);
 	}
 
 }

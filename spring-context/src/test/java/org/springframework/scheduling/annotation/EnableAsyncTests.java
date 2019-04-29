@@ -16,6 +16,23 @@
 
 package org.springframework.scheduling.annotation;
 
+import org.junit.Test;
+import org.mockito.Mockito;
+import org.springframework.aop.Advisor;
+import org.springframework.aop.framework.Advised;
+import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
+import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.factory.BeanDefinitionStoreException;
+import org.springframework.beans.factory.BeanNotOfRequiredTypeException;
+import org.springframework.beans.factory.UnsatisfiedDependencyException;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.*;
+import org.springframework.core.Ordered;
+import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.stereotype.Component;
+import org.springframework.util.ReflectionUtils;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -26,31 +43,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.junit.Test;
-import org.mockito.Mockito;
-
-import org.springframework.aop.Advisor;
-import org.springframework.aop.framework.Advised;
-import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
-import org.springframework.aop.support.AopUtils;
-import org.springframework.beans.factory.BeanDefinitionStoreException;
-import org.springframework.beans.factory.BeanNotOfRequiredTypeException;
-import org.springframework.beans.factory.UnsatisfiedDependencyException;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.AdviceMode;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.core.Ordered;
-import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.stereotype.Component;
-import org.springframework.util.ReflectionUtils;
-
-import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.*;
 
@@ -94,8 +87,7 @@ public class EnableAsyncTests {
 		try {
 			ctx.refresh();
 			fail("Should have thrown UnsatisfiedDependencyException");
-		}
-		catch (UnsatisfiedDependencyException ex) {
+		} catch (UnsatisfiedDependencyException ex) {
 			assertTrue(ex.getCause() instanceof BeanNotOfRequiredTypeException);
 		}
 	}
@@ -108,8 +100,7 @@ public class EnableAsyncTests {
 		try {
 			ctx.refresh();
 			fail("Should have thrown UnsatisfiedDependencyException");
-		}
-		catch (UnsatisfiedDependencyException ex) {
+		} catch (UnsatisfiedDependencyException ex) {
 			assertTrue(ex.getCause() instanceof BeanNotOfRequiredTypeException);
 		}
 	}
@@ -241,6 +232,20 @@ public class EnableAsyncTests {
 	}
 
 
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface CustomAsync {
+	}
+
+
+	public interface AsyncInterface {
+
+		@Async
+		void work();
+
+		Thread getThreadOfExecution();
+	}
+
 	static class AsyncBeanWithExecutorQualifiedByName {
 
 		@Async
@@ -264,7 +269,6 @@ public class EnableAsyncTests {
 		}
 	}
 
-
 	static class AsyncBean {
 
 		private Thread threadOfExecution;
@@ -284,7 +288,6 @@ public class EnableAsyncTests {
 		}
 	}
 
-
 	@Component("asyncBean")
 	static class AsyncBeanWithInterface extends AsyncBean implements Runnable {
 
@@ -292,7 +295,6 @@ public class EnableAsyncTests {
 		public void run() {
 		}
 	}
-
 
 	static class AsyncBeanUser {
 
@@ -307,17 +309,9 @@ public class EnableAsyncTests {
 		}
 	}
 
-
 	@EnableAsync(annotation = CustomAsync.class)
 	static class CustomAsyncAnnotationConfig {
 	}
-
-
-	@Target(ElementType.METHOD)
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface CustomAsync {
-	}
-
 
 	static class CustomAsyncBean {
 
@@ -325,7 +319,6 @@ public class EnableAsyncTests {
 		public void work() {
 		}
 	}
-
 
 	@Configuration
 	@EnableAsync(order = Ordered.HIGHEST_PRECEDENCE)
@@ -337,7 +330,6 @@ public class EnableAsyncTests {
 		}
 	}
 
-
 	@Configuration
 	@EnableAsync(mode = AdviceMode.ASPECTJ)
 	static class AspectJAsyncAnnotationConfig {
@@ -347,7 +339,6 @@ public class EnableAsyncTests {
 			return new AsyncBean();
 		}
 	}
-
 
 	@Configuration
 	@EnableAsync
@@ -359,7 +350,6 @@ public class EnableAsyncTests {
 		}
 	}
 
-
 	@Configuration
 	@EnableAsync
 	static class AsyncConfigWithMockito {
@@ -370,7 +360,6 @@ public class EnableAsyncTests {
 			return Mockito.mock(AsyncBean.class);
 		}
 	}
-
 
 	@Configuration
 	@EnableAsync
@@ -393,7 +382,6 @@ public class EnableAsyncTests {
 		}
 	}
 
-
 	@Configuration
 	@EnableAsync
 	static class CustomExecutorBean {
@@ -408,7 +396,6 @@ public class EnableAsyncTests {
 			return Executors.newSingleThreadExecutor(new CustomizableThreadFactory("Custom-"));
 		}
 	}
-
 
 	@Configuration
 	@EnableAsync
@@ -437,16 +424,6 @@ public class EnableAsyncTests {
 			return new TestableAsyncUncaughtExceptionHandler();
 		}
 	}
-
-
-	public interface AsyncInterface {
-
-		@Async
-		void work();
-
-		Thread getThreadOfExecution();
-	}
-
 
 	public static class AsyncService implements AsyncInterface {
 

@@ -16,19 +16,19 @@
 
 package org.springframework.beans.propertyeditors;
 
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
+
 import java.beans.PropertyEditorSupport;
 import java.util.Locale;
 import java.util.ResourceBundle;
-
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link java.beans.PropertyEditor} implementation for standard JDK
  * {@link java.util.ResourceBundle ResourceBundles}.
  *
  * <p>Only supports conversion <i>from</i> a String, but not <i>to</i> a String.
- *
+ * <p>
  * Find below some examples of using this class in a (properly configured)
  * Spring container using XML-based metadata:
  *
@@ -87,8 +87,7 @@ public class ResourceBundleEditor extends PropertyEditorSupport {
 		int separator = name.indexOf(BASE_NAME_SEPARATOR);
 		if (separator == -1) {
 			setValue(ResourceBundle.getBundle(name));
-		}
-		else {
+		} else {
 			// The name potentially contains locale information
 			String baseName = name.substring(0, separator);
 			if (!StringUtils.hasText(baseName)) {

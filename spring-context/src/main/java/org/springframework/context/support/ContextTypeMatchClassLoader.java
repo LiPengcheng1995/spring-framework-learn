@@ -16,15 +16,15 @@
 
 package org.springframework.context.support;
 
-import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.springframework.core.DecoratingClassLoader;
 import org.springframework.core.OverridingClassLoader;
 import org.springframework.core.SmartClassLoader;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Special variant of an overriding ClassLoader, used for temporary type
@@ -33,30 +33,30 @@ import org.springframework.util.ReflectionUtils;
  * pick up recently loaded types in the parent ClassLoader.
  *
  * @author Juergen Hoeller
- * @since 2.5
  * @see AbstractApplicationContext
  * @see org.springframework.beans.factory.config.ConfigurableBeanFactory#setTempClassLoader
+ * @since 2.5
  */
 class ContextTypeMatchClassLoader extends DecoratingClassLoader implements SmartClassLoader {
+
+	private static Method findLoadedClassMethod;
 
 	static {
 		ClassLoader.registerAsParallelCapable();
 	}
 
-
-	private static Method findLoadedClassMethod;
-
 	static {
 		try {
 			findLoadedClassMethod = ClassLoader.class.getDeclaredMethod("findLoadedClass", String.class);
-		}
-		catch (NoSuchMethodException ex) {
+		} catch (NoSuchMethodException ex) {
 			throw new IllegalStateException("Invalid [java.lang.ClassLoader] class: no 'findLoadedClass' method defined!");
 		}
 	}
 
 
-	/** Cache for byte array per class name */
+	/**
+	 * Cache for byte array per class name
+	 */
 	private final Map<String, byte[]> bytesCache = new ConcurrentHashMap<>(256);
 
 
@@ -108,8 +108,7 @@ class ContextTypeMatchClassLoader extends DecoratingClassLoader implements Smart
 				bytes = loadBytesForClass(name);
 				if (bytes != null) {
 					bytesCache.put(name, bytes);
-				}
-				else {
+				} else {
 					return null;
 				}
 			}

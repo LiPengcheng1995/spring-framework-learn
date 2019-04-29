@@ -16,34 +16,25 @@
 
 package org.springframework.jms.remoting;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Enumeration;
-import javax.jms.CompletionListener;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageProducer;
-import javax.jms.ObjectMessage;
-import javax.jms.Queue;
-import javax.jms.QueueConnection;
-import javax.jms.QueueConnectionFactory;
-import javax.jms.QueueSession;
-import javax.jms.Session;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.jms.support.converter.MessageConversionException;
 import org.springframework.jms.support.converter.SimpleMessageConverter;
 import org.springframework.remoting.RemoteTimeoutException;
 import org.springframework.tests.sample.beans.ITestBean;
 import org.springframework.tests.sample.beans.TestBean;
 
+import javax.jms.*;
+import java.io.Serializable;
+import java.lang.IllegalStateException;
+import java.util.Arrays;
+import java.util.Enumeration;
+
 import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
 
 /**
  * @author Juergen Hoeller
@@ -131,8 +122,7 @@ public class JmsInvokerTests {
 		pfb.setConnectionFactory(this.mockConnectionFactory);
 		if (dynamicQueue) {
 			pfb.setQueueName("myQueue");
-		}
-		else {
+		} else {
 			pfb.setQueue(this.mockQueue);
 		}
 		pfb.setMessageConverter(new MockSimpleMessageConverter());
@@ -144,21 +134,19 @@ public class JmsInvokerTests {
 		assertEquals(99, proxy.getAge());
 		proxy.setAge(50);
 		assertEquals(50, proxy.getAge());
-		proxy.setStringArray(new String[] {"str1", "str2"});
-		assertTrue(Arrays.equals(new String[] {"str1", "str2"}, proxy.getStringArray()));
+		proxy.setStringArray(new String[]{"str1", "str2"});
+		assertTrue(Arrays.equals(new String[]{"str1", "str2"}, proxy.getStringArray()));
 
 		try {
 			proxy.exceptional(new IllegalStateException());
 			fail("Should have thrown IllegalStateException");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			// expected
 		}
 		try {
 			proxy.exceptional(new IllegalAccessException());
 			fail("Should have thrown IllegalAccessException");
-		}
-		catch (IllegalAccessException ex) {
+		} catch (IllegalAccessException ex) {
 			// expected
 		}
 	}
@@ -171,16 +159,12 @@ public class JmsInvokerTests {
 		public boolean closed = false;
 
 		@Override
-		public void setDisableMessageID(boolean b) throws JMSException {
-		}
-
-		@Override
 		public boolean getDisableMessageID() throws JMSException {
 			return false;
 		}
 
 		@Override
-		public void setDisableMessageTimestamp(boolean b) throws JMSException {
+		public void setDisableMessageID(boolean b) throws JMSException {
 		}
 
 		@Override
@@ -189,7 +173,7 @@ public class JmsInvokerTests {
 		}
 
 		@Override
-		public void setDeliveryMode(int i) throws JMSException {
+		public void setDisableMessageTimestamp(boolean b) throws JMSException {
 		}
 
 		@Override
@@ -198,7 +182,7 @@ public class JmsInvokerTests {
 		}
 
 		@Override
-		public void setPriority(int i) throws JMSException {
+		public void setDeliveryMode(int i) throws JMSException {
 		}
 
 		@Override
@@ -207,7 +191,7 @@ public class JmsInvokerTests {
 		}
 
 		@Override
-		public void setTimeToLive(long l) throws JMSException {
+		public void setPriority(int i) throws JMSException {
 		}
 
 		@Override
@@ -216,12 +200,16 @@ public class JmsInvokerTests {
 		}
 
 		@Override
-		public void setDeliveryDelay(long deliveryDelay) throws JMSException {
+		public void setTimeToLive(long l) throws JMSException {
 		}
 
 		@Override
 		public long getDeliveryDelay() throws JMSException {
 			return 0;
+		}
+
+		@Override
+		public void setDeliveryDelay(long deliveryDelay) throws JMSException {
 		}
 
 		@Override
@@ -280,13 +268,13 @@ public class JmsInvokerTests {
 		}
 
 		@Override
-		public void setObject(Serializable serializable) throws JMSException {
-			this.serializable = serializable;
+		public Serializable getObject() throws JMSException {
+			return serializable;
 		}
 
 		@Override
-		public Serializable getObject() throws JMSException {
-			return serializable;
+		public void setObject(Serializable serializable) throws JMSException {
+			this.serializable = serializable;
 		}
 
 		@Override
@@ -317,12 +305,12 @@ public class JmsInvokerTests {
 		}
 
 		@Override
-		public void setJMSCorrelationID(String string) throws JMSException {
+		public String getJMSCorrelationID() throws JMSException {
+			return null;
 		}
 
 		@Override
-		public String getJMSCorrelationID() throws JMSException {
-			return null;
+		public void setJMSCorrelationID(String string) throws JMSException {
 		}
 
 		@Override

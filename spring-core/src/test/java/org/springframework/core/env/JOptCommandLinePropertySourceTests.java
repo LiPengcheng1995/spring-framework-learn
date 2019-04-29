@@ -16,14 +16,15 @@
 
 package org.springframework.core.env;
 
-import java.util.Arrays;
-
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 /**
  * Unit tests for {@link JOptCommandLinePropertySource}.
@@ -40,7 +41,7 @@ public class JOptCommandLinePropertySourceTests {
 		OptionSet options = parser.parse("--foo=bar");
 
 		PropertySource<?> ps = new JOptCommandLinePropertySource(options);
-		assertThat((String)ps.getProperty("foo"), equalTo("bar"));
+		assertThat((String) ps.getProperty("foo"), equalTo("bar"));
 	}
 
 	@Test
@@ -51,7 +52,7 @@ public class JOptCommandLinePropertySourceTests {
 
 		PropertySource<?> ps = new JOptCommandLinePropertySource(options);
 		assertThat(ps.containsProperty("foo"), is(true));
-		assertThat((String)ps.getProperty("foo"), equalTo(""));
+		assertThat((String) ps.getProperty("foo"), equalTo(""));
 	}
 
 	@Test
@@ -64,7 +65,7 @@ public class JOptCommandLinePropertySourceTests {
 		PropertySource<?> ps = new JOptCommandLinePropertySource(options);
 		assertThat(ps.containsProperty("o1"), is(true));
 		assertThat(ps.containsProperty("o2"), is(false));
-		assertThat((String)ps.getProperty("o1"), equalTo(""));
+		assertThat((String) ps.getProperty("o1"), equalTo(""));
 		assertThat(ps.getProperty("o2"), nullValue());
 	}
 
@@ -75,7 +76,7 @@ public class JOptCommandLinePropertySourceTests {
 		OptionSet options = parser.parse("--foo=bar,baz,biz");
 
 		CommandLinePropertySource<?> ps = new JOptCommandLinePropertySource(options);
-		assertEquals(Arrays.asList("bar","baz","biz"), ps.getOptionValues("foo"));
+		assertEquals(Arrays.asList("bar", "baz", "biz"), ps.getOptionValues("foo"));
 		assertThat(ps.getProperty("foo"), equalTo("bar,baz,biz"));
 	}
 
@@ -86,7 +87,7 @@ public class JOptCommandLinePropertySourceTests {
 		OptionSet options = parser.parse("--foo=bar", "--foo=baz", "--foo=biz");
 
 		CommandLinePropertySource<?> ps = new JOptCommandLinePropertySource(options);
-		assertEquals(Arrays.asList("bar","baz","biz"), ps.getOptionValues("foo"));
+		assertEquals(Arrays.asList("bar", "baz", "biz"), ps.getOptionValues("foo"));
 		assertThat(ps.getProperty("foo"), equalTo("bar,baz,biz"));
 	}
 
@@ -113,7 +114,7 @@ public class JOptCommandLinePropertySourceTests {
 	@Test
 	public void withDefaultNonOptionArgsNameAndNoNonOptionArgsPresent() {
 		OptionParser parser = new OptionParser();
-		parser.acceptsAll(Arrays.asList("o1","option1")).withRequiredArg();
+		parser.acceptsAll(Arrays.asList("o1", "option1")).withRequiredArg();
 		parser.accepts("o2");
 		OptionSet optionSet = parser.parse("--o1=v1", "--o2");
 		EnumerablePropertySource<?> ps = new JOptCommandLinePropertySource(optionSet);
@@ -139,7 +140,7 @@ public class JOptCommandLinePropertySourceTests {
 		assertThat(ps.containsProperty("o1"), is(true));
 		assertThat(ps.containsProperty("o2"), is(true));
 
-		String nonOptionArgs = (String)ps.getProperty("nonOptionArgs");
+		String nonOptionArgs = (String) ps.getProperty("nonOptionArgs");
 		assertThat(nonOptionArgs, equalTo("noa1,noa2"));
 	}
 

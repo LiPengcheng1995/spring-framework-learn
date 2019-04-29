@@ -21,10 +21,9 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.aop.AopInvocationException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test for SPR-4675. A null value returned from around advice is very hard to debug if
@@ -36,10 +35,6 @@ public class NullPrimitiveTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
-
-	static interface Foo {
-		int getValue();
-	}
 
 	@Test
 	public void testNullPrimitiveWithJdkProxy() {
@@ -67,12 +62,6 @@ public class NullPrimitiveTests {
 		assertEquals(0, foo.getValue());
 	}
 
-	public static class Bar {
-		public int getValue() {
-			return 100;
-		}
-	}
-
 	@Test
 	public void testNullPrimitiveWithCglibProxy() {
 
@@ -90,6 +79,16 @@ public class NullPrimitiveTests {
 		thrown.expect(AopInvocationException.class);
 		thrown.expectMessage("Bar.getValue()");
 		assertEquals(0, bar.getValue());
+	}
+
+	static interface Foo {
+		int getValue();
+	}
+
+	public static class Bar {
+		public int getValue() {
+			return 100;
+		}
 	}
 
 }

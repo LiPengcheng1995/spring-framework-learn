@@ -16,10 +16,10 @@
 
 package org.springframework.expression;
 
-import java.util.List;
-
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.lang.Nullable;
+
+import java.util.List;
 
 /**
  * A constructor resolver attempts locate a constructor and returns a ConstructorExecutor
@@ -36,8 +36,9 @@ public interface ConstructorResolver {
 	 * Within the supplied context determine a suitable constructor on the supplied type
 	 * that can handle the specified arguments. Return a ConstructorExecutor that can be
 	 * used to invoke that constructor (or {@code null} if no constructor could be found).
-	 * @param context the current evaluation context
-	 * @param typeName the type upon which to look for the constructor
+	 *
+	 * @param context       the current evaluation context
+	 * @param typeName      the type upon which to look for the constructor
 	 * @param argumentTypes the arguments that the constructor must be able to handle
 	 * @return a ConstructorExecutor that can invoke the constructor, or null if non found
 	 */

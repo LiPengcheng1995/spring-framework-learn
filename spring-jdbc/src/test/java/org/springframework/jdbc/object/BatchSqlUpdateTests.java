@@ -16,17 +16,17 @@
 
 package org.springframework.jdbc.object;
 
+import org.junit.Test;
+import org.springframework.jdbc.core.SqlParameter;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.Types;
-import javax.sql.DataSource;
 
-import org.junit.Test;
-
-import org.springframework.jdbc.core.SqlParameter;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.*;
 
 /**
@@ -47,8 +47,8 @@ public class BatchSqlUpdateTests {
 
 	private void doTestBatchUpdate(boolean flushThroughBatchSize) throws Exception {
 		final String sql = "UPDATE NOSUCHTABLE SET DATE_DISPATCHED = SYSDATE WHERE ID = ?";
-		final int[] ids = new int[] { 100, 200 };
-		final int[] rowsAffected = new int[] { 1, 2 };
+		final int[] ids = new int[]{100, 200};
+		final int[] rowsAffected = new int[]{1, 2};
 
 		Connection connection = mock(Connection.class);
 		DataSource dataSource = mock(DataSource.class);
@@ -74,8 +74,7 @@ public class BatchSqlUpdateTests {
 		if (flushThroughBatchSize) {
 			assertEquals(0, update.getQueueCount());
 			assertEquals(2, update.getRowsAffected().length);
-		}
-		else {
+		} else {
 			assertEquals(2, update.getQueueCount());
 			assertEquals(0, update.getRowsAffected().length);
 		}
@@ -85,8 +84,7 @@ public class BatchSqlUpdateTests {
 
 		if (flushThroughBatchSize) {
 			assertTrue("flush did not execute updates", actualRowsAffected.length == 0);
-		}
-		else {
+		} else {
 			assertTrue("executed 2 updates", actualRowsAffected.length == 2);
 			assertEquals(rowsAffected[0], actualRowsAffected[0]);
 			assertEquals(rowsAffected[1], actualRowsAffected[1]);

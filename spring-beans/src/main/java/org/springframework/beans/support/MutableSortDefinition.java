@@ -16,9 +16,9 @@
 
 package org.springframework.beans.support;
 
-import java.io.Serializable;
-
 import org.springframework.util.StringUtils;
+
+import java.io.Serializable;
 
 /**
  * Mutable implementation of the {@link SortDefinition} interface.
@@ -26,8 +26,8 @@ import org.springframework.util.StringUtils;
  *
  * @author Juergen Hoeller
  * @author Jean-Pierre Pawlak
- * @since 26.05.2003
  * @see #setToggleAscendingOnProperty
+ * @since 26.05.2003
  */
 @SuppressWarnings("serial")
 public class MutableSortDefinition implements SortDefinition, Serializable {
@@ -44,6 +44,7 @@ public class MutableSortDefinition implements SortDefinition, Serializable {
 	/**
 	 * Create an empty MutableSortDefinition,
 	 * to be populated via its bean properties.
+	 *
 	 * @see #setProperty
 	 * @see #setIgnoreCase
 	 * @see #setAscending
@@ -54,6 +55,7 @@ public class MutableSortDefinition implements SortDefinition, Serializable {
 	/**
 	 * Copy constructor: create a new MutableSortDefinition
 	 * that mirrors the given sort definition.
+	 *
 	 * @param source the original sort definition
 	 */
 	public MutableSortDefinition(SortDefinition source) {
@@ -64,9 +66,10 @@ public class MutableSortDefinition implements SortDefinition, Serializable {
 
 	/**
 	 * Create a MutableSortDefinition for the given settings.
-	 * @param property the property to compare
+	 *
+	 * @param property   the property to compare
 	 * @param ignoreCase whether upper and lower case in String values should be ignored
-	 * @param ascending whether to sort ascending (true) or descending (false)
+	 * @param ascending  whether to sort ascending (true) or descending (false)
 	 */
 	public MutableSortDefinition(String property, boolean ignoreCase, boolean ascending) {
 		this.property = property;
@@ -76,26 +79,31 @@ public class MutableSortDefinition implements SortDefinition, Serializable {
 
 	/**
 	 * Create a new MutableSortDefinition.
+	 *
 	 * @param toggleAscendingOnSameProperty whether to toggle the ascending flag
-	 * if the same property gets set again (that is, {@code setProperty} gets
-	 * called with already set property name again).
+	 *                                      if the same property gets set again (that is, {@code setProperty} gets
+	 *                                      called with already set property name again).
 	 */
 	public MutableSortDefinition(boolean toggleAscendingOnSameProperty) {
 		this.toggleAscendingOnProperty = toggleAscendingOnSameProperty;
 	}
 
+	@Override
+	public String getProperty() {
+		return this.property;
+	}
 
 	/**
 	 * Set the property to compare.
 	 * <p>If the property was the same as the current, the sort is reversed if
 	 * "toggleAscendingOnProperty" is activated, else simply ignored.
+	 *
 	 * @see #setToggleAscendingOnProperty
 	 */
 	public void setProperty(String property) {
 		if (!StringUtils.hasLength(property)) {
 			this.property = "";
-		}
-		else {
+		} else {
 			// Implicit toggling of ascending?
 			if (isToggleAscendingOnProperty()) {
 				this.ascending = (!property.equals(this.property) || !this.ascending);
@@ -105,8 +113,8 @@ public class MutableSortDefinition implements SortDefinition, Serializable {
 	}
 
 	@Override
-	public String getProperty() {
-		return this.property;
+	public boolean isIgnoreCase() {
+		return this.ignoreCase;
 	}
 
 	/**
@@ -117,8 +125,8 @@ public class MutableSortDefinition implements SortDefinition, Serializable {
 	}
 
 	@Override
-	public boolean isIgnoreCase() {
-		return this.ignoreCase;
+	public boolean isAscending() {
+		return this.ascending;
 	}
 
 	/**
@@ -128,9 +136,12 @@ public class MutableSortDefinition implements SortDefinition, Serializable {
 		this.ascending = ascending;
 	}
 
-	@Override
-	public boolean isAscending() {
-		return this.ascending;
+	/**
+	 * Return whether to toggle the ascending flag if the same property gets set again
+	 * (that is, {@code setProperty} gets called with already set property name again).
+	 */
+	public boolean isToggleAscendingOnProperty() {
+		return this.toggleAscendingOnProperty;
 	}
 
 	/**
@@ -143,15 +154,6 @@ public class MutableSortDefinition implements SortDefinition, Serializable {
 	public void setToggleAscendingOnProperty(boolean toggleAscendingOnProperty) {
 		this.toggleAscendingOnProperty = toggleAscendingOnProperty;
 	}
-
-	/**
-	 * Return whether to toggle the ascending flag if the same property gets set again
-	 * (that is, {@code setProperty} gets called with already set property name again).
-	 */
-	public boolean isToggleAscendingOnProperty() {
-		return this.toggleAscendingOnProperty;
-	}
-
 
 	@Override
 	public boolean equals(Object other) {

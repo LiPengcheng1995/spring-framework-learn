@@ -16,13 +16,13 @@
 
 package org.springframework.jdbc.datasource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.logging.Logger;
-import javax.sql.DataSource;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Abstract base class for Spring's {@link javax.sql.DataSource}
@@ -33,12 +33,14 @@ import org.apache.commons.logging.LogFactory;
  * {@link #getLoginTimeout()}, {@link #setLoginTimeout(int)}, and so forth.
  *
  * @author Juergen Hoeller
- * @since 07.05.2003
  * @see DriverManagerDataSource
+ * @since 07.05.2003
  */
 public abstract class AbstractDataSource implements DataSource {
 
-	/** Logger available to subclasses */
+	/**
+	 * Logger available to subclasses
+	 */
 	protected final Log logger = LogFactory.getLog(getClass());
 
 

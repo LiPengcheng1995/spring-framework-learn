@@ -16,17 +16,17 @@
 
 package org.springframework.jca.work;
 
-import javax.resource.spi.work.Work;
-
 import org.springframework.util.Assert;
+
+import javax.resource.spi.work.Work;
 
 /**
  * Simple Work adapter that delegates to a given Runnable.
  *
  * @author Juergen Hoeller
- * @since 2.0.3
  * @see javax.resource.spi.work.Work
  * @see Runnable
+ * @since 2.0.3
  */
 public class DelegatingWork implements Work {
 
@@ -35,6 +35,7 @@ public class DelegatingWork implements Work {
 
 	/**
 	 * Create a new DelegatingWork.
+	 *
 	 * @param delegate the Runnable implementation to delegate to
 	 */
 	public DelegatingWork(Runnable delegate) {

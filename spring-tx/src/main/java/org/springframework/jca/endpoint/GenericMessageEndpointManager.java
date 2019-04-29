@@ -16,16 +16,16 @@
 
 package org.springframework.jca.endpoint;
 
-import javax.resource.ResourceException;
-import javax.resource.spi.ActivationSpec;
-import javax.resource.spi.ResourceAdapter;
-import javax.resource.spi.endpoint.MessageEndpointFactory;
-
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import javax.resource.ResourceException;
+import javax.resource.spi.ActivationSpec;
+import javax.resource.spi.ResourceAdapter;
+import javax.resource.spi.endpoint.MessageEndpointFactory;
 
 /**
  * Generic bean that manages JCA 1.7 message endpoints within a Spring
@@ -52,7 +52,7 @@ import org.springframework.util.Assert;
  *     &lt;/bean&gt;
  *   &lt;/property&gt;
  * &lt;/bean&gt;</pre>
- *
+ * <p>
  * In this example, Spring's own {@link GenericMessageEndpointFactory} is used
  * to point to a standard message listener object that happens to be supported
  * by the specified target ResourceAdapter: in this case, a JMS
@@ -63,7 +63,7 @@ import org.springframework.util.Assert;
  * &lt;bean id="messageListener" class="com.myorg.messaging.myMessageListener"&gt;
  *   ...
  * &lt;/bean&gt;</pre>
- *
+ * <p>
  * The target ResourceAdapter may be configured as a local Spring bean as well
  * (the typical case) or obtained from JNDI (e.g. on WebLogic). For the
  * example above, a local ResourceAdapter bean could be defined as follows
@@ -80,7 +80,7 @@ import org.springframework.util.Assert;
  *     &lt;bean class="org.springframework.jca.work.SimpleTaskWorkManager"/&gt;
  *   &lt;/property&gt;
  * &lt;/bean&gt;</pre>
- *
+ * <p>
  * For a different target resource, the configuration would simply point to a
  * different ResourceAdapter and a different ActivationSpec object (which are
  * both specific to the resource provider), and possibly a different message
@@ -117,7 +117,7 @@ import org.springframework.util.Assert;
  * &lt;/bean&gt;
  *
  * &lt;bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager"/&gt;</pre>
- *
+ * <p>
  * Alternatively, check out your resource provider's ActivationSpec object,
  * which should support local transactions through a provider-specific config flag,
  * e.g. ActiveMQActivationSpec's "useRAManagedTransaction" bean property.
@@ -140,38 +140,24 @@ import org.springframework.util.Assert;
  * &lt;/bean&gt;</pre>
  *
  * @author Juergen Hoeller
- * @since 2.5
  * @see javax.resource.spi.ResourceAdapter#endpointActivation
  * @see javax.resource.spi.ResourceAdapter#endpointDeactivation
  * @see javax.resource.spi.endpoint.MessageEndpointFactory
  * @see javax.resource.spi.ActivationSpec
+ * @since 2.5
  */
 public class GenericMessageEndpointManager implements SmartLifecycle, InitializingBean, DisposableBean {
 
+	private final Object lifecycleMonitor = new Object();
 	@Nullable
 	private ResourceAdapter resourceAdapter;
-
 	@Nullable
 	private MessageEndpointFactory messageEndpointFactory;
-
 	@Nullable
 	private ActivationSpec activationSpec;
-
 	private boolean autoStartup = true;
-
 	private int phase = Integer.MAX_VALUE;
-
 	private volatile boolean running = false;
-
-	private final Object lifecycleMonitor = new Object();
-
-
-	/**
-	 * Set the JCA ResourceAdapter to manage endpoints for.
-	 */
-	public void setResourceAdapter(@Nullable ResourceAdapter resourceAdapter) {
-		this.resourceAdapter = resourceAdapter;
-	}
 
 	/**
 	 * Return the JCA ResourceAdapter to manage endpoints for.
@@ -182,15 +168,10 @@ public class GenericMessageEndpointManager implements SmartLifecycle, Initializi
 	}
 
 	/**
-	 * Set the JCA MessageEndpointFactory to activate, pointing to a
-	 * MessageListener object that the endpoints will delegate to.
-	 * <p>A MessageEndpointFactory instance may be shared across multiple
-	 * endpoints (i.e. multiple GenericMessageEndpointManager instances),
-	 * with different {@link #setActivationSpec ActivationSpec} objects applied.
-	 * @see GenericMessageEndpointFactory#setMessageListener
+	 * Set the JCA ResourceAdapter to manage endpoints for.
 	 */
-	public void setMessageEndpointFactory(@Nullable MessageEndpointFactory messageEndpointFactory) {
-		this.messageEndpointFactory = messageEndpointFactory;
+	public void setResourceAdapter(@Nullable ResourceAdapter resourceAdapter) {
+		this.resourceAdapter = resourceAdapter;
 	}
 
 	/**
@@ -199,6 +180,27 @@ public class GenericMessageEndpointManager implements SmartLifecycle, Initializi
 	@Nullable
 	public MessageEndpointFactory getMessageEndpointFactory() {
 		return this.messageEndpointFactory;
+	}
+
+	/**
+	 * Set the JCA MessageEndpointFactory to activate, pointing to a
+	 * MessageListener object that the endpoints will delegate to.
+	 * <p>A MessageEndpointFactory instance may be shared across multiple
+	 * endpoints (i.e. multiple GenericMessageEndpointManager instances),
+	 * with different {@link #setActivationSpec ActivationSpec} objects applied.
+	 *
+	 * @see GenericMessageEndpointFactory#setMessageListener
+	 */
+	public void setMessageEndpointFactory(@Nullable MessageEndpointFactory messageEndpointFactory) {
+		this.messageEndpointFactory = messageEndpointFactory;
+	}
+
+	/**
+	 * Return the JCA ActivationSpec to use for activating the endpoint.
+	 */
+	@Nullable
+	public ActivationSpec getActivationSpec() {
+		return this.activationSpec;
 	}
 
 	/**
@@ -211,11 +213,12 @@ public class GenericMessageEndpointManager implements SmartLifecycle, Initializi
 	}
 
 	/**
-	 * Return the JCA ActivationSpec to use for activating the endpoint.
+	 * Return the value for the 'autoStartup' property.	If "true", this
+	 * endpoint manager will start upon a ContextRefreshedEvent.
 	 */
-	@Nullable
-	public ActivationSpec getActivationSpec() {
-		return this.activationSpec;
+	@Override
+	public boolean isAutoStartup() {
+		return this.autoStartup;
 	}
 
 	/**
@@ -229,12 +232,11 @@ public class GenericMessageEndpointManager implements SmartLifecycle, Initializi
 	}
 
 	/**
-	 * Return the value for the 'autoStartup' property.	If "true", this
-	 * endpoint manager will start upon a ContextRefreshedEvent.
+	 * Return the phase in which this endpoint manager will be started and stopped.
 	 */
 	@Override
-	public boolean isAutoStartup() {
-		return this.autoStartup;
+	public int getPhase() {
+		return this.phase;
 	}
 
 	/**
@@ -246,14 +248,6 @@ public class GenericMessageEndpointManager implements SmartLifecycle, Initializi
 	 */
 	public void setPhase(int phase) {
 		this.phase = phase;
-	}
-
-	/**
-	 * Return the phase in which this endpoint manager will be started and stopped.
-	 */
-	@Override
-	public int getPhase() {
-		return this.phase;
 	}
 
 	/**
@@ -275,8 +269,7 @@ public class GenericMessageEndpointManager implements SmartLifecycle, Initializi
 
 		if (activationSpec.getResourceAdapter() == null) {
 			activationSpec.setResourceAdapter(getResourceAdapter());
-		}
-		else if (activationSpec.getResourceAdapter() != getResourceAdapter()) {
+		} else if (activationSpec.getResourceAdapter() != getResourceAdapter()) {
 			throw new IllegalArgumentException("ActivationSpec [" + activationSpec +
 					"] is associated with a different ResourceAdapter: " + activationSpec.getResourceAdapter());
 		}
@@ -293,8 +286,7 @@ public class GenericMessageEndpointManager implements SmartLifecycle, Initializi
 				Assert.state(resourceAdapter != null, "No ResourceAdapter set");
 				try {
 					resourceAdapter.endpointActivation(getMessageEndpointFactory(), getActivationSpec());
-				}
-				catch (ResourceException ex) {
+				} catch (ResourceException ex) {
 					throw new IllegalStateException("Could not activate message endpoint", ex);
 				}
 				this.running = true;

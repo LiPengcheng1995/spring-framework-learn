@@ -16,22 +16,15 @@
 
 package org.springframework.validation;
 
-import java.beans.PropertyEditor;
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+
+import java.beans.PropertyEditor;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Abstract implementation of the {@link BindingResult} interface and
@@ -40,27 +33,23 @@ import org.springframework.util.StringUtils;
  *
  * @author Juergen Hoeller
  * @author Rob Harrop
- * @since 2.0
  * @see Errors
+ * @since 2.0
  */
 @SuppressWarnings("serial")
 public abstract class AbstractBindingResult extends AbstractErrors implements BindingResult, Serializable {
 
 	private final String objectName;
-
-	private MessageCodesResolver messageCodesResolver = new DefaultMessageCodesResolver();
-
 	private final List<ObjectError> errors = new LinkedList<>();
-
 	private final Map<String, Class<?>> fieldTypes = new HashMap<>();
-
 	private final Map<String, Object> fieldValues = new HashMap<>();
-
 	private final Set<String> suppressedFields = new HashSet<>();
+	private MessageCodesResolver messageCodesResolver = new DefaultMessageCodesResolver();
 
 
 	/**
 	 * Create a new AbstractBindingResult instance.
+	 *
 	 * @param objectName the name of the target object
 	 * @see DefaultMessageCodesResolver
 	 */
@@ -68,22 +57,22 @@ public abstract class AbstractBindingResult extends AbstractErrors implements Bi
 		this.objectName = objectName;
 	}
 
-
-	/**
-	 * Set the strategy to use for resolving errors into message codes.
-	 * Default is DefaultMessageCodesResolver.
-	 * @see DefaultMessageCodesResolver
-	 */
-	public void setMessageCodesResolver(MessageCodesResolver messageCodesResolver) {
-		Assert.notNull(messageCodesResolver, "MessageCodesResolver must not be null");
-		this.messageCodesResolver = messageCodesResolver;
-	}
-
 	/**
 	 * Return the strategy to use for resolving errors into message codes.
 	 */
 	public MessageCodesResolver getMessageCodesResolver() {
 		return this.messageCodesResolver;
+	}
+
+	/**
+	 * Set the strategy to use for resolving errors into message codes.
+	 * Default is DefaultMessageCodesResolver.
+	 *
+	 * @see DefaultMessageCodesResolver
+	 */
+	public void setMessageCodesResolver(MessageCodesResolver messageCodesResolver) {
+		Assert.notNull(messageCodesResolver, "MessageCodesResolver must not be null");
+		this.messageCodesResolver = messageCodesResolver;
 	}
 
 
@@ -103,7 +92,7 @@ public abstract class AbstractBindingResult extends AbstractErrors implements Bi
 
 	@Override
 	public void rejectValue(@Nullable String field, String errorCode, @Nullable Object[] errorArgs,
-			@Nullable String defaultMessage) {
+							@Nullable String defaultMessage) {
 
 		if ("".equals(getNestedPath()) && !StringUtils.hasLength(field)) {
 			// We're at the top of the nested object hierarchy,
@@ -223,12 +212,10 @@ public abstract class AbstractBindingResult extends AbstractErrors implements Bi
 			Object value = fieldError.getRejectedValue();
 			// Do not apply formatting on binding failures like type mismatches.
 			return (fieldError.isBindingFailure() ? value : formatFieldValue(field, value));
-		}
-		else if (getTarget() != null) {
+		} else if (getTarget() != null) {
 			Object value = getActualFieldValue(fixedField(field));
 			return formatFieldValue(field, value);
-		}
-		else {
+		} else {
 			return this.fieldValues.get(field);
 		}
 	}
@@ -237,6 +224,7 @@ public abstract class AbstractBindingResult extends AbstractErrors implements Bi
 	 * This default implementation determines the type based on the actual
 	 * field value, if any. Subclasses should override this to determine
 	 * the type from a descriptor, even for {@code null} values.
+	 *
 	 * @see #getActualFieldValue
 	 */
 	@Override
@@ -265,6 +253,7 @@ public abstract class AbstractBindingResult extends AbstractErrors implements Bi
 	 * <p>The attributes in the model Map returned by this method are usually
 	 * included in the ModelAndView for a form view that uses Spring's bind tag,
 	 * which needs access to the Errors instance.
+	 *
 	 * @see #getObjectName
 	 * @see #MODEL_KEY_PREFIX
 	 */
@@ -299,8 +288,7 @@ public abstract class AbstractBindingResult extends AbstractErrors implements Bi
 				valueTypeToUse = getFieldType(field);
 			}
 			return editorRegistry.findCustomEditor(valueTypeToUse, fixedField(field));
-		}
-		else {
+		} else {
 			return null;
 		}
 	}
@@ -340,6 +328,7 @@ public abstract class AbstractBindingResult extends AbstractErrors implements Bi
 	 * Mark the specified disallowed field as suppressed.
 	 * <p>The data binder invokes this for each field value that was
 	 * detected to target a disallowed field.
+	 *
 	 * @see DataBinder#setAllowedFields
 	 */
 	@Override
@@ -351,6 +340,7 @@ public abstract class AbstractBindingResult extends AbstractErrors implements Bi
 	 * Return the list of fields that were suppressed during the bind process.
 	 * <p>Can be used to determine whether any field values were targeting
 	 * disallowed fields.
+	 *
 	 * @see DataBinder#setAllowedFields
 	 */
 	@Override
@@ -392,6 +382,7 @@ public abstract class AbstractBindingResult extends AbstractErrors implements Bi
 
 	/**
 	 * Extract the actual field value for the given field.
+	 *
 	 * @param field the field to check
 	 * @return the current value of the field
 	 */
@@ -401,9 +392,10 @@ public abstract class AbstractBindingResult extends AbstractErrors implements Bi
 	/**
 	 * Format the given value for the specified field.
 	 * <p>The default implementation simply returns the field value as-is.
+	 *
 	 * @param field the field to check
 	 * @param value the value of the field (either a rejected value
-	 * other than from a binding error, or an actual field value)
+	 *              other than from a binding error, or an actual field value)
 	 * @return the formatted value
 	 */
 	@Nullable

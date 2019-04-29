@@ -16,10 +16,10 @@
 
 package org.springframework.web.client;
 
-import java.io.IOException;
-
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.lang.Nullable;
+
+import java.io.IOException;
 
 /**
  * Generic callback interface used by {@link RestTemplate}'s retrieval methods
@@ -30,14 +30,15 @@ import org.springframework.lang.Nullable;
  * <p>Used internally by the {@link RestTemplate}, but also useful for application code.
  *
  * @author Arjen Poutsma
- * @since 3.0
  * @see RestTemplate#execute
+ * @since 3.0
  */
 @FunctionalInterface
 public interface ResponseExtractor<T> {
 
 	/**
 	 * Extract data from the given {@code ClientHttpResponse} and return it.
+	 *
 	 * @param response the HTTP response
 	 * @return the extracted data
 	 * @throws IOException in case of I/O errors

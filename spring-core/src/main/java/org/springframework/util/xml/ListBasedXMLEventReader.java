@@ -16,16 +16,16 @@
 
 package org.springframework.util.xml;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.XMLEvent;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * Implementation of {@code XMLEventReader} based on a {@link List}
@@ -62,8 +62,7 @@ class ListBasedXMLEventReader extends AbstractXMLEventReader {
 			this.currentEvent = this.events.get(this.cursor);
 			this.cursor++;
 			return this.currentEvent;
-		}
-		else {
+		} else {
 			throw new NoSuchElementException();
 		}
 	}
@@ -73,8 +72,7 @@ class ListBasedXMLEventReader extends AbstractXMLEventReader {
 	public XMLEvent peek() {
 		if (hasNext()) {
 			return this.events.get(this.cursor);
-		}
-		else {
+		} else {
 			return null;
 		}
 	}
@@ -91,8 +89,7 @@ class ListBasedXMLEventReader extends AbstractXMLEventReader {
 			XMLEvent event = nextEvent();
 			if (event.isEndElement()) {
 				break;
-			}
-			else if (!event.isCharacters()) {
+			} else if (!event.isCharacters()) {
 				throw new XMLStreamException("Unexpected non-text event: " + event);
 			}
 			Characters characters = event.asCharacters();

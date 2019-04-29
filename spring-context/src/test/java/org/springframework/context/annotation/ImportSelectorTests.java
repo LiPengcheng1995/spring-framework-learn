@@ -16,23 +16,10 @@
 
 package org.springframework.context.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanFactory;
@@ -49,8 +36,15 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 
@@ -150,11 +144,24 @@ public class ImportSelectorTests {
 	}
 
 
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Import({DeferredImportSelector1.class, DeferredImportSelector2.class,
+			ImportSelector1.class, ImportSelector2.class})
+	public @interface Sample {
+	}
+
+
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Import({GroupedDeferredImportSelector1.class, GroupedDeferredImportSelector2.class, ImportSelector1.class, ImportSelector2.class})
+	public @interface GroupedSample {
+	}
+
 	@Configuration
 	@Import(SampleImportSelector.class)
 	static class AwareConfig {
 	}
-
 
 	private static class SampleImportSelector implements ImportSelector,
 			BeanClassLoaderAware, ResourceLoaderAware, BeanFactoryAware, EnvironmentAware {
@@ -193,51 +200,39 @@ public class ImportSelectorTests {
 
 		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
-			return new String[] {};
+			return new String[]{};
 		}
 	}
-
 
 	@Sample
 	@Configuration
 	static class Config {
 	}
 
-
-	@Target(ElementType.TYPE)
-	@Retention(RetentionPolicy.RUNTIME)
-	@Import({DeferredImportSelector1.class, DeferredImportSelector2.class,
-			ImportSelector1.class, ImportSelector2.class})
-	public @interface Sample {
-	}
-
-
 	public static class ImportSelector1 implements ImportSelector {
 
 		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
 			ImportSelectorTests.importFrom.put(getClass(), importingClassMetadata.getClassName());
-			return new String[] { ImportedSelector1.class.getName() };
+			return new String[]{ImportedSelector1.class.getName()};
 		}
 	}
-
 
 	public static class ImportSelector2 implements ImportSelector {
 
 		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
 			ImportSelectorTests.importFrom.put(getClass(), importingClassMetadata.getClassName());
-			return new String[] { ImportedSelector2.class.getName() };
+			return new String[]{ImportedSelector2.class.getName()};
 		}
 	}
-
 
 	public static class DeferredImportSelector1 implements DeferredImportSelector, Ordered {
 
 		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
 			ImportSelectorTests.importFrom.put(getClass(), importingClassMetadata.getClassName());
-			return new String[] { DeferredImportedSelector1.class.getName() };
+			return new String[]{DeferredImportedSelector1.class.getName()};
 		}
 
 		@Override
@@ -246,17 +241,15 @@ public class ImportSelectorTests {
 		}
 	}
 
-
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	public static class DeferredImportSelector2 implements DeferredImportSelector {
 
 		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
 			ImportSelectorTests.importFrom.put(getClass(), importingClassMetadata.getClassName());
-			return new String[] { DeferredImportedSelector2.class.getName() };
+			return new String[]{DeferredImportedSelector2.class.getName()};
 		}
 	}
-
 
 	@Configuration
 	public static class ImportedSelector1 {
@@ -267,7 +260,6 @@ public class ImportSelectorTests {
 		}
 	}
 
-
 	@Configuration
 	public static class ImportedSelector2 {
 
@@ -276,7 +268,6 @@ public class ImportSelectorTests {
 			return "b";
 		}
 	}
-
 
 	@Configuration
 	public static class DeferredImportedSelector1 {
@@ -287,7 +278,6 @@ public class ImportSelectorTests {
 		}
 	}
 
-
 	@Configuration
 	public static class DeferredImportedSelector2 {
 
@@ -297,37 +287,26 @@ public class ImportSelectorTests {
 		}
 	}
 
-
 	@Configuration
 	@Import(IndirectImportSelector.class)
 	public static class IndirectConfig {
 	}
 
-
 	public static class IndirectImportSelector implements ImportSelector {
 
 		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
-			return new String[] {IndirectImport.class.getName()};
+			return new String[]{IndirectImport.class.getName()};
 		}
 	}
-
 
 	@Sample
 	public static class IndirectImport {
 	}
 
-
 	@GroupedSample
 	@Configuration
 	static class GroupedConfig {
-	}
-
-
-	@Target(ElementType.TYPE)
-	@Retention(RetentionPolicy.RUNTIME)
-	@Import({GroupedDeferredImportSelector1.class, GroupedDeferredImportSelector2.class, ImportSelector1.class, ImportSelector2.class})
-	public @interface GroupedSample {
 	}
 
 	@Configuration
@@ -394,7 +373,7 @@ public class ImportSelectorTests {
 		public Iterable<Entry> selectImports() {
 			LinkedList<Entry> content = new LinkedList<>();
 			TestImportGroup.imports.forEach((metadata, values) ->
-				    values.forEach(value ->  content.add(new Entry(metadata, value))));
+					values.forEach(value -> content.add(new Entry(metadata, value))));
 			Collections.reverse(content);
 			return content;
 		}

@@ -145,7 +145,7 @@ open class BeanDefinitionDsl(private val condition: (ConfigurableEnvironment) ->
 		 * @param name the name of the bean to retrieve
 		 * @param T type the bean must match, can be an interface or superclass
 		 */
-		inline fun <reified T : Any> ref(name: String? = null) : T = when (name) {
+		inline fun <reified T : Any> ref(name: String? = null): T = when (name) {
 			null -> context.getBean(T::class.java)
 			else -> context.getBean(name, T::class.java)
 		}
@@ -153,9 +153,9 @@ open class BeanDefinitionDsl(private val condition: (ConfigurableEnvironment) ->
 		/**
 		 * Get the [ConfigurableEnvironment] associated to the underlying [GenericApplicationContext].
 		 */
-		val env : ConfigurableEnvironment
+		val env: ConfigurableEnvironment
 			get() = context.environment
-		
+
 	}
 
 	/**
@@ -177,9 +177,9 @@ open class BeanDefinitionDsl(private val condition: (ConfigurableEnvironment) ->
 									  isPrimary: Boolean? = null,
 									  autowireMode: Autowire = Autowire.CONSTRUCTOR,
 									  isAutowireCandidate: Boolean? = null) {
-		
+
 		registrations.add {
-			val customizer = BeanDefinitionCustomizer { bd -> 
+			val customizer = BeanDefinitionCustomizer { bd ->
 				scope?.let { bd.scope = scope.name.toLowerCase() }
 				isLazyInit?.let { bd.isLazyInit = isLazyInit }
 				isPrimary?.let { bd.isPrimary = isPrimary }
@@ -188,7 +188,7 @@ open class BeanDefinitionDsl(private val condition: (ConfigurableEnvironment) ->
 					bd.autowireMode = autowireMode.ordinal
 				}
 			}
-			
+
 			when (name) {
 				null -> it.registerBean(T::class.java, customizer)
 				else -> it.registerBean(name, T::class.java, customizer)
@@ -217,7 +217,7 @@ open class BeanDefinitionDsl(private val condition: (ConfigurableEnvironment) ->
 									  autowireMode: Autowire = Autowire.NO,
 									  isAutowireCandidate: Boolean? = null,
 									  crossinline function: BeanDefinitionContext.() -> T) {
-		
+
 		val customizer = BeanDefinitionCustomizer { bd ->
 			scope?.let { bd.scope = scope.name.toLowerCase() }
 			isLazyInit?.let { bd.isLazyInit = isLazyInit }

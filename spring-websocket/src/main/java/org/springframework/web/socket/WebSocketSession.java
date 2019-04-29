@@ -16,6 +16,9 @@
 
 package org.springframework.web.socket;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.lang.Nullable;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -23,9 +26,6 @@ import java.net.URI;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.lang.Nullable;
 
 /**
  * A WebSocket session abstraction. Allows sending messages over a WebSocket
@@ -59,6 +59,7 @@ public interface WebSocketSession extends Closeable {
 	 * HandshakeInterceptor}. On the client side the map can be populated via
 	 * {@link org.springframework.web.socket.client.WebSocketClient
 	 * WebSocketClient} handshake methods.
+	 *
 	 * @return a Map with the session attributes (never {@code null})
 	 */
 	Map<String, Object> getAttributes();
@@ -85,6 +86,7 @@ public interface WebSocketSession extends Closeable {
 
 	/**
 	 * Return the negotiated sub-protocol.
+	 *
 	 * @return the protocol identifier, or {@code null} if no protocol
 	 * was specified or negotiated successfully
 	 */
@@ -92,19 +94,14 @@ public interface WebSocketSession extends Closeable {
 	String getAcceptedProtocol();
 
 	/**
-	 * Configure the maximum size for an incoming text message.
-	 */
-	void setTextMessageSizeLimit(int messageSizeLimit);
-
-	/**
 	 * Get the configured maximum size for an incoming text message.
 	 */
 	int getTextMessageSizeLimit();
 
 	/**
-	 * Configure the maximum size for an incoming binary message.
+	 * Configure the maximum size for an incoming text message.
 	 */
-	void setBinaryMessageSizeLimit(int messageSizeLimit);
+	void setTextMessageSizeLimit(int messageSizeLimit);
 
 	/**
 	 * Get the configured maximum size for an incoming binary message.
@@ -112,7 +109,13 @@ public interface WebSocketSession extends Closeable {
 	int getBinaryMessageSizeLimit();
 
 	/**
+	 * Configure the maximum size for an incoming binary message.
+	 */
+	void setBinaryMessageSizeLimit(int messageSizeLimit);
+
+	/**
 	 * Determine the negotiated extensions.
+	 *
 	 * @return the list of extensions, or an empty list if no extension
 	 * was specified or negotiated successfully
 	 */

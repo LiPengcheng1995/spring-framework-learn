@@ -16,11 +16,7 @@
 
 package org.springframework.cache.annotation;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.Test;
-
 import org.springframework.aop.Advisor;
 import org.springframework.aop.framework.Advised;
 import org.springframework.aop.support.AopUtils;
@@ -33,8 +29,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Repository;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import java.util.Collections;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Integration tests for the @EnableCaching annotation.
@@ -61,8 +61,7 @@ public class EnableCachingIntegrationTests {
 		ctx.register(Config.class, AspectJCacheConfig.class);
 		try {
 			ctx.refresh();
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			// this test is a bit fragile, but gets the job done, proving that an
 			// attempt was made to look up the AJ aspect. It's due to classpath issues
 			// in .integration-tests that it's not found.
@@ -76,7 +75,7 @@ public class EnableCachingIntegrationTests {
 
 		boolean isCacheProxy = false;
 		if (AopUtils.isAopProxy(repo)) {
-			for (Advisor advisor : ((Advised)repo).getAdvisors()) {
+			for (Advisor advisor : ((Advised) repo).getAdvisors()) {
 				if (advisor instanceof BeanFactoryCacheOperationSourceAdvisor) {
 					isCacheProxy = true;
 					break;
@@ -87,8 +86,13 @@ public class EnableCachingIntegrationTests {
 	}
 
 
+	interface FooRepository {
+
+		List<Object> findAll();
+	}
+
 	@Configuration
-	@EnableCaching(proxyTargetClass=true)
+	@EnableCaching(proxyTargetClass = true)
 	static class ProxyTargetClassCachingConfig {
 
 		@Bean
@@ -96,7 +100,6 @@ public class EnableCachingIntegrationTests {
 			return new NoOpCacheManager();
 		}
 	}
-
 
 	@Configuration
 	static class Config {
@@ -107,9 +110,8 @@ public class EnableCachingIntegrationTests {
 		}
 	}
 
-
 	@Configuration
-	@EnableCaching(mode=AdviceMode.ASPECTJ)
+	@EnableCaching(mode = AdviceMode.ASPECTJ)
 	static class AspectJCacheConfig {
 
 		@Bean
@@ -117,13 +119,6 @@ public class EnableCachingIntegrationTests {
 			return new NoOpCacheManager();
 		}
 	}
-
-
-	interface FooRepository {
-
-		List<Object> findAll();
-	}
-
 
 	@Repository
 	static class DummyFooRepository implements FooRepository {

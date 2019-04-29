@@ -16,18 +16,17 @@
 
 package org.springframework.cache.aspectj;
 
-import java.lang.reflect.Method;
+import org.aspectj.lang.annotation.RequiredTypes;
+import org.aspectj.lang.annotation.SuppressAjWarnings;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.cache.interceptor.CacheOperationInvoker;
+import org.springframework.cache.jcache.interceptor.JCacheAspectSupport;
+
 import javax.cache.annotation.CachePut;
 import javax.cache.annotation.CacheRemove;
 import javax.cache.annotation.CacheRemoveAll;
 import javax.cache.annotation.CacheResult;
-
-import org.aspectj.lang.annotation.RequiredTypes;
-import org.aspectj.lang.annotation.SuppressAjWarnings;
-import org.aspectj.lang.reflect.MethodSignature;
-
-import org.springframework.cache.interceptor.CacheOperationInvoker;
-import org.springframework.cache.jcache.interceptor.JCacheAspectSupport;
+import java.lang.reflect.Method;
 
 /**
  * Concrete AspectJ cache aspect using JSR-107 standard annotations.
@@ -47,66 +46,64 @@ import org.springframework.cache.jcache.interceptor.JCacheAspectSupport;
 @RequiredTypes({"org.springframework.cache.jcache.interceptor.JCacheAspectSupport", "javax.cache.annotation.CacheResult"})
 public aspect JCacheCacheAspect extends JCacheAspectSupport {
 
-	@SuppressAjWarnings("adviceDidNotMatch")
-	Object around(final Object cachedObject) : cacheMethodExecution(cachedObject) {
-		MethodSignature methodSignature = (MethodSignature) thisJoinPoint.getSignature();
-		Method method = methodSignature.getMethod();
+    @SuppressAjWarnings("adviceDidNotMatch")
+    Object around(final Object cachedObject): cacheMethodExecution(cachedObject) {
+        MethodSignature methodSignature = (MethodSignature) thisJoinPoint.getSignature();
+        Method method = methodSignature.getMethod();
 
-		CacheOperationInvoker aspectJInvoker = new CacheOperationInvoker() {
-			public Object invoke() {
-				try {
-					return proceed(cachedObject);
-				}
-				catch (Throwable ex) {
-					throw new ThrowableWrapper(ex);
-				}
-			}
+        CacheOperationInvoker aspectJInvoker = new CacheOperationInvoker() {
+            public Object invoke() {
+                try {
+                    return proceed(cachedObject);
+                } catch (Throwable ex) {
+                    throw new ThrowableWrapper(ex);
+                }
+            }
 
-		};
+        };
 
-		try {
-			return execute(aspectJInvoker, thisJoinPoint.getTarget(), method, thisJoinPoint.getArgs());
-		}
-		catch (CacheOperationInvoker.ThrowableWrapper th) {
-			AnyThrow.throwUnchecked(th.getOriginal());
-			return null; // never reached
-		}
-	}
+        try {
+            return execute(aspectJInvoker, thisJoinPoint.getTarget(), method, thisJoinPoint.getArgs());
+        } catch (CacheOperationInvoker.ThrowableWrapper th) {
+            AnyThrow.throwUnchecked(th.getOriginal());
+            return null; // never reached
+        }
+    }
 
-	/**
-	* Definition of pointcut: matched join points will have JSR-107
-	* cache management applied.
-	*/
-	protected pointcut cacheMethodExecution(Object cachedObject) :
-			(executionOfCacheResultMethod()
-				|| executionOfCachePutMethod()
-				|| executionOfCacheRemoveMethod()
-				|| executionOfCacheRemoveAllMethod())
-			&& this(cachedObject);
+    /**
+     * Definition of pointcut: matched join points will have JSR-107
+     * cache management applied.
+     */
+    protected pointcut cacheMethodExecution(Object cachedObject):
+            (executionOfCacheResultMethod()
+                    || executionOfCachePutMethod()
+                    || executionOfCacheRemoveMethod()
+                    || executionOfCacheRemoveAllMethod())
+                    && this(cachedObject);
 
-	/**
-	 * Matches the execution of any method with the @{@link CacheResult} annotation.
-	 */
-	private pointcut executionOfCacheResultMethod() :
-		execution(@CacheResult * *(..));
+    /**
+     * Matches the execution of any method with the @{@link CacheResult} annotation.
+     */
+    private pointcut executionOfCacheResultMethod():
+            execution(@CacheResult * *(..));
 
-	/**
-	 * Matches the execution of any method with the @{@link CachePut} annotation.
-	 */
-	private pointcut executionOfCachePutMethod() :
-		execution(@CachePut * *(..));
+    /**
+     * Matches the execution of any method with the @{@link CachePut} annotation.
+     */
+    private pointcut executionOfCachePutMethod():
+            execution(@CachePut * *(..));
 
-	/**
-	 * Matches the execution of any method with the @{@link CacheRemove} annotation.
-	 */
-	private pointcut executionOfCacheRemoveMethod() :
-		execution(@CacheRemove * *(..));
+    /**
+     * Matches the execution of any method with the @{@link CacheRemove} annotation.
+     */
+    private pointcut executionOfCacheRemoveMethod():
+            execution(@CacheRemove * *(..));
 
-	/**
-	 * Matches the execution of any method with the @{@link CacheRemoveAll} annotation.
-	 */
-	private pointcut executionOfCacheRemoveAllMethod() :
-		execution(@CacheRemoveAll * *(..));
+    /**
+     * Matches the execution of any method with the @{@link CacheRemoveAll} annotation.
+     */
+    private pointcut executionOfCacheRemoveAllMethod():
+            execution(@CacheRemoveAll * *(..));
 
 
 }

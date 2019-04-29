@@ -16,20 +16,6 @@
 
 package org.springframework.scheduling.concurrent;
 
-import java.util.Date;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-
 import org.springframework.core.task.AsyncListenableTaskExecutor;
 import org.springframework.core.task.TaskRejectedException;
 import org.springframework.lang.Nullable;
@@ -43,36 +29,117 @@ import org.springframework.util.ErrorHandler;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureTask;
 
+import java.util.Date;
+import java.util.Map;
+import java.util.concurrent.*;
+
 /**
  * Implementation of Spring's {@link TaskScheduler} interface, wrapping
  * a native {@link java.util.concurrent.ScheduledThreadPoolExecutor}.
  *
  * @author Juergen Hoeller
  * @author Mark Fisher
- * @since 3.0
  * @see #setPoolSize
  * @see #setRemoveOnCancelPolicy
  * @see #setThreadFactory
  * @see #setErrorHandler
+ * @since 3.0
  */
 @SuppressWarnings("serial")
 public class ThreadPoolTaskScheduler extends ExecutorConfigurationSupport
 		implements AsyncListenableTaskExecutor, SchedulingTaskExecutor, TaskScheduler {
 
-	private volatile int poolSize = 1;
-
-	private volatile boolean removeOnCancelPolicy = false;
-
-	@Nullable
-	private volatile ErrorHandler errorHandler;
-
-	@Nullable
-	private ScheduledExecutorService scheduledExecutor;
-
 	// Underlying ScheduledFutureTask to user-level ListenableFuture handle, if any
 	private final Map<Object, ListenableFuture<?>> listenableFutureMap =
 			new ConcurrentReferenceHashMap<>(16, ConcurrentReferenceHashMap.ReferenceType.WEAK);
+	private volatile int poolSize = 1;
+	private volatile boolean removeOnCancelPolicy = false;
+	@Nullable
+	private volatile ErrorHandler errorHandler;
+	@Nullable
+	private ScheduledExecutorService scheduledExecutor;
 
+	/**
+	 * Set a custom {@link ErrorHandler} strategy.
+	 */
+	public void setErrorHandler(ErrorHandler errorHandler) {
+		this.errorHandler = errorHandler;
+	}
+
+	@Override
+	protected ExecutorService initializeExecutor(
+			ThreadFactory threadFactory, RejectedExecutionHandler rejectedExecutionHandler) {
+
+		this.scheduledExecutor = createExecutor(this.poolSize, threadFactory, rejectedExecutionHandler);
+
+		if (this.removeOnCancelPolicy) {
+			if (this.scheduledExecutor instanceof ScheduledThreadPoolExecutor) {
+				((ScheduledThreadPoolExecutor) this.scheduledExecutor).setRemoveOnCancelPolicy(true);
+			} else {
+				logger.info("Could not apply remove-on-cancel policy - not a ScheduledThreadPoolExecutor");
+			}
+		}
+
+		return this.scheduledExecutor;
+	}
+
+	/**
+	 * Create a new {@link ScheduledExecutorService} instance.
+	 * <p>The default implementation creates a {@link ScheduledThreadPoolExecutor}.
+	 * Can be overridden in subclasses to provide custom {@link ScheduledExecutorService} instances.
+	 *
+	 * @param poolSize                 the specified pool size
+	 * @param threadFactory            the ThreadFactory to use
+	 * @param rejectedExecutionHandler the RejectedExecutionHandler to use
+	 * @return a new ScheduledExecutorService instance
+	 * @see #afterPropertiesSet()
+	 * @see java.util.concurrent.ScheduledThreadPoolExecutor
+	 */
+	protected ScheduledExecutorService createExecutor(
+			int poolSize, ThreadFactory threadFactory, RejectedExecutionHandler rejectedExecutionHandler) {
+
+		return new ScheduledThreadPoolExecutor(poolSize, threadFactory, rejectedExecutionHandler);
+	}
+
+	/**
+	 * Return the underlying ScheduledExecutorService for native access.
+	 *
+	 * @return the underlying ScheduledExecutorService (never {@code null})
+	 * @throws IllegalStateException if the ThreadPoolTaskScheduler hasn't been initialized yet
+	 */
+	public ScheduledExecutorService getScheduledExecutor() throws IllegalStateException {
+		Assert.state(this.scheduledExecutor != null, "ThreadPoolTaskScheduler not initialized");
+		return this.scheduledExecutor;
+	}
+
+	/**
+	 * Return the underlying ScheduledThreadPoolExecutor, if available.
+	 *
+	 * @return the underlying ScheduledExecutorService (never {@code null})
+	 * @throws IllegalStateException if the ThreadPoolTaskScheduler hasn't been initialized yet
+	 *                               or if the underlying ScheduledExecutorService isn't a ScheduledThreadPoolExecutor
+	 * @see #getScheduledExecutor()
+	 */
+	public ScheduledThreadPoolExecutor getScheduledThreadPoolExecutor() throws IllegalStateException {
+		Assert.state(this.scheduledExecutor instanceof ScheduledThreadPoolExecutor,
+				"No ScheduledThreadPoolExecutor available");
+		return (ScheduledThreadPoolExecutor) this.scheduledExecutor;
+	}
+
+	/**
+	 * Return the current pool size.
+	 * <p>Requires an underlying {@link ScheduledThreadPoolExecutor}.
+	 *
+	 * @see #getScheduledThreadPoolExecutor()
+	 * @see java.util.concurrent.ScheduledThreadPoolExecutor#getPoolSize()
+	 */
+	public int getPoolSize() {
+		if (this.scheduledExecutor == null) {
+			// Not initialized yet: assume initial pool size.
+			return this.poolSize;
+		}
+		return getScheduledThreadPoolExecutor().getPoolSize();
+	}
 
 	/**
 	 * Set the ScheduledExecutorService's pool size.
@@ -88,102 +155,6 @@ public class ThreadPoolTaskScheduler extends ExecutorConfigurationSupport
 	}
 
 	/**
-	 * Set the remove-on-cancel mode on {@link ScheduledThreadPoolExecutor}.
-	 * <p>Default is {@code false}. If set to {@code true}, the target executor will be
-	 * switched into remove-on-cancel mode (if possible, with a soft fallback otherwise).
-	 * <p><b>This setting can be modified at runtime, for example through JMX.</b>
-	 */
-	public void setRemoveOnCancelPolicy(boolean removeOnCancelPolicy) {
-		this.removeOnCancelPolicy = removeOnCancelPolicy;
-		if (this.scheduledExecutor instanceof ScheduledThreadPoolExecutor) {
-			((ScheduledThreadPoolExecutor) this.scheduledExecutor).setRemoveOnCancelPolicy(removeOnCancelPolicy);
-		}
-		else if (removeOnCancelPolicy && this.scheduledExecutor != null) {
-			logger.info("Could not apply remove-on-cancel policy - not a ScheduledThreadPoolExecutor");
-		}
-	}
-
-	/**
-	 * Set a custom {@link ErrorHandler} strategy.
-	 */
-	public void setErrorHandler(ErrorHandler errorHandler) {
-		this.errorHandler = errorHandler;
-	}
-
-
-	@Override
-	protected ExecutorService initializeExecutor(
-			ThreadFactory threadFactory, RejectedExecutionHandler rejectedExecutionHandler) {
-
-		this.scheduledExecutor = createExecutor(this.poolSize, threadFactory, rejectedExecutionHandler);
-
-		if (this.removeOnCancelPolicy) {
-			if (this.scheduledExecutor instanceof ScheduledThreadPoolExecutor) {
-				((ScheduledThreadPoolExecutor) this.scheduledExecutor).setRemoveOnCancelPolicy(true);
-			}
-			else {
-				logger.info("Could not apply remove-on-cancel policy - not a ScheduledThreadPoolExecutor");
-			}
-		}
-
-		return this.scheduledExecutor;
-	}
-
-	/**
-	 * Create a new {@link ScheduledExecutorService} instance.
-	 * <p>The default implementation creates a {@link ScheduledThreadPoolExecutor}.
-	 * Can be overridden in subclasses to provide custom {@link ScheduledExecutorService} instances.
-	 * @param poolSize the specified pool size
-	 * @param threadFactory the ThreadFactory to use
-	 * @param rejectedExecutionHandler the RejectedExecutionHandler to use
-	 * @return a new ScheduledExecutorService instance
-	 * @see #afterPropertiesSet()
-	 * @see java.util.concurrent.ScheduledThreadPoolExecutor
-	 */
-	protected ScheduledExecutorService createExecutor(
-			int poolSize, ThreadFactory threadFactory, RejectedExecutionHandler rejectedExecutionHandler) {
-
-		return new ScheduledThreadPoolExecutor(poolSize, threadFactory, rejectedExecutionHandler);
-	}
-
-	/**
-	 * Return the underlying ScheduledExecutorService for native access.
-	 * @return the underlying ScheduledExecutorService (never {@code null})
-	 * @throws IllegalStateException if the ThreadPoolTaskScheduler hasn't been initialized yet
-	 */
-	public ScheduledExecutorService getScheduledExecutor() throws IllegalStateException {
-		Assert.state(this.scheduledExecutor != null, "ThreadPoolTaskScheduler not initialized");
-		return this.scheduledExecutor;
-	}
-
-	/**
-	 * Return the underlying ScheduledThreadPoolExecutor, if available.
-	 * @return the underlying ScheduledExecutorService (never {@code null})
-	 * @throws IllegalStateException if the ThreadPoolTaskScheduler hasn't been initialized yet
-	 * or if the underlying ScheduledExecutorService isn't a ScheduledThreadPoolExecutor
-	 * @see #getScheduledExecutor()
-	 */
-	public ScheduledThreadPoolExecutor getScheduledThreadPoolExecutor() throws IllegalStateException {
-		Assert.state(this.scheduledExecutor instanceof ScheduledThreadPoolExecutor,
-				"No ScheduledThreadPoolExecutor available");
-		return (ScheduledThreadPoolExecutor) this.scheduledExecutor;
-	}
-
-	/**
-	 * Return the current pool size.
-	 * <p>Requires an underlying {@link ScheduledThreadPoolExecutor}.
-	 * @see #getScheduledThreadPoolExecutor()
-	 * @see java.util.concurrent.ScheduledThreadPoolExecutor#getPoolSize()
-	 */
-	public int getPoolSize() {
-		if (this.scheduledExecutor == null) {
-			// Not initialized yet: assume initial pool size.
-			return this.poolSize;
-		}
-		return getScheduledThreadPoolExecutor().getPoolSize();
-	}
-
-	/**
 	 * Return the current setting for the remove-on-cancel mode.
 	 * <p>Requires an underlying {@link ScheduledThreadPoolExecutor}.
 	 */
@@ -196,8 +167,24 @@ public class ThreadPoolTaskScheduler extends ExecutorConfigurationSupport
 	}
 
 	/**
+	 * Set the remove-on-cancel mode on {@link ScheduledThreadPoolExecutor}.
+	 * <p>Default is {@code false}. If set to {@code true}, the target executor will be
+	 * switched into remove-on-cancel mode (if possible, with a soft fallback otherwise).
+	 * <p><b>This setting can be modified at runtime, for example through JMX.</b>
+	 */
+	public void setRemoveOnCancelPolicy(boolean removeOnCancelPolicy) {
+		this.removeOnCancelPolicy = removeOnCancelPolicy;
+		if (this.scheduledExecutor instanceof ScheduledThreadPoolExecutor) {
+			((ScheduledThreadPoolExecutor) this.scheduledExecutor).setRemoveOnCancelPolicy(removeOnCancelPolicy);
+		} else if (removeOnCancelPolicy && this.scheduledExecutor != null) {
+			logger.info("Could not apply remove-on-cancel policy - not a ScheduledThreadPoolExecutor");
+		}
+	}
+
+	/**
 	 * Return the number of currently active threads.
 	 * <p>Requires an underlying {@link ScheduledThreadPoolExecutor}.
+	 *
 	 * @see #getScheduledThreadPoolExecutor()
 	 * @see java.util.concurrent.ScheduledThreadPoolExecutor#getActiveCount()
 	 */
@@ -217,8 +204,7 @@ public class ThreadPoolTaskScheduler extends ExecutorConfigurationSupport
 		Executor executor = getScheduledExecutor();
 		try {
 			executor.execute(errorHandlingTask(task, false));
-		}
-		catch (RejectedExecutionException ex) {
+		} catch (RejectedExecutionException ex) {
 			throw new TaskRejectedException("Executor [" + executor + "] did not accept task: " + task, ex);
 		}
 	}
@@ -233,8 +219,7 @@ public class ThreadPoolTaskScheduler extends ExecutorConfigurationSupport
 		ExecutorService executor = getScheduledExecutor();
 		try {
 			return executor.submit(errorHandlingTask(task, false));
-		}
-		catch (RejectedExecutionException ex) {
+		} catch (RejectedExecutionException ex) {
 			throw new TaskRejectedException("Executor [" + executor + "] did not accept task: " + task, ex);
 		}
 	}
@@ -249,8 +234,7 @@ public class ThreadPoolTaskScheduler extends ExecutorConfigurationSupport
 				taskToUse = new DelegatingErrorHandlingCallable<>(task, errorHandler);
 			}
 			return executor.submit(taskToUse);
-		}
-		catch (RejectedExecutionException ex) {
+		} catch (RejectedExecutionException ex) {
 			throw new TaskRejectedException("Executor [" + executor + "] did not accept task: " + task, ex);
 		}
 	}
@@ -262,8 +246,7 @@ public class ThreadPoolTaskScheduler extends ExecutorConfigurationSupport
 			ListenableFutureTask<Object> listenableFuture = new ListenableFutureTask<>(task, null);
 			executeAndTrack(executor, listenableFuture);
 			return listenableFuture;
-		}
-		catch (RejectedExecutionException ex) {
+		} catch (RejectedExecutionException ex) {
 			throw new TaskRejectedException("Executor [" + executor + "] did not accept task: " + task, ex);
 		}
 	}
@@ -275,8 +258,7 @@ public class ThreadPoolTaskScheduler extends ExecutorConfigurationSupport
 			ListenableFutureTask<T> listenableFuture = new ListenableFutureTask<>(task);
 			executeAndTrack(executor, listenableFuture);
 			return listenableFuture;
-		}
-		catch (RejectedExecutionException ex) {
+		} catch (RejectedExecutionException ex) {
 			throw new TaskRejectedException("Executor [" + executor + "] did not accept task: " + task, ex);
 		}
 	}
@@ -316,8 +298,7 @@ public class ThreadPoolTaskScheduler extends ExecutorConfigurationSupport
 				errorHandler = TaskUtils.getDefaultErrorHandler(true);
 			}
 			return new ReschedulingRunnable(task, trigger, executor, errorHandler).schedule();
-		}
-		catch (RejectedExecutionException ex) {
+		} catch (RejectedExecutionException ex) {
 			throw new TaskRejectedException("Executor [" + executor + "] did not accept task: " + task, ex);
 		}
 	}
@@ -328,8 +309,7 @@ public class ThreadPoolTaskScheduler extends ExecutorConfigurationSupport
 		long initialDelay = startTime.getTime() - System.currentTimeMillis();
 		try {
 			return executor.schedule(errorHandlingTask(task, false), initialDelay, TimeUnit.MILLISECONDS);
-		}
-		catch (RejectedExecutionException ex) {
+		} catch (RejectedExecutionException ex) {
 			throw new TaskRejectedException("Executor [" + executor + "] did not accept task: " + task, ex);
 		}
 	}
@@ -340,8 +320,7 @@ public class ThreadPoolTaskScheduler extends ExecutorConfigurationSupport
 		long initialDelay = startTime.getTime() - System.currentTimeMillis();
 		try {
 			return executor.scheduleAtFixedRate(errorHandlingTask(task, true), initialDelay, period, TimeUnit.MILLISECONDS);
-		}
-		catch (RejectedExecutionException ex) {
+		} catch (RejectedExecutionException ex) {
 			throw new TaskRejectedException("Executor [" + executor + "] did not accept task: " + task, ex);
 		}
 	}
@@ -351,8 +330,7 @@ public class ThreadPoolTaskScheduler extends ExecutorConfigurationSupport
 		ScheduledExecutorService executor = getScheduledExecutor();
 		try {
 			return executor.scheduleAtFixedRate(errorHandlingTask(task, true), 0, period, TimeUnit.MILLISECONDS);
-		}
-		catch (RejectedExecutionException ex) {
+		} catch (RejectedExecutionException ex) {
 			throw new TaskRejectedException("Executor [" + executor + "] did not accept task: " + task, ex);
 		}
 	}
@@ -363,8 +341,7 @@ public class ThreadPoolTaskScheduler extends ExecutorConfigurationSupport
 		long initialDelay = startTime.getTime() - System.currentTimeMillis();
 		try {
 			return executor.scheduleWithFixedDelay(errorHandlingTask(task, true), initialDelay, delay, TimeUnit.MILLISECONDS);
-		}
-		catch (RejectedExecutionException ex) {
+		} catch (RejectedExecutionException ex) {
 			throw new TaskRejectedException("Executor [" + executor + "] did not accept task: " + task, ex);
 		}
 	}
@@ -374,8 +351,7 @@ public class ThreadPoolTaskScheduler extends ExecutorConfigurationSupport
 		ScheduledExecutorService executor = getScheduledExecutor();
 		try {
 			return executor.scheduleWithFixedDelay(errorHandlingTask(task, true), 0, delay, TimeUnit.MILLISECONDS);
-		}
-		catch (RejectedExecutionException ex) {
+		} catch (RejectedExecutionException ex) {
 			throw new TaskRejectedException("Executor [" + executor + "] did not accept task: " + task, ex);
 		}
 	}
@@ -402,8 +378,7 @@ public class ThreadPoolTaskScheduler extends ExecutorConfigurationSupport
 		public V call() throws Exception {
 			try {
 				return this.delegate.call();
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				this.errorHandler.handleError(ex);
 				return null;
 			}

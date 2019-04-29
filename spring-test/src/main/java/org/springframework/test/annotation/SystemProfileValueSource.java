@@ -32,22 +32,22 @@ public class SystemProfileValueSource implements ProfileValueSource {
 
 
 	/**
-	 * Obtain the canonical instance of this ProfileValueSource.
-	 */
-	public static final SystemProfileValueSource getInstance() {
-		return INSTANCE;
-	}
-
-
-	/**
 	 * Private constructor, enforcing the singleton pattern.
 	 */
 	private SystemProfileValueSource() {
 	}
 
 	/**
+	 * Obtain the canonical instance of this ProfileValueSource.
+	 */
+	public static final SystemProfileValueSource getInstance() {
+		return INSTANCE;
+	}
+
+	/**
 	 * Get the <em>profile value</em> indicated by the specified key from the
 	 * system properties.
+	 *
 	 * @see System#getProperty(String)
 	 */
 	@Override

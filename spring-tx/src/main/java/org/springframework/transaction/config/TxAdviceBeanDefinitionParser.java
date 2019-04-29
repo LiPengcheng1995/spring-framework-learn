@@ -16,24 +16,19 @@
 
 package org.springframework.transaction.config;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import org.w3c.dom.Element;
-
 import org.springframework.beans.factory.config.TypedStringValue;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
-import org.springframework.transaction.interceptor.NameMatchTransactionAttributeSource;
-import org.springframework.transaction.interceptor.NoRollbackRuleAttribute;
-import org.springframework.transaction.interceptor.RollbackRuleAttribute;
-import org.springframework.transaction.interceptor.RuleBasedTransactionAttribute;
-import org.springframework.transaction.interceptor.TransactionInterceptor;
+import org.springframework.transaction.interceptor.*;
 import org.springframework.util.StringUtils;
 import org.springframework.util.xml.DomUtils;
+import org.w3c.dom.Element;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * {@link org.springframework.beans.factory.xml.BeanDefinitionParser
@@ -79,14 +74,12 @@ class TxAdviceBeanDefinitionParser extends AbstractSingleBeanDefinitionParser {
 		if (txAttributes.size() > 1) {
 			parserContext.getReaderContext().error(
 					"Element <attributes> is allowed at most once inside element <advice>", element);
-		}
-		else if (txAttributes.size() == 1) {
+		} else if (txAttributes.size() == 1) {
 			// Using attributes source.
 			Element attributeSourceElement = txAttributes.get(0);
 			RootBeanDefinition attributeSourceDefinition = parseAttributeSource(attributeSourceElement, parserContext);
 			builder.addPropertyValue("transactionAttributeSource", attributeSourceDefinition);
-		}
-		else {
+		} else {
 			// Assume annotations source.
 			builder.addPropertyValue("transactionAttributeSource",
 					new RootBeanDefinition("org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"));
@@ -118,8 +111,7 @@ class TxAdviceBeanDefinitionParser extends AbstractSingleBeanDefinitionParser {
 			if (StringUtils.hasText(timeout)) {
 				try {
 					attribute.setTimeout(Integer.parseInt(timeout));
-				}
-				catch (NumberFormatException ex) {
+				} catch (NumberFormatException ex) {
 					parserContext.getReaderContext().error("Timeout must be an integer value: [" + timeout + "]", methodEle);
 				}
 			}
@@ -130,11 +122,11 @@ class TxAdviceBeanDefinitionParser extends AbstractSingleBeanDefinitionParser {
 			List<RollbackRuleAttribute> rollbackRules = new LinkedList<>();
 			if (methodEle.hasAttribute(ROLLBACK_FOR_ATTRIBUTE)) {
 				String rollbackForValue = methodEle.getAttribute(ROLLBACK_FOR_ATTRIBUTE);
-				addRollbackRuleAttributesTo(rollbackRules,rollbackForValue);
+				addRollbackRuleAttributesTo(rollbackRules, rollbackForValue);
 			}
 			if (methodEle.hasAttribute(NO_ROLLBACK_FOR_ATTRIBUTE)) {
 				String noRollbackForValue = methodEle.getAttribute(NO_ROLLBACK_FOR_ATTRIBUTE);
-				addNoRollbackRuleAttributesTo(rollbackRules,noRollbackForValue);
+				addNoRollbackRuleAttributesTo(rollbackRules, noRollbackForValue);
 			}
 			attribute.setRollbackRules(rollbackRules);
 

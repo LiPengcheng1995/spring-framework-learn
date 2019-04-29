@@ -16,12 +16,12 @@
 
 package org.springframework.jdbc.object;
 
+import org.springframework.lang.Nullable;
+
+import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
-import javax.sql.DataSource;
-
-import org.springframework.lang.Nullable;
 
 /**
  * Reusable query in which concrete subclasses must implement the abstract
@@ -47,7 +47,8 @@ public abstract class MappingSqlQuery<T> extends MappingSqlQueryWithParameters<T
 
 	/**
 	 * Convenient constructor with DataSource and SQL string.
-	 * @param ds DataSource to use to obtain connections
+	 *
+	 * @param ds  DataSource to use to obtain connections
 	 * @param sql SQL to run
 	 */
 	public MappingSqlQuery(DataSource ds, String sql) {
@@ -58,6 +59,7 @@ public abstract class MappingSqlQuery<T> extends MappingSqlQueryWithParameters<T
 	/**
 	 * This method is implemented to invoke the simpler mapRow
 	 * template method, ignoring parameters.
+	 *
 	 * @see #mapRow(ResultSet, int)
 	 */
 	@Override
@@ -74,12 +76,13 @@ public abstract class MappingSqlQuery<T> extends MappingSqlQueryWithParameters<T
 	 * <p>Subclasses of this class, as opposed to direct subclasses of
 	 * MappingSqlQueryWithParameters, don't need to concern themselves
 	 * with the parameters to the execute method of the query object.
-	 * @param rs ResultSet we're working through
+	 *
+	 * @param rs     ResultSet we're working through
 	 * @param rowNum row number (from 0) we're up to
 	 * @return an object of the result type
 	 * @throws SQLException if there's an error extracting data.
-	 * Subclasses can simply not catch SQLExceptions, relying on the
-	 * framework to clean up.
+	 *                      Subclasses can simply not catch SQLExceptions, relying on the
+	 *                      framework to clean up.
 	 */
 	@Nullable
 	protected abstract T mapRow(ResultSet rs, int rowNum) throws SQLException;

@@ -16,15 +16,15 @@
 
 package org.springframework.jmx.export;
 
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-
 import org.junit.Test;
-
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jmx.support.ObjectNameManager;
 
-import static org.junit.Assert.*;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 /**
  * @author Rob Harrop
@@ -42,8 +42,7 @@ public class LazyInitMBeanTests {
 			ObjectName oname = ObjectNameManager.getInstance("bean:name=testBean2");
 			String name = (String) server.getAttribute(oname, "Name");
 			assertEquals("Invalid name returned", "foo", name);
-		}
-		finally {
+		} finally {
 			ctx.close();
 		}
 	}

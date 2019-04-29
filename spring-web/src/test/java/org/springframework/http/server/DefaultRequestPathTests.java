@@ -15,14 +15,15 @@
  */
 package org.springframework.http.server;
 
-import java.net.URI;
-
 import org.junit.Test;
+
+import java.net.URI;
 
 import static org.junit.Assert.assertEquals;
 
 /**
  * Unit tests for {@link DefaultRequestPath}.
+ *
  * @author Rossen Stoyanchev
  */
 public class DefaultRequestPathTests {

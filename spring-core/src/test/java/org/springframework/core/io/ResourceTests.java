@@ -16,21 +16,17 @@
 
 package org.springframework.core.io;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.springframework.util.FileCopyUtils;
+
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.util.HashSet;
 
-import org.junit.Ignore;
-import org.junit.Test;
-
-import org.springframework.util.FileCopyUtils;
-
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.*;
 
 /**
@@ -185,7 +181,8 @@ public class ResourceTests {
 		assertEquals(new UrlResource("file:dir/subdir"), relative);
 	}
 
-	@Ignore @Test // this test is quite slow. TODO: re-enable with JUnit categories
+	@Ignore
+	@Test // this test is quite slow. TODO: re-enable with JUnit categories
 	public void testNonFileResourceExists() throws Exception {
 		Resource resource = new UrlResource("https://www.springframework.org");
 		assertTrue(resource.exists());
@@ -200,6 +197,7 @@ public class ResourceTests {
 			public String getDescription() {
 				return name;
 			}
+
 			@Override
 			public InputStream getInputStream() throws IOException {
 				throw new FileNotFoundException();
@@ -209,22 +207,19 @@ public class ResourceTests {
 		try {
 			resource.getURL();
 			fail("FileNotFoundException should have been thrown");
-		}
-		catch (FileNotFoundException ex) {
+		} catch (FileNotFoundException ex) {
 			assertTrue(ex.getMessage().contains(name));
 		}
 		try {
 			resource.getFile();
 			fail("FileNotFoundException should have been thrown");
-		}
-		catch (FileNotFoundException ex) {
+		} catch (FileNotFoundException ex) {
 			assertTrue(ex.getMessage().contains(name));
 		}
 		try {
 			resource.createRelative("/testing");
 			fail("FileNotFoundException should have been thrown");
-		}
-		catch (FileNotFoundException ex) {
+		} catch (FileNotFoundException ex) {
 			assertTrue(ex.getMessage().contains(name));
 		}
 
@@ -236,8 +231,9 @@ public class ResourceTests {
 		AbstractResource resource = new AbstractResource() {
 			@Override
 			public InputStream getInputStream() {
-				return new ByteArrayInputStream(new byte[] { 'a', 'b', 'c' });
+				return new ByteArrayInputStream(new byte[]{'a', 'b', 'c'});
 			}
+
 			@Override
 			public String getDescription() {
 				return "";
@@ -256,8 +252,7 @@ public class ResourceTests {
 			channel.read(buffer);
 			buffer.rewind();
 			assertTrue(buffer.limit() > 0);
-		}
-		finally {
+		} finally {
 			if (channel != null) {
 				channel.close();
 			}

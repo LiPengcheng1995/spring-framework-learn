@@ -16,6 +16,9 @@
 
 package org.springframework.core;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -23,9 +26,6 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
-
-import org.junit.Before;
-import org.junit.Test;
 
 import static org.junit.Assert.*;
 
@@ -153,6 +153,11 @@ public class MethodParameterTests {
 		return 42;
 	}
 
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.PARAMETER)
+	private @interface Param {
+	}
+
 	@SuppressWarnings("unused")
 	private static class NestedClass {
 
@@ -165,11 +170,6 @@ public class MethodParameterTests {
 
 		public InnerClass(@Param String s, Callable<Integer> i) {
 		}
-	}
-
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target(ElementType.PARAMETER)
-	private @interface Param {
 	}
 
 }

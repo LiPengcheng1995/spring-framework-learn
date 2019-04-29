@@ -16,15 +16,14 @@
 
 package org.springframework.aop.scope;
 
-import java.util.Arrays;
-
 import org.junit.Test;
-
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 
+import java.util.Arrays;
+
 import static org.junit.Assert.*;
-import static org.springframework.tests.TestResourceUtils.*;
+import static org.springframework.tests.TestResourceUtils.qualifiedResource;
 
 /**
  * @author Mark Fisher
@@ -66,12 +65,12 @@ public class ScopedProxyAutowireTests {
 
 		private TestBean child;
 
-		public void setChild(TestBean child) {
-			this.child = child;
-		}
-
 		public TestBean getChild() {
 			return this.child;
+		}
+
+		public void setChild(TestBean child) {
+			this.child = child;
 		}
 	}
 

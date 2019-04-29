@@ -16,17 +16,16 @@
 
 package org.springframework.core.codec;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.lang.Nullable;
 import org.springframework.util.MimeType;
+import reactor.core.publisher.Mono;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Abstract base class for {@link Decoder} implementations.
@@ -60,7 +59,7 @@ public abstract class AbstractDecoder<T> implements Decoder<T> {
 
 	@Override
 	public Mono<T> decodeToMono(Publisher<DataBuffer> inputStream, ResolvableType elementType,
-			@Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
+								@Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
 
 		throw new UnsupportedOperationException();
 	}

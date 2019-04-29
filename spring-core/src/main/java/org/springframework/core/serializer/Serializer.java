@@ -34,7 +34,8 @@ public interface Serializer<T> {
 	 * <p>Note: Implementations should not close the given OutputStream
 	 * (or any decorators of that OutputStream) but rather leave this up
 	 * to the caller.
-	 * @param object the object to serialize
+	 *
+	 * @param object       the object to serialize
 	 * @param outputStream the output stream
 	 * @throws IOException in case of errors writing to the stream
 	 */

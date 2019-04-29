@@ -16,16 +16,15 @@
 
 package org.springframework.core;
 
-import java.awt.Component;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.springframework.tests.sample.objects.TestObject;
+
+import java.awt.*;
 import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Date;
-
-import org.junit.Ignore;
-import org.junit.Test;
-
-import org.springframework.tests.sample.objects.TestObject;
 
 import static org.junit.Assert.*;
 
@@ -36,6 +35,18 @@ public class LocalVariableTableParameterNameDiscovererTests {
 
 	private final LocalVariableTableParameterNameDiscoverer discoverer = new LocalVariableTableParameterNameDiscoverer();
 
+	public static void staticMethodNoLocalVars() {
+	}
+
+	public static long staticMethod(long x, long y) {
+		long u = x * y;
+		return u;
+	}
+
+	public static long staticMethod(long x, long y, long z) {
+		long u = x * y * z;
+		return u;
+	}
 
 	@Test
 	public void methodParameterNameDiscoveryNoArgs() throws NoSuchMethodException {
@@ -223,20 +234,6 @@ public class LocalVariableTableParameterNameDiscovererTests {
 		assertNull(names);
 	}
 
-
-	public static void staticMethodNoLocalVars() {
-	}
-
-	public static long staticMethod(long x, long y) {
-		long u = x * y;
-		return u;
-	}
-
-	public static long staticMethod(long x, long y, long z) {
-		long u = x * y * z;
-		return u;
-	}
-
 	public double instanceMethod(double x, double y) {
 		double u = x * y;
 		return u;
@@ -261,14 +258,6 @@ public class LocalVariableTableParameterNameDiscovererTests {
 			this.waz = (int) (foo + bar);
 		}
 
-		public String instanceMethod(String aa) {
-			return aa;
-		}
-
-		public String instanceMethod(String aa, String bb) {
-			return aa + bb;
-		}
-
 		public static long staticMethod(long x) {
 			long u = x;
 			return u;
@@ -277,6 +266,14 @@ public class LocalVariableTableParameterNameDiscovererTests {
 		public static long staticMethod(long x, long y) {
 			long u = x * y;
 			return u;
+		}
+
+		public String instanceMethod(String aa) {
+			return aa;
+		}
+
+		public String instanceMethod(String aa, String bb) {
+			return aa + bb;
 		}
 	}
 
@@ -305,10 +302,6 @@ public class LocalVariableTableParameterNameDiscovererTests {
 			return date;
 		}
 
-		public <P> void generifiedMethod(P param, long x, K key, V value) {
-			// nothing
-		}
-
 		public static void voidStaticMethod(Object obj, long x, int i) {
 			// nothing
 		}
@@ -319,6 +312,10 @@ public class LocalVariableTableParameterNameDiscovererTests {
 
 		public static long getDate() {
 			return date;
+		}
+
+		public <P> void generifiedMethod(P param, long x, K key, V value) {
+			// nothing
 		}
 	}
 

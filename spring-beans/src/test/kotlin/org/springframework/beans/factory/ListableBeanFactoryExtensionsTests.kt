@@ -20,7 +20,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Answers
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.times
+import org.mockito.Mockito.verify
 import org.mockito.junit.MockitoJUnitRunner
 
 /**
@@ -37,37 +38,37 @@ class ListableBeanFactoryExtensionsTests {
 	@Test
 	fun `getBeanNamesForType with reified type parameters`() {
 		lbf.getBeanNamesForType<Foo>()
-		verify(lbf, times(1)).getBeanNamesForType(Foo::class.java, true , true)
+		verify(lbf, times(1)).getBeanNamesForType(Foo::class.java, true, true)
 	}
 
 	@Test
 	fun `getBeanNamesForType with reified type parameters and Boolean`() {
 		lbf.getBeanNamesForType<Foo>(false)
-		verify(lbf, times(1)).getBeanNamesForType(Foo::class.java, false , true)
+		verify(lbf, times(1)).getBeanNamesForType(Foo::class.java, false, true)
 	}
 
 	@Test
 	fun `getBeanNamesForType with reified type parameters, Boolean and Boolean`() {
 		lbf.getBeanNamesForType<Foo>(false, false)
-		verify(lbf, times(1)).getBeanNamesForType(Foo::class.java, false , false)
+		verify(lbf, times(1)).getBeanNamesForType(Foo::class.java, false, false)
 	}
 
 	@Test
 	fun `getBeansOfType with reified type parameters`() {
 		lbf.getBeansOfType<Foo>()
-		verify(lbf, times(1)).getBeansOfType(Foo::class.java, true , true)
+		verify(lbf, times(1)).getBeansOfType(Foo::class.java, true, true)
 	}
 
 	@Test
 	fun `getBeansOfType with reified type parameters and Boolean`() {
 		lbf.getBeansOfType<Foo>(false)
-		verify(lbf, times(1)).getBeansOfType(Foo::class.java, false , true)
+		verify(lbf, times(1)).getBeansOfType(Foo::class.java, false, true)
 	}
 
 	@Test
 	fun `getBeansOfType with reified type parameters, Boolean and Boolean`() {
 		lbf.getBeansOfType<Foo>(false, false)
-		verify(lbf, times(1)).getBeansOfType(Foo::class.java, false , false)
+		verify(lbf, times(1)).getBeansOfType(Foo::class.java, false, false)
 	}
 
 	@Test

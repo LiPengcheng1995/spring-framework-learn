@@ -16,17 +16,10 @@
 
 package org.springframework.aop.framework;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.accessibility.Accessible;
-import javax.swing.JFrame;
-import javax.swing.RootPaneContainer;
-
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.junit.Ignore;
 import org.junit.Test;
-
 import org.springframework.aop.Advisor;
 import org.springframework.aop.interceptor.DebugInterceptor;
 import org.springframework.aop.support.AopUtils;
@@ -42,7 +35,12 @@ import org.springframework.tests.sample.beans.IOther;
 import org.springframework.tests.sample.beans.ITestBean;
 import org.springframework.tests.sample.beans.TestBean;
 
-import static org.hamcrest.CoreMatchers.*;
+import javax.accessibility.Accessible;
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
 
 /**
@@ -123,15 +121,13 @@ public class ProxyFactoryTests {
 		// Check out of bounds
 		try {
 			pf.removeAdvisor(-1);
-		}
-		catch (AopConfigException ex) {
+		} catch (AopConfigException ex) {
 			// Ok
 		}
 
 		try {
 			pf.removeAdvisor(2);
-		}
-		catch (AopConfigException ex) {
+		} catch (AopConfigException ex) {
 			// Ok
 		}
 
@@ -216,7 +212,7 @@ public class ProxyFactoryTests {
 		TimeStamped ts = (TimeStamped) factory.getProxy();
 		assertTrue(ts.getTimeStamp() == t);
 		// Shouldn't fail;
-		 ((IOther) ts).absquatulate();
+		((IOther) ts).absquatulate();
 	}
 
 	@Test
@@ -275,8 +271,7 @@ public class ProxyFactoryTests {
 			// Existing reference will fail
 			ts.getTimeStamp();
 			fail("Existing object won't implement this interface any more");
-		}
-		catch (RuntimeException ex) {
+		} catch (RuntimeException ex) {
 		}
 
 		assertFalse("Should no longer implement TimeStamped",
@@ -414,7 +409,7 @@ public class ProxyFactoryTests {
 
 
 	@Order(1)
-	public static class B implements Runnable{
+	public static class B implements Runnable {
 
 		@Override
 		public void run() {

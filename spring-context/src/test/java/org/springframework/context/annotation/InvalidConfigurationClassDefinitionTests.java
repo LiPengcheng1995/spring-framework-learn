@@ -16,13 +16,13 @@
 package org.springframework.context.annotation;
 
 import org.junit.Test;
-
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.parsing.BeanDefinitionParsingException;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
-import static org.junit.Assert.*;
-import static org.springframework.beans.factory.support.BeanDefinitionBuilder.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.springframework.beans.factory.support.BeanDefinitionBuilder.rootBeanDefinition;
 
 /**
  * Unit tests covering cases where a user defines an invalid Configuration
@@ -36,7 +36,8 @@ public class InvalidConfigurationClassDefinitionTests {
 	@Test
 	public void configurationClassesMayNotBeFinal() {
 		@Configuration
-		final class Config { }
+		final class Config {
+		}
 
 		BeanDefinition configBeanDef = rootBeanDefinition(Config.class).getBeanDefinition();
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
@@ -46,8 +47,7 @@ public class InvalidConfigurationClassDefinitionTests {
 			ConfigurationClassPostProcessor pp = new ConfigurationClassPostProcessor();
 			pp.postProcessBeanFactory(beanFactory);
 			fail("expected exception");
-		}
-		catch (BeanDefinitionParsingException ex) {
+		} catch (BeanDefinitionParsingException ex) {
 			assertTrue(ex.getMessage(), ex.getMessage().contains("Remove the final modifier"));
 		}
 	}

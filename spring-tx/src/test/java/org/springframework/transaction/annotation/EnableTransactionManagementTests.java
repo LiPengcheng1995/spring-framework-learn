@@ -16,21 +16,11 @@
 
 package org.springframework.transaction.annotation;
 
-import java.util.Collection;
-import java.util.Map;
-
 import org.junit.Test;
-
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AdviceMode;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ConfigurationCondition;
+import org.springframework.context.annotation.*;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.stereotype.Service;
 import org.springframework.tests.transaction.CallCountingTransactionManager;
@@ -38,7 +28,11 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.config.TransactionManagementConfigUtils;
 import org.springframework.transaction.event.TransactionalEventListenerFactory;
 
-import static org.hamcrest.CoreMatchers.*;
+import java.util.Collection;
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.*;
 
 /**
@@ -58,7 +52,7 @@ public class EnableTransactionManagementTests {
 				EnableTxConfig.class, TxManagerConfig.class);
 		TransactionalTestBean bean = ctx.getBean(TransactionalTestBean.class);
 		assertTrue("testBean is not a proxy", AopUtils.isAopProxy(bean));
-		Map<?,?> services = ctx.getBeansWithAnnotation(Service.class);
+		Map<?, ?> services = ctx.getBeansWithAnnotation(Service.class);
 		assertTrue("Stereotype annotation not visible", services.containsKey("testBean"));
 		ctx.close();
 	}
@@ -69,7 +63,7 @@ public class EnableTransactionManagementTests {
 				InheritedEnableTxConfig.class, TxManagerConfig.class);
 		TransactionalTestBean bean = ctx.getBean(TransactionalTestBean.class);
 		assertTrue("testBean is not a proxy", AopUtils.isAopProxy(bean));
-		Map<?,?> services = ctx.getBeansWithAnnotation(Service.class);
+		Map<?, ?> services = ctx.getBeansWithAnnotation(Service.class);
 		assertTrue("Stereotype annotation not visible", services.containsKey("testBean"));
 		ctx.close();
 	}
@@ -80,7 +74,7 @@ public class EnableTransactionManagementTests {
 				ParentEnableTxConfig.class, ChildEnableTxConfig.class, TxManagerConfig.class);
 		TransactionalTestBean bean = ctx.getBean(TransactionalTestBean.class);
 		assertTrue("testBean is not a proxy", AopUtils.isAopProxy(bean));
-		Map<?,?> services = ctx.getBeansWithAnnotation(Service.class);
+		Map<?, ?> services = ctx.getBeansWithAnnotation(Service.class);
 		assertTrue("Stereotype annotation not visible", services.containsKey("testBean"));
 		ctx.close();
 	}
@@ -118,8 +112,7 @@ public class EnableTransactionManagementTests {
 			new AnnotationConfigApplicationContext(EnableAspectjTxConfig.class, TxManagerConfig.class);
 			fail("should have thrown CNFE when trying to load AnnotationTransactionAspect. " +
 					"Do you actually have org.springframework.aspects on the classpath?");
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			assertThat(ex.getMessage(), containsString("AspectJTransactionManagementConfiguration"));
 		}
 	}
@@ -182,6 +175,20 @@ public class EnableTransactionManagementTests {
 	}
 
 
+	public interface BaseTransactionalInterface {
+
+		@Transactional
+		default void saveBar() {
+		}
+	}
+
+
+	public interface TransactionalTestInterface extends BaseTransactionalInterface {
+
+		@Transactional
+		void saveFoo();
+	}
+
 	@Service
 	public static class TransactionalTestBean {
 
@@ -199,17 +206,14 @@ public class EnableTransactionManagementTests {
 		}
 	}
 
-
 	@Configuration
 	@EnableTransactionManagement
 	static class EnableTxConfig {
 	}
 
-
 	@Configuration
 	static class InheritedEnableTxConfig extends EnableTxConfig {
 	}
-
 
 	@Configuration
 	@EnableTransactionManagement
@@ -222,7 +226,6 @@ public class EnableTransactionManagementTests {
 		}
 	}
 
-
 	@Configuration
 	static class ChildEnableTxConfig extends ParentEnableTxConfig {
 
@@ -231,7 +234,6 @@ public class EnableTransactionManagementTests {
 			return "X";
 		}
 	}
-
 
 	private static class NeverCondition implements ConfigurationCondition {
 
@@ -246,12 +248,10 @@ public class EnableTransactionManagementTests {
 		}
 	}
 
-
 	@Configuration
 	@EnableTransactionManagement(mode = AdviceMode.ASPECTJ)
 	static class EnableAspectjTxConfig {
 	}
-
 
 	@Configuration
 	static class TxManagerConfig {
@@ -267,7 +267,6 @@ public class EnableTransactionManagementTests {
 		}
 	}
 
-
 	@Configuration
 	static class MultiTxManagerConfig extends TxManagerConfig implements TransactionManagementConfigurer {
 
@@ -281,7 +280,6 @@ public class EnableTransactionManagementTests {
 			return txManager2();
 		}
 	}
-
 
 	@Configuration
 	@EnableTransactionManagement
@@ -298,22 +296,6 @@ public class EnableTransactionManagementTests {
 			return new TransactionalTestBean();
 		}
 	}
-
-
-	public interface BaseTransactionalInterface {
-
-		@Transactional
-		default void saveBar() {
-		}
-	}
-
-
-	public interface TransactionalTestInterface extends BaseTransactionalInterface {
-
-		@Transactional
-		void saveFoo();
-	}
-
 
 	@Service
 	public static class TransactionalTestService implements TransactionalTestInterface {

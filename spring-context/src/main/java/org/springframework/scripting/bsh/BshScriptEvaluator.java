@@ -16,25 +16,24 @@
 
 package org.springframework.scripting.bsh;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.Map;
-
 import bsh.EvalError;
 import bsh.Interpreter;
-
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.lang.Nullable;
 import org.springframework.scripting.ScriptCompilationException;
 import org.springframework.scripting.ScriptEvaluator;
 import org.springframework.scripting.ScriptSource;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Map;
+
 /**
  * BeanShell-based implementation of Spring's {@link ScriptEvaluator} strategy interface.
  *
  * @author Juergen Hoeller
- * @since 4.0
  * @see Interpreter#eval(String)
+ * @since 4.0
  */
 public class BshScriptEvaluator implements ScriptEvaluator, BeanClassLoaderAware {
 
@@ -50,6 +49,7 @@ public class BshScriptEvaluator implements ScriptEvaluator, BeanClassLoaderAware
 
 	/**
 	 * Construct a new BshScriptEvaluator.
+	 *
 	 * @param classLoader the ClassLoader to use for the {@link Interpreter}
 	 */
 	public BshScriptEvaluator(ClassLoader classLoader) {
@@ -81,11 +81,9 @@ public class BshScriptEvaluator implements ScriptEvaluator, BeanClassLoaderAware
 				}
 			}
 			return interpreter.eval(new StringReader(script.getScriptAsString()));
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			throw new ScriptCompilationException(script, "Cannot access BeanShell script", ex);
-		}
-		catch (EvalError ex) {
+		} catch (EvalError ex) {
 			throw new ScriptCompilationException(script, ex);
 		}
 	}

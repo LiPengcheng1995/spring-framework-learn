@@ -16,15 +16,8 @@
 
 package org.springframework.scheduling.aspectj;
 
-import java.lang.reflect.Method;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -37,6 +30,12 @@ import org.springframework.tests.Assume;
 import org.springframework.tests.TestGroup;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.concurrent.ListenableFuture;
+
+import java.lang.reflect.Method;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.Matchers.not;
@@ -159,8 +158,7 @@ public class AnnotationAsyncExecutionAspectTests {
 			obj.failWithVoid();
 			exceptionHandler.await(3000);
 			exceptionHandler.assertCalledWith(m, UnsupportedOperationException.class);
-		}
-		finally {
+		} finally {
 			AnnotationAsyncExecutionAspect.aspectOf().setExceptionHandler(defaultExceptionHandler);
 		}
 	}
@@ -177,12 +175,10 @@ public class AnnotationAsyncExecutionAspectTests {
 				obj.failWithVoid();
 				exceptionHandler.await(3000);
 				exceptionHandler.assertCalledWith(m, UnsupportedOperationException.class);
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				fail("No unexpected exception should have been received but got " + ex.getMessage());
 			}
-		}
-		finally {
+		} finally {
 			AnnotationAsyncExecutionAspect.aspectOf().setExceptionHandler(defaultExceptionHandler);
 
 		}
@@ -210,8 +206,7 @@ public class AnnotationAsyncExecutionAspectTests {
 		public synchronized void waitForCompletion() {
 			try {
 				wait(WAIT_TIME);
-			}
-			catch (InterruptedException ex) {
+			} catch (InterruptedException ex) {
 				fail("Didn't finish the async job in " + WAIT_TIME + " milliseconds");
 			}
 		}
@@ -222,7 +217,8 @@ public class AnnotationAsyncExecutionAspectTests {
 
 		int counter;
 
-		@Async public void incrementAsync() {
+		@Async
+		public void incrementAsync() {
 			counter++;
 		}
 
@@ -230,7 +226,8 @@ public class AnnotationAsyncExecutionAspectTests {
 			counter++;
 		}
 
-		@Async public Future<Integer> incrementReturningAFuture() {
+		@Async
+		public Future<Integer> incrementReturningAFuture() {
 			counter++;
 			return new AsyncResult<Integer>(5);
 		}
@@ -295,7 +292,7 @@ public class AnnotationAsyncExecutionAspectTests {
 
 		@Async
 		public void failWithVoid() {
-			 throw new UnsupportedOperationException("failWithVoid");
+			throw new UnsupportedOperationException("failWithVoid");
 		}
 	}
 

@@ -16,31 +16,27 @@
 
 package org.springframework.test.util;
 
-import java.io.ByteArrayInputStream;
-import java.util.Collections;
-import java.util.Map;
-import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
 import org.hamcrest.Matcher;
+import org.springframework.lang.Nullable;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+import org.springframework.util.xml.SimpleNamespaceContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import org.springframework.lang.Nullable;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
-import org.springframework.util.xml.SimpleNamespaceContext;
+import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.*;
+import java.io.ByteArrayInputStream;
+import java.util.Collections;
+import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.springframework.test.util.AssertionErrors.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.springframework.test.util.AssertionErrors.assertEquals;
+import static org.springframework.test.util.AssertionErrors.assertTrue;
 
 /**
  * A helper class for applying assertions via XPath expressions.
@@ -59,10 +55,11 @@ public class XpathExpectationsHelper {
 
 	/**
 	 * XpathExpectationsHelper constructor.
+	 *
 	 * @param expression the XPath expression
 	 * @param namespaces XML namespaces referenced in the XPath expression, or {@code null}
-	 * @param args arguments to parameterize the XPath expression with using the
-	 * formatting specifiers defined in {@link String#format(String, Object...)}
+	 * @param args       arguments to parameterize the XPath expression with using the
+	 *                   formatting specifiers defined in {@link String#format(String, Object...)}
 	 * @throws XPathExpressionException if expression compilation failed
 	 */
 	public XpathExpectationsHelper(String expression, @Nullable Map<String, String> namespaces, Object... args)
@@ -105,7 +102,8 @@ public class XpathExpectationsHelper {
 
 	/**
 	 * Parse the given XML content to a {@link Document}.
-	 * @param xml the content to parse
+	 *
+	 * @param xml      the content to parse
 	 * @param encoding optional content encoding, if provided as metadata (e.g. in HTTP headers)
 	 * @return the parsed document
 	 */
@@ -122,6 +120,7 @@ public class XpathExpectationsHelper {
 
 	/**
 	 * Apply the XPath expression to given document.
+	 *
 	 * @throws XPathExpressionException if expression evaluation failed
 	 */
 	@SuppressWarnings("unchecked")
@@ -134,6 +133,7 @@ public class XpathExpectationsHelper {
 
 	/**
 	 * Apply the XPath expression and assert the resulting content exists.
+	 *
 	 * @throws Exception if content parsing or expression evaluation fails
 	 */
 	public void exists(byte[] content, @Nullable String encoding) throws Exception {
@@ -144,6 +144,7 @@ public class XpathExpectationsHelper {
 
 	/**
 	 * Apply the XPath expression and assert the resulting content does not exist.
+	 *
 	 * @throws Exception if content parsing or expression evaluation fails
 	 */
 	public void doesNotExist(byte[] content, @Nullable String encoding) throws Exception {
@@ -155,6 +156,7 @@ public class XpathExpectationsHelper {
 	/**
 	 * Apply the XPath expression and assert the resulting content with the
 	 * given Hamcrest matcher.
+	 *
 	 * @throws Exception if content parsing or expression evaluation fails
 	 */
 	public void assertNodeCount(byte[] content, @Nullable String encoding, Matcher<Integer> matcher) throws Exception {
@@ -166,6 +168,7 @@ public class XpathExpectationsHelper {
 
 	/**
 	 * Apply the XPath expression and assert the resulting content as an integer.
+	 *
 	 * @throws Exception if content parsing or expression evaluation fails
 	 */
 	public void assertNodeCount(byte[] content, @Nullable String encoding, int expectedCount) throws Exception {
@@ -178,27 +181,30 @@ public class XpathExpectationsHelper {
 	/**
 	 * Apply the XPath expression and assert the resulting content with the
 	 * given Hamcrest matcher.
+	 *
 	 * @throws Exception if content parsing or expression evaluation fails
 	 */
 	public void assertString(byte[] content, @Nullable String encoding, Matcher<? super String> matcher) throws Exception {
 		Document document = parseXmlByteArray(content, encoding);
-		String result = evaluateXpath(document,  XPathConstants.STRING, String.class);
+		String result = evaluateXpath(document, XPathConstants.STRING, String.class);
 		assertThat("XPath " + this.expression, result, matcher);
 	}
 
 	/**
 	 * Apply the XPath expression and assert the resulting content as a String.
+	 *
 	 * @throws Exception if content parsing or expression evaluation fails
 	 */
 	public void assertString(byte[] content, @Nullable String encoding, String expectedValue) throws Exception {
 		Document document = parseXmlByteArray(content, encoding);
-		String actual = evaluateXpath(document,  XPathConstants.STRING, String.class);
+		String actual = evaluateXpath(document, XPathConstants.STRING, String.class);
 		assertEquals("XPath " + this.expression, expectedValue, actual);
 	}
 
 	/**
 	 * Apply the XPath expression and assert the resulting content with the
 	 * given Hamcrest matcher.
+	 *
 	 * @throws Exception if content parsing or expression evaluation fails
 	 */
 	public void assertNumber(byte[] content, @Nullable String encoding, Matcher<? super Double> matcher) throws Exception {
@@ -209,6 +215,7 @@ public class XpathExpectationsHelper {
 
 	/**
 	 * Apply the XPath expression and assert the resulting content as a Double.
+	 *
 	 * @throws Exception if content parsing or expression evaluation fails
 	 */
 	public void assertNumber(byte[] content, @Nullable String encoding, Double expectedValue) throws Exception {
@@ -219,6 +226,7 @@ public class XpathExpectationsHelper {
 
 	/**
 	 * Apply the XPath expression and assert the resulting content as a Boolean.
+	 *
 	 * @throws Exception if content parsing or expression evaluation fails
 	 */
 	public void assertBoolean(byte[] content, @Nullable String encoding, boolean expectedValue) throws Exception {

@@ -17,13 +17,13 @@
 package org.springframework.core.type;
 
 import org.junit.Test;
-
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 import org.springframework.core.type.filter.AssignableTypeFilter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Ramnivas Laddad
@@ -77,26 +77,26 @@ public class AssignableTypeFilterTests {
 	}
 
 
+	private interface TestInterface {
+	}
+
+	private interface SomeDaoLikeInterface {
+	}
+
+	private interface JdbcDaoSupport {
+	}
+
 	// We must use a standalone set of types to ensure that no one else is loading them
 	// and interfere with ClassloadingAssertions.assertClassNotLoaded()
 	private static class TestNonInheritingClass {
-	}
-
-	private interface TestInterface {
 	}
 
 	@SuppressWarnings("unused")
 	private static class TestInterfaceImpl implements TestInterface {
 	}
 
-	private interface SomeDaoLikeInterface {
-	}
-
 	@SuppressWarnings("unused")
 	private static class SomeDaoLikeImpl extends SimpleJdbcDaoSupport implements SomeDaoLikeInterface {
-	}
-
-	private interface JdbcDaoSupport {
 	}
 
 	private static class SimpleJdbcDaoSupport implements JdbcDaoSupport {

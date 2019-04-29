@@ -16,16 +16,6 @@
 
 package org.springframework.http.client;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.IOException;
-import java.net.URI;
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.concurrent.Future;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,6 +28,14 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
+
+import java.io.IOException;
+import java.net.URI;
+import java.util.Arrays;
+import java.util.Locale;
+import java.util.concurrent.Future;
+
+import static org.junit.Assert.*;
 
 @SuppressWarnings("deprecation")
 public abstract class AbstractAsyncHttpRequestFactoryTestCase extends AbstractMockWebServerTestCase {
@@ -73,8 +71,7 @@ public abstract class AbstractAsyncHttpRequestFactoryTestCase extends AbstractMo
 		ClientHttpResponse response = futureResponse.get();
 		try {
 			assertEquals("Invalid status code", HttpStatus.NOT_FOUND, response.getStatusCode());
-		}
-		finally {
+		} finally {
 			response.close();
 		}
 	}
@@ -91,11 +88,11 @@ public abstract class AbstractAsyncHttpRequestFactoryTestCase extends AbstractMo
 			public void onSuccess(ClientHttpResponse result) {
 				try {
 					assertEquals("Invalid status code", HttpStatus.NOT_FOUND, result.getStatusCode());
-				}
-				catch (IOException ex) {
+				} catch (IOException ex) {
 					fail(ex.getMessage());
 				}
 			}
+
 			@Override
 			public void onFailure(Throwable ex) {
 				fail(ex.getMessage());
@@ -104,8 +101,7 @@ public abstract class AbstractAsyncHttpRequestFactoryTestCase extends AbstractMo
 		ClientHttpResponse response = listenableFuture.get();
 		try {
 			assertEquals("Invalid status code", HttpStatus.NOT_FOUND, response.getStatusCode());
-		}
-		finally {
+		} finally {
 			response.close();
 		}
 	}
@@ -125,8 +121,7 @@ public abstract class AbstractAsyncHttpRequestFactoryTestCase extends AbstractMo
 		if (request instanceof StreamingHttpOutputMessage) {
 			StreamingHttpOutputMessage streamingRequest = (StreamingHttpOutputMessage) request;
 			streamingRequest.setBody(outputStream -> StreamUtils.copy(body, outputStream));
-		}
-		else {
+		} else {
 			StreamUtils.copy(body, request.getBody());
 		}
 
@@ -139,8 +134,7 @@ public abstract class AbstractAsyncHttpRequestFactoryTestCase extends AbstractMo
 					response.getHeaders().get(headerName));
 			byte[] result = FileCopyUtils.copyToByteArray(response.getBody());
 			assertTrue("Invalid body", Arrays.equals(body, result));
-		}
-		finally {
+		} finally {
 			response.close();
 		}
 	}
@@ -153,8 +147,7 @@ public abstract class AbstractAsyncHttpRequestFactoryTestCase extends AbstractMo
 		if (request instanceof StreamingHttpOutputMessage) {
 			StreamingHttpOutputMessage streamingRequest = (StreamingHttpOutputMessage) request;
 			streamingRequest.setBody(outputStream -> StreamUtils.copy(body, outputStream));
-		}
-		else {
+		} else {
 			StreamUtils.copy(body, request.getBody());
 		}
 
@@ -163,11 +156,9 @@ public abstract class AbstractAsyncHttpRequestFactoryTestCase extends AbstractMo
 		try {
 			FileCopyUtils.copy(body, request.getBody());
 			fail("IllegalStateException expected");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			// expected
-		}
-		finally {
+		} finally {
 			response.close();
 		}
 	}
@@ -184,11 +175,9 @@ public abstract class AbstractAsyncHttpRequestFactoryTestCase extends AbstractMo
 		try {
 			request.getHeaders().add("MyHeader", "value");
 			fail("UnsupportedOperationException expected");
-		}
-		catch (UnsupportedOperationException ex) {
+		} catch (UnsupportedOperationException ex) {
 			// expected
-		}
-		finally {
+		} finally {
 			response.close();
 		}
 	}
@@ -215,8 +204,7 @@ public abstract class AbstractAsyncHttpRequestFactoryTestCase extends AbstractMo
 			response = futureResponse.get();
 			assertEquals("Invalid response status", HttpStatus.OK, response.getStatusCode());
 			assertEquals("Invalid method", path.toUpperCase(Locale.ENGLISH), request.getMethod().name());
-		}
-		finally {
+		} finally {
 			if (response != null) {
 				response.close();
 			}

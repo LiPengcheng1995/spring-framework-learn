@@ -17,7 +17,6 @@
 package org.springframework.aop.aspectj;
 
 import org.junit.Test;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.tests.sample.beans.CountingTestBean;
@@ -26,7 +25,8 @@ import org.springframework.tests.sample.beans.ITestBean;
 import org.springframework.tests.sample.beans.TestBean;
 import org.springframework.tests.sample.beans.subpkg.DeepBean;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for the {@link TypePatternClassFilter} class.
@@ -67,15 +67,15 @@ public class TypePatternClassFilterTests {
 	@Test
 	public void testAndOrNotReplacement() {
 		TypePatternClassFilter tpcf = new TypePatternClassFilter("java.lang.Object or java.lang.String");
-		assertFalse("matches Number",tpcf.matches(Number.class));
-		assertTrue("matches Object",tpcf.matches(Object.class));
-		assertTrue("matchesString",tpcf.matches(String.class));
+		assertFalse("matches Number", tpcf.matches(Number.class));
+		assertTrue("matches Object", tpcf.matches(Object.class));
+		assertTrue("matchesString", tpcf.matches(String.class));
 		tpcf = new TypePatternClassFilter("java.lang.Number+ and java.lang.Float");
-		assertTrue("matches Float",tpcf.matches(Float.class));
-		assertFalse("matches Double",tpcf.matches(Double.class));
+		assertTrue("matches Float", tpcf.matches(Float.class));
+		assertFalse("matches Double", tpcf.matches(Double.class));
 		tpcf = new TypePatternClassFilter("java.lang.Number+ and not java.lang.Float");
-		assertFalse("matches Float",tpcf.matches(Float.class));
-		assertTrue("matches Double",tpcf.matches(Double.class));
+		assertFalse("matches Float", tpcf.matches(Float.class));
+		assertTrue("matches Double", tpcf.matches(Double.class));
 	}
 
 	@Test(expected = IllegalArgumentException.class)

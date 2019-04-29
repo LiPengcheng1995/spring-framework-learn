@@ -30,9 +30,9 @@ public interface IJmxTestBean {
 
 	void setAge(int age);
 
-	void setName(String name) throws Exception;
-
 	String getName();
+
+	void setName(String name) throws Exception;
 
 	// used to test invalid methods that exist in the proxy interface
 	void dontExposeMe();

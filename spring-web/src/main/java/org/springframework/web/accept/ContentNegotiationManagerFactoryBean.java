@@ -16,14 +16,6 @@
 
 package org.springframework.web.accept;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import javax.servlet.ServletContext;
-
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.http.MediaType;
@@ -32,6 +24,9 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.ServletContextAware;
+
+import javax.servlet.ServletContext;
+import java.util.*;
 
 /**
  * Factory to create a {@code ContentNegotiationManager} and configure it with
@@ -125,6 +120,7 @@ public class ContentNegotiationManagerFactoryBean
 	 * <p><strong>Note:</strong> use of this method is mutually exclusive with
 	 * use of all other setters in this class which customize a default, fixed
 	 * set of strategies. See class level doc for more details.
+	 *
 	 * @param strategies the strategies to use
 	 * @since 5.0
 	 */
@@ -153,6 +149,7 @@ public class ContentNegotiationManagerFactoryBean
 	 * <p>The path extension strategy will also try to use
 	 * {@link ServletContext#getMimeType} and
 	 * {@link org.springframework.http.MediaTypeFactory} to resolve path extensions.
+	 *
 	 * @param mediaTypes media type mappings
 	 * @see #addMediaType(String, MediaType)
 	 * @see #addMediaTypes(Map)
@@ -169,6 +166,7 @@ public class ContentNegotiationManagerFactoryBean
 
 	/**
 	 * An alternative to {@link #setMediaTypes} for use in Java code.
+	 *
 	 * @see #setMediaTypes
 	 * @see #addMediaTypes
 	 */
@@ -178,6 +176,7 @@ public class ContentNegotiationManagerFactoryBean
 
 	/**
 	 * An alternative to {@link #setMediaTypes} for use in Java code.
+	 *
 	 * @see #setMediaTypes
 	 * @see #addMediaType
 	 */
@@ -226,6 +225,7 @@ public class ContentNegotiationManagerFactoryBean
 	 * determine the requested media type. For this option to work you must
 	 * register {@link #setMediaTypes media type mappings}.
 	 * <p>By default this is set to {@code false}.
+	 *
 	 * @see #setParameterName
 	 */
 	public void setFavorParameter(boolean favorParameter) {
@@ -252,6 +252,7 @@ public class ContentNegotiationManagerFactoryBean
 	/**
 	 * Set the default content type to use when no content type is requested.
 	 * <p>By default this is not set.
+	 *
 	 * @see #setDefaultContentTypeStrategy
 	 */
 	public void setDefaultContentType(MediaType contentType) {
@@ -261,6 +262,7 @@ public class ContentNegotiationManagerFactoryBean
 	/**
 	 * Set the default content types to use when no content type is requested.
 	 * <p>By default this is not set.
+	 *
 	 * @see #setDefaultContentTypeStrategy
 	 * @since 5.0
 	 */
@@ -272,6 +274,7 @@ public class ContentNegotiationManagerFactoryBean
 	 * Set a custom {@link ContentNegotiationStrategy} to use to determine
 	 * the content type to use when no content type is requested.
 	 * <p>By default this is not set.
+	 *
 	 * @see #setDefaultContentType
 	 * @since 4.1.2
 	 */
@@ -295,6 +298,7 @@ public class ContentNegotiationManagerFactoryBean
 
 	/**
 	 * Actually build the {@link ContentNegotiationManager}.
+	 *
 	 * @since 5.0
 	 */
 	public ContentNegotiationManager build() {
@@ -302,14 +306,12 @@ public class ContentNegotiationManagerFactoryBean
 
 		if (this.strategies != null) {
 			strategies.addAll(this.strategies);
-		}
-		else {
+		} else {
 			if (this.favorPathExtension) {
 				PathExtensionContentNegotiationStrategy strategy;
 				if (this.servletContext != null && !useRegisteredExtensionsOnly()) {
 					strategy = new ServletPathExtensionContentNegotiationStrategy(this.servletContext, this.mediaTypes);
-				}
-				else {
+				} else {
 					strategy = new PathExtensionContentNegotiationStrategy(this.mediaTypes);
 				}
 				strategy.setIgnoreUnknownExtensions(this.ignoreUnknownPathExtensions);
@@ -324,8 +326,7 @@ public class ContentNegotiationManagerFactoryBean
 				strategy.setParameterName(this.parameterName);
 				if (this.useRegisteredExtensionsOnly != null) {
 					strategy.setUseRegisteredExtensionsOnly(this.useRegisteredExtensionsOnly);
-				}
-				else {
+				} else {
 					strategy.setUseRegisteredExtensionsOnly(true);  // backwards compatibility
 				}
 				strategies.add(strategy);

@@ -16,10 +16,10 @@
 
 package org.springframework.messaging.core;
 
-import java.util.Map;
-
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
+
+import java.util.Map;
 
 /**
  * An extension of {@link AbstractMessageReceivingTemplate} that adds support for
@@ -80,7 +80,7 @@ public abstract class AbstractMessagingTemplate<D> extends AbstractMessageReceiv
 	@Override
 	@Nullable
 	public <T> T convertSendAndReceive(D destination, Object request, Class<T> targetClass,
-			@Nullable MessagePostProcessor postProcessor) {
+									   @Nullable MessagePostProcessor postProcessor) {
 
 		return convertSendAndReceive(destination, request, null, targetClass, postProcessor);
 	}
@@ -89,7 +89,7 @@ public abstract class AbstractMessagingTemplate<D> extends AbstractMessageReceiv
 	@Override
 	@Nullable
 	public <T> T convertSendAndReceive(D destination, Object request, @Nullable Map<String, Object> headers,
-			Class<T> targetClass, @Nullable MessagePostProcessor postProcessor) {
+									   Class<T> targetClass, @Nullable MessagePostProcessor postProcessor) {
 
 		Message<?> requestMessage = doConvert(request, headers, postProcessor);
 		Message<?> replyMessage = sendAndReceive(destination, requestMessage);

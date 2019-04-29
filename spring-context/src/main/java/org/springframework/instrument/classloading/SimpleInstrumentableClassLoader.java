@@ -16,10 +16,10 @@
 
 package org.springframework.instrument.classloading;
 
-import java.lang.instrument.ClassFileTransformer;
-
 import org.springframework.core.OverridingClassLoader;
 import org.springframework.lang.Nullable;
+
+import java.lang.instrument.ClassFileTransformer;
 
 /**
  * Simplistic implementation of an instrumentable {@code ClassLoader}.
@@ -42,6 +42,7 @@ public class SimpleInstrumentableClassLoader extends OverridingClassLoader {
 
 	/**
 	 * Create a new SimpleInstrumentableClassLoader for the given ClassLoader.
+	 *
 	 * @param parent the ClassLoader to build an instrumentable ClassLoader for
 	 */
 	public SimpleInstrumentableClassLoader(@Nullable ClassLoader parent) {
@@ -52,6 +53,7 @@ public class SimpleInstrumentableClassLoader extends OverridingClassLoader {
 
 	/**
 	 * Add a {@link ClassFileTransformer} to be applied by this ClassLoader.
+	 *
 	 * @param transformer the {@link ClassFileTransformer} to register
 	 */
 	public void addTransformer(ClassFileTransformer transformer) {

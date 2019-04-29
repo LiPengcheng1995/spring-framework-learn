@@ -16,17 +16,17 @@
 
 package org.springframework.cache;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.UUID;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.hamcrest.core.Is.*;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 
 /**
@@ -34,10 +34,9 @@ import static org.junit.Assert.*;
  */
 public abstract class AbstractCacheTests<T extends Cache> {
 
+	protected final static String CACHE_NAME = "testCache";
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();
-
-	protected final static String CACHE_NAME = "testCache";
 
 	protected abstract T getCache();
 
@@ -170,8 +169,7 @@ public abstract class AbstractCacheTests<T extends Cache> {
 			cache.get(key, () -> {
 				throw new UnsupportedOperationException("Expected exception");
 			});
-		}
-		catch (Cache.ValueRetrievalException ex) {
+		} catch (Cache.ValueRetrievalException ex) {
 			assertNotNull(ex.getCause());
 			assertEquals(UnsupportedOperationException.class, ex.getCause().getClass());
 		}
@@ -196,8 +194,7 @@ public abstract class AbstractCacheTests<T extends Cache> {
 					return counter.incrementAndGet();
 				});
 				results.add(value);
-			}
-			finally {
+			} finally {
 				latch.countDown();
 			}
 		};

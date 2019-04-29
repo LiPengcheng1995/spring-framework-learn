@@ -16,20 +16,15 @@
 
 package org.springframework.jmx.access;
 
-import java.net.BindException;
-import java.net.MalformedURLException;
-import javax.management.MBeanServerConnection;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXConnectorServer;
-import javax.management.remote.JMXConnectorServerFactory;
-import javax.management.remote.JMXServiceURL;
-
 import org.junit.After;
-
 import org.springframework.tests.Assume;
 import org.springframework.tests.TestGroup;
 import org.springframework.util.SocketUtils;
+
+import javax.management.MBeanServerConnection;
+import javax.management.remote.*;
+import java.net.BindException;
+import java.net.MalformedURLException;
 
 /**
  * To run the tests in the class, set the following Java system property:
@@ -65,8 +60,7 @@ public class RemoteMBeanClientInterceptorTests extends MBeanClientInterceptorTes
 		this.connectorServer = JMXConnectorServerFactory.newJMXConnectorServer(getServiceUrl(), null, getServer());
 		try {
 			this.connectorServer.start();
-		}
-		catch (BindException ex) {
+		} catch (BindException ex) {
 			System.out.println("Skipping remote JMX tests because binding to local port ["
 					+ SERVICE_PORT + "] failed: " + ex.getMessage());
 			runTests = false;

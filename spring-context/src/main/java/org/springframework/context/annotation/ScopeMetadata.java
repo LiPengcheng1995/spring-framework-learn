@@ -28,9 +28,9 @@ import org.springframework.util.Assert;
  *
  * @author Mark Fisher
  * @author Juergen Hoeller
- * @since 2.5
  * @see ScopeMetadataResolver
  * @see ScopedProxyMode
+ * @since 2.5
  */
 public class ScopeMetadata {
 
@@ -38,6 +38,12 @@ public class ScopeMetadata {
 
 	private ScopedProxyMode scopedProxyMode = ScopedProxyMode.NO;
 
+	/**
+	 * Get the name of the scope.
+	 */
+	public String getScopeName() {
+		return this.scopeName;
+	}
 
 	/**
 	 * Set the name of the scope.
@@ -48,10 +54,10 @@ public class ScopeMetadata {
 	}
 
 	/**
-	 * Get the name of the scope.
+	 * Get the proxy-mode to be applied to the scoped instance.
 	 */
-	public String getScopeName() {
-		return this.scopeName;
+	public ScopedProxyMode getScopedProxyMode() {
+		return this.scopedProxyMode;
 	}
 
 	/**
@@ -60,13 +66,6 @@ public class ScopeMetadata {
 	public void setScopedProxyMode(ScopedProxyMode scopedProxyMode) {
 		Assert.notNull(scopedProxyMode, "'scopedProxyMode' must not be null");
 		this.scopedProxyMode = scopedProxyMode;
-	}
-
-	/**
-	 * Get the proxy-mode to be applied to the scoped instance.
-	 */
-	public ScopedProxyMode getScopedProxyMode() {
-		return this.scopedProxyMode;
 	}
 
 }

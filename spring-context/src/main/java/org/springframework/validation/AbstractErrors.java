@@ -16,16 +16,11 @@
 
 package org.springframework.validation;
 
-import java.io.Serializable;
-import java.util.ArrayDeque;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
+
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Abstract implementation of the {@link Errors} interface. Provides common
@@ -39,20 +34,18 @@ import org.springframework.util.StringUtils;
 @SuppressWarnings("serial")
 public abstract class AbstractErrors implements Errors, Serializable {
 
+	private final Deque<String> nestedPathStack = new ArrayDeque<>();
 	private String nestedPath = "";
 
-	private final Deque<String> nestedPathStack = new ArrayDeque<>();
-
+	@Override
+	public String getNestedPath() {
+		return this.nestedPath;
+	}
 
 	@Override
 	public void setNestedPath(@Nullable String nestedPath) {
 		doSetNestedPath(nestedPath);
 		this.nestedPathStack.clear();
-	}
-
-	@Override
-	public String getNestedPath() {
-		return this.nestedPath;
 	}
 
 	@Override
@@ -66,8 +59,7 @@ public abstract class AbstractErrors implements Errors, Serializable {
 		try {
 			String formerNestedPath = this.nestedPathStack.pop();
 			doSetNestedPath(formerNestedPath);
-		}
-		catch (NoSuchElementException ex) {
+		} catch (NoSuchElementException ex) {
 			throw new IllegalStateException("Cannot pop nested path: no nested path on stack");
 		}
 	}
@@ -94,8 +86,7 @@ public abstract class AbstractErrors implements Errors, Serializable {
 	protected String fixedField(@Nullable String field) {
 		if (StringUtils.hasLength(field)) {
 			return getNestedPath() + canonicalFieldName(field);
-		}
-		else {
+		} else {
 			String path = getNestedPath();
 			return (path.endsWith(Errors.NESTED_PATH_SEPARATOR) ?
 					path.substring(0, path.length() - NESTED_PATH_SEPARATOR.length()) : path);
@@ -105,6 +96,7 @@ public abstract class AbstractErrors implements Errors, Serializable {
 	/**
 	 * Determine the canonical field name for the given field.
 	 * <p>The default implementation simply returns the field name as-is.
+	 *
 	 * @param field the original field name
 	 * @return the canonical field name
 	 */
@@ -225,7 +217,8 @@ public abstract class AbstractErrors implements Errors, Serializable {
 
 	/**
 	 * Check whether the given FieldError matches the given field.
-	 * @param field the field that we are looking up FieldErrors for
+	 *
+	 * @param field      the field that we are looking up FieldErrors for
 	 * @param fieldError the candidate FieldError
 	 * @return whether the FieldError matches the given field
 	 */

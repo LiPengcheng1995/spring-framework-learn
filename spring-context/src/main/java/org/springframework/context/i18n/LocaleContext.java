@@ -16,9 +16,9 @@
 
 package org.springframework.context.i18n;
 
-import java.util.Locale;
-
 import org.springframework.lang.Nullable;
+
+import java.util.Locale;
 
 /**
  * Strategy interface for determining the current Locale.
@@ -27,15 +27,16 @@ import org.springframework.lang.Nullable;
  * via the LocaleContextHolder class.
  *
  * @author Juergen Hoeller
- * @since 1.2
  * @see LocaleContextHolder#getLocale()
  * @see TimeZoneAwareLocaleContext
+ * @since 1.2
  */
 public interface LocaleContext {
 
 	/**
 	 * Return the current Locale, which can be fixed or determined dynamically,
 	 * depending on the implementation strategy.
+	 *
 	 * @return the current Locale, or {@code null} if no specific Locale associated
 	 */
 	@Nullable

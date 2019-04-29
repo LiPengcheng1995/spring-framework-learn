@@ -16,11 +16,11 @@
 
 package org.springframework.core.io;
 
+import org.springframework.lang.Nullable;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-
-import org.springframework.lang.Nullable;
 
 /**
  * Simple {@link Resource} implementation that holds a resource description
@@ -39,6 +39,7 @@ public class DescriptiveResource extends AbstractResource {
 
 	/**
 	 * Create a new DescriptiveResource.
+	 *
 	 * @param description the resource description
 	 */
 	public DescriptiveResource(@Nullable String description) {

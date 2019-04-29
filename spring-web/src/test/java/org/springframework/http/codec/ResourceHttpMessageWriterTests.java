@@ -16,14 +16,7 @@
 
 package org.springframework.http.codec;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.Map;
-
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -33,10 +26,14 @@ import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpResponse;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.StringUtils;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.startsWith;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.Map;
+
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
@@ -60,6 +57,9 @@ public class ResourceHttpMessageWriterTests {
 	private final Mono<Resource> input = Mono.just(new ByteArrayResource(
 			"Spring Framework test resource content.".getBytes(StandardCharsets.UTF_8)));
 
+	private static HttpRange of(int first, int last) {
+		return HttpRange.createByteRange(first, last);
+	}
 
 	@Test
 	public void getWritableMediaTypes() throws Exception {
@@ -95,7 +95,7 @@ public class ResourceHttpMessageWriterTests {
 	@Test
 	public void writeMultipleRegions() throws Exception {
 
-		testWrite(get("/").range(of(0,5), of(7,15), of(17,20), of(22,38)).build());
+		testWrite(get("/").range(of(0, 5), of(7, 15), of(17, 20), of(22, 38)).build());
 
 		HttpHeaders headers = this.response.getHeaders();
 		String contentType = headers.getContentType().toString();
@@ -106,7 +106,7 @@ public class ResourceHttpMessageWriterTests {
 		StepVerifier.create(this.response.getBodyAsString())
 				.consumeNextWith(content -> {
 					String[] actualRanges = StringUtils.tokenizeToStringArray(content, "\r\n", false, true);
-					String[] expected = new String[] {
+					String[] expected = new String[]{
 							"--" + boundary,
 							"Content-Type: text/plain",
 							"Content-Range: bytes 0-5/39",
@@ -140,14 +140,9 @@ public class ResourceHttpMessageWriterTests {
 		assertThat(this.response.getStatusCode(), is(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE));
 	}
 
-
 	private void testWrite(MockServerHttpRequest request) {
 		Mono<Void> mono = this.writer.write(this.input, null, null, TEXT_PLAIN, request, this.response, HINTS);
 		StepVerifier.create(mono).expectComplete().verify();
-	}
-
-	private static HttpRange of(int first, int last) {
-		return HttpRange.createByteRange(first, last);
 	}
 
 }

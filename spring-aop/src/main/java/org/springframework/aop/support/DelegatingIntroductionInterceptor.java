@@ -17,7 +17,6 @@
 package org.springframework.aop.support;
 
 import org.aopalliance.intercept.MethodInvocation;
-
 import org.springframework.aop.DynamicIntroductionAdvice;
 import org.springframework.aop.IntroductionInterceptor;
 import org.springframework.aop.ProxyMethodInvocation;
@@ -45,9 +44,9 @@ import org.springframework.util.Assert;
  *
  * @author Rod Johnson
  * @author Juergen Hoeller
- * @since 16.11.2003
  * @see #suppressInterface
  * @see DelegatePerTargetObjectIntroductionInterceptor
+ * @since 16.11.2003
  */
 @SuppressWarnings("serial")
 public class DelegatingIntroductionInterceptor extends IntroductionInfoSupport
@@ -64,6 +63,7 @@ public class DelegatingIntroductionInterceptor extends IntroductionInfoSupport
 	/**
 	 * Construct a new DelegatingIntroductionInterceptor, providing
 	 * a delegate that implements the interfaces to be introduced.
+	 *
 	 * @param delegate the delegate that implements the introduced interfaces
 	 */
 	public DelegatingIntroductionInterceptor(Object delegate) {
@@ -83,6 +83,7 @@ public class DelegatingIntroductionInterceptor extends IntroductionInfoSupport
 	/**
 	 * Both constructors use this init method, as it is impossible to pass
 	 * a "this" reference from one constructor to another.
+	 *
 	 * @param delegate the delegate object
 	 */
 	private void init(Object delegate) {

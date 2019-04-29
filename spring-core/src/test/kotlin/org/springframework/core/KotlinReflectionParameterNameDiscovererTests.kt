@@ -15,10 +15,9 @@
  */
 package org.springframework.core
 
-import org.junit.Test
-
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.Test
 import org.springframework.util.ReflectionUtils
 
 /**
@@ -30,14 +29,14 @@ class KotlinReflectionParameterNameDiscovererTests {
 
 	@Test
 	fun getParameterNamesOnInterface() {
-		val method = ReflectionUtils.findMethod(MessageService::class.java,"sendMessage", String::class.java)!!
+		val method = ReflectionUtils.findMethod(MessageService::class.java, "sendMessage", String::class.java)!!
 		val actualParams = parameterNameDiscoverer.getParameterNames(method)
 		assertThat(actualParams, `is`(arrayOf("message")))
 	}
 
 	@Test
 	fun getParameterNamesOnClass() {
-		val method = ReflectionUtils.findMethod(MessageServiceImpl::class.java,"sendMessage", String::class.java)!!
+		val method = ReflectionUtils.findMethod(MessageServiceImpl::class.java, "sendMessage", String::class.java)!!
 		val actualParams = parameterNameDiscoverer.getParameterNames(method)
 		assertThat(actualParams, `is`(arrayOf("message")))
 	}

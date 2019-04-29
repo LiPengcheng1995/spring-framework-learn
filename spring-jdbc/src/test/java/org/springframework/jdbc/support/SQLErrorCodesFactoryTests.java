@@ -16,18 +16,17 @@
 
 package org.springframework.jdbc.support;
 
+import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Arrays;
-import javax.sql.DataSource;
 
-import org.junit.Test;
-
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.*;
 
@@ -129,8 +128,8 @@ public class SQLErrorCodesFactoryTests {
 		assertTrue(Arrays.binarySearch(sec.getPermissionDeniedCodes(), "10") >= 0);
 		assertTrue(Arrays.binarySearch(sec.getDuplicateKeyCodes(), "301") >= 0);
 		assertTrue(Arrays.binarySearch(sec.getDataIntegrityViolationCodes(), "461") >= 0);
-		assertTrue(Arrays.binarySearch(sec.getDataAccessResourceFailureCodes(), "-813") >=0);
-		assertTrue(Arrays.binarySearch(sec.getInvalidResultSetAccessCodes(), "582") >=0);
+		assertTrue(Arrays.binarySearch(sec.getDataAccessResourceFailureCodes(), "-813") >= 0);
+		assertTrue(Arrays.binarySearch(sec.getInvalidResultSetAccessCodes(), "582") >= 0);
 		assertTrue(Arrays.binarySearch(sec.getCannotAcquireLockCodes(), "131") >= 0);
 		assertTrue(Arrays.binarySearch(sec.getCannotSerializeTransactionCodes(), "138") >= 0);
 		assertTrue(Arrays.binarySearch(sec.getDeadlockLoserCodes(), "133") >= 0);
@@ -141,14 +140,14 @@ public class SQLErrorCodesFactoryTests {
 	public void testLookupOrder() {
 		class TestSQLErrorCodesFactory extends SQLErrorCodesFactory {
 			private int lookups = 0;
+
 			@Override
 			protected Resource loadResource(String path) {
 				++lookups;
 				if (lookups == 1) {
 					assertEquals(SQLErrorCodesFactory.SQL_ERROR_CODE_DEFAULT_PATH, path);
 					return null;
-				}
-				else {
+				} else {
 					// Should have only one more lookup
 					assertEquals(2, lookups);
 					assertEquals(SQLErrorCodesFactory.SQL_ERROR_CODE_OVERRIDE_PATH, path);
@@ -271,8 +270,7 @@ public class SQLErrorCodesFactoryTests {
 		SQLErrorCodesFactory secf = null;
 		if (factory != null) {
 			secf = factory;
-		}
-		else {
+		} else {
 			secf = SQLErrorCodesFactory.getInstance();
 		}
 

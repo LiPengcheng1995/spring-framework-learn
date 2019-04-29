@@ -16,12 +16,9 @@
 
 package org.springframework.scheduling.annotation;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.aspectj.lang.annotation.Aspect;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.BeanCreationException;
@@ -39,9 +36,11 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.mock;
 
 /**
  * Integration tests cornering bug SPR-8651, which revealed that @Scheduled methods may
@@ -68,8 +67,7 @@ public class ScheduledAndTransactionalAnnotationIntegrationTests {
 		try {
 			ctx.refresh();
 			fail("Should have thrown BeanCreationException");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			assertTrue(ex.getRootCause() instanceof IllegalStateException);
 		}
 	}
@@ -118,17 +116,28 @@ public class ScheduledAndTransactionalAnnotationIntegrationTests {
 	}
 
 
+	public interface MyRepository {
+
+		int getInvocationCount();
+	}
+
+
+	public interface MyRepositoryWithScheduledMethod {
+
+		int getInvocationCount();
+
+		void scheduled();
+	}
+
 	@Configuration
 	@EnableTransactionManagement
 	static class JdkProxyTxConfig {
 	}
 
-
 	@Configuration
 	@EnableTransactionManagement(proxyTargetClass = true)
 	static class SubclassProxyTxConfig {
 	}
-
 
 	@Configuration
 	static class RepoConfigA {
@@ -139,7 +148,6 @@ public class ScheduledAndTransactionalAnnotationIntegrationTests {
 		}
 	}
 
-
 	@Configuration
 	static class RepoConfigB {
 
@@ -148,7 +156,6 @@ public class ScheduledAndTransactionalAnnotationIntegrationTests {
 			return new MyRepositoryWithScheduledMethodImpl();
 		}
 	}
-
 
 	@Configuration
 	@EnableScheduling
@@ -170,7 +177,6 @@ public class ScheduledAndTransactionalAnnotationIntegrationTests {
 		}
 	}
 
-
 	@Configuration
 	@EnableScheduling
 	static class AspectConfig {
@@ -188,7 +194,6 @@ public class ScheduledAndTransactionalAnnotationIntegrationTests {
 		}
 	}
 
-
 	@Aspect
 	public static class MyAspect {
 
@@ -199,13 +204,6 @@ public class ScheduledAndTransactionalAnnotationIntegrationTests {
 			this.count.incrementAndGet();
 		}
 	}
-
-
-	public interface MyRepository {
-
-		int getInvocationCount();
-	}
-
 
 	@Repository
 	static class MyRepositoryImpl implements MyRepository {
@@ -223,15 +221,6 @@ public class ScheduledAndTransactionalAnnotationIntegrationTests {
 			return this.count.get();
 		}
 	}
-
-
-	public interface MyRepositoryWithScheduledMethod {
-
-		int getInvocationCount();
-
-		void scheduled();
-	}
-
 
 	@Repository
 	static class MyRepositoryWithScheduledMethodImpl implements MyRepositoryWithScheduledMethod {

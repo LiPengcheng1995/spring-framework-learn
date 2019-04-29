@@ -16,6 +16,14 @@
 
 package org.springframework.format.support;
 
+import org.junit.Test;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.core.annotation.AliasFor;
+import org.springframework.core.convert.ConversionFailedException;
+import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.format.*;
+import org.springframework.format.annotation.NumberFormat;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -24,20 +32,6 @@ import java.text.ParseException;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
-
-import org.junit.Test;
-
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.core.annotation.AliasFor;
-import org.springframework.core.convert.ConversionFailedException;
-import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.format.AnnotationFormatterFactory;
-import org.springframework.format.Formatter;
-import org.springframework.format.FormatterRegistrar;
-import org.springframework.format.FormatterRegistry;
-import org.springframework.format.Parser;
-import org.springframework.format.Printer;
-import org.springframework.format.annotation.NumberFormat;
 
 import static org.junit.Assert.*;
 
@@ -60,8 +54,7 @@ public class FormattingConversionServiceFactoryBeanTests {
 			assertEquals(15.0, value);
 			value = fcs.convert(15.0, descriptor, TypeDescriptor.valueOf(String.class));
 			assertEquals("15", value);
-		}
-		finally {
+		} finally {
 			LocaleContextHolder.resetLocaleContext();
 		}
 	}
@@ -77,8 +70,7 @@ public class FormattingConversionServiceFactoryBeanTests {
 		try {
 			fcs.convert("15,00", TypeDescriptor.valueOf(String.class), descriptor);
 			fail("This format should not be parseable");
-		}
-		catch (ConversionFailedException ex) {
+		} catch (ConversionFailedException ex) {
 			assertTrue(ex.getCause() instanceof NumberFormatException);
 		}
 	}
@@ -127,8 +119,7 @@ public class FormattingConversionServiceFactoryBeanTests {
 		try {
 			factory.afterPropertiesSet();
 			fail("Expected formatter to be rejected");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// expected
 		}
 	}

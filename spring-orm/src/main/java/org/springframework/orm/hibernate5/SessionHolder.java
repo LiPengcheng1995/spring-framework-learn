@@ -19,7 +19,6 @@ package org.springframework.orm.hibernate5;
 import org.hibernate.FlushMode;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-
 import org.springframework.lang.Nullable;
 import org.springframework.transaction.support.ResourceHolderSupport;
 import org.springframework.util.Assert;
@@ -32,9 +31,9 @@ import org.springframework.util.Assert;
  * <p>Note: This is an SPI class, not intended to be used by applications.
  *
  * @author Juergen Hoeller
- * @since 4.2
  * @see HibernateTransactionManager
  * @see SessionFactoryUtils
+ * @since 4.2
  */
 public class SessionHolder extends ResourceHolderSupport {
 
@@ -57,17 +56,13 @@ public class SessionHolder extends ResourceHolderSupport {
 		return this.session;
 	}
 
-	public void setTransaction(@Nullable Transaction transaction) {
-		this.transaction = transaction;
-	}
-
 	@Nullable
 	public Transaction getTransaction() {
 		return this.transaction;
 	}
 
-	public void setPreviousFlushMode(@Nullable FlushMode previousFlushMode) {
-		this.previousFlushMode = previousFlushMode;
+	public void setTransaction(@Nullable Transaction transaction) {
+		this.transaction = transaction;
 	}
 
 	@Nullable
@@ -75,6 +70,9 @@ public class SessionHolder extends ResourceHolderSupport {
 		return this.previousFlushMode;
 	}
 
+	public void setPreviousFlushMode(@Nullable FlushMode previousFlushMode) {
+		this.previousFlushMode = previousFlushMode;
+	}
 
 	@Override
 	public void clear() {

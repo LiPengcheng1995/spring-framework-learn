@@ -16,26 +16,21 @@
 
 package org.springframework.orm.jpa;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.RollbackException;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.transaction.InvalidIsolationLevelException;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.TransactionSystemException;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.transaction.support.*;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.RollbackException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.*;
@@ -132,8 +127,7 @@ public class JpaTransactionManagerTests {
 				}
 			});
 			assertSame(l, result);
-		}
-		catch (TransactionSystemException tse) {
+		} catch (TransactionSystemException tse) {
 			// expected
 			assertTrue(tse.getCause() instanceof RollbackException);
 		}
@@ -166,8 +160,7 @@ public class JpaTransactionManagerTests {
 				}
 			});
 			fail("Should have propagated RuntimeException");
-		}
-		catch (RuntimeException ex) {
+		} catch (RuntimeException ex) {
 			// expected
 			assertEquals("some exception", ex.getMessage());
 		}
@@ -199,8 +192,7 @@ public class JpaTransactionManagerTests {
 				}
 			});
 			fail("Should have propagated RuntimeException");
-		}
-		catch (RuntimeException ex) {
+		} catch (RuntimeException ex) {
 			// expected
 		}
 
@@ -300,8 +292,7 @@ public class JpaTransactionManagerTests {
 				}
 			});
 			fail("Should have propagated RuntimeException");
-		}
-		catch (RuntimeException ex) {
+		} catch (RuntimeException ex) {
 			// expected
 		}
 
@@ -343,8 +334,7 @@ public class JpaTransactionManagerTests {
 				}
 			});
 			fail("Should have thrown TransactionSystemException");
-		}
-		catch (TransactionSystemException tse) {
+		} catch (TransactionSystemException tse) {
 			// expected
 			assertTrue(tse.getCause() instanceof RollbackException);
 		}
@@ -425,8 +415,7 @@ public class JpaTransactionManagerTests {
 				}
 			});
 			assertSame(l, result);
-		}
-		finally {
+		} finally {
 			TransactionSynchronizationManager.unbindResource(factory);
 		}
 
@@ -648,8 +637,7 @@ public class JpaTransactionManagerTests {
 
 			assertTrue(TransactionSynchronizationManager.hasResource(factory));
 			assertTrue(!TransactionSynchronizationManager.isSynchronizationActive());
-		}
-		finally {
+		} finally {
 			TransactionSynchronizationManager.unbindResource(factory);
 		}
 
@@ -680,8 +668,7 @@ public class JpaTransactionManagerTests {
 
 			assertTrue(TransactionSynchronizationManager.hasResource(factory));
 			assertTrue(!TransactionSynchronizationManager.isSynchronizationActive());
-		}
-		finally {
+		} finally {
 			TransactionSynchronizationManager.unbindResource(factory);
 		}
 
@@ -716,8 +703,7 @@ public class JpaTransactionManagerTests {
 
 			assertTrue(TransactionSynchronizationManager.hasResource(factory));
 			assertTrue(!TransactionSynchronizationManager.isSynchronizationActive());
-		}
-		finally {
+		} finally {
 			TransactionSynchronizationManager.unbindResource(factory);
 		}
 
@@ -747,8 +733,7 @@ public class JpaTransactionManagerTests {
 
 			assertTrue(TransactionSynchronizationManager.hasResource(factory));
 			assertTrue(!TransactionSynchronizationManager.isSynchronizationActive());
-		}
-		finally {
+		} finally {
 			TransactionSynchronizationManager.unbindResource(factory);
 		}
 
@@ -769,8 +754,7 @@ public class JpaTransactionManagerTests {
 				}
 			});
 			fail("Should have thrown InvalidIsolationLevelException");
-		}
-		catch (InvalidIsolationLevelException ex) {
+		} catch (InvalidIsolationLevelException ex) {
 			// expected
 		}
 

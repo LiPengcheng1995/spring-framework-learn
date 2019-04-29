@@ -16,16 +16,16 @@
 
 package org.springframework.util.xml;
 
-import java.util.Map;
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
+
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.util.Map;
 
 /**
  * SAX {@link org.xml.sax.ContentHandler} and {@link LexicalHandler}
@@ -56,7 +56,7 @@ class StaxStreamHandler extends AbstractStaxHandler {
 
 	@Override
 	protected void startElementInternal(QName name, Attributes attributes,
-			Map<String, String> namespaceMapping) throws XMLStreamException {
+										Map<String, String> namespaceMapping) throws XMLStreamException {
 
 		this.streamWriter.writeStartElement(name.getPrefix(), name.getLocalPart(), name.getNamespaceURI());
 
@@ -66,8 +66,7 @@ class StaxStreamHandler extends AbstractStaxHandler {
 			this.streamWriter.writeNamespace(prefix, namespaceUri);
 			if (XMLConstants.DEFAULT_NS_PREFIX.equals(prefix)) {
 				this.streamWriter.setDefaultNamespace(namespaceUri);
-			}
-			else {
+			} else {
 				this.streamWriter.setPrefix(prefix, namespaceUri);
 			}
 		}

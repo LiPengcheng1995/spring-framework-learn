@@ -16,15 +16,14 @@
 
 package org.springframework.aop.interceptor;
 
-import java.io.Serializable;
-
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-
 import org.springframework.aop.Advisor;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.core.PriorityOrdered;
+
+import java.io.Serializable;
 
 /**
  * Interceptor that exposes the current {@link org.aopalliance.intercept.MethodInvocation}
@@ -43,7 +42,9 @@ import org.springframework.core.PriorityOrdered;
 @SuppressWarnings("serial")
 public class ExposeInvocationInterceptor implements MethodInterceptor, PriorityOrdered, Serializable {
 
-	/** Singleton instance of this class */
+	/**
+	 * Singleton instance of this class
+	 */
 	public static final ExposeInvocationInterceptor INSTANCE = new ExposeInvocationInterceptor();
 
 	/**
@@ -53,7 +54,7 @@ public class ExposeInvocationInterceptor implements MethodInterceptor, PriorityO
 	public static final Advisor ADVISOR = new DefaultPointcutAdvisor(INSTANCE) {
 		@Override
 		public String toString() {
-			return ExposeInvocationInterceptor.class.getName() +".ADVISOR";
+			return ExposeInvocationInterceptor.class.getName() + ".ADVISOR";
 		}
 	};
 
@@ -62,26 +63,26 @@ public class ExposeInvocationInterceptor implements MethodInterceptor, PriorityO
 
 
 	/**
+	 * Ensures that only the canonical instance can be created.
+	 */
+	private ExposeInvocationInterceptor() {
+	}
+
+	/**
 	 * Return the AOP Alliance MethodInvocation object associated with the current invocation.
+	 *
 	 * @return the invocation object associated with the current invocation
 	 * @throws IllegalStateException if there is no AOP invocation in progress,
-	 * or if the ExposeInvocationInterceptor was not added to this interceptor chain
+	 *                               or if the ExposeInvocationInterceptor was not added to this interceptor chain
 	 */
 	public static MethodInvocation currentInvocation() throws IllegalStateException {
 		MethodInvocation mi = invocation.get();
 		if (mi == null)
 			throw new IllegalStateException(
 					"No MethodInvocation found: Check that an AOP invocation is in progress, and that the " +
-					"ExposeInvocationInterceptor is upfront in the interceptor chain. Specifically, note that " +
-					"advices with order HIGHEST_PRECEDENCE will execute before ExposeInvocationInterceptor!");
+							"ExposeInvocationInterceptor is upfront in the interceptor chain. Specifically, note that " +
+							"advices with order HIGHEST_PRECEDENCE will execute before ExposeInvocationInterceptor!");
 		return mi;
-	}
-
-
-	/**
-	 * Ensures that only the canonical instance can be created.
-	 */
-	private ExposeInvocationInterceptor() {
 	}
 
 	@Override
@@ -90,8 +91,7 @@ public class ExposeInvocationInterceptor implements MethodInterceptor, PriorityO
 		invocation.set(mi);
 		try {
 			return mi.proceed();
-		}
-		finally {
+		} finally {
 			invocation.set(oldInvocation);
 		}
 	}

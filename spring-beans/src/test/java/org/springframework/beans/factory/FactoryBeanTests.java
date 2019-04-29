@@ -16,12 +16,7 @@
 
 package org.springframework.beans.factory;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.Test;
-
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -30,8 +25,12 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static org.junit.Assert.*;
-import static org.springframework.tests.TestResourceUtils.*;
+import static org.springframework.tests.TestResourceUtils.qualifiedResource;
 
 /**
  * @author Rob Harrop
@@ -146,12 +145,12 @@ public class FactoryBeanTests {
 
 		private Beta beta;
 
-		public void setBeta(Beta beta) {
-			this.beta = beta;
-		}
-
 		public Beta getBeta() {
 			return beta;
+		}
+
+		public void setBeta(Beta beta) {
+			this.beta = beta;
 		}
 
 		@Override
@@ -167,20 +166,20 @@ public class FactoryBeanTests {
 
 		private String name;
 
-		public void setGamma(Gamma gamma) {
-			this.gamma = gamma;
-		}
-
 		public Gamma getGamma() {
 			return gamma;
 		}
 
-		public void setName(String name) {
-			this.name = name;
+		public void setGamma(Gamma gamma) {
+			this.gamma = gamma;
 		}
 
 		public String getName() {
 			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
 		}
 
 		@Override
@@ -197,10 +196,10 @@ public class FactoryBeanTests {
 	@Component
 	public static class BetaFactoryBean implements FactoryBean<Object> {
 
+		private Beta beta;
+
 		public BetaFactoryBean(Alpha alpha) {
 		}
-
-		private Beta beta;
 
 		public void setBeta(Beta beta) {
 			this.beta = beta;
@@ -297,8 +296,7 @@ public class FactoryBeanTests {
 			AtomicInteger c = count.get(beanName);
 			if (c != null) {
 				return c.intValue();
-			}
-			else {
+			} else {
 				return 0;
 			}
 		}

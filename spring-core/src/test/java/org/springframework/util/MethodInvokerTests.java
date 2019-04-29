@@ -16,15 +16,15 @@
 
 package org.springframework.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.junit.Assert.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Colin Sampaleanu
@@ -162,15 +162,20 @@ public class MethodInvokerTests {
 	}
 
 
+	private interface Greetable {
+
+		String getGreeting();
+	}
+
+
+	private interface Person extends Greetable {
+	}
+
 	public static class TestClass1 {
 
 		public static int _staticField1;
 
 		public int _field1 = 0;
-
-		public int method1() {
-			return ++_field1;
-		}
 
 		public static int staticMethod1() {
 			return ++TestClass1._staticField1;
@@ -207,8 +212,11 @@ public class MethodInvokerTests {
 		public static String supertypes2(Collection<?> c, List<?> l, String s, String s2) {
 			return s;
 		}
-	}
 
+		public int method1() {
+			return ++_field1;
+		}
+	}
 
 	@SuppressWarnings("unused")
 	public static class Greeter {
@@ -233,17 +241,6 @@ public class MethodInvokerTests {
 			return "regular: " + regular.getGreeting();
 		}
 	}
-
-
-	private interface Greetable {
-
-		String getGreeting();
-	}
-
-
-	private interface Person extends Greetable {
-	}
-
 
 	private static class Purchaser implements Greetable {
 
@@ -291,7 +288,7 @@ public class MethodInvokerTests {
 
 		@Override
 		public String getGreeting() {
-			return "welcome back " + name ;
+			return "welcome back " + name;
 		}
 	}
 

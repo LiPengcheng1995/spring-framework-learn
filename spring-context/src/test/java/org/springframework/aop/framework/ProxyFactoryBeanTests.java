@@ -16,21 +16,11 @@
 
 package org.springframework.aop.framework;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.aopalliance.aop.Advice;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.junit.Before;
 import org.junit.Test;
-import test.mixin.Lockable;
-import test.mixin.LockedException;
-
 import org.springframework.aop.ClassFilter;
 import org.springframework.aop.IntroductionAdvisor;
 import org.springframework.aop.IntroductionInterceptor;
@@ -60,15 +50,25 @@ import org.springframework.tests.sample.beans.Person;
 import org.springframework.tests.sample.beans.SideEffectBean;
 import org.springframework.tests.sample.beans.TestBean;
 import org.springframework.util.SerializationTestUtils;
+import test.mixin.Lockable;
+import test.mixin.LockedException;
 
-import static org.hamcrest.CoreMatchers.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.LinkedList;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;
 
 /**
- * @since 13.03.2003
  * @author Rod Johnson
  * @author Juergen Hoeller
  * @author Chris Beams
+ * @since 13.03.2003
  */
 public class ProxyFactoryBeanTests {
 
@@ -141,8 +141,7 @@ public class ProxyFactoryBeanTests {
 			new XmlBeanDefinitionReader(bf).loadBeanDefinitions(new ClassPathResource(DBL_TARGETSOURCE_CONTEXT, CLASS));
 			bf.getBean(name);
 			fail("Should not allow TargetSource to be specified in interceptorNames as well as targetSource property");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			// Root cause of the problem must be an AOP exception
 			AopConfigException aex = (AopConfigException) ex.getCause();
 			assertTrue(aex.getMessage().indexOf("TargetSource") != -1);
@@ -156,8 +155,7 @@ public class ProxyFactoryBeanTests {
 			new XmlBeanDefinitionReader(bf).loadBeanDefinitions(new ClassPathResource(NOTLAST_TARGETSOURCE_CONTEXT, CLASS));
 			bf.getBean("targetSourceNotLast");
 			fail("TargetSource or non-advised object must be last in interceptorNames");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			// Root cause of the problem must be an AOP exception
 			AopConfigException aex = (AopConfigException) ex.getCause();
 			assertTrue(aex.getMessage().contains("interceptorNames"));
@@ -200,8 +198,7 @@ public class ProxyFactoryBeanTests {
 		try {
 			tb.getName();
 			fail();
-		}
-		catch (UnsupportedOperationException ex) {
+		} catch (UnsupportedOperationException ex) {
 			assertEquals("getName", ex.getMessage());
 		}
 		FactoryBean<?> pfb = (ProxyFactoryBean) bf.getBean("&noTarget");
@@ -248,8 +245,9 @@ public class ProxyFactoryBeanTests {
 
 	/**
 	 * Uses its own bean factory XML for clarity
+	 *
 	 * @param beanName name of the ProxyFactoryBean definition that should
-	 * be a prototype
+	 *                 be a prototype
 	 */
 	private Object testPrototypeInstancesAreIndependent(String beanName) {
 		// Initial count value set in bean factory XML
@@ -262,7 +260,7 @@ public class ProxyFactoryBeanTests {
 		SideEffectBean raw = (SideEffectBean) bf.getBean("prototypeTarget");
 		assertEquals(INITIAL_COUNT, raw.getCount());
 		raw.doWork();
-		assertEquals(INITIAL_COUNT+1, raw.getCount());
+		assertEquals(INITIAL_COUNT + 1, raw.getCount());
 		raw = (SideEffectBean) bf.getBean("prototypeTarget");
 		assertEquals(INITIAL_COUNT, raw.getCount());
 
@@ -329,8 +327,7 @@ public class ProxyFactoryBeanTests {
 			// Will fail now
 			tb.toString();
 			fail("Evil interceptor added programmatically should fail all method calls");
-		}
-		catch (Exception thrown) {
+		} catch (Exception thrown) {
 			assertTrue(thrown == ex);
 		}
 	}
@@ -461,8 +458,7 @@ public class ProxyFactoryBeanTests {
 		try {
 			echo.echoException(1, expected);
 			fail();
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			assertEquals(expected, ex);
 		}
 		// No throws handler method: count should still be 0
@@ -473,8 +469,7 @@ public class ProxyFactoryBeanTests {
 		try {
 			echo.echoException(1, expected);
 			fail();
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			assertEquals(expected, ex);
 		}
 		// One match
@@ -508,8 +503,7 @@ public class ProxyFactoryBeanTests {
 		try {
 			bf.getBean("emptyInterceptorNames");
 			fail("Interceptor names cannot be empty");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			// Ok
 		}
 	}
@@ -524,8 +518,7 @@ public class ProxyFactoryBeanTests {
 		try {
 			bf.getBean("globalsWithoutTarget");
 			fail("Should require target name");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			assertTrue(ex.getCause() instanceof AopConfigException);
 		}
 	}
@@ -554,8 +547,7 @@ public class ProxyFactoryBeanTests {
 		try {
 			agi = (AddedGlobalInterface) factory.getBean("test1");
 			fail("Aspect interface should't be implemeneted without globals");
-		}
-		catch (ClassCastException ex) {
+		} catch (ClassCastException ex) {
 		}
 	}
 
@@ -634,15 +626,13 @@ public class ProxyFactoryBeanTests {
 		try {
 			bean1.setAge(5);
 			fail("expected LockedException");
-		}
-		catch (LockedException ex) {
+		} catch (LockedException ex) {
 			// expected
 		}
 
 		try {
 			bean2.setAge(6);
-		}
-		catch (LockedException ex) {
+		} catch (LockedException ex) {
 			fail("did not expect LockedException");
 		}
 	}
@@ -665,15 +655,13 @@ public class ProxyFactoryBeanTests {
 		try {
 			bean1.setAge(5);
 			fail("expected LockedException");
-		}
-		catch (LockedException ex) {
+		} catch (LockedException ex) {
 			// expected
 		}
 
 		try {
 			bean2.setAge(6);
-		}
-		catch (LockedException ex) {
+		} catch (LockedException ex) {
 			fail("did not expect LockedException");
 		}
 	}
@@ -694,7 +682,7 @@ public class ProxyFactoryBeanTests {
 		DefaultListableBeanFactory bf = new DefaultListableBeanFactory();
 		new XmlBeanDefinitionReader(bf).loadBeanDefinitions(new ClassPathResource(FROZEN_CONTEXT, CLASS));
 
-		Advised advised = (Advised)bf.getBean("frozen");
+		Advised advised = (Advised) bf.getBean("frozen");
 		assertTrue("The proxy should be frozen", advised.isFrozen());
 	}
 
@@ -710,16 +698,20 @@ public class ProxyFactoryBeanTests {
 
 
 	/**
+	 * Aspect interface
+	 */
+	public interface AddedGlobalInterface {
+
+		int globalsAdded();
+	}
+
+	/**
 	 * Fires only on void methods. Saves list of methods intercepted.
 	 */
 	@SuppressWarnings("serial")
 	public static class PointcutForVoid extends DefaultPointcutAdvisor {
 
 		public static List<String> methodNames = new LinkedList<>();
-
-		public static void reset() {
-			methodNames.clear();
-		}
 
 		public PointcutForVoid() {
 			setAdvice(new MethodInterceptor() {
@@ -736,8 +728,11 @@ public class ProxyFactoryBeanTests {
 				}
 			});
 		}
-	}
 
+		public static void reset() {
+			methodNames.clear();
+		}
+	}
 
 	public static class DependsOnITestBean {
 
@@ -747,15 +742,6 @@ public class ProxyFactoryBeanTests {
 			this.tb = tb;
 		}
 	}
-
-	/**
-	 * Aspect interface
-	 */
-	public interface AddedGlobalInterface {
-
-		int globalsAdded();
-	}
-
 
 	/**
 	 * Use as a global interceptor. Checks that
@@ -795,7 +781,7 @@ public class ProxyFactoryBeanTests {
 
 		@Override
 		public Class<?>[] getInterfaces() {
-			return new Class<?>[] { AddedGlobalInterface.class };
+			return new Class<?>[]{AddedGlobalInterface.class};
 		}
 
 		@Override

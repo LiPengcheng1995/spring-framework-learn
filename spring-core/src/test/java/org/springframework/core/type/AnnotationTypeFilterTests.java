@@ -16,17 +16,17 @@
 
 package org.springframework.core.type;
 
-import java.lang.annotation.Inherited;
-
 import org.junit.Test;
-
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.stereotype.Component;
 
-import static org.junit.Assert.*;
+import java.lang.annotation.Inherited;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Ramnivas Laddad
@@ -113,28 +113,24 @@ public class AnnotationTypeFilterTests {
 
 
 	@InheritedAnnotation
-	private static class SomeComponent {
-	}
-
-
-	@InheritedAnnotation
 	private interface SomeComponentInterface {
-	}
-
-
-	@SuppressWarnings("unused")
-	private static class SomeClassWithSomeComponentInterface implements Cloneable, SomeComponentInterface {
-	}
-
-
-	@SuppressWarnings("unused")
-	private static class SomeSubclassOfSomeComponent extends SomeComponent {
 	}
 
 
 	private @interface NonInheritedAnnotation {
 	}
 
+	@InheritedAnnotation
+	private static class SomeComponent {
+	}
+
+	@SuppressWarnings("unused")
+	private static class SomeClassWithSomeComponentInterface implements Cloneable, SomeComponentInterface {
+	}
+
+	@SuppressWarnings("unused")
+	private static class SomeSubclassOfSomeComponent extends SomeComponent {
+	}
 
 	@NonInheritedAnnotation
 	private static class SomeClassMarkedWithNonInheritedAnnotation {

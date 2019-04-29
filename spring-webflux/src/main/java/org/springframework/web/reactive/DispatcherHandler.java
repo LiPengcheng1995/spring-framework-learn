@@ -16,16 +16,8 @@
 
 package org.springframework.web.reactive;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -33,10 +25,17 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.lang.Nullable;
-import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebHandler;
+import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Central dispatcher for HTTP request handlers/controllers. Dispatches to
@@ -65,8 +64,8 @@ import org.springframework.web.server.WebHandler;
  * @author Rossen Stoyanchev
  * @author Sebastien Deleuze
  * @author Juergen Hoeller
- * @since 5.0
  * @see WebHttpHandlerBuilder#applicationContext(ApplicationContext)
+ * @since 5.0
  */
 public class DispatcherHandler implements WebHandler, ApplicationContextAware {
 
@@ -96,6 +95,7 @@ public class DispatcherHandler implements WebHandler, ApplicationContextAware {
 
 	/**
 	 * Create a new {@code DispatcherHandler} for the given {@link ApplicationContext}.
+	 *
 	 * @param applicationContext the application context to find the handler beans in
 	 */
 	public DispatcherHandler(ApplicationContext applicationContext) {
@@ -109,6 +109,7 @@ public class DispatcherHandler implements WebHandler, ApplicationContextAware {
 	 * {@link AnnotationAwareOrderComparator#sort(List) sorted}.
 	 * <p><strong>Note:</strong> This method may return {@code null} if invoked
 	 * prior to {@link #setApplicationContext(ApplicationContext)}.
+	 *
 	 * @return immutable list with the configured mappings or {@code null}
 	 */
 	@Nullable

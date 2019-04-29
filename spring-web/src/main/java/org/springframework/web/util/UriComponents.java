@@ -16,6 +16,10 @@
 
 package org.springframework.web.util;
 
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+import org.springframework.util.MultiValueMap;
+
 import java.io.Serializable;
 import java.net.URI;
 import java.nio.charset.Charset;
@@ -28,10 +32,6 @@ import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.MultiValueMap;
-
 /**
  * Represents an immutable collection of URI components, mapping component type to
  * String values. Contains convenience getters for all components. Effectively similar
@@ -41,13 +41,15 @@ import org.springframework.util.MultiValueMap;
  * @author Arjen Poutsma
  * @author Juergen Hoeller
  * @author Rossen Stoyanchev
- * @since 3.1
  * @see UriComponentsBuilder
+ * @since 3.1
  */
 @SuppressWarnings("serial")
 public abstract class UriComponents implements Serializable {
 
-	/** Captures URI template variable names */
+	/**
+	 * Captures URI template variable names
+	 */
 	private static final Pattern NAMES_PATTERN = Pattern.compile("\\{([^/]+?)\\}");
 
 
@@ -65,6 +67,71 @@ public abstract class UriComponents implements Serializable {
 
 
 	// Component getters
+
+	@Nullable
+	static String expandUriComponent(@Nullable String source, UriTemplateVariables uriVariables) {
+		return expandUriComponent(source, uriVariables, null);
+	}
+
+	@Nullable
+	static String expandUriComponent(@Nullable String source, UriTemplateVariables uriVariables,
+									 @Nullable UnaryOperator<String> encoder) {
+
+		if (source == null) {
+			return null;
+		}
+		if (source.indexOf('{') == -1) {
+			return source;
+		}
+		if (source.indexOf(':') != -1) {
+			source = sanitizeSource(source);
+		}
+		Matcher matcher = NAMES_PATTERN.matcher(source);
+		StringBuffer sb = new StringBuffer();
+		while (matcher.find()) {
+			String match = matcher.group(1);
+			String varName = getVariableName(match);
+			Object varValue = uriVariables.getValue(varName);
+			if (UriTemplateVariables.SKIP_VALUE.equals(varValue)) {
+				continue;
+			}
+			String formatted = getVariableValueAsString(varValue);
+			formatted = encoder != null ? encoder.apply(formatted) : Matcher.quoteReplacement(formatted);
+			matcher.appendReplacement(sb, formatted);
+		}
+		matcher.appendTail(sb);
+		return sb.toString();
+	}
+
+	/**
+	 * Remove nested "{}" such as in URI vars with regular expressions.
+	 */
+	private static String sanitizeSource(String source) {
+		int level = 0;
+		StringBuilder sb = new StringBuilder();
+		for (char c : source.toCharArray()) {
+			if (c == '{') {
+				level++;
+			}
+			if (c == '}') {
+				level--;
+			}
+			if (level > 1 || (level == 1 && c == '}')) {
+				continue;
+			}
+			sb.append(c);
+		}
+		return sb.toString();
+	}
+
+	private static String getVariableName(String match) {
+		int colonIdx = match.indexOf(':');
+		return (colonIdx != -1 ? match.substring(0, colonIdx) : match);
+	}
+
+	private static String getVariableValueAsString(@Nullable Object variableValue) {
+		return (variableValue != null ? variableValue.toString() : "");
+	}
 
 	/**
 	 * Return the scheme. Can be {@code null}.
@@ -127,7 +194,6 @@ public abstract class UriComponents implements Serializable {
 	 */
 	public abstract MultiValueMap<String, String> getQueryParams();
 
-
 	/**
 	 * Invoke this <em>after</em> expanding URI variables to encode the
 	 * resulting URI component values.
@@ -136,6 +202,7 @@ public abstract class UriComponents implements Serializable {
 	 * component type) characters, but not characters with reserved meaning.
 	 * For most cases, {@link UriComponentsBuilder#encode()} is more likely
 	 * to give the expected result.
+	 *
 	 * @see UriComponentsBuilder#encode()
 	 */
 	public final UriComponents encode() {
@@ -144,6 +211,7 @@ public abstract class UriComponents implements Serializable {
 
 	/**
 	 * A variant of {@link #encode()} with a charset other than "UTF-8".
+	 *
 	 * @param charset the charset to use for encoding
 	 * @see UriComponentsBuilder#encode(Charset)
 	 */
@@ -153,6 +221,7 @@ public abstract class UriComponents implements Serializable {
 	 * Replace all URI template variables with the values from a given map.
 	 * <p>The given map keys represent variable names; the corresponding values
 	 * represent variable values. The order of variables is not significant.
+	 *
 	 * @param uriVariables the map of URI variables
 	 * @return the expanded URI components
 	 */
@@ -164,6 +233,7 @@ public abstract class UriComponents implements Serializable {
 	/**
 	 * Replace all URI template variables with the values from a given array.
 	 * <p>The given array represents variable values. The order of variables is significant.
+	 *
 	 * @param uriVariableValues the URI variable values
 	 * @return the expanded URI components
 	 */
@@ -175,6 +245,7 @@ public abstract class UriComponents implements Serializable {
 	/**
 	 * Replace all URI template variables with the values from the given
 	 * {@link UriTemplateVariables}.
+	 *
 	 * @param uriVariables the URI template values
 	 * @return the expanded URI components
 	 */
@@ -186,15 +257,20 @@ public abstract class UriComponents implements Serializable {
 	/**
 	 * Replace all URI template variables with the values from the given {@link
 	 * UriTemplateVariables}
+	 *
 	 * @param uriVariables URI template values
 	 * @return the expanded URI components
 	 */
 	abstract UriComponents expandInternal(UriTemplateVariables uriVariables);
 
+
+	// Static expansion helpers
+
 	/**
 	 * Normalize the path removing sequences like "path/..". Note that
 	 * normalization is applied to the full path, and not to individual path
 	 * segments.
+	 *
 	 * @see org.springframework.util.StringUtils#cleanPath(String)
 	 */
 	public abstract UriComponents normalize();
@@ -229,81 +305,15 @@ public abstract class UriComponents implements Serializable {
 
 	/**
 	 * Set all components of the given UriComponentsBuilder.
+	 *
 	 * @since 4.2
 	 */
 	protected abstract void copyToUriComponentsBuilder(UriComponentsBuilder builder);
 
 
-	// Static expansion helpers
-
-	@Nullable
-	static String expandUriComponent(@Nullable String source, UriTemplateVariables uriVariables) {
-		return expandUriComponent(source, uriVariables, null);
-	}
-
-	@Nullable
-	static String expandUriComponent(@Nullable String source, UriTemplateVariables uriVariables,
-			@Nullable UnaryOperator<String> encoder) {
-
-		if (source == null) {
-			return null;
-		}
-		if (source.indexOf('{') == -1) {
-			return source;
-		}
-		if (source.indexOf(':') != -1) {
-			source = sanitizeSource(source);
-		}
-		Matcher matcher = NAMES_PATTERN.matcher(source);
-		StringBuffer sb = new StringBuffer();
-		while (matcher.find()) {
-			String match = matcher.group(1);
-			String varName = getVariableName(match);
-			Object varValue = uriVariables.getValue(varName);
-			if (UriTemplateVariables.SKIP_VALUE.equals(varValue)) {
-				continue;
-			}
-			String formatted = getVariableValueAsString(varValue);
-			formatted = encoder != null ? encoder.apply(formatted) : Matcher.quoteReplacement(formatted);
-			matcher.appendReplacement(sb, formatted);
-		}
-		matcher.appendTail(sb);
-		return sb.toString();
-	}
-
-	/**
-	 * Remove nested "{}" such as in URI vars with regular expressions.
-	 */
-	private static String sanitizeSource(String source) {
-		int level = 0;
-		StringBuilder sb = new StringBuilder();
-		for (char c : source.toCharArray()) {
-			if (c == '{') {
-				level++;
-			}
-			if (c == '}') {
-				level--;
-			}
-			if (level > 1 || (level == 1 && c == '}')) {
-				continue;
-			}
-			sb.append(c);
-		}
-		return sb.toString();
-	}
-
-	private static String getVariableName(String match) {
-		int colonIdx = match.indexOf(':');
-		return (colonIdx != -1 ? match.substring(0, colonIdx) : match);
-	}
-
-	private static String getVariableValueAsString(@Nullable Object variableValue) {
-		return (variableValue != null ? variableValue.toString() : "");
-	}
-
-
 	/**
 	 * Defines the contract for URI Template variables
+	 *
 	 * @see HierarchicalUriComponents#expand
 	 */
 	public interface UriTemplateVariables {
@@ -319,6 +329,7 @@ public abstract class UriComponents implements Serializable {
 		 * Get the value for the given URI variable name.
 		 * If the value is {@code null}, an empty String is expanded.
 		 * If the value is {@link #SKIP_VALUE}, the URI variable is not expanded.
+		 *
 		 * @param name the variable name
 		 * @return the variable value, possibly {@code null} or {@link #SKIP_VALUE}
 		 */

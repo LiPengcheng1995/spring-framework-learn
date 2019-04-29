@@ -16,11 +16,10 @@
 
 package org.springframework.beans.propertyeditors;
 
-import java.io.InputStream;
-
 import org.junit.Test;
-
 import org.springframework.util.ClassUtils;
+
+import java.io.InputStream;
 
 import static org.junit.Assert.*;
 
@@ -50,8 +49,7 @@ public class InputStreamEditorTests {
 			assertTrue(value instanceof InputStream);
 			stream = (InputStream) value;
 			assertTrue(stream.available() > 0);
-		}
-		finally {
+		} finally {
 			if (stream != null) {
 				stream.close();
 			}

@@ -16,6 +16,9 @@
 
 package org.springframework.http;
 
+import org.hamcrest.Matchers;
+import org.junit.Test;
+
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -23,20 +26,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 
-import org.hamcrest.Matchers;
-import org.junit.Test;
-
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
 /**
@@ -261,8 +253,7 @@ public class HttpHeadersTests {
 			headers.setDate(date);
 			assertEquals("Invalid Date header", "Thu, 18 Dec 2008 10:20:00 GMT", headers.getFirst("date"));
 			assertEquals("Invalid Date header", date, headers.getDate());
-		}
-		finally {
+		} finally {
 			Locale.setDefault(defaultLocale);
 		}
 	}
@@ -367,7 +358,7 @@ public class HttpHeadersTests {
 
 	@Test  // SPR-11917
 	public void getAllowEmptySet() {
-		headers.setAllow(Collections.<HttpMethod> emptySet());
+		headers.setAllow(Collections.<HttpMethod>emptySet());
 		assertThat(headers.getAllow(), Matchers.emptyCollectionOf(HttpMethod.class));
 	}
 
@@ -482,7 +473,7 @@ public class HttpHeadersTests {
 
 	@Test
 	public void contentLanguageSerialized() {
-		headers.set(HttpHeaders.CONTENT_LANGUAGE,  "de, en_CA");
+		headers.set(HttpHeaders.CONTENT_LANGUAGE, "de, en_CA");
 		assertEquals("Expected one (first) locale", Locale.GERMAN, headers.getContentLanguage());
 	}
 

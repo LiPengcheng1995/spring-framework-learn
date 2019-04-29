@@ -46,11 +46,6 @@ public class MessageListenerTestContainer implements MessageListenerContainer, I
 		this.endpoint = endpoint;
 	}
 
-
-	public void setAutoStartup(boolean autoStartup) {
-		this.autoStartup = autoStartup;
-	}
-
 	public JmsListenerEndpoint getEndpoint() {
 		return this.endpoint;
 	}
@@ -95,6 +90,10 @@ public class MessageListenerTestContainer implements MessageListenerContainer, I
 	@Override
 	public boolean isAutoStartup() {
 		return this.autoStartup;
+	}
+
+	public void setAutoStartup(boolean autoStartup) {
+		this.autoStartup = autoStartup;
 	}
 
 	@Override

@@ -16,28 +16,22 @@
 
 package org.springframework.jdbc.object;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.HashMap;
-import java.util.Map;
-import javax.sql.DataSource;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.jdbc.JdbcUpdateAffectedIncorrectNumberOfRowsException;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
-import static org.junit.Assert.*;
+import javax.sql.DataSource;
+import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.*;
 
 /**
@@ -157,8 +151,7 @@ public class SqlUpdateTests {
 				if (namedDeclarations) {
 					declareParameter(new SqlParameter("priceId", Types.DECIMAL));
 					declareParameter(new SqlParameter("perfId", Types.NUMERIC));
-				}
-				else {
+				} else {
 					declareParameter(new SqlParameter(Types.NUMERIC));
 					declareParameter(new SqlParameter(Types.DECIMAL));
 				}
@@ -218,7 +211,7 @@ public class SqlUpdateTests {
 		given(preparedStatement.getGeneratedKeys()).willReturn(resultSet);
 		given(connection.prepareStatement(INSERT_GENERATE_KEYS,
 				PreparedStatement.RETURN_GENERATED_KEYS)
-			).willReturn(preparedStatement);
+		).willReturn(preparedStatement);
 
 		GeneratedKeysUpdater pc = new GeneratedKeysUpdater();
 		KeyHolder generatedKeyHolder = new GeneratedKeyHolder();
@@ -388,7 +381,7 @@ public class SqlUpdateTests {
 		}
 
 		public int run(String name, KeyHolder generatedKeyHolder) {
-			return update(new Object[] {name}, generatedKeyHolder);
+			return update(new Object[]{name}, generatedKeyHolder);
 		}
 	}
 
@@ -397,7 +390,7 @@ public class SqlUpdateTests {
 
 		public ConstructorUpdater() {
 			super(dataSource, UPDATE_OBJECTS,
-					new int[] {Types.NUMERIC, Types.NUMERIC, Types.VARCHAR, Types.BOOLEAN });
+					new int[]{Types.NUMERIC, Types.NUMERIC, Types.VARCHAR, Types.BOOLEAN});
 			compile();
 		}
 

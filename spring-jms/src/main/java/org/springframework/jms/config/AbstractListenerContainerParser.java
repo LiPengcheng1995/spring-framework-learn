@@ -16,12 +16,6 @@
 
 package org.springframework.jms.config;
 
-import javax.jms.Session;
-
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.PropertyValues;
@@ -34,6 +28,11 @@ import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import javax.jms.Session;
 
 /**
  * Abstract parser for JMS listener container elements, providing support for
@@ -138,7 +137,7 @@ abstract class AbstractListenerContainerParser implements BeanDefinitionParser {
 	}
 
 	private void parseListener(Element containerEle, Element listenerEle, ParserContext parserContext,
-			MutablePropertyValues commonContainerProperties, PropertyValues specificContainerProperties) {
+							   MutablePropertyValues commonContainerProperties, PropertyValues specificContainerProperties) {
 
 		RootBeanDefinition listenerDef = new RootBeanDefinition();
 		listenerDef.setSource(parserContext.extractSource(listenerEle));
@@ -148,8 +147,7 @@ abstract class AbstractListenerContainerParser implements BeanDefinitionParser {
 		if (!StringUtils.hasText(ref)) {
 			parserContext.getReaderContext().error(
 					"Listener 'ref' attribute contains empty value.", listenerEle);
-		}
-		else {
+		} else {
 			listenerDef.getPropertyValues().add("delegate", new RuntimeBeanReference(ref));
 		}
 
@@ -243,22 +241,17 @@ abstract class AbstractListenerContainerParser implements BeanDefinitionParser {
 			pubSubDomain = true;
 			subscriptionDurable = true;
 			subscriptionShared = true;
-		}
-		else if (DESTINATION_TYPE_SHARED_TOPIC.equals(destinationType)) {
+		} else if (DESTINATION_TYPE_SHARED_TOPIC.equals(destinationType)) {
 			pubSubDomain = true;
 			subscriptionShared = true;
-		}
-		else if (DESTINATION_TYPE_DURABLE_TOPIC.equals(destinationType)) {
+		} else if (DESTINATION_TYPE_DURABLE_TOPIC.equals(destinationType)) {
 			pubSubDomain = true;
 			subscriptionDurable = true;
-		}
-		else if (DESTINATION_TYPE_TOPIC.equals(destinationType)) {
+		} else if (DESTINATION_TYPE_TOPIC.equals(destinationType)) {
 			pubSubDomain = true;
-		}
-		else if ("".equals(destinationType) || DESTINATION_TYPE_QUEUE.equals(destinationType)) {
+		} else if ("".equals(destinationType) || DESTINATION_TYPE_QUEUE.equals(destinationType)) {
 			// the default: queue
-		}
-		else {
+		} else {
 			parserContext.getReaderContext().error("Invalid listener container 'destination-type': only " +
 					"\"queue\", \"topic\", \"durableTopic\", \"sharedTopic\", \"sharedDurableTopic\" supported.", containerEle);
 		}
@@ -270,11 +263,9 @@ abstract class AbstractListenerContainerParser implements BeanDefinitionParser {
 		String replyDestinationType = containerEle.getAttribute(RESPONSE_DESTINATION_TYPE_ATTRIBUTE);
 		if (!StringUtils.hasText(replyDestinationType)) {
 			replyPubSubDomain = pubSubDomain;  // the default: same value as pubSubDomain
-		}
-		else if (DESTINATION_TYPE_TOPIC.equals(replyDestinationType)) {
+		} else if (DESTINATION_TYPE_TOPIC.equals(replyDestinationType)) {
 			replyPubSubDomain = true;
-		}
-		else if (!DESTINATION_TYPE_QUEUE.equals(replyDestinationType)) {
+		} else if (!DESTINATION_TYPE_QUEUE.equals(replyDestinationType)) {
 			parserContext.getReaderContext().error("Invalid listener container 'response-destination-type': only " +
 					"\"queue\", \"topic\" supported.", containerEle);
 		}
@@ -294,8 +285,7 @@ abstract class AbstractListenerContainerParser implements BeanDefinitionParser {
 			if (!StringUtils.hasText(messageConverter)) {
 				parserContext.getReaderContext().error(
 						"listener container 'message-converter' attribute contains empty value.", containerEle);
-			}
-			else {
+			} else {
 				properties.add("messageConverter", new RuntimeBeanReference(messageConverter));
 			}
 		}
@@ -316,13 +306,13 @@ abstract class AbstractListenerContainerParser implements BeanDefinitionParser {
 	 */
 	@Nullable
 	protected abstract RootBeanDefinition createContainerFactory(String factoryId, Element containerEle, ParserContext parserContext,
-			PropertyValues commonContainerProperties, PropertyValues specificContainerProperties);
+																 PropertyValues commonContainerProperties, PropertyValues specificContainerProperties);
 
 	/**
 	 * Create the container {@link BeanDefinition} for the specified context.
 	 */
 	protected abstract RootBeanDefinition createContainer(Element containerEle, Element listenerEle, ParserContext parserContext,
-			PropertyValues commonContainerProperties, PropertyValues specificContainerProperties);
+														  PropertyValues commonContainerProperties, PropertyValues specificContainerProperties);
 
 
 	@Nullable
@@ -332,20 +322,16 @@ abstract class AbstractListenerContainerParser implements BeanDefinitionParser {
 			int acknowledgeMode = Session.AUTO_ACKNOWLEDGE;
 			if (ACKNOWLEDGE_TRANSACTED.equals(acknowledge)) {
 				acknowledgeMode = Session.SESSION_TRANSACTED;
-			}
-			else if (ACKNOWLEDGE_DUPS_OK.equals(acknowledge)) {
+			} else if (ACKNOWLEDGE_DUPS_OK.equals(acknowledge)) {
 				acknowledgeMode = Session.DUPS_OK_ACKNOWLEDGE;
-			}
-			else if (ACKNOWLEDGE_CLIENT.equals(acknowledge)) {
+			} else if (ACKNOWLEDGE_CLIENT.equals(acknowledge)) {
 				acknowledgeMode = Session.CLIENT_ACKNOWLEDGE;
-			}
-			else if (!ACKNOWLEDGE_AUTO.equals(acknowledge)) {
+			} else if (!ACKNOWLEDGE_AUTO.equals(acknowledge)) {
 				parserContext.getReaderContext().error("Invalid listener container 'acknowledge' setting [" +
 						acknowledge + "]: only \"auto\", \"client\", \"dups-ok\" and \"transacted\" supported.", ele);
 			}
 			return acknowledgeMode;
-		}
-		else {
+		} else {
 			return null;
 		}
 	}

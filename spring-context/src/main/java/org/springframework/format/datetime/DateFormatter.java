@@ -16,20 +16,15 @@
 
 package org.springframework.format.datetime;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Date;
-import java.util.EnumMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TimeZone;
-
 import org.springframework.format.Formatter;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * A formatter for {@link java.util.Date} types.
@@ -38,8 +33,8 @@ import org.springframework.util.StringUtils;
  * @author Keith Donald
  * @author Juergen Hoeller
  * @author Phillip Webb
- * @since 3.0
  * @see SimpleDateFormat
+ * @since 3.0
  */
 public class DateFormatter implements Formatter<Date> {
 
@@ -97,6 +92,7 @@ public class DateFormatter implements Formatter<Date> {
 
 	/**
 	 * Set the ISO format used for this date.
+	 *
 	 * @param iso the {@link ISO} format
 	 * @since 3.2
 	 */
@@ -107,6 +103,7 @@ public class DateFormatter implements Formatter<Date> {
 	/**
 	 * Set the style to use to format date values.
 	 * <p>If not specified, DateFormat's default style will be used.
+	 *
 	 * @see DateFormat#DEFAULT
 	 * @see DateFormat#SHORT
 	 * @see DateFormat#MEDIUM
@@ -128,6 +125,7 @@ public class DateFormatter implements Formatter<Date> {
 	 * <li>'-' = Omitted</li>
 	 * <ul>
 	 * This method mimics the styles supported by Joda-Time.
+	 *
 	 * @param stylePattern two characters from the set {"S", "M", "L", "F", "-"}
 	 * @since 3.2
 	 */
@@ -206,11 +204,16 @@ public class DateFormatter implements Formatter<Date> {
 	private int getStylePatternForChar(int index) {
 		if (this.stylePattern != null && this.stylePattern.length() > index) {
 			switch (this.stylePattern.charAt(index)) {
-				case 'S': return DateFormat.SHORT;
-				case 'M': return DateFormat.MEDIUM;
-				case 'L': return DateFormat.LONG;
-				case 'F': return DateFormat.FULL;
-				case '-': return -1;
+				case 'S':
+					return DateFormat.SHORT;
+				case 'M':
+					return DateFormat.MEDIUM;
+				case 'L':
+					return DateFormat.LONG;
+				case 'F':
+					return DateFormat.FULL;
+				case '-':
+					return -1;
 			}
 		}
 		throw new IllegalStateException("Unsupported style pattern '" + this.stylePattern + "'");

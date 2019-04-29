@@ -16,15 +16,9 @@
 
 package org.springframework.http.converter;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
@@ -35,10 +29,14 @@ import org.springframework.http.MockHttpInputMessage;
 import org.springframework.http.MockHttpOutputMessage;
 import org.springframework.util.FileCopyUtils;
 
-import static org.hamcrest.core.Is.*;
-import static org.hamcrest.core.IsInstanceOf.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.any;
 import static org.mockito.BDDMockito.*;
 
 /**
@@ -79,7 +77,7 @@ public class ResourceHttpMessageConverterTests {
 
 	@Test  // SPR-13443
 	public void shouldReadInputStreamResource() throws IOException {
-		try (InputStream body = getClass().getResourceAsStream("logo.jpg") ) {
+		try (InputStream body = getClass().getResourceAsStream("logo.jpg")) {
 			MockHttpInputMessage inputMessage = new MockHttpInputMessage(body);
 			inputMessage.getHeaders().setContentType(MediaType.IMAGE_JPEG);
 			inputMessage.getHeaders().setContentDisposition(
@@ -94,7 +92,7 @@ public class ResourceHttpMessageConverterTests {
 	@Test  // SPR-14882
 	public void shouldNotReadInputStreamResource() throws IOException {
 		ResourceHttpMessageConverter noStreamConverter = new ResourceHttpMessageConverter(false);
-		try (InputStream body = getClass().getResourceAsStream("logo.jpg") ) {
+		try (InputStream body = getClass().getResourceAsStream("logo.jpg")) {
 			this.thrown.expect(HttpMessageNotReadableException.class);
 			MockHttpInputMessage inputMessage = new MockHttpInputMessage(body);
 			inputMessage.getHeaders().setContentType(MediaType.IMAGE_JPEG);

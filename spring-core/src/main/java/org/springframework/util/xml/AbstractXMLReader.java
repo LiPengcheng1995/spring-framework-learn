@@ -16,16 +16,9 @@
 
 package org.springframework.util.xml;
 
-import org.xml.sax.ContentHandler;
-import org.xml.sax.DTDHandler;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.ext.LexicalHandler;
-
 import org.springframework.lang.Nullable;
+import org.xml.sax.*;
+import org.xml.sax.ext.LexicalHandler;
 
 /**
  * Abstract base class for SAX {@code XMLReader} implementations.
@@ -33,11 +26,11 @@ import org.springframework.lang.Nullable;
  *
  * @author Arjen Poutsma
  * @author Juergen Hoeller
- * @since 3.0
  * @see #setContentHandler(org.xml.sax.ContentHandler)
  * @see #setDTDHandler(org.xml.sax.DTDHandler)
  * @see #setEntityResolver(org.xml.sax.EntityResolver)
  * @see #setErrorHandler(org.xml.sax.ErrorHandler)
+ * @since 3.0
  */
 abstract class AbstractXMLReader implements XMLReader {
 
@@ -56,12 +49,6 @@ abstract class AbstractXMLReader implements XMLReader {
 	@Nullable
 	private LexicalHandler lexicalHandler;
 
-
-	@Override
-	public void setContentHandler(@Nullable ContentHandler contentHandler) {
-		this.contentHandler = contentHandler;
-	}
-
 	@Override
 	@Nullable
 	public ContentHandler getContentHandler() {
@@ -69,8 +56,8 @@ abstract class AbstractXMLReader implements XMLReader {
 	}
 
 	@Override
-	public void setDTDHandler(@Nullable DTDHandler dtdHandler) {
-		this.dtdHandler = dtdHandler;
+	public void setContentHandler(@Nullable ContentHandler contentHandler) {
+		this.contentHandler = contentHandler;
 	}
 
 	@Override
@@ -80,8 +67,8 @@ abstract class AbstractXMLReader implements XMLReader {
 	}
 
 	@Override
-	public void setEntityResolver(@Nullable EntityResolver entityResolver) {
-		this.entityResolver = entityResolver;
+	public void setDTDHandler(@Nullable DTDHandler dtdHandler) {
+		this.dtdHandler = dtdHandler;
 	}
 
 	@Override
@@ -91,14 +78,19 @@ abstract class AbstractXMLReader implements XMLReader {
 	}
 
 	@Override
-	public void setErrorHandler(@Nullable ErrorHandler errorHandler) {
-		this.errorHandler = errorHandler;
+	public void setEntityResolver(@Nullable EntityResolver entityResolver) {
+		this.entityResolver = entityResolver;
 	}
 
 	@Override
 	@Nullable
 	public ErrorHandler getErrorHandler() {
 		return this.errorHandler;
+	}
+
+	@Override
+	public void setErrorHandler(@Nullable ErrorHandler errorHandler) {
+		this.errorHandler = errorHandler;
 	}
 
 	@Nullable
@@ -116,8 +108,7 @@ abstract class AbstractXMLReader implements XMLReader {
 	public boolean getFeature(String name) throws SAXNotRecognizedException, SAXNotSupportedException {
 		if (name.startsWith("http://xml.org/sax/features/")) {
 			return false;
-		}
-		else {
+		} else {
 			throw new SAXNotRecognizedException(name);
 		}
 	}
@@ -133,8 +124,7 @@ abstract class AbstractXMLReader implements XMLReader {
 			if (value) {
 				throw new SAXNotSupportedException(name);
 			}
-		}
-		else {
+		} else {
 			throw new SAXNotRecognizedException(name);
 		}
 	}
@@ -148,8 +138,7 @@ abstract class AbstractXMLReader implements XMLReader {
 	public Object getProperty(String name) throws SAXNotRecognizedException, SAXNotSupportedException {
 		if ("http://xml.org/sax/properties/lexical-handler".equals(name)) {
 			return this.lexicalHandler;
-		}
-		else {
+		} else {
 			throw new SAXNotRecognizedException(name);
 		}
 	}
@@ -162,8 +151,7 @@ abstract class AbstractXMLReader implements XMLReader {
 	public void setProperty(String name, Object value) throws SAXNotRecognizedException, SAXNotSupportedException {
 		if ("http://xml.org/sax/properties/lexical-handler".equals(name)) {
 			this.lexicalHandler = (LexicalHandler) value;
-		}
-		else {
+		} else {
 			throw new SAXNotRecognizedException(name);
 		}
 	}

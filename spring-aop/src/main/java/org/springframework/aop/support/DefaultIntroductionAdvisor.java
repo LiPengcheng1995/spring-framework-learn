@@ -16,12 +16,7 @@
 
 package org.springframework.aop.support;
 
-import java.io.Serializable;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import org.aopalliance.aop.Advice;
-
 import org.springframework.aop.ClassFilter;
 import org.springframework.aop.DynamicIntroductionAdvice;
 import org.springframework.aop.IntroductionAdvisor;
@@ -31,6 +26,10 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
+import java.io.Serializable;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 /**
  * Simple {@link org.springframework.aop.IntroductionAdvisor} implementation
  * that by default applies to any class.
@@ -39,7 +38,7 @@ import org.springframework.util.ClassUtils;
  * @author Juergen Hoeller
  * @since 11.11.2003
  */
-@SuppressWarnings({"serial" })
+@SuppressWarnings({"serial"})
 public class DefaultIntroductionAdvisor implements IntroductionAdvisor, ClassFilter, Ordered, Serializable {
 
 	private final Advice advice;
@@ -51,8 +50,9 @@ public class DefaultIntroductionAdvisor implements IntroductionAdvisor, ClassFil
 
 	/**
 	 * Create a DefaultIntroductionAdvisor for the given advice.
+	 *
 	 * @param advice the Advice to apply (may implement the
-	 * {@link org.springframework.aop.IntroductionInfo} interface)
+	 *               {@link org.springframework.aop.IntroductionInfo} interface)
 	 * @see #addInterface
 	 */
 	public DefaultIntroductionAdvisor(Advice advice) {
@@ -61,9 +61,10 @@ public class DefaultIntroductionAdvisor implements IntroductionAdvisor, ClassFil
 
 	/**
 	 * Create a DefaultIntroductionAdvisor for the given advice.
-	 * @param advice the Advice to apply
+	 *
+	 * @param advice           the Advice to apply
 	 * @param introductionInfo the IntroductionInfo that describes
-	 * the interface to introduce (may be {@code null})
+	 *                         the interface to introduce (may be {@code null})
 	 */
 	public DefaultIntroductionAdvisor(Advice advice, @Nullable IntroductionInfo introductionInfo) {
 		Assert.notNull(advice, "Advice must not be null");
@@ -81,8 +82,9 @@ public class DefaultIntroductionAdvisor implements IntroductionAdvisor, ClassFil
 
 	/**
 	 * Create a DefaultIntroductionAdvisor for the given advice.
+	 *
 	 * @param advice the Advice to apply
-	 * @param intf the interface to introduce
+	 * @param intf   the interface to introduce
 	 */
 	public DefaultIntroductionAdvisor(DynamicIntroductionAdvice advice, Class<?> intf) {
 		Assert.notNull(advice, "Advice must not be null");
@@ -93,6 +95,7 @@ public class DefaultIntroductionAdvisor implements IntroductionAdvisor, ClassFil
 
 	/**
 	 * Add the specified interface to the list of interfaces to introduce.
+	 *
 	 * @param intf the interface to introduce
 	 */
 	public void addInterface(Class<?> intf) {
@@ -113,19 +116,19 @@ public class DefaultIntroductionAdvisor implements IntroductionAdvisor, ClassFil
 		for (Class<?> ifc : this.interfaces) {
 			if (this.advice instanceof DynamicIntroductionAdvice &&
 					!((DynamicIntroductionAdvice) this.advice).implementsInterface(ifc)) {
-			 throw new IllegalArgumentException("DynamicIntroductionAdvice [" + this.advice + "] " +
-					 "does not implement interface [" + ifc.getName() + "] specified for introduction");
+				throw new IllegalArgumentException("DynamicIntroductionAdvice [" + this.advice + "] " +
+						"does not implement interface [" + ifc.getName() + "] specified for introduction");
 			}
 		}
-	}
-
-	public void setOrder(int order) {
-		this.order = order;
 	}
 
 	@Override
 	public int getOrder() {
 		return this.order;
+	}
+
+	public void setOrder(int order) {
+		this.order = order;
 	}
 
 	@Override

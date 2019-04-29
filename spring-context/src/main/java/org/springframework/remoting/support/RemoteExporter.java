@@ -43,6 +43,12 @@ public abstract class RemoteExporter extends RemotingSupport {
 
 	private Object[] interceptors;
 
+	/**
+	 * Return the service to export.
+	 */
+	public Object getService() {
+		return this.service;
+	}
 
 	/**
 	 * Set the service to export.
@@ -53,10 +59,10 @@ public abstract class RemoteExporter extends RemotingSupport {
 	}
 
 	/**
-	 * Return the service to export.
+	 * Return the interface of the service to export.
 	 */
-	public Object getService() {
-		return this.service;
+	public Class<?> getServiceInterface() {
+		return this.serviceInterface;
 	}
 
 	/**
@@ -70,13 +76,6 @@ public abstract class RemoteExporter extends RemotingSupport {
 	}
 
 	/**
-	 * Return the interface of the service to export.
-	 */
-	public Class<?> getServiceInterface() {
-		return this.serviceInterface;
-	}
-
-	/**
 	 * Set whether to register a RemoteInvocationTraceInterceptor for exported
 	 * services. Only applied when a subclass uses {@code getProxyForService}
 	 * for creating the proxy to expose.
@@ -84,6 +83,7 @@ public abstract class RemoteExporter extends RemotingSupport {
 	 * is that it logs exception stacktraces on the server, before propagating an
 	 * exception to the client. Note that RemoteInvocationTraceInterceptor will <i>not</i>
 	 * be registered by default if the "interceptors" property has been specified.
+	 *
 	 * @see #setInterceptors
 	 * @see #getProxyForService
 	 * @see RemoteInvocationTraceInterceptor
@@ -97,6 +97,7 @@ public abstract class RemoteExporter extends RemotingSupport {
 	 * remote endpoint, e.g. a PerformanceMonitorInterceptor.
 	 * <p>You may specify any AOP Alliance MethodInterceptors or other
 	 * Spring AOP Advices, as well as Spring AOP Advisors.
+	 *
 	 * @see #getProxyForService
 	 * @see org.springframework.aop.interceptor.PerformanceMonitorInterceptor
 	 */
@@ -107,6 +108,7 @@ public abstract class RemoteExporter extends RemotingSupport {
 
 	/**
 	 * Check whether the service reference has been set.
+	 *
 	 * @see #setService
 	 */
 	protected void checkService() throws IllegalArgumentException {
@@ -116,6 +118,7 @@ public abstract class RemoteExporter extends RemotingSupport {
 	/**
 	 * Check whether a service reference has been set,
 	 * and whether it matches the specified service.
+	 *
 	 * @see #setServiceInterface
 	 * @see #setService
 	 */
@@ -142,6 +145,7 @@ public abstract class RemoteExporter extends RemotingSupport {
 	 * <p>Used to export a proxy that does not expose any internals but just
 	 * a specific interface intended for remote access. Furthermore, a
 	 * {@link RemoteInvocationTraceInterceptor} will be registered (by default).
+	 *
 	 * @return the proxy
 	 * @see #setServiceInterface
 	 * @see #setRegisterTraceInterceptor
@@ -175,6 +179,7 @@ public abstract class RemoteExporter extends RemotingSupport {
 	 * Used for tracing of remote invocations.
 	 * <p>Default is the unqualified class name (without package).
 	 * Can be overridden in subclasses.
+	 *
 	 * @see #getProxyForService
 	 * @see RemoteInvocationTraceInterceptor
 	 * @see org.springframework.util.ClassUtils#getShortName

@@ -16,10 +16,10 @@
 
 package org.springframework.validation.support;
 
-import java.util.Map;
-
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.validation.BindingResult;
+
+import java.util.Map;
 
 /**
  * Subclass of {@link org.springframework.ui.ExtendedModelMap} that automatically removes
@@ -32,8 +32,8 @@ import org.springframework.validation.BindingResult;
  * a regular {@link Map} with String keys will be good enough to return a user model.
  *
  * @author Juergen Hoeller
- * @since 2.5.6
  * @see org.springframework.validation.BindingResult
+ * @since 2.5.6
  */
 @SuppressWarnings("serial")
 public class BindingAwareModelMap extends ExtendedModelMap {

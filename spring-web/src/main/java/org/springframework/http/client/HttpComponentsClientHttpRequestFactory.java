@@ -16,30 +16,20 @@
 
 package org.springframework.http.client;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.net.URI;
-
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.Configurable;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpHead;
-import org.apache.http.client.methods.HttpOptions;
-import org.apache.http.client.methods.HttpPatch;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpTrace;
-import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.*;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.HttpContext;
-
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.http.HttpMethod;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.net.URI;
 
 /**
  * {@link org.springframework.http.client.ClientHttpRequestFactory} implementation that
@@ -78,19 +68,10 @@ public class HttpComponentsClientHttpRequestFactory implements ClientHttpRequest
 	/**
 	 * Create a new instance of the {@code HttpComponentsClientHttpRequestFactory}
 	 * with the given {@link HttpClient} instance.
+	 *
 	 * @param httpClient the HttpClient instance to use for this request factory
 	 */
 	public HttpComponentsClientHttpRequestFactory(HttpClient httpClient) {
-		this.httpClient = httpClient;
-	}
-
-
-	/**
-	 * Set the {@code HttpClient} used for
-	 * {@linkplain #createRequest(URI, HttpMethod) synchronous execution}.
-	 */
-	public void setHttpClient(HttpClient httpClient) {
-		Assert.notNull(httpClient, "HttpClient must not be null");
 		this.httpClient = httpClient;
 	}
 
@@ -103,10 +84,20 @@ public class HttpComponentsClientHttpRequestFactory implements ClientHttpRequest
 	}
 
 	/**
+	 * Set the {@code HttpClient} used for
+	 * {@linkplain #createRequest(URI, HttpMethod) synchronous execution}.
+	 */
+	public void setHttpClient(HttpClient httpClient) {
+		Assert.notNull(httpClient, "HttpClient must not be null");
+		this.httpClient = httpClient;
+	}
+
+	/**
 	 * Set the connection timeout for the underlying HttpClient.
 	 * A timeout value of 0 specifies an infinite timeout.
 	 * <p>Additional properties can be configured by specifying a
 	 * {@link RequestConfig} instance on a custom {@link HttpClient}.
+	 *
 	 * @param timeout the timeout value in milliseconds
 	 * @see RequestConfig#getConnectTimeout()
 	 */
@@ -121,6 +112,7 @@ public class HttpComponentsClientHttpRequestFactory implements ClientHttpRequest
 	 * A timeout value of 0 specifies an infinite timeout.
 	 * <p>Additional properties can be configured by specifying a
 	 * {@link RequestConfig} instance on a custom {@link HttpClient}.
+	 *
 	 * @param connectionRequestTimeout the timeout value to request a connection in milliseconds
 	 * @see RequestConfig#getConnectionRequestTimeout()
 	 */
@@ -133,6 +125,7 @@ public class HttpComponentsClientHttpRequestFactory implements ClientHttpRequest
 	 * A timeout value of 0 specifies an infinite timeout.
 	 * <p>Additional properties can be configured by specifying a
 	 * {@link RequestConfig} instance on a custom {@link HttpClient}.
+	 *
 	 * @param timeout the timeout value in milliseconds
 	 * @see RequestConfig#getSocketTimeout()
 	 */
@@ -145,6 +138,7 @@ public class HttpComponentsClientHttpRequestFactory implements ClientHttpRequest
 	 * Indicates whether this request factory should buffer the request body internally.
 	 * <p>Default is {@code true}. When sending large amounts of data via POST or PUT, it is
 	 * recommended to change this property to {@code false}, so as not to run out of memory.
+	 *
 	 * @since 4.0
 	 */
 	public void setBufferRequestBody(boolean bufferRequestBody) {
@@ -180,8 +174,7 @@ public class HttpComponentsClientHttpRequestFactory implements ClientHttpRequest
 
 		if (this.bufferRequestBody) {
 			return new HttpComponentsClientHttpRequest(client, httpRequest, context);
-		}
-		else {
+		} else {
 			return new HttpComponentsStreamingClientHttpRequest(client, httpRequest, context);
 		}
 	}
@@ -189,6 +182,7 @@ public class HttpComponentsClientHttpRequestFactory implements ClientHttpRequest
 
 	/**
 	 * Return a builder for modifying the factory-level {@link RequestConfig}.
+	 *
 	 * @since 4.2
 	 */
 	private RequestConfig.Builder requestConfigBuilder() {
@@ -201,10 +195,11 @@ public class HttpComponentsClientHttpRequestFactory implements ClientHttpRequest
 	 * be set and the defaults of the {@link HttpClient} should be used.
 	 * <p>The default implementation tries to merge the defaults of the client
 	 * with the local customizations of this factory instance, if any.
+	 *
 	 * @param client the {@link HttpClient} (or {@code HttpAsyncClient}) to check
 	 * @return the actual RequestConfig to use (may be {@code null})
-	 * @since 4.2
 	 * @see #mergeRequestConfig(RequestConfig)
+	 * @since 4.2
 	 */
 	@Nullable
 	protected RequestConfig createRequestConfig(Object client) {
@@ -218,6 +213,7 @@ public class HttpComponentsClientHttpRequestFactory implements ClientHttpRequest
 	/**
 	 * Merge the given {@link HttpClient}-level {@link RequestConfig} with
 	 * the factory-level {@link RequestConfig}, if necessary.
+	 *
 	 * @param clientConfig the config held by the current
 	 * @return the merged request config
 	 * @since 4.2
@@ -245,8 +241,9 @@ public class HttpComponentsClientHttpRequestFactory implements ClientHttpRequest
 
 	/**
 	 * Create a Commons HttpMethodBase object for the given HTTP method and URI specification.
+	 *
 	 * @param httpMethod the HTTP method
-	 * @param uri the URI
+	 * @param uri        the URI
 	 * @return the Commons HttpMethodBase object
 	 */
 	protected HttpUriRequest createHttpUriRequest(HttpMethod httpMethod, URI uri) {
@@ -276,6 +273,7 @@ public class HttpComponentsClientHttpRequestFactory implements ClientHttpRequest
 	 * Template method that allows for manipulating the {@link HttpUriRequest} before it is
 	 * returned as part of a {@link HttpComponentsClientHttpRequest}.
 	 * <p>The default implementation is empty.
+	 *
 	 * @param request the request to process
 	 */
 	protected void postProcessHttpRequest(HttpUriRequest request) {
@@ -284,8 +282,9 @@ public class HttpComponentsClientHttpRequestFactory implements ClientHttpRequest
 	/**
 	 * Template methods that creates a {@link HttpContext} for the given HTTP method and URI.
 	 * <p>The default implementation returns {@code null}.
+	 *
 	 * @param httpMethod the HTTP method
-	 * @param uri the URI
+	 * @param uri        the URI
 	 * @return the http context
 	 */
 	@Nullable
@@ -314,6 +313,7 @@ public class HttpComponentsClientHttpRequestFactory implements ClientHttpRequest
 	 * rather than {@link org.apache.http.client.methods.HttpRequestBase} and
 	 * hence allows HTTP delete with a request body. For use with the RestTemplate
 	 * exchange methods which allow the combination of HTTP DELETE with an entity.
+	 *
 	 * @since 4.1.2
 	 */
 	private static class HttpDelete extends HttpEntityEnclosingRequestBase {

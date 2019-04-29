@@ -16,13 +16,13 @@
 
 package org.springframework.scheduling.support;
 
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.TriggerContext;
 import org.springframework.util.Assert;
+
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A trigger for periodic task execution. The period may be applied as either
@@ -76,6 +76,7 @@ public class PeriodicTrigger implements Trigger {
 
 	/**
 	 * Return this trigger's period.
+	 *
 	 * @since 5.0.2
 	 */
 	public long getPeriod() {
@@ -84,10 +85,20 @@ public class PeriodicTrigger implements Trigger {
 
 	/**
 	 * Return this trigger's time unit (milliseconds by default).
+	 *
 	 * @since 5.0.2
 	 */
 	public TimeUnit getTimeUnit() {
 		return this.timeUnit;
+	}
+
+	/**
+	 * Return the initial delay, or 0 if none.
+	 *
+	 * @since 5.0.2
+	 */
+	public long getInitialDelay() {
+		return this.initialDelay;
 	}
 
 	/**
@@ -100,11 +111,13 @@ public class PeriodicTrigger implements Trigger {
 	}
 
 	/**
-	 * Return the initial delay, or 0 if none.
+	 * Return whether this trigger uses fixed rate ({@code true}) or
+	 * fixed delay ({@code false}) behavior.
+	 *
 	 * @since 5.0.2
 	 */
-	public long getInitialDelay() {
-		return this.initialDelay;
+	public boolean isFixedRate() {
+		return this.fixedRate;
 	}
 
 	/**
@@ -115,16 +128,6 @@ public class PeriodicTrigger implements Trigger {
 	public void setFixedRate(boolean fixedRate) {
 		this.fixedRate = fixedRate;
 	}
-
-	/**
-	 * Return whether this trigger uses fixed rate ({@code true}) or
-	 * fixed delay ({@code false}) behavior.
-	 * @since 5.0.2
-	 */
-	public boolean isFixedRate() {
-		return this.fixedRate;
-	}
-
 
 	/**
 	 * Returns the time after which a task should run again.

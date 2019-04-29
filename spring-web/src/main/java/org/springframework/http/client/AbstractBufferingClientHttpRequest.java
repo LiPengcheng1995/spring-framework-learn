@@ -16,11 +16,11 @@
 
 package org.springframework.http.client;
 
+import org.springframework.http.HttpHeaders;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-
-import org.springframework.http.HttpHeaders;
 
 /**
  * Base implementation of {@link ClientHttpRequest} that buffers output
@@ -52,7 +52,8 @@ abstract class AbstractBufferingClientHttpRequest extends AbstractClientHttpRequ
 
 	/**
 	 * Abstract template method that writes the given headers and content to the HTTP request.
-	 * @param headers the HTTP headers
+	 *
+	 * @param headers        the HTTP headers
 	 * @param bufferedOutput the body content
 	 * @return the response object for the executed request
 	 */

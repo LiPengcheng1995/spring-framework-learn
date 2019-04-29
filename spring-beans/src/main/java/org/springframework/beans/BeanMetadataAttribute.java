@@ -40,7 +40,8 @@ public class BeanMetadataAttribute implements BeanMetadataElement {
 
 	/**
 	 * Create a new AttributeValue instance.
-	 * @param name the name of the attribute (never {@code null})
+	 *
+	 * @param name  the name of the attribute (never {@code null})
 	 * @param value the value of the attribute (possibly before type conversion)
 	 */
 	public BeanMetadataAttribute(String name, @Nullable Object value) {
@@ -65,6 +66,12 @@ public class BeanMetadataAttribute implements BeanMetadataElement {
 		return this.value;
 	}
 
+	@Override
+	@Nullable
+	public Object getSource() {
+		return this.source;
+	}
+
 	/**
 	 * Set the configuration source {@code Object} for this metadata element.
 	 * <p>The exact type of the object will depend on the configuration mechanism used.
@@ -72,13 +79,6 @@ public class BeanMetadataAttribute implements BeanMetadataElement {
 	public void setSource(@Nullable Object source) {
 		this.source = source;
 	}
-
-	@Override
-	@Nullable
-	public Object getSource() {
-		return this.source;
-	}
-
 
 	@Override
 	public boolean equals(Object other) {

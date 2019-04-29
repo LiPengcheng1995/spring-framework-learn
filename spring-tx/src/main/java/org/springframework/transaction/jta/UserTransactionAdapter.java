@@ -16,15 +16,9 @@
 
 package org.springframework.transaction.jta;
 
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
-import javax.transaction.TransactionManager;
-import javax.transaction.UserTransaction;
-
 import org.springframework.util.Assert;
+
+import javax.transaction.*;
 
 /**
  * Adapter for a JTA UserTransaction handle, taking a JTA
@@ -50,6 +44,7 @@ public class UserTransactionAdapter implements UserTransaction {
 
 	/**
 	 * Create a new UserTransactionAdapter for the given TransactionManager.
+	 *
 	 * @param transactionManager the JTA TransactionManager to wrap
 	 */
 	public UserTransactionAdapter(TransactionManager transactionManager) {

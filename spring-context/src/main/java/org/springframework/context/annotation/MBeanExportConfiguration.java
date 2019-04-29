@@ -16,10 +16,6 @@
 
 package org.springframework.context.annotation;
 
-import java.util.Map;
-import javax.management.MBeanServer;
-import javax.naming.NamingException;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -37,6 +33,10 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
+import javax.management.MBeanServer;
+import javax.naming.NamingException;
+import java.util.Map;
+
 /**
  * {@code @Configuration} class that registers a {@link AnnotationMBeanExporter} bean.
  *
@@ -45,8 +45,8 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Chris Beams
- * @since 3.2
  * @see EnableMBeanExport
+ * @since 3.2
  */
 @Configuration
 public class MBeanExportConfiguration implements ImportAware, EnvironmentAware, BeanFactoryAware {
@@ -113,8 +113,7 @@ public class MBeanExportConfiguration implements ImportAware, EnvironmentAware, 
 		if (StringUtils.hasText(server)) {
 			Assert.state(this.beanFactory != null, "No BeanFactory set");
 			exporter.setServer(this.beanFactory.getBean(server, MBeanServer.class));
-		}
-		else {
+		} else {
 			SpecificPlatform specificPlatform = SpecificPlatform.get();
 			if (specificPlatform != null) {
 				MBeanServer mbeanServer = specificPlatform.getMBeanServer();
@@ -138,8 +137,7 @@ public class MBeanExportConfiguration implements ImportAware, EnvironmentAware, 
 			public MBeanServer getMBeanServer() {
 				try {
 					return new JndiLocatorDelegate().lookup("java:comp/env/jmx/runtime", MBeanServer.class);
-				}
-				catch (NamingException ex) {
+				} catch (NamingException ex) {
 					throw new MBeanServerNotFoundException("Failed to retrieve WebLogic MBeanServer from JNDI", ex);
 				}
 			}
@@ -161,9 +159,6 @@ public class MBeanExportConfiguration implements ImportAware, EnvironmentAware, 
 		}
 
 		@Nullable
-		public abstract MBeanServer getMBeanServer();
-
-		@Nullable
 		public static SpecificPlatform get() {
 			ClassLoader classLoader = MBeanExportConfiguration.class.getClassLoader();
 			for (SpecificPlatform environment : values()) {
@@ -173,6 +168,9 @@ public class MBeanExportConfiguration implements ImportAware, EnvironmentAware, 
 			}
 			return null;
 		}
+
+		@Nullable
+		public abstract MBeanServer getMBeanServer();
 	}
 
 }

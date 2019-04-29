@@ -16,16 +16,16 @@
 
 package org.springframework.mock.web;
 
-import javax.servlet.SessionCookieConfig;
-
 import org.springframework.lang.Nullable;
+
+import javax.servlet.SessionCookieConfig;
 
 /**
  * Mock implementation of the {@link javax.servlet.SessionCookieConfig} interface.
  *
  * @author Juergen Hoeller
- * @since 4.0
  * @see javax.servlet.ServletContext#getSessionCookieConfig()
+ * @since 4.0
  */
 public class MockSessionCookieConfig implements SessionCookieConfig {
 
@@ -47,12 +47,6 @@ public class MockSessionCookieConfig implements SessionCookieConfig {
 
 	private int maxAge = -1;
 
-
-	@Override
-	public void setName(@Nullable String name) {
-		this.name = name;
-	}
-
 	@Override
 	@Nullable
 	public String getName() {
@@ -60,8 +54,8 @@ public class MockSessionCookieConfig implements SessionCookieConfig {
 	}
 
 	@Override
-	public void setDomain(@Nullable String domain) {
-		this.domain = domain;
+	public void setName(@Nullable String name) {
+		this.name = name;
 	}
 
 	@Override
@@ -71,8 +65,8 @@ public class MockSessionCookieConfig implements SessionCookieConfig {
 	}
 
 	@Override
-	public void setPath(@Nullable String path) {
-		this.path = path;
+	public void setDomain(@Nullable String domain) {
+		this.domain = domain;
 	}
 
 	@Override
@@ -82,8 +76,8 @@ public class MockSessionCookieConfig implements SessionCookieConfig {
 	}
 
 	@Override
-	public void setComment(@Nullable String comment) {
-		this.comment = comment;
+	public void setPath(@Nullable String path) {
+		this.path = path;
 	}
 
 	@Override
@@ -93,8 +87,8 @@ public class MockSessionCookieConfig implements SessionCookieConfig {
 	}
 
 	@Override
-	public void setHttpOnly(boolean httpOnly) {
-		this.httpOnly = httpOnly;
+	public void setComment(@Nullable String comment) {
+		this.comment = comment;
 	}
 
 	@Override
@@ -103,8 +97,8 @@ public class MockSessionCookieConfig implements SessionCookieConfig {
 	}
 
 	@Override
-	public void setSecure(boolean secure) {
-		this.secure = secure;
+	public void setHttpOnly(boolean httpOnly) {
+		this.httpOnly = httpOnly;
 	}
 
 	@Override
@@ -113,13 +107,18 @@ public class MockSessionCookieConfig implements SessionCookieConfig {
 	}
 
 	@Override
-	public void setMaxAge(int maxAge) {
-		this.maxAge = maxAge;
+	public void setSecure(boolean secure) {
+		this.secure = secure;
 	}
 
 	@Override
 	public int getMaxAge() {
 		return this.maxAge;
+	}
+
+	@Override
+	public void setMaxAge(int maxAge) {
+		this.maxAge = maxAge;
 	}
 
 }

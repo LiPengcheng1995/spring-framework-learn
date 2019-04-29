@@ -16,6 +16,10 @@
 
 package org.springframework.beans.propertyeditors;
 
+import org.junit.Test;
+import org.springframework.beans.*;
+import org.springframework.tests.sample.beans.*;
+
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorSupport;
 import java.beans.PropertyVetoException;
@@ -25,29 +29,8 @@ import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.*;
 import java.util.regex.Pattern;
-
-import org.junit.Test;
-
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.MutablePropertyValues;
-import org.springframework.beans.PropertyValue;
-import org.springframework.tests.sample.beans.BooleanTestBean;
-import org.springframework.tests.sample.beans.ITestBean;
-import org.springframework.tests.sample.beans.IndexedTestBean;
-import org.springframework.tests.sample.beans.NumberTestBean;
-import org.springframework.tests.sample.beans.TestBean;
 
 import static org.junit.Assert.*;
 
@@ -221,8 +204,7 @@ public class CustomEditorTests {
 		try {
 			bw.setPropertyValue("bool1", "argh");
 			fail("Should have thrown BeansException");
-		}
-		catch (BeansException ex) {
+		} catch (BeansException ex) {
 			// expected
 		}
 	}
@@ -323,8 +305,7 @@ public class CustomEditorTests {
 		try {
 			editor.setAsText(null);
 			fail("Should have thrown IllegalArgumentException");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// expected
 		}
 	}
@@ -452,8 +433,7 @@ public class CustomEditorTests {
 		try {
 			bw.setPropertyValue("long1", "");
 			fail("Should have thrown BeansException");
-		}
-		catch (BeansException ex) {
+		} catch (BeansException ex) {
 			// expected
 			assertTrue("Correct long1 value", new Long("5").equals(bw.getPropertyValue("long1")));
 			assertTrue("Correct long1 value", tb.getLong1() == 5);
@@ -480,8 +460,7 @@ public class CustomEditorTests {
 			CustomNumberEditor editor = new CustomNumberEditor(Short.class, true);
 			editor.setAsText(String.valueOf(Short.MAX_VALUE + 1));
 			fail(Short.MAX_VALUE + 1 + " is greater than max value");
-		}
-		catch (NumberFormatException ex) {
+		} catch (NumberFormatException ex) {
 			// expected
 		}
 	}
@@ -601,8 +580,8 @@ public class CustomEditorTests {
 	}
 
 	/*
-	* SPR_2165 - ClassEditor is inconsistent with multidimensional arrays
-	*/
+	 * SPR_2165 - ClassEditor is inconsistent with multidimensional arrays
+	 */
 	@Test
 	public void testGetAsTextWithTwoDimensionalArray() throws Exception {
 		String[][] chessboard = new String[8][8];
@@ -635,8 +614,7 @@ public class CustomEditorTests {
 		PropertyEditor fileEditor = new FileEditor();
 		try {
 			fileEditor.setAsText("myfile.txt");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// expected: should get resolved as class path resource,
 			// and there is no such resource in the class path...
 		}
@@ -704,8 +682,7 @@ public class CustomEditorTests {
 		try {
 			editor.setAsText(null);
 			fail("Should have thrown IllegalArgumentException");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// expected
 		}
 	}
@@ -756,16 +733,14 @@ public class CustomEditorTests {
 
 		try {
 			editor.setAsText(validDate);
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			fail("Exception shouldn't be thrown because this is a valid date");
 		}
 
 		try {
 			editor.setAsText(invalidDate);
 			fail("Exception should be thrown because this is an invalid date");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// expected
 			assertTrue(ex.getMessage().contains("10"));
 		}
@@ -1092,36 +1067,36 @@ public class CustomEditorTests {
 		BeanWrapper bw = new BeanWrapperImpl(bean);
 		bw.registerCustomEditor(String.class, "array.nestedIndexedBean.array.name", new PropertyEditorSupport() {
 			@Override
+			public String getAsText() {
+				return ((String) getValue()).substring(5);
+			}			@Override
 			public void setAsText(String text) throws IllegalArgumentException {
 				setValue("array" + text);
 			}
 
-			@Override
-			public String getAsText() {
-				return ((String) getValue()).substring(5);
-			}
+
 		});
 		bw.registerCustomEditor(String.class, "list.nestedIndexedBean.list.name", new PropertyEditorSupport() {
 			@Override
+			public String getAsText() {
+				return ((String) getValue()).substring(4);
+			}			@Override
 			public void setAsText(String text) throws IllegalArgumentException {
 				setValue("list" + text);
 			}
 
-			@Override
-			public String getAsText() {
-				return ((String) getValue()).substring(4);
-			}
+
 		});
 		bw.registerCustomEditor(String.class, "map.nestedIndexedBean.map.name", new PropertyEditorSupport() {
 			@Override
+			public String getAsText() {
+				return ((String) getValue()).substring(4);
+			}			@Override
 			public void setAsText(String text) throws IllegalArgumentException {
 				setValue("map" + text);
 			}
 
-			@Override
-			public String getAsText() {
-				return ((String) getValue()).substring(4);
-			}
+
 		});
 		assertEquals("name0", tb0.getName());
 		assertEquals("name1", tb1.getName());
@@ -1215,36 +1190,36 @@ public class CustomEditorTests {
 		BeanWrapper bw = new BeanWrapperImpl(bean);
 		bw.registerCustomEditor(TestBean.class, "array", new PropertyEditorSupport() {
 			@Override
+			public String getAsText() {
+				return ((TestBean) getValue()).getName();
+			}			@Override
 			public void setAsText(String text) throws IllegalArgumentException {
 				setValue(new TestBean("array" + text, 99));
 			}
 
-			@Override
-			public String getAsText() {
-				return ((TestBean) getValue()).getName();
-			}
+
 		});
 		bw.registerCustomEditor(TestBean.class, "list", new PropertyEditorSupport() {
 			@Override
+			public String getAsText() {
+				return ((TestBean) getValue()).getName();
+			}			@Override
 			public void setAsText(String text) throws IllegalArgumentException {
 				setValue(new TestBean("list" + text, 99));
 			}
 
-			@Override
-			public String getAsText() {
-				return ((TestBean) getValue()).getName();
-			}
+
 		});
 		bw.registerCustomEditor(TestBean.class, "map", new PropertyEditorSupport() {
 			@Override
+			public String getAsText() {
+				return ((TestBean) getValue()).getName();
+			}			@Override
 			public void setAsText(String text) throws IllegalArgumentException {
 				setValue(new TestBean("map" + text, 99));
 			}
 
-			@Override
-			public String getAsText() {
-				return ((TestBean) getValue()).getName();
-			}
+
 		});
 
 		MutablePropertyValues pvs = new MutablePropertyValues();
@@ -1269,69 +1244,69 @@ public class CustomEditorTests {
 		BeanWrapper bw = new BeanWrapperImpl(bean);
 		bw.registerCustomEditor(TestBean.class, "array[0]", new PropertyEditorSupport() {
 			@Override
+			public String getAsText() {
+				return ((TestBean) getValue()).getName();
+			}			@Override
 			public void setAsText(String text) throws IllegalArgumentException {
 				setValue(new TestBean("array0" + text, 99));
 			}
 
-			@Override
-			public String getAsText() {
-				return ((TestBean) getValue()).getName();
-			}
+
 		});
 		bw.registerCustomEditor(TestBean.class, "array[1]", new PropertyEditorSupport() {
 			@Override
+			public String getAsText() {
+				return ((TestBean) getValue()).getName();
+			}			@Override
 			public void setAsText(String text) throws IllegalArgumentException {
 				setValue(new TestBean("array1" + text, 99));
 			}
 
-			@Override
-			public String getAsText() {
-				return ((TestBean) getValue()).getName();
-			}
+
 		});
 		bw.registerCustomEditor(TestBean.class, "list[0]", new PropertyEditorSupport() {
 			@Override
+			public String getAsText() {
+				return ((TestBean) getValue()).getName();
+			}			@Override
 			public void setAsText(String text) throws IllegalArgumentException {
 				setValue(new TestBean("list0" + text, 99));
 			}
 
-			@Override
-			public String getAsText() {
-				return ((TestBean) getValue()).getName();
-			}
+
 		});
 		bw.registerCustomEditor(TestBean.class, "list[1]", new PropertyEditorSupport() {
 			@Override
+			public String getAsText() {
+				return ((TestBean) getValue()).getName();
+			}			@Override
 			public void setAsText(String text) throws IllegalArgumentException {
 				setValue(new TestBean("list1" + text, 99));
 			}
 
-			@Override
-			public String getAsText() {
-				return ((TestBean) getValue()).getName();
-			}
+
 		});
 		bw.registerCustomEditor(TestBean.class, "map[key1]", new PropertyEditorSupport() {
 			@Override
+			public String getAsText() {
+				return ((TestBean) getValue()).getName();
+			}			@Override
 			public void setAsText(String text) throws IllegalArgumentException {
 				setValue(new TestBean("mapkey1" + text, 99));
 			}
 
-			@Override
-			public String getAsText() {
-				return ((TestBean) getValue()).getName();
-			}
+
 		});
 		bw.registerCustomEditor(TestBean.class, "map[key2]", new PropertyEditorSupport() {
 			@Override
+			public String getAsText() {
+				return ((TestBean) getValue()).getName();
+			}			@Override
 			public void setAsText(String text) throws IllegalArgumentException {
 				setValue(new TestBean("mapkey2" + text, 99));
 			}
 
-			@Override
-			public String getAsText() {
-				return ((TestBean) getValue()).getName();
-			}
+
 		});
 
 		MutablePropertyValues pvs = new MutablePropertyValues();
@@ -1375,7 +1350,7 @@ public class CustomEditorTests {
 		bw.registerCustomEditor(Vector.class, new CustomCollectionEditor(Vector.class));
 		bw.registerCustomEditor(Hashtable.class, new CustomMapEditor(Hashtable.class));
 
-		bw.setPropertyValue("vector", new String[] {"a", "b"});
+		bw.setPropertyValue("vector", new String[]{"a", "b"});
 		assertEquals(2, tb.getVector().size());
 		assertEquals("a", tb.getVector().get(0));
 		assertEquals("b", tb.getVector().get(1));
@@ -1411,7 +1386,7 @@ public class CustomEditorTests {
 				setValue(new TestBean(text, 99));
 			}
 		});
-		bw.setPropertyValue("array", new String[] {"a", "b"});
+		bw.setPropertyValue("array", new String[]{"a", "b"});
 		assertEquals(2, tb.getArray().length);
 		assertEquals("a", tb.getArray()[0].getName());
 		assertEquals("b", tb.getArray()[1].getName());
@@ -1427,7 +1402,7 @@ public class CustomEditorTests {
 				setValue("-" + text + "-");
 			}
 		});
-		bw.setPropertyValue("name", new String[] {"a", "b"});
+		bw.setPropertyValue("name", new String[]{"a", "b"});
 		assertEquals("-a,b-", tb.getName());
 	}
 

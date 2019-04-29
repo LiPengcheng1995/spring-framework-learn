@@ -16,18 +16,17 @@
 
 package org.springframework.web.bind;
 
-import java.beans.PropertyEditorSupport;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Test;
-
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.PropertyValues;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.tests.sample.beans.ITestBean;
 import org.springframework.tests.sample.beans.TestBean;
+
+import java.beans.PropertyEditorSupport;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -221,7 +220,7 @@ public class ServletRequestDataBinderTests {
 	@Test
 	public void testMultipleValuesForParameter() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
-		String[] original = new String[] {"Tony", "Rod"};
+		String[] original = new String[]{"Tony", "Rod"};
 		request.addParameter("forname", original);
 
 		ServletRequestParameterPropertyValues pvs = new ServletRequestParameterPropertyValues(request);

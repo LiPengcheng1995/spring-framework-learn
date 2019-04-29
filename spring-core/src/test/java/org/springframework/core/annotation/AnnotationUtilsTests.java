@@ -16,32 +16,23 @@
 
 package org.springframework.core.annotation;
 
-import java.lang.annotation.Annotation;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Repeatable;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.subpackage.NonPublicAnnotatedClass;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 
-import static java.util.Arrays.*;
-import static java.util.stream.Collectors.*;
+import java.lang.annotation.*;
+import java.lang.reflect.Method;
+import java.util.*;
+
+import static java.util.Arrays.asList;
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import static org.springframework.core.annotation.AnnotationUtils.*;
@@ -61,12 +52,15 @@ public class AnnotationUtilsTests {
 	@Rule
 	public final ExpectedException exception = ExpectedException.none();
 
+	@SafeVarargs
+	static <T> T[] asArray(T... arr) {
+		return arr;
+	}
 
 	@Before
 	public void clearCacheBeforeTests() {
 		AnnotationUtils.clearCache();
 	}
-
 
 	@Test
 	public void findMethodAnnotationOnLeaf() throws Exception {
@@ -1224,7 +1218,7 @@ public class AnnotationUtilsTests {
 		assertNotNull(annotationWithDefaults);
 		assertEquals("text: ", "enigma", annotationWithDefaults.text());
 		assertTrue("predicate: ", annotationWithDefaults.predicate());
-		assertArrayEquals("characters: ", new char[] { 'a', 'b', 'c' }, annotationWithDefaults.characters());
+		assertArrayEquals("characters: ", new char[]{'a', 'b', 'c'}, annotationWithDefaults.characters());
 	}
 
 	@Test
@@ -1530,14 +1524,14 @@ public class AnnotationUtilsTests {
 		assertThat(synthesizedCharsContainer, instanceOf(SynthesizedAnnotation.class));
 
 		char[] chars = synthesizedCharsContainer.chars();
-		assertArrayEquals(new char[] { 'x', 'y', 'z' }, chars);
+		assertArrayEquals(new char[]{'x', 'y', 'z'}, chars);
 
 		// Alter array returned from synthesized annotation
 		chars[0] = '?';
 
 		// Re-retrieve the array from the synthesized annotation
 		chars = synthesizedCharsContainer.chars();
-		assertArrayEquals(new char[] { 'x', 'y', 'z' }, chars);
+		assertArrayEquals(new char[]{'x', 'y', 'z'}, chars);
 	}
 
 	@Test
@@ -1548,11 +1542,9 @@ public class AnnotationUtilsTests {
 	}
 
 
-	@SafeVarargs
-	static <T> T[] asArray(T... arr) {
-		return arr;
+	enum RequestMethod {
+		GET, POST
 	}
-
 
 	@Component("meta1")
 	@Order
@@ -1596,6 +1588,434 @@ public class AnnotationUtilsTests {
 	interface InterfaceWithMetaAnnotation {
 	}
 
+	public interface AnnotatedInterface {
+
+		@Order(0)
+		void fromInterfaceImplementedByRoot();
+	}
+
+	public interface NullableAnnotatedInterface {
+
+		@Nullable
+		void fromInterfaceImplementedByRoot();
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Inherited
+	@interface Transactional {
+
+		boolean readOnly() default false;
+	}
+
+	@Transactional
+	public interface InheritedAnnotationInterface {
+	}
+
+	public interface SubInheritedAnnotationInterface extends InheritedAnnotationInterface {
+	}
+
+	public interface SubSubInheritedAnnotationInterface extends SubInheritedAnnotationInterface {
+	}
+
+	@Order
+	public interface NonInheritedAnnotationInterface {
+	}
+
+	public interface SubNonInheritedAnnotationInterface extends NonInheritedAnnotationInterface {
+	}
+
+	public interface SubSubNonInheritedAnnotationInterface extends SubNonInheritedAnnotationInterface {
+	}
+
+	public interface NonAnnotatedInterface {
+	}
+
+	public interface InterfaceWithAnnotatedMethod {
+
+		@Order
+		void foo();
+	}
+
+	public interface InterfaceWithGenericAnnotatedMethod<T> {
+
+		@Order
+		void foo(T t);
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Inherited
+	@interface MyRepeatableContainer {
+
+		MyRepeatable[] value();
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Inherited
+	@Repeatable(MyRepeatableContainer.class)
+	@interface MyRepeatable {
+
+		String value();
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Inherited
+	@MyRepeatable("meta1")
+	@interface MyRepeatableMeta1 {
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Inherited
+	@MyRepeatable("meta2")
+	@interface MyRepeatableMeta2 {
+	}
+
+	interface InterfaceWithRepeated {
+
+		@MyRepeatable("A")
+		@MyRepeatableContainer({@MyRepeatable("B"), @MyRepeatable("C")})
+		@MyRepeatableMeta1
+		void foo();
+	}
+
+	/**
+	 * Mock of {@code org.springframework.web.bind.annotation.RequestMapping}.
+	 */
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface WebMapping {
+
+		String name();
+
+		@AliasFor("path")
+		String[] value() default "";
+
+		@AliasFor(attribute = "value")
+		String[] path() default "";
+
+		RequestMethod[] method() default {};
+	}
+
+	/**
+	 * Mock of {@code org.springframework.web.bind.annotation.GetMapping}, except
+	 * that the String arrays are overridden with single String elements.
+	 */
+	@Retention(RetentionPolicy.RUNTIME)
+	@WebMapping(method = RequestMethod.GET, name = "")
+	@interface Get {
+
+		@AliasFor(annotation = WebMapping.class)
+		String value() default "";
+
+		@AliasFor(annotation = WebMapping.class)
+		String path() default "";
+	}
+
+	/**
+	 * Mock of {@code org.springframework.web.bind.annotation.PostMapping}, except
+	 * that the path is overridden by convention with single String element.
+	 */
+	@Retention(RetentionPolicy.RUNTIME)
+	@WebMapping(method = RequestMethod.POST, name = "")
+	@interface Post {
+
+		String path() default "";
+	}
+
+	/**
+	 * Mock of {@code org.springframework.test.context.ContextConfiguration}.
+	 */
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface ContextConfig {
+
+		@AliasFor("location")
+		String value() default "";
+
+		@AliasFor("value")
+		String location() default "";
+
+		Class<?> klass() default Object.class;
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface BrokenContextConfig {
+
+		// Intentionally missing:
+		// @AliasFor("location")
+		String value() default "";
+
+		@AliasFor("value")
+		String location() default "";
+	}
+
+	/**
+	 * Mock of {@code org.springframework.test.context.ContextHierarchy}.
+	 */
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface Hierarchy {
+		ContextConfig[] value();
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface BrokenHierarchy {
+		BrokenContextConfig[] value();
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface CharsContainer {
+
+		@AliasFor(attribute = "chars")
+		char[] value() default {};
+
+		@AliasFor(attribute = "value")
+		char[] chars() default {};
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface AliasForWithMissingAttributeDeclaration {
+
+		@AliasFor
+		String foo() default "";
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface AliasForWithDuplicateAttributeDeclaration {
+
+		@AliasFor(value = "bar", attribute = "baz")
+		String foo() default "";
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface AliasForNonexistentAttribute {
+
+		@AliasFor("bar")
+		String foo() default "";
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface AliasForWithoutMirroredAliasFor {
+
+		@AliasFor("bar")
+		String foo() default "";
+
+		String bar() default "";
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface AliasForWithMirroredAliasForWrongAttribute {
+
+		@AliasFor(attribute = "bar")
+		String[] foo() default "";
+
+		@AliasFor(attribute = "quux")
+		String[] bar() default "";
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface AliasForAttributeOfDifferentType {
+
+		@AliasFor("bar")
+		String[] foo() default "";
+
+		@AliasFor("foo")
+		boolean bar() default true;
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface AliasForWithMissingDefaultValues {
+
+		@AliasFor(attribute = "bar")
+		String foo();
+
+		@AliasFor(attribute = "foo")
+		String bar();
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface AliasForAttributeWithDifferentDefaultValue {
+
+		@AliasFor("bar")
+		String foo() default "X";
+
+		@AliasFor("foo")
+		String bar() default "Z";
+	}
+
+	// @ContextConfig --> Intentionally NOT meta-present
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface AliasedComposedContextConfigNotMetaPresent {
+
+		@AliasFor(annotation = ContextConfig.class, attribute = "location")
+		String xmlConfigFile();
+	}
+
+	@ContextConfig
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface AliasedComposedContextConfig {
+
+		@AliasFor(annotation = ContextConfig.class, attribute = "location")
+		String xmlConfigFile();
+	}
+
+	@ContextConfig
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface ImplicitAliasesContextConfig {
+
+		@AliasFor(annotation = ContextConfig.class, attribute = "location")
+		String xmlFile() default "";
+
+		@AliasFor(annotation = ContextConfig.class, attribute = "location")
+		String groovyScript() default "";
+
+		@AliasFor(annotation = ContextConfig.class, attribute = "location")
+		String value() default "";
+
+		@AliasFor(annotation = ContextConfig.class, attribute = "location")
+		String location1() default "";
+
+		@AliasFor(annotation = ContextConfig.class, attribute = "location")
+		String location2() default "";
+
+		@AliasFor(annotation = ContextConfig.class, attribute = "location")
+		String location3() default "";
+
+		@AliasFor(annotation = ContextConfig.class, attribute = "klass")
+		Class<?> configClass() default Object.class;
+
+		String nonAliasedAttribute() default "";
+	}
+
+	@ContextConfig
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface ImplicitAliasesWithImpliedAliasNamesOmittedContextConfig {
+
+		// intentionally omitted: attribute = "value"
+		@AliasFor(annotation = ContextConfig.class)
+		String value() default "";
+
+		// intentionally omitted: attribute = "locations"
+		@AliasFor(annotation = ContextConfig.class)
+		String location() default "";
+
+		@AliasFor(annotation = ContextConfig.class, attribute = "location")
+		String xmlFile() default "";
+	}
+
+	@ImplicitAliasesWithImpliedAliasNamesOmittedContextConfig
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface TransitiveImplicitAliasesWithImpliedAliasNamesOmittedContextConfig {
+
+		@AliasFor(annotation = ImplicitAliasesWithImpliedAliasNamesOmittedContextConfig.class, attribute = "xmlFile")
+		String xml() default "";
+
+		@AliasFor(annotation = ImplicitAliasesWithImpliedAliasNamesOmittedContextConfig.class, attribute = "location")
+		String groovy() default "";
+	}
+
+	@ContextConfig
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface ImplicitAliasesWithMissingDefaultValuesContextConfig {
+
+		@AliasFor(annotation = ContextConfig.class, attribute = "location")
+		String location1();
+
+		@AliasFor(annotation = ContextConfig.class, attribute = "location")
+		String location2();
+	}
+
+	@ContextConfig
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface ImplicitAliasesWithDifferentDefaultValuesContextConfig {
+
+		@AliasFor(annotation = ContextConfig.class, attribute = "location")
+		String location1() default "foo";
+
+		@AliasFor(annotation = ContextConfig.class, attribute = "location")
+		String location2() default "bar";
+	}
+
+	@ContextConfig
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface ImplicitAliasesWithDuplicateValuesContextConfig {
+
+		@AliasFor(annotation = ContextConfig.class, attribute = "location")
+		String location1() default "";
+
+		@AliasFor(annotation = ContextConfig.class, attribute = "location")
+		String location2() default "";
+	}
+
+	@ContextConfig
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface ImplicitAliasesForAliasPairContextConfig {
+
+		@AliasFor(annotation = ContextConfig.class, attribute = "location")
+		String xmlFile() default "";
+
+		@AliasFor(annotation = ContextConfig.class, value = "value")
+		String groovyScript() default "";
+	}
+
+	@ImplicitAliasesContextConfig
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface TransitiveImplicitAliasesContextConfig {
+
+		@AliasFor(annotation = ImplicitAliasesContextConfig.class, attribute = "xmlFile")
+		String xml() default "";
+
+		@AliasFor(annotation = ImplicitAliasesContextConfig.class, attribute = "groovyScript")
+		String groovy() default "";
+	}
+
+	@ImplicitAliasesForAliasPairContextConfig
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface TransitiveImplicitAliasesForAliasPairContextConfig {
+
+		@AliasFor(annotation = ImplicitAliasesForAliasPairContextConfig.class, attribute = "xmlFile")
+		String xml() default "";
+
+		@AliasFor(annotation = ImplicitAliasesForAliasPairContextConfig.class, attribute = "groovyScript")
+		String groovy() default "";
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({})
+	@interface Filter {
+		String pattern();
+	}
+
+	/**
+	 * Mock of {@code org.springframework.context.annotation.ComponentScan}.
+	 */
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface ComponentScan {
+		Filter[] excludeFilters() default {};
+	}
+
+	/**
+	 * Mock of {@code org.springframework.context.annotation.ComponentScan}.
+	 */
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface ComponentScanSingleFilter {
+		Filter value();
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface AnnotationWithDefaults {
+		String text() default "enigma";
+
+		boolean predicate() default true;
+
+		char[] characters() default {'a', 'b', 'c'};
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface AnnotationWithoutDefaults {
+		String text();
+	}
+
+	@ContextConfig(value = "foo", location = "bar")
+	interface ContextConfigMismatch {
+	}
+
 	@Meta2
 	static class ClassWithLocalMetaAnnotationAndMetaAnnotatedInterface implements InterfaceWithMetaAnnotation {
 	}
@@ -1632,18 +2052,6 @@ public class AnnotationUtilsTests {
 
 	@MetaCycle3
 	static class MetaCycleAnnotatedClass {
-	}
-
-	public interface AnnotatedInterface {
-
-		@Order(0)
-		void fromInterfaceImplementedByRoot();
-	}
-
-	public interface NullableAnnotatedInterface {
-
-		@Nullable
-		void fromInterfaceImplementedByRoot();
 	}
 
 	public static class Root implements AnnotatedInterface {
@@ -1695,13 +2103,6 @@ public class AnnotationUtilsTests {
 		}
 	}
 
-	@Retention(RetentionPolicy.RUNTIME)
-	@Inherited
-	@interface Transactional {
-
-		boolean readOnly() default false;
-	}
-
 	public static abstract class Foo<T> {
 
 		@Order(1)
@@ -1716,30 +2117,7 @@ public class AnnotationUtilsTests {
 		}
 	}
 
-	@Transactional
-	public interface InheritedAnnotationInterface {
-	}
-
-	public interface SubInheritedAnnotationInterface extends InheritedAnnotationInterface {
-	}
-
-	public interface SubSubInheritedAnnotationInterface extends SubInheritedAnnotationInterface {
-	}
-
-	@Order
-	public interface NonInheritedAnnotationInterface {
-	}
-
-	public interface SubNonInheritedAnnotationInterface extends NonInheritedAnnotationInterface {
-	}
-
-	public interface SubSubNonInheritedAnnotationInterface extends SubNonInheritedAnnotationInterface {
-	}
-
 	public static class NonAnnotatedClass {
-	}
-
-	public interface NonAnnotatedInterface {
 	}
 
 	@Transactional
@@ -1765,12 +2143,6 @@ public class AnnotationUtilsTests {
 	}
 
 	public static class SubTransactionalAndOrderedClass extends TransactionalAndOrderedClass {
-	}
-
-	public interface InterfaceWithAnnotatedMethod {
-
-		@Order
-		void foo();
 	}
 
 	public static class ImplementsInterfaceWithAnnotatedMethod implements InterfaceWithAnnotatedMethod {
@@ -1799,12 +2171,6 @@ public class AnnotationUtilsTests {
 		}
 	}
 
-	public interface InterfaceWithGenericAnnotatedMethod<T> {
-
-		@Order
-		void foo(T t);
-	}
-
 	public static class ImplementsInterfaceWithGenericAnnotatedMethod implements InterfaceWithGenericAnnotatedMethod<String> {
 
 		public void foo(String t) {
@@ -1821,41 +2187,6 @@ public class AnnotationUtilsTests {
 
 		public void foo(String t) {
 		}
-	}
-
-	@Retention(RetentionPolicy.RUNTIME)
-	@Inherited
-	@interface MyRepeatableContainer {
-
-		MyRepeatable[] value();
-	}
-
-	@Retention(RetentionPolicy.RUNTIME)
-	@Inherited
-	@Repeatable(MyRepeatableContainer.class)
-	@interface MyRepeatable {
-
-		String value();
-	}
-
-	@Retention(RetentionPolicy.RUNTIME)
-	@Inherited
-	@MyRepeatable("meta1")
-	@interface MyRepeatableMeta1 {
-	}
-
-	@Retention(RetentionPolicy.RUNTIME)
-	@Inherited
-	@MyRepeatable("meta2")
-	@interface MyRepeatableMeta2 {
-	}
-
-	interface InterfaceWithRepeated {
-
-		@MyRepeatable("A")
-		@MyRepeatableContainer({@MyRepeatable("B"), @MyRepeatable("C")})
-		@MyRepeatableMeta1
-		void foo();
 	}
 
 	@MyRepeatable("A")
@@ -1877,53 +2208,6 @@ public class AnnotationUtilsTests {
 			SubMyRepeatableWithAdditionalLocalDeclarationsClass {
 	}
 
-	enum RequestMethod {
-		GET, POST
-	}
-
-	/**
-	 * Mock of {@code org.springframework.web.bind.annotation.RequestMapping}.
-	 */
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface WebMapping {
-
-		String name();
-
-		@AliasFor("path")
-		String[] value() default "";
-
-		@AliasFor(attribute = "value")
-		String[] path() default "";
-
-		RequestMethod[] method() default {};
-	}
-
-	/**
-	 * Mock of {@code org.springframework.web.bind.annotation.GetMapping}, except
-	 * that the String arrays are overridden with single String elements.
-	 */
-	@Retention(RetentionPolicy.RUNTIME)
-	@WebMapping(method = RequestMethod.GET, name = "")
-	@interface Get {
-
-		@AliasFor(annotation = WebMapping.class)
-		String value() default "";
-
-		@AliasFor(annotation = WebMapping.class)
-		String path() default "";
-	}
-
-	/**
-	 * Mock of {@code org.springframework.web.bind.annotation.PostMapping}, except
-	 * that the path is overridden by convention with single String element.
-	 */
-	@Retention(RetentionPolicy.RUNTIME)
-	@WebMapping(method = RequestMethod.POST, name = "")
-	@interface Post {
-
-		String path() default "";
-	}
-
 	@Component("webController")
 	static class WebController {
 
@@ -1931,7 +2215,7 @@ public class AnnotationUtilsTests {
 		public void handleMappedWithValueAttribute() {
 		}
 
-		@WebMapping(path = "/test", name = "bar", method = { RequestMethod.GET, RequestMethod.POST })
+		@WebMapping(path = "/test", name = "bar", method = {RequestMethod.GET, RequestMethod.POST})
 		public void handleMappedWithPathAttribute() {
 		}
 
@@ -1950,52 +2234,13 @@ public class AnnotationUtilsTests {
 		/**
 		 * mapping is logically "equal" to handleMappedWithPathAttribute().
 		 */
-		@WebMapping(value = "/test", path = "/test", name = "bar", method = { RequestMethod.GET, RequestMethod.POST })
+		@WebMapping(value = "/test", path = "/test", name = "bar", method = {RequestMethod.GET, RequestMethod.POST})
 		public void handleMappedWithSamePathAndValueAttributes() {
 		}
 
 		@WebMapping(value = "/enigma", path = "/test", name = "baz")
 		public void handleMappedWithDifferentPathAndValueAttributes() {
 		}
-	}
-
-	/**
-	 * Mock of {@code org.springframework.test.context.ContextConfiguration}.
-	 */
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface ContextConfig {
-
-		@AliasFor("location")
-		String value() default "";
-
-		@AliasFor("value")
-		String location() default "";
-
-		Class<?> klass() default Object.class;
-	}
-
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface BrokenContextConfig {
-
-		// Intentionally missing:
-		// @AliasFor("location")
-		String value() default "";
-
-		@AliasFor("value")
-		String location() default "";
-	}
-
-	/**
-	 * Mock of {@code org.springframework.test.context.ContextHierarchy}.
-	 */
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface Hierarchy {
-		ContextConfig[] value();
-	}
-
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface BrokenHierarchy {
-		BrokenContextConfig[] value();
 	}
 
 	@Hierarchy({@ContextConfig("A"), @ContextConfig(location = "B")})
@@ -2010,168 +2255,44 @@ public class AnnotationUtilsTests {
 	static class SimpleConfigTestCase {
 	}
 
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface CharsContainer {
-
-		@AliasFor(attribute = "chars")
-		char[] value() default {};
-
-		@AliasFor(attribute = "value")
-		char[] chars() default {};
-	}
-
-	@CharsContainer(chars = { 'x', 'y', 'z' })
+	@CharsContainer(chars = {'x', 'y', 'z'})
 	static class GroupOfCharsClass {
-	}
-
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface AliasForWithMissingAttributeDeclaration {
-
-		@AliasFor
-		String foo() default "";
 	}
 
 	@AliasForWithMissingAttributeDeclaration
 	static class AliasForWithMissingAttributeDeclarationClass {
 	}
 
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface AliasForWithDuplicateAttributeDeclaration {
-
-		@AliasFor(value = "bar", attribute = "baz")
-		String foo() default "";
-	}
-
 	@AliasForWithDuplicateAttributeDeclaration
 	static class AliasForWithDuplicateAttributeDeclarationClass {
-	}
-
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface AliasForNonexistentAttribute {
-
-		@AliasFor("bar")
-		String foo() default "";
 	}
 
 	@AliasForNonexistentAttribute
 	static class AliasForNonexistentAttributeClass {
 	}
 
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface AliasForWithoutMirroredAliasFor {
-
-		@AliasFor("bar")
-		String foo() default "";
-
-		String bar() default "";
-	}
-
 	@AliasForWithoutMirroredAliasFor
 	static class AliasForWithoutMirroredAliasForClass {
-	}
-
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface AliasForWithMirroredAliasForWrongAttribute {
-
-		@AliasFor(attribute = "bar")
-		String[] foo() default "";
-
-		@AliasFor(attribute = "quux")
-		String[] bar() default "";
 	}
 
 	@AliasForWithMirroredAliasForWrongAttribute
 	static class AliasForWithMirroredAliasForWrongAttributeClass {
 	}
 
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface AliasForAttributeOfDifferentType {
-
-		@AliasFor("bar")
-		String[] foo() default "";
-
-		@AliasFor("foo")
-		boolean bar() default true;
-	}
-
 	@AliasForAttributeOfDifferentType
 	static class AliasForAttributeOfDifferentTypeClass {
-	}
-
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface AliasForWithMissingDefaultValues {
-
-		@AliasFor(attribute = "bar")
-		String foo();
-
-		@AliasFor(attribute = "foo")
-		String bar();
 	}
 
 	@AliasForWithMissingDefaultValues(foo = "foo", bar = "bar")
 	static class AliasForWithMissingDefaultValuesClass {
 	}
 
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface AliasForAttributeWithDifferentDefaultValue {
-
-		@AliasFor("bar")
-		String foo() default "X";
-
-		@AliasFor("foo")
-		String bar() default "Z";
-	}
-
 	@AliasForAttributeWithDifferentDefaultValue
 	static class AliasForAttributeWithDifferentDefaultValueClass {
 	}
 
-	// @ContextConfig --> Intentionally NOT meta-present
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface AliasedComposedContextConfigNotMetaPresent {
-
-		@AliasFor(annotation = ContextConfig.class, attribute = "location")
-		String xmlConfigFile();
-	}
-
 	@AliasedComposedContextConfigNotMetaPresent(xmlConfigFile = "test.xml")
 	static class AliasedComposedContextConfigNotMetaPresentClass {
-	}
-
-	@ContextConfig
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface AliasedComposedContextConfig {
-
-		@AliasFor(annotation = ContextConfig.class, attribute = "location")
-		String xmlConfigFile();
-	}
-
-	@ContextConfig
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface ImplicitAliasesContextConfig {
-
-		@AliasFor(annotation = ContextConfig.class, attribute = "location")
-		String xmlFile() default "";
-
-		@AliasFor(annotation = ContextConfig.class, attribute = "location")
-		String groovyScript() default "";
-
-		@AliasFor(annotation = ContextConfig.class, attribute = "location")
-		String value() default "";
-
-		@AliasFor(annotation = ContextConfig.class, attribute = "location")
-		String location1() default "";
-
-		@AliasFor(annotation = ContextConfig.class, attribute = "location")
-		String location2() default "";
-
-		@AliasFor(annotation = ContextConfig.class, attribute = "location")
-		String location3() default "";
-
-		@AliasFor(annotation = ContextConfig.class, attribute = "klass")
-		Class<?> configClass() default Object.class;
-
-		String nonAliasedAttribute() default "";
 	}
 
 	// Attribute value intentionally matches attribute name:
@@ -2204,33 +2325,6 @@ public class AnnotationUtilsTests {
 	static class Location3ImplicitAliasesContextConfigClass {
 	}
 
-	@ContextConfig
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface ImplicitAliasesWithImpliedAliasNamesOmittedContextConfig {
-
-		// intentionally omitted: attribute = "value"
-		@AliasFor(annotation = ContextConfig.class)
-		String value() default "";
-
-		// intentionally omitted: attribute = "locations"
-		@AliasFor(annotation = ContextConfig.class)
-		String location() default "";
-
-		@AliasFor(annotation = ContextConfig.class, attribute = "location")
-		String xmlFile() default "";
-	}
-
-	@ImplicitAliasesWithImpliedAliasNamesOmittedContextConfig
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface TransitiveImplicitAliasesWithImpliedAliasNamesOmittedContextConfig {
-
-		@AliasFor(annotation = ImplicitAliasesWithImpliedAliasNamesOmittedContextConfig.class, attribute = "xmlFile")
-		String xml() default "";
-
-		@AliasFor(annotation = ImplicitAliasesWithImpliedAliasNamesOmittedContextConfig.class, attribute = "location")
-		String groovy() default "";
-	}
-
 	// Attribute value intentionally matches attribute name:
 	@ImplicitAliasesWithImpliedAliasNamesOmittedContextConfig("value")
 	static class ValueImplicitAliasesWithImpliedAliasNamesOmittedContextConfigClass {
@@ -2246,140 +2340,36 @@ public class AnnotationUtilsTests {
 	static class XmlFilesImplicitAliasesWithImpliedAliasNamesOmittedContextConfigClass {
 	}
 
-	@ContextConfig
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface ImplicitAliasesWithMissingDefaultValuesContextConfig {
-
-		@AliasFor(annotation = ContextConfig.class, attribute = "location")
-		String location1();
-
-		@AliasFor(annotation = ContextConfig.class, attribute = "location")
-		String location2();
-	}
-
 	@ImplicitAliasesWithMissingDefaultValuesContextConfig(location1 = "1", location2 = "2")
 	static class ImplicitAliasesWithMissingDefaultValuesContextConfigClass {
-	}
-
-	@ContextConfig
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface ImplicitAliasesWithDifferentDefaultValuesContextConfig {
-
-		@AliasFor(annotation = ContextConfig.class, attribute = "location")
-		String location1() default "foo";
-
-		@AliasFor(annotation = ContextConfig.class, attribute = "location")
-		String location2() default "bar";
 	}
 
 	@ImplicitAliasesWithDifferentDefaultValuesContextConfig(location1 = "1", location2 = "2")
 	static class ImplicitAliasesWithDifferentDefaultValuesContextConfigClass {
 	}
 
-	@ContextConfig
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface ImplicitAliasesWithDuplicateValuesContextConfig {
-
-		@AliasFor(annotation = ContextConfig.class, attribute = "location")
-		String location1() default "";
-
-		@AliasFor(annotation = ContextConfig.class, attribute = "location")
-		String location2() default "";
-	}
-
 	@ImplicitAliasesWithDuplicateValuesContextConfig(location1 = "1", location2 = "2")
 	static class ImplicitAliasesWithDuplicateValuesContextConfigClass {
-	}
-
-	@ContextConfig
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface ImplicitAliasesForAliasPairContextConfig {
-
-		@AliasFor(annotation = ContextConfig.class, attribute = "location")
-		String xmlFile() default "";
-
-		@AliasFor(annotation = ContextConfig.class, value = "value")
-		String groovyScript() default "";
 	}
 
 	@ImplicitAliasesForAliasPairContextConfig(xmlFile = "test.xml")
 	static class ImplicitAliasesForAliasPairContextConfigClass {
 	}
 
-	@ImplicitAliasesContextConfig
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface TransitiveImplicitAliasesContextConfig {
-
-		@AliasFor(annotation = ImplicitAliasesContextConfig.class, attribute = "xmlFile")
-		String xml() default "";
-
-		@AliasFor(annotation = ImplicitAliasesContextConfig.class, attribute = "groovyScript")
-		String groovy() default "";
-	}
-
 	@TransitiveImplicitAliasesContextConfig(xml = "test.xml")
 	static class TransitiveImplicitAliasesContextConfigClass {
-	}
-
-	@ImplicitAliasesForAliasPairContextConfig
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface TransitiveImplicitAliasesForAliasPairContextConfig {
-
-		@AliasFor(annotation = ImplicitAliasesForAliasPairContextConfig.class, attribute = "xmlFile")
-		String xml() default "";
-
-		@AliasFor(annotation = ImplicitAliasesForAliasPairContextConfig.class, attribute = "groovyScript")
-		String groovy() default "";
 	}
 
 	@TransitiveImplicitAliasesForAliasPairContextConfig(xml = "test.xml")
 	static class TransitiveImplicitAliasesForAliasPairContextConfigClass {
 	}
 
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target({})
-	@interface Filter {
-		String pattern();
-	}
-
-	/**
-	 * Mock of {@code org.springframework.context.annotation.ComponentScan}.
-	 */
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface ComponentScan {
-		Filter[] excludeFilters() default {};
-	}
-
 	@ComponentScan(excludeFilters = {@Filter(pattern = "*Foo"), @Filter(pattern = "*Bar")})
 	static class ComponentScanClass {
 	}
 
-	/**
-	 * Mock of {@code org.springframework.context.annotation.ComponentScan}.
-	 */
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface ComponentScanSingleFilter {
-		Filter value();
-	}
-
 	@ComponentScanSingleFilter(@Filter(pattern = "*Foo"))
 	static class ComponentScanSingleFilterClass {
-	}
-
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface AnnotationWithDefaults {
-		String text() default "enigma";
-		boolean predicate() default true;
-		char[] characters() default {'a', 'b', 'c'};
-	}
-
-	@Retention(RetentionPolicy.RUNTIME)
-	@interface AnnotationWithoutDefaults {
-		String text();
-	}
-
-	@ContextConfig(value = "foo", location = "bar")
-	interface ContextConfigMismatch {
 	}
 
 }

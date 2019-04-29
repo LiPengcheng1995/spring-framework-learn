@@ -16,14 +16,8 @@
 
 package org.springframework.messaging.simp;
 
-import java.util.Map;
-
 import org.springframework.lang.Nullable;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.MessageDeliveryException;
-import org.springframework.messaging.MessageHeaders;
-import org.springframework.messaging.MessagingException;
+import org.springframework.messaging.*;
 import org.springframework.messaging.core.AbstractMessageSendingTemplate;
 import org.springframework.messaging.core.MessagePostProcessor;
 import org.springframework.messaging.support.MessageBuilder;
@@ -32,6 +26,8 @@ import org.springframework.messaging.support.MessageHeaderInitializer;
 import org.springframework.messaging.support.NativeMessageHeaderAccessor;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import java.util.Map;
 
 /**
  * An implementation of
@@ -60,6 +56,7 @@ public class SimpMessagingTemplate extends AbstractMessageSendingTemplate<String
 
 	/**
 	 * Create a new {@link SimpMessagingTemplate} instance.
+	 *
 	 * @param messageChannel the message channel (never {@code null})
 	 */
 	public SimpMessagingTemplate(MessageChannel messageChannel) {
@@ -76,8 +73,16 @@ public class SimpMessagingTemplate extends AbstractMessageSendingTemplate<String
 	}
 
 	/**
+	 * Return the configured user destination prefix.
+	 */
+	public String getUserDestinationPrefix() {
+		return this.destinationPrefix;
+	}
+
+	/**
 	 * Configure the prefix to use for destinations targeting a specific user.
 	 * <p>The default value is "/user/".
+	 *
 	 * @see org.springframework.messaging.simp.user.UserDestinationMessageHandler
 	 */
 	public void setUserDestinationPrefix(String prefix) {
@@ -87,10 +92,10 @@ public class SimpMessagingTemplate extends AbstractMessageSendingTemplate<String
 	}
 
 	/**
-	 * Return the configured user destination prefix.
+	 * Return the configured send timeout (in milliseconds).
 	 */
-	public String getUserDestinationPrefix() {
-		return this.destinationPrefix;
+	public long getSendTimeout() {
+		return this.sendTimeout;
 	}
 
 	/**
@@ -101,10 +106,11 @@ public class SimpMessagingTemplate extends AbstractMessageSendingTemplate<String
 	}
 
 	/**
-	 * Return the configured send timeout (in milliseconds).
+	 * Return the configured header initializer.
 	 */
-	public long getSendTimeout() {
-		return this.sendTimeout;
+	@Nullable
+	public MessageHeaderInitializer getHeaderInitializer() {
+		return this.headerInitializer;
 	}
 
 	/**
@@ -117,15 +123,6 @@ public class SimpMessagingTemplate extends AbstractMessageSendingTemplate<String
 	}
 
 	/**
-	 * Return the configured header initializer.
-	 */
-	@Nullable
-	public MessageHeaderInitializer getHeaderInitializer() {
-		return this.headerInitializer;
-	}
-
-
-	/**
 	 * If the headers of the given message already contain a
 	 * {@link org.springframework.messaging.simp.SimpMessageHeaderAccessor#DESTINATION_HEADER
 	 * SimpMessageHeaderAccessor#DESTINATION_HEADER} then the message is sent without
@@ -134,6 +131,7 @@ public class SimpMessagingTemplate extends AbstractMessageSendingTemplate<String
 	 * to the configured {@link #setDefaultDestination(Object) defaultDestination}
 	 * or an exception an {@code IllegalStateException} is raised if that isn't
 	 * configured.
+	 *
 	 * @param message the message to send (never {@code null})
 	 */
 	@Override
@@ -161,14 +159,12 @@ public class SimpMessagingTemplate extends AbstractMessageSendingTemplate<String
 				simpAccessor.setImmutable();
 				sendInternal(message);
 				return;
-			}
-			else {
+			} else {
 				// Try and keep the original accessor type
 				simpAccessor = (SimpMessageHeaderAccessor) MessageHeaderAccessor.getMutableAccessor(message);
 				initHeaders(simpAccessor);
 			}
-		}
-		else {
+		} else {
 			simpAccessor = SimpMessageHeaderAccessor.wrap(message);
 			initHeaders(simpAccessor);
 		}
@@ -206,21 +202,21 @@ public class SimpMessagingTemplate extends AbstractMessageSendingTemplate<String
 
 	@Override
 	public void convertAndSendToUser(String user, String destination, Object payload,
-			@Nullable Map<String, Object> headers) throws MessagingException {
+									 @Nullable Map<String, Object> headers) throws MessagingException {
 
 		convertAndSendToUser(user, destination, payload, headers, null);
 	}
 
 	@Override
 	public void convertAndSendToUser(String user, String destination, Object payload,
-			@Nullable MessagePostProcessor postProcessor) throws MessagingException {
+									 @Nullable MessagePostProcessor postProcessor) throws MessagingException {
 
 		convertAndSendToUser(user, destination, payload, null, postProcessor);
 	}
 
 	@Override
 	public void convertAndSendToUser(String user, String destination, Object payload,
-			@Nullable Map<String, Object> headers, @Nullable MessagePostProcessor postProcessor)
+									 @Nullable Map<String, Object> headers, @Nullable MessagePostProcessor postProcessor)
 			throws MessagingException {
 
 		Assert.notNull(user, "User must not be null");

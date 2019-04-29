@@ -16,21 +16,20 @@
 
 package org.springframework.web.filter;
 
-import java.io.IOException;
-import java.util.Enumeration;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.mock.web.test.MockFilterChain;
+import org.springframework.mock.web.test.MockHttpServletRequest;
+import org.springframework.mock.web.test.MockHttpServletResponse;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import org.springframework.mock.web.test.MockFilterChain;
-import org.springframework.mock.web.test.MockHttpServletRequest;
-import org.springframework.mock.web.test.MockHttpServletResponse;
+import java.io.IOException;
+import java.util.Enumeration;
 
 import static org.junit.Assert.*;
 
@@ -63,7 +62,8 @@ public class ForwardedHeaderFilterTests {
 		this.request.setScheme("http");
 		this.request.setServerName("localhost");
 		this.request.setServerPort(80);
-		this.filterChain = new MockFilterChain(new HttpServlet() {});
+		this.filterChain = new MockFilterChain(new HttpServlet() {
+		});
 	}
 
 
@@ -280,9 +280,9 @@ public class ForwardedHeaderFilterTests {
 		HttpServletRequest actual = filterAndGetWrappedRequest();
 		assertEquals("http://localhost/prefix/mvc-showcase", actual.getRequestURL().toString());
 	}
-	
+
 	@Test
-	public void requestURLNewStringBuffer() throws Exception { 
+	public void requestURLNewStringBuffer() throws Exception {
 		this.request.addHeader(X_FORWARDED_PREFIX, "/prefix/");
 		this.request.setRequestURI("/mvc-showcase");
 
@@ -436,7 +436,7 @@ public class ForwardedHeaderFilterTests {
 		Filter filter = new OncePerRequestFilter() {
 			@Override
 			protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res,
-					FilterChain chain) throws IOException {
+											FilterChain chain) throws IOException {
 
 				res.sendRedirect(location);
 			}
@@ -450,7 +450,8 @@ public class ForwardedHeaderFilterTests {
 			throws ServletException, IOException {
 
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		FilterChain filterChain = new MockFilterChain(new HttpServlet() {}, filters);
+		FilterChain filterChain = new MockFilterChain(new HttpServlet() {
+		}, filters);
 		filterChain.doFilter(request, response);
 		return response;
 	}

@@ -16,10 +16,6 @@
 
 package com.foo;
 
-import java.util.List;
-
-import org.w3c.dom.Element;
-
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -28,13 +24,11 @@ import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.xml.DomUtils;
+import org.w3c.dom.Element;
+
+import java.util.List;
 
 public class ComponentBeanDefinitionParser extends AbstractBeanDefinitionParser {
-
-	@Override
-	protected AbstractBeanDefinition parseInternal(Element element, ParserContext parserContext) {
-		return parseComponentElement(element);
-	}
 
 	private static AbstractBeanDefinition parseComponentElement(Element element) {
 		BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ComponentFactoryBean.class);
@@ -60,6 +54,11 @@ public class ComponentBeanDefinitionParser extends AbstractBeanDefinitionParser 
 			children.add(parseComponentElement(element));
 		}
 		factory.addPropertyValue("children", children);
+	}
+
+	@Override
+	protected AbstractBeanDefinition parseInternal(Element element, ParserContext parserContext) {
+		return parseComponentElement(element);
 	}
 
 }

@@ -16,20 +16,19 @@
 
 package org.springframework.http.server;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.util.FileCopyUtils;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -97,15 +96,15 @@ public class ServletServerHttpRequestTests {
 
 	@Test  // SPR-13876
 	public void getUriWithEncoding() throws URISyntaxException {
-        URI uri = new URI("https://example.com/%E4%B8%AD%E6%96%87" +
+		URI uri = new URI("https://example.com/%E4%B8%AD%E6%96%87" +
 				"?redirect=https%3A%2F%2Fgithub.com%2Fspring-projects%2Fspring-framework");
-        mockRequest.setScheme(uri.getScheme());
-        mockRequest.setServerName(uri.getHost());
-        mockRequest.setServerPort(uri.getPort());
-        mockRequest.setRequestURI(uri.getRawPath());
-        mockRequest.setQueryString(uri.getRawQuery());
-        assertEquals(uri, request.getURI());
-    }
+		mockRequest.setScheme(uri.getScheme());
+		mockRequest.setServerName(uri.getHost());
+		mockRequest.setServerPort(uri.getPort());
+		mockRequest.setRequestURI(uri.getRawPath());
+		mockRequest.setQueryString(uri.getRawQuery());
+		assertEquals(uri, request.getURI());
+	}
 
 	@Test
 	public void getHeaders() {
@@ -163,7 +162,7 @@ public class ServletServerHttpRequestTests {
 		mockRequest.setContentType("application/x-www-form-urlencoded; charset=UTF-8");
 		mockRequest.setMethod("POST");
 		mockRequest.addParameter("name 1", "value 1");
-		mockRequest.addParameter("name 2", new String[] {"value 2+1", "value 2+2"});
+		mockRequest.addParameter("name 2", new String[]{"value 2+1", "value 2+2"});
 		mockRequest.addParameter("name 3", (String) null);
 
 		byte[] result = FileCopyUtils.copyToByteArray(request.getBody());

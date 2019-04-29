@@ -28,20 +28,19 @@ import org.springframework.core.codec.Encoder;
 public interface ServerCodecConfigurer extends CodecConfigurer {
 
 	/**
+	 * Static factory method for a {@code ServerCodecConfigurer}.
+	 */
+	static ServerCodecConfigurer create() {
+		return CodecConfigurerFactory.create(ServerCodecConfigurer.class);
+	}
+
+	/**
 	 * {@inheritDoc}
 	 * <p>On the server side, built-in default also include customizations
 	 * related to the encoder for SSE.
 	 */
 	@Override
 	ServerDefaultCodecs defaultCodecs();
-
-
-	/**
-	 * Static factory method for a {@code ServerCodecConfigurer}.
-	 */
-	static ServerCodecConfigurer create() {
-		return CodecConfigurerFactory.create(ServerCodecConfigurer.class);
-	}
 
 
 	/**

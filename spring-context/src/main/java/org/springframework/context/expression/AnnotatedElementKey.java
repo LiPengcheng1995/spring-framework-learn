@@ -16,11 +16,11 @@
 
 package org.springframework.context.expression;
 
-import java.lang.reflect.AnnotatedElement;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+
+import java.lang.reflect.AnnotatedElement;
 
 /**
  * Represent an {@link AnnotatedElement} on a particular {@link Class}
@@ -28,8 +28,8 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Costin Leau
  * @author Stephane Nicoll
- * @since 4.2
  * @see CachedExpressionEvaluator
+ * @since 4.2
  */
 public final class AnnotatedElementKey implements Comparable<AnnotatedElementKey> {
 

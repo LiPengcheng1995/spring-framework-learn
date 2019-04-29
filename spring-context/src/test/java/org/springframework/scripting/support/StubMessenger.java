@@ -26,13 +26,13 @@ public class StubMessenger implements ConfigurableMessenger {
 	private String message = "I used to be smart... now I'm just stupid.";
 
 	@Override
-	public void setMessage(String message) {
-		this.message = message;
+	public String getMessage() {
+		return message;
 	}
 
 	@Override
-	public String getMessage() {
-		return message;
+	public void setMessage(String message) {
+		this.message = message;
 	}
 
 }

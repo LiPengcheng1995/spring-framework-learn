@@ -16,17 +16,16 @@
 
 package org.springframework.core.env;
 
+import org.junit.Test;
+import org.springframework.core.SpringProperties;
+import org.springframework.mock.env.MockPropertySource;
+
 import java.lang.reflect.Field;
 import java.security.AccessControlException;
 import java.security.Permission;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
-
-import org.junit.Test;
-
-import org.springframework.core.SpringProperties;
-import org.springframework.mock.env.MockPropertySource;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -54,6 +53,58 @@ public class StandardEnvironmentTests {
 
 	private final ConfigurableEnvironment environment = new StandardEnvironment();
 
+	@SuppressWarnings("unchecked")
+	public static Map<String, String> getModifiableSystemEnvironment() {
+		// for os x / linux
+		Class<?>[] classes = Collections.class.getDeclaredClasses();
+		Map<String, String> env = System.getenv();
+		for (Class<?> cl : classes) {
+			if ("java.util.Collections$UnmodifiableMap".equals(cl.getName())) {
+				try {
+					Field field = cl.getDeclaredField("m");
+					field.setAccessible(true);
+					Object obj = field.get(env);
+					if (obj != null && obj.getClass().getName().equals("java.lang.ProcessEnvironment$StringEnvironment")) {
+						return (Map<String, String>) obj;
+					}
+				} catch (Exception ex) {
+					throw new RuntimeException(ex);
+				}
+			}
+		}
+
+		// for windows
+		Class<?> processEnvironmentClass;
+		try {
+			processEnvironmentClass = Class.forName("java.lang.ProcessEnvironment");
+		} catch (Exception ex) {
+			throw new IllegalStateException(ex);
+		}
+
+		try {
+			Field theCaseInsensitiveEnvironmentField = processEnvironmentClass.getDeclaredField("theCaseInsensitiveEnvironment");
+			theCaseInsensitiveEnvironmentField.setAccessible(true);
+			Object obj = theCaseInsensitiveEnvironmentField.get(null);
+			return (Map<String, String>) obj;
+		} catch (NoSuchFieldException ex) {
+			// do nothing
+		} catch (Exception ex) {
+			throw new IllegalStateException(ex);
+		}
+
+		try {
+			Field theEnvironmentField = processEnvironmentClass.getDeclaredField("theEnvironment");
+			theEnvironmentField.setAccessible(true);
+			Object obj = theEnvironmentField.get(null);
+			return (Map<String, String>) obj;
+		} catch (NoSuchFieldException ex) {
+			// do nothing
+		} catch (Exception ex) {
+			throw new IllegalStateException(ex);
+		}
+
+		throw new IllegalStateException();
+	}
 
 	@Test
 	public void merge() {
@@ -79,8 +130,8 @@ public class StandardEnvironmentTests {
 		assertThat(parent.getProperty("parentKey"), is("parentVal"));
 		assertThat(parent.getProperty("bothKey"), is("parentBothVal"));
 
-		assertThat(child.getActiveProfiles(), equalTo(new String[]{"c1","c2"}));
-		assertThat(parent.getActiveProfiles(), equalTo(new String[]{"p1","p2"}));
+		assertThat(child.getActiveProfiles(), equalTo(new String[]{"c1", "c2"}));
+		assertThat(parent.getActiveProfiles(), equalTo(new String[]{"p1", "p2"}));
 
 		child.merge(parent);
 
@@ -92,8 +143,8 @@ public class StandardEnvironmentTests {
 		assertThat(parent.getProperty("parentKey"), is("parentVal"));
 		assertThat(parent.getProperty("bothKey"), is("parentBothVal"));
 
-		assertThat(child.getActiveProfiles(), equalTo(new String[]{"c1","c2","p1","p2"}));
-		assertThat(parent.getActiveProfiles(), equalTo(new String[]{"p1","p2"}));
+		assertThat(child.getActiveProfiles(), equalTo(new String[]{"c1", "c2", "p1", "p2"}));
+		assertThat(parent.getActiveProfiles(), equalTo(new String[]{"p1", "p2"}));
 	}
 
 	@Test
@@ -202,7 +253,7 @@ public class StandardEnvironmentTests {
 		System.setProperty(DEFAULT_PROFILES_PROPERTY_NAME, "d0");
 		assertThat(environment.getDefaultProfiles(), equalTo(new String[]{"d0"}));
 		environment.setDefaultProfiles("d1", "d2");
-		assertThat(environment.getDefaultProfiles(), equalTo(new String[]{"d1","d2"}));
+		assertThat(environment.getDefaultProfiles(), equalTo(new String[]{"d1", "d2"}));
 		System.getProperties().remove(DEFAULT_PROFILES_PROPERTY_NAME);
 	}
 
@@ -211,8 +262,7 @@ public class StandardEnvironmentTests {
 		System.setProperty(DEFAULT_PROFILES_PROPERTY_NAME, "${spring.profiles.default}");
 		try {
 			environment.getDefaultProfiles();
-		}
-		finally {
+		} finally {
 			System.getProperties().remove(DEFAULT_PROFILES_PROPERTY_NAME);
 		}
 	}
@@ -248,7 +298,7 @@ public class StandardEnvironmentTests {
 
 	@Test
 	public void getDefaultProfiles() {
-		assertThat(environment.getDefaultProfiles(), equalTo(new String[] {RESERVED_DEFAULT_PROFILE_NAME}));
+		assertThat(environment.getDefaultProfiles(), equalTo(new String[]{RESERVED_DEFAULT_PROFILE_NAME}));
 		environment.getPropertySources().addFirst(new MockPropertySource().withProperty(DEFAULT_PROFILES_PROPERTY_NAME, "pd1"));
 		assertThat(environment.getDefaultProfiles().length, is(1));
 		assertThat(Arrays.asList(environment.getDefaultProfiles()), hasItem("pd1"));
@@ -345,8 +395,7 @@ public class StandardEnvironmentTests {
 		try {
 			env.addActiveProfile("invalid-profile");
 			fail("expected validation exception");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			assertThat(ex.getMessage(),
 					equalTo("Invalid profile [invalid-profile]: must not contain dash character"));
 		}
@@ -384,12 +433,12 @@ public class StandardEnvironmentTests {
 			Map<?, ?> systemProperties = environment.getSystemProperties();
 			assertThat(systemProperties, notNullValue());
 			assertSame(systemProperties, System.getProperties());
-			assertThat(systemProperties.get(ALLOWED_PROPERTY_NAME), equalTo((Object)ALLOWED_PROPERTY_VALUE));
-			assertThat(systemProperties.get(DISALLOWED_PROPERTY_NAME), equalTo((Object)DISALLOWED_PROPERTY_VALUE));
+			assertThat(systemProperties.get(ALLOWED_PROPERTY_NAME), equalTo((Object) ALLOWED_PROPERTY_VALUE));
+			assertThat(systemProperties.get(DISALLOWED_PROPERTY_NAME), equalTo((Object) DISALLOWED_PROPERTY_VALUE));
 
 			// non-string keys and values work fine... until the security manager is introduced below
 			assertThat(systemProperties.get(STRING_PROPERTY_NAME), equalTo(NON_STRING_PROPERTY_VALUE));
-			assertThat(systemProperties.get(NON_STRING_PROPERTY_NAME), equalTo((Object)STRING_PROPERTY_VALUE));
+			assertThat(systemProperties.get(NON_STRING_PROPERTY_NAME), equalTo((Object) STRING_PROPERTY_VALUE));
 		}
 
 		SecurityManager oldSecurityManager = System.getSecurityManager();
@@ -399,6 +448,7 @@ public class StandardEnvironmentTests {
 				// see https://download.oracle.com/javase/1.5.0/docs/api/java/lang/System.html#getProperties()
 				throw new AccessControlException("Accessing the system properties is disallowed");
 			}
+
 			@Override
 			public void checkPropertyAccess(String key) {
 				// see https://download.oracle.com/javase/1.5.0/docs/api/java/lang/System.html#getProperty(java.lang.String)
@@ -407,6 +457,7 @@ public class StandardEnvironmentTests {
 							String.format("Accessing the system property [%s] is disallowed", DISALLOWED_PROPERTY_NAME));
 				}
 			}
+
 			@Override
 			public void checkPermission(Permission perm) {
 				// allow everything else
@@ -418,7 +469,7 @@ public class StandardEnvironmentTests {
 			Map<?, ?> systemProperties = environment.getSystemProperties();
 			assertThat(systemProperties, notNullValue());
 			assertThat(systemProperties, instanceOf(ReadOnlySystemAttributesMap.class));
-			assertThat((String)systemProperties.get(ALLOWED_PROPERTY_NAME), equalTo(ALLOWED_PROPERTY_VALUE));
+			assertThat((String) systemProperties.get(ALLOWED_PROPERTY_NAME), equalTo(ALLOWED_PROPERTY_VALUE));
 			assertThat(systemProperties.get(DISALLOWED_PROPERTY_NAME), equalTo(null));
 
 			// nothing we can do here in terms of warning the user that there was
@@ -435,8 +486,7 @@ public class StandardEnvironmentTests {
 			try {
 				systemProperties.get(NON_STRING_PROPERTY_NAME);
 				fail("Expected IllegalArgumentException when searching with non-string key against ReadOnlySystemAttributesMap");
-			}
-			catch (IllegalArgumentException ex) {
+			} catch (IllegalArgumentException ex) {
 				// expected
 			}
 		}
@@ -468,7 +518,7 @@ public class StandardEnvironmentTests {
 					throw new AccessControlException("Accessing the system environment is disallowed");
 				}
 				//see https://download.oracle.com/javase/1.5.0/docs/api/java/lang/System.html#getenv(java.lang.String)
-				if (("getenv."+DISALLOWED_PROPERTY_NAME).equals(perm.getName())) {
+				if (("getenv." + DISALLOWED_PROPERTY_NAME).equals(perm.getName())) {
 					throw new AccessControlException(
 							String.format("Accessing the system environment variable [%s] is disallowed", DISALLOWED_PROPERTY_NAME));
 				}
@@ -480,73 +530,13 @@ public class StandardEnvironmentTests {
 			Map<String, Object> systemEnvironment = environment.getSystemEnvironment();
 			assertThat(systemEnvironment, notNullValue());
 			assertThat(systemEnvironment, instanceOf(ReadOnlySystemAttributesMap.class));
-			assertThat(systemEnvironment.get(ALLOWED_PROPERTY_NAME), equalTo((Object)ALLOWED_PROPERTY_VALUE));
+			assertThat(systemEnvironment.get(ALLOWED_PROPERTY_NAME), equalTo((Object) ALLOWED_PROPERTY_VALUE));
 			assertThat(systemEnvironment.get(DISALLOWED_PROPERTY_NAME), nullValue());
 		}
 
 		System.setSecurityManager(oldSecurityManager);
 		getModifiableSystemEnvironment().remove(ALLOWED_PROPERTY_NAME);
 		getModifiableSystemEnvironment().remove(DISALLOWED_PROPERTY_NAME);
-	}
-
-
-	@SuppressWarnings("unchecked")
-	public static Map<String, String> getModifiableSystemEnvironment() {
-		// for os x / linux
-		Class<?>[] classes = Collections.class.getDeclaredClasses();
-		Map<String, String> env = System.getenv();
-		for (Class<?> cl : classes) {
-			if ("java.util.Collections$UnmodifiableMap".equals(cl.getName())) {
-				try {
-					Field field = cl.getDeclaredField("m");
-					field.setAccessible(true);
-					Object obj = field.get(env);
-					if (obj != null && obj.getClass().getName().equals("java.lang.ProcessEnvironment$StringEnvironment")) {
-						return (Map<String, String>) obj;
-					}
-				}
-				catch (Exception ex) {
-					throw new RuntimeException(ex);
-				}
-			}
-		}
-
-		// for windows
-		Class<?> processEnvironmentClass;
-		try {
-			processEnvironmentClass = Class.forName("java.lang.ProcessEnvironment");
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException(ex);
-		}
-
-		try {
-			Field theCaseInsensitiveEnvironmentField = processEnvironmentClass.getDeclaredField("theCaseInsensitiveEnvironment");
-			theCaseInsensitiveEnvironmentField.setAccessible(true);
-			Object obj = theCaseInsensitiveEnvironmentField.get(null);
-			return (Map<String, String>) obj;
-		}
-		catch (NoSuchFieldException ex) {
-			// do nothing
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException(ex);
-		}
-
-		try {
-			Field theEnvironmentField = processEnvironmentClass.getDeclaredField("theEnvironment");
-			theEnvironmentField.setAccessible(true);
-			Object obj = theEnvironmentField.get(null);
-			return (Map<String, String>) obj;
-		}
-		catch (NoSuchFieldException ex) {
-			// do nothing
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException(ex);
-		}
-
-		throw new IllegalStateException();
 	}
 
 }

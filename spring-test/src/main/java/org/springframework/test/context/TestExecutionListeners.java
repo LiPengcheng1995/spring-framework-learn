@@ -16,14 +16,9 @@
 
 package org.springframework.test.context;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.core.annotation.AliasFor;
+
+import java.lang.annotation.*;
 
 /**
  * {@code TestExecutionListeners} defines class-level metadata for configuring
@@ -37,10 +32,10 @@ import org.springframework.core.annotation.AliasFor;
  * <em>meta-annotation</em> to create custom <em>composed annotations</em>.
  *
  * @author Sam Brannen
- * @since 2.5
  * @see TestExecutionListener
  * @see TestContextManager
  * @see ContextConfiguration
+ * @since 2.5
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -61,6 +56,7 @@ public @interface TestExecutionListeners {
 	 * the {@link TestContextManager}.
 	 * <p>This attribute may <strong>not</strong> be used in conjunction with
 	 * {@link #value}, but it may be used instead of {@link #value}.
+	 *
 	 * @see org.springframework.test.context.web.ServletTestExecutionListener
 	 * @see org.springframework.test.context.support.DependencyInjectionTestExecutionListener
 	 * @see org.springframework.test.context.support.DirtiesContextTestExecutionListener
@@ -114,6 +110,7 @@ public @interface TestExecutionListeners {
 	 * <p>The mode is ignored if listeners are inherited from a superclass.
 	 * <p>Defaults to {@link MergeMode#REPLACE_DEFAULTS REPLACE_DEFAULTS}
 	 * for backwards compatibility.
+	 *
 	 * @see MergeMode
 	 * @since 4.1
 	 */
@@ -125,6 +122,7 @@ public @interface TestExecutionListeners {
 	 * declared listeners are merged with the default listeners when
 	 * {@code @TestExecutionListeners} is declared on a class that does
 	 * <strong>not</strong> inherit listeners from a superclass.
+	 *
 	 * @since 4.1
 	 */
 	enum MergeMode {

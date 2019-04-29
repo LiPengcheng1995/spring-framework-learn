@@ -37,19 +37,20 @@ import org.springframework.util.Assert;
 public abstract class SqlOperation extends RdbmsOperation {
 
 	/**
+	 * Monitor for locking the cached representation of the parsed SQL statement
+	 */
+	private final Object parsedSqlMonitor = new Object();
+	/**
 	 * Object enabling us to create PreparedStatementCreators efficiently,
 	 * based on this class's declared parameters.
 	 */
 	@Nullable
 	private PreparedStatementCreatorFactory preparedStatementFactory;
-
-	/** Parsed representation of the SQL statement */
+	/**
+	 * Parsed representation of the SQL statement
+	 */
 	@Nullable
 	private ParsedSql cachedSql;
-
-	/** Monitor for locking the cached representation of the parsed SQL statement */
-	private final Object parsedSqlMonitor = new Object();
-
 
 	/**
 	 * Overridden method to configure the PreparedStatementCreatorFactory
@@ -71,6 +72,7 @@ public abstract class SqlOperation extends RdbmsOperation {
 	/**
 	 * Hook method that subclasses may override to post-process compilation.
 	 * This implementation does nothing.
+	 *
 	 * @see #compileInternal
 	 */
 	protected void onCompileInternal() {
@@ -93,6 +95,7 @@ public abstract class SqlOperation extends RdbmsOperation {
 	/**
 	 * Return a PreparedStatementSetter to perform an operation
 	 * with the given parameters.
+	 *
 	 * @param params the parameter array (may be {@code null})
 	 */
 	protected final PreparedStatementSetter newPreparedStatementSetter(@Nullable Object[] params) {
@@ -103,6 +106,7 @@ public abstract class SqlOperation extends RdbmsOperation {
 	/**
 	 * Return a PreparedStatementCreator to perform an operation
 	 * with the given parameters.
+	 *
 	 * @param params the parameter array (may be {@code null})
 	 */
 	protected final PreparedStatementCreator newPreparedStatementCreator(@Nullable Object[] params) {
@@ -113,9 +117,10 @@ public abstract class SqlOperation extends RdbmsOperation {
 	/**
 	 * Return a PreparedStatementCreator to perform an operation
 	 * with the given parameters.
+	 *
 	 * @param sqlToUse the actual SQL statement to use (if different from
-	 * the factory's, for example because of named parameter expanding)
-	 * @param params the parameter array (may be {@code null})
+	 *                 the factory's, for example because of named parameter expanding)
+	 * @param params   the parameter array (may be {@code null})
 	 */
 	protected final PreparedStatementCreator newPreparedStatementCreator(String sqlToUse, @Nullable Object[] params) {
 		Assert.state(this.preparedStatementFactory != null, "No PreparedStatementFactory available");

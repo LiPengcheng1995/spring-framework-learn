@@ -16,8 +16,6 @@
 
 package org.springframework.context.config;
 
-import org.w3c.dom.Element;
-
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -26,6 +24,7 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.jmx.export.annotation.AnnotationMBeanExporter;
 import org.springframework.jmx.support.RegistrationPolicy;
 import org.springframework.util.StringUtils;
+import org.w3c.dom.Element;
 
 /**
  * Parser for the &lt;context:mbean-export/&gt; element.
@@ -36,8 +35,8 @@ import org.springframework.util.StringUtils;
  *
  * @author Juergen Hoeller
  * @author Mark Fisher
- * @since 2.5
  * @see org.springframework.jmx.export.annotation.AnnotationMBeanExporter
+ * @since 2.5
  */
 class MBeanExportBeanDefinitionParser extends AbstractBeanDefinitionParser {
 
@@ -75,8 +74,7 @@ class MBeanExportBeanDefinitionParser extends AbstractBeanDefinitionParser {
 		String serverBeanName = element.getAttribute(SERVER_ATTRIBUTE);
 		if (StringUtils.hasText(serverBeanName)) {
 			builder.addPropertyReference("server", serverBeanName);
-		}
-		else {
+		} else {
 			AbstractBeanDefinition specialServer = MBeanServerBeanDefinitionParser.findServerForSpecialEnvironment();
 			if (specialServer != null) {
 				builder.addPropertyValue("server", specialServer);
@@ -87,8 +85,7 @@ class MBeanExportBeanDefinitionParser extends AbstractBeanDefinitionParser {
 		RegistrationPolicy registrationPolicy = RegistrationPolicy.FAIL_ON_EXISTING;
 		if (REGISTRATION_IGNORE_EXISTING.equals(registration)) {
 			registrationPolicy = RegistrationPolicy.IGNORE_EXISTING;
-		}
-		else if (REGISTRATION_REPLACE_EXISTING.equals(registration)) {
+		} else if (REGISTRATION_REPLACE_EXISTING.equals(registration)) {
 			registrationPolicy = RegistrationPolicy.REPLACE_EXISTING;
 		}
 		builder.addPropertyValue("registrationPolicy", registrationPolicy);

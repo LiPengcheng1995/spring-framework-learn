@@ -16,11 +16,11 @@
 
 package org.springframework.transaction.support;
 
-import java.io.Serializable;
-
 import org.springframework.lang.Nullable;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.util.Assert;
+
+import java.io.Serializable;
 
 /**
  * {@link TransactionDefinition} implementation that delegates all calls to a given target
@@ -39,6 +39,7 @@ public abstract class DelegatingTransactionDefinition implements TransactionDefi
 
 	/**
 	 * Create a DelegatingTransactionAttribute for the given target attribute.
+	 *
 	 * @param targetDefinition the target TransactionAttribute to delegate to
 	 */
 	public DelegatingTransactionDefinition(TransactionDefinition targetDefinition) {

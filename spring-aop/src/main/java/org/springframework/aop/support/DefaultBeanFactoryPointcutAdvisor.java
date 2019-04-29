@@ -29,30 +29,29 @@ import org.springframework.lang.Nullable;
  * in order to not initialize the advice object until the pointcut actually matches.
  *
  * @author Juergen Hoeller
- * @since 2.0.2
  * @see #setPointcut
  * @see #setAdviceBeanName
+ * @since 2.0.2
  */
 @SuppressWarnings("serial")
 public class DefaultBeanFactoryPointcutAdvisor extends AbstractBeanFactoryPointcutAdvisor {
 
 	private Pointcut pointcut = Pointcut.TRUE;
 
-
-	/**
-	 * Specify the pointcut targeting the advice.
-	 * <p>Default is {@code Pointcut.TRUE}.
-	 * @see #setAdviceBeanName
-	 */
-	public void setPointcut(@Nullable Pointcut pointcut) {
-		this.pointcut = (pointcut != null ? pointcut : Pointcut.TRUE);
-	}
-
 	@Override
 	public Pointcut getPointcut() {
 		return this.pointcut;
 	}
 
+	/**
+	 * Specify the pointcut targeting the advice.
+	 * <p>Default is {@code Pointcut.TRUE}.
+	 *
+	 * @see #setAdviceBeanName
+	 */
+	public void setPointcut(@Nullable Pointcut pointcut) {
+		this.pointcut = (pointcut != null ? pointcut : Pointcut.TRUE);
+	}
 
 	@Override
 	public String toString() {

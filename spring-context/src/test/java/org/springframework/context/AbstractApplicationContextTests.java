@@ -16,12 +16,6 @@
 
 package org.springframework.context;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.Locale;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanFactory;
@@ -29,7 +23,14 @@ import org.springframework.beans.factory.xml.AbstractListableBeanFactoryTests;
 import org.springframework.tests.sample.beans.LifecycleBean;
 import org.springframework.tests.sample.beans.TestBean;
 
-import static org.junit.Assert.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Locale;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Rod Johnson
@@ -38,12 +39,16 @@ import static org.junit.Assert.*;
  */
 public abstract class AbstractApplicationContextTests extends AbstractListableBeanFactoryTests {
 
-	/** Must be supplied as XML */
+	/**
+	 * Must be supplied as XML
+	 */
 	public static final String TEST_NAMESPACE = "testNamespace";
 
 	protected ConfigurableApplicationContext applicationContext;
 
-	/** Subclass must register this */
+	/**
+	 * Subclass must register this
+	 */
 	protected TestListener listener = new TestListener();
 
 	protected TestListener parentListener = new TestListener();
@@ -159,7 +164,7 @@ public abstract class AbstractApplicationContextTests extends AbstractListableBe
 	}
 
 	protected void doTestEvents(TestListener listener, TestListener parentListener,
-			MyEvent event) {
+								MyEvent event) {
 		listener.zeroCounter();
 		parentListener.zeroCounter();
 		assertTrue("0 events before publication", listener.getEventCount() == 0);

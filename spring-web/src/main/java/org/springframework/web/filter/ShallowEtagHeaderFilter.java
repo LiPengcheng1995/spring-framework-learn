@@ -16,21 +16,21 @@
 
 package org.springframework.web.filter;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
+import org.springframework.http.HttpMethod;
+import org.springframework.util.Assert;
+import org.springframework.util.DigestUtils;
+import org.springframework.web.util.ContentCachingResponseWrapper;
+import org.springframework.web.util.WebUtils;
+
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.http.HttpMethod;
-import org.springframework.util.Assert;
-import org.springframework.util.DigestUtils;
-import org.springframework.web.util.ContentCachingResponseWrapper;
-import org.springframework.web.util.WebUtils;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 
 /**
  * {@link javax.servlet.Filter} that generates an {@code ETag} value based on the
@@ -66,26 +66,43 @@ public class ShallowEtagHeaderFilter extends OncePerRequestFilter {
 
 	private boolean writeWeakETag = false;
 
-
 	/**
-	 * Set whether the ETag value written to the response should be weak, as per RFC 7232.
-	 * <p>Should be configured using an {@code <init-param>} for parameter name
-	 * "writeWeakETag" in the filter definition in {@code web.xml}.
-	 * @since 4.3
-	 * @see <a href="https://tools.ietf.org/html/rfc7232#section-2.3">RFC 7232 section 2.3</a>
+	 * This method can be used to disable the content caching response wrapper
+	 * of the ShallowEtagHeaderFilter. This can be done before the start of HTTP
+	 * streaming for example where the response will be written to asynchronously
+	 * and not in the context of a Servlet container thread.
+	 *
+	 * @since 4.2
 	 */
-	public void setWriteWeakETag(boolean writeWeakETag) {
-		this.writeWeakETag = writeWeakETag;
+	public static void disableContentCaching(ServletRequest request) {
+		Assert.notNull(request, "ServletRequest must not be null");
+		request.setAttribute(STREAMING_ATTRIBUTE, true);
+	}
+
+	private static boolean isContentCachingDisabled(HttpServletRequest request) {
+		return (request.getAttribute(STREAMING_ATTRIBUTE) != null);
 	}
 
 	/**
 	 * Return whether the ETag value written to the response should be weak, as per RFC 7232.
+	 *
 	 * @since 4.3
 	 */
 	public boolean isWriteWeakETag() {
 		return this.writeWeakETag;
 	}
 
+	/**
+	 * Set whether the ETag value written to the response should be weak, as per RFC 7232.
+	 * <p>Should be configured using an {@code <init-param>} for parameter name
+	 * "writeWeakETag" in the filter definition in {@code web.xml}.
+	 *
+	 * @see <a href="https://tools.ietf.org/html/rfc7232#section-2.3">RFC 7232 section 2.3</a>
+	 * @since 4.3
+	 */
+	public void setWriteWeakETag(boolean writeWeakETag) {
+		this.writeWeakETag = writeWeakETag;
+	}
 
 	/**
 	 * The default value is {@code false} so that the filter may delay the generation
@@ -121,8 +138,7 @@ public class ShallowEtagHeaderFilter extends OncePerRequestFilter {
 
 		if (rawResponse.isCommitted()) {
 			responseWrapper.copyBodyToResponse();
-		}
-		else if (isEligibleForEtag(request, responseWrapper, statusCode, responseWrapper.getContentInputStream())) {
+		} else if (isEligibleForEtag(request, responseWrapper, statusCode, responseWrapper.getContentInputStream())) {
 			String responseETag = generateETagHeaderValue(responseWrapper.getContentInputStream(), this.writeWeakETag);
 			rawResponse.setHeader(HEADER_ETAG, responseETag);
 			String requestETag = request.getHeader(HEADER_IF_NONE_MATCH);
@@ -132,16 +148,14 @@ public class ShallowEtagHeaderFilter extends OncePerRequestFilter {
 					logger.trace("ETag [" + responseETag + "] equal to If-None-Match, sending 304");
 				}
 				rawResponse.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-			}
-			else {
+			} else {
 				if (logger.isTraceEnabled()) {
 					logger.trace("ETag [" + responseETag + "] not equal to If-None-Match [" + requestETag +
 							"], sending normal response");
 				}
 				responseWrapper.copyBodyToResponse();
 			}
-		}
-		else {
+		} else {
 			if (logger.isTraceEnabled()) {
 				logger.trace("Response with status code [" + statusCode + "] not eligible for ETag");
 			}
@@ -157,14 +171,15 @@ public class ShallowEtagHeaderFilter extends OncePerRequestFilter {
 	 * <li>request method is a GET</li>
 	 * <li>response Cache-Control header is not set or does not contain a "no-store" directive</li>
 	 * </ul>
-	 * @param request the HTTP request
-	 * @param response the HTTP response
+	 *
+	 * @param request            the HTTP request
+	 * @param response           the HTTP response
 	 * @param responseStatusCode the HTTP response status code
-	 * @param inputStream the response body
+	 * @param inputStream        the response body
 	 * @return {@code true} if eligible for ETag generation, {@code false} otherwise
 	 */
 	protected boolean isEligibleForEtag(HttpServletRequest request, HttpServletResponse response,
-			int responseStatusCode, InputStream inputStream) {
+										int responseStatusCode, InputStream inputStream) {
 
 		String method = request.getMethod();
 		if (responseStatusCode >= 200 && responseStatusCode < 300 && HttpMethod.GET.matches(method)) {
@@ -177,8 +192,9 @@ public class ShallowEtagHeaderFilter extends OncePerRequestFilter {
 	/**
 	 * Generate the ETag header value from the given response body byte array.
 	 * <p>The default implementation generates an MD5 hash.
+	 *
 	 * @param inputStream the response body as an InputStream
-	 * @param isWeak whether the generated ETag should be weak
+	 * @param isWeak      whether the generated ETag should be weak
 	 * @return the ETag header value
 	 * @see org.springframework.util.DigestUtils
 	 */
@@ -193,24 +209,6 @@ public class ShallowEtagHeaderFilter extends OncePerRequestFilter {
 		builder.append('"');
 		return builder.toString();
 	}
-
-
-	/**
-	 * This method can be used to disable the content caching response wrapper
-	 * of the ShallowEtagHeaderFilter. This can be done before the start of HTTP
-	 * streaming for example where the response will be written to asynchronously
-	 * and not in the context of a Servlet container thread.
-	 * @since 4.2
-	 */
-	public static void disableContentCaching(ServletRequest request) {
-		Assert.notNull(request, "ServletRequest must not be null");
-		request.setAttribute(STREAMING_ATTRIBUTE, true);
-	}
-
-	private static boolean isContentCachingDisabled(HttpServletRequest request) {
-		return (request.getAttribute(STREAMING_ATTRIBUTE) != null);
-	}
-
 
 	private static class HttpStreamingAwareContentCachingResponseWrapper extends ContentCachingResponseWrapper {
 

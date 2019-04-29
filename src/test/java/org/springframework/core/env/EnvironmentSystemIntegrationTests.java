@@ -16,30 +16,16 @@
 
 package org.springframework.core.env;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.EnvironmentAware;
-import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Profile;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
-import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.context.support.GenericXmlApplicationContext;
-import org.springframework.context.support.StaticApplicationContext;
+import org.springframework.context.annotation.*;
+import org.springframework.context.support.*;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jca.context.ResourceAdapterApplicationContext;
 import org.springframework.jca.support.SimpleBootstrapContext;
@@ -50,17 +36,16 @@ import org.springframework.mock.web.MockServletConfig;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.AbstractRefreshableWebApplicationContext;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
-import org.springframework.web.context.support.GenericWebApplicationContext;
-import org.springframework.web.context.support.StandardServletEnvironment;
-import org.springframework.web.context.support.StaticWebApplicationContext;
-import org.springframework.web.context.support.XmlWebApplicationContext;
+import org.springframework.web.context.support.*;
+
+import java.io.File;
+import java.io.IOException;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.springframework.beans.factory.support.BeanDefinitionBuilder.*;
-import static org.springframework.context.ConfigurableApplicationContext.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.springframework.beans.factory.support.BeanDefinitionBuilder.rootBeanDefinition;
+import static org.springframework.context.ConfigurableApplicationContext.ENVIRONMENT_BEAN_NAME;
 import static org.springframework.core.env.EnvironmentSystemIntegrationTests.Constants.*;
 
 /**
@@ -158,7 +143,7 @@ public class EnvironmentSystemIntegrationTests {
 		ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(ctx);
 		scanner.scan("org.springframework.core.env.scan2");
 		ctx.refresh();
-		assertThat(scanner.getEnvironment(), is((Environment)ctx.getEnvironment()));
+		assertThat(scanner.getEnvironment(), is((Environment) ctx.getEnvironment()));
 		assertThat(ctx.containsBean(DEV_BEAN_NAME), is(false));
 		assertThat(ctx.containsBean(PROD_BEAN_NAME), is(true));
 	}
@@ -199,7 +184,7 @@ public class EnvironmentSystemIntegrationTests {
 
 		// strange - FSXAC strips leading '/' unless prefixed with 'file:'
 		ConfigurableApplicationContext ctx =
-				new FileSystemXmlApplicationContext(new String[] {"file:" + tmpFile.getPath()}, false);
+				new FileSystemXmlApplicationContext(new String[]{"file:" + tmpFile.getPath()}, false);
 		ctx.setEnvironment(prodEnv);
 		ctx.refresh();
 		assertEnvironmentBeanRegistered(ctx);
@@ -526,8 +511,7 @@ public class EnvironmentSystemIntegrationTests {
 			try {
 				ctx.refresh();
 				fail("expected missing property exception");
-			}
-			catch (MissingRequiredPropertiesException ex) {
+			} catch (MissingRequiredPropertiesException ex) {
 			}
 		}
 

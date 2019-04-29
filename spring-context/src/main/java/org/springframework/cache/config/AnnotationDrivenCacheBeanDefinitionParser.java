@@ -16,8 +16,6 @@
 
 package org.springframework.cache.config;
 
-import org.w3c.dom.Element;
-
 import org.springframework.aop.config.AopNamespaceUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -31,6 +29,7 @@ import org.springframework.cache.interceptor.CacheInterceptor;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
+import org.w3c.dom.Element;
 
 /**
  * {@link org.springframework.beans.factory.xml.BeanDefinitionParser}
@@ -68,43 +67,6 @@ class AnnotationDrivenCacheBeanDefinitionParser implements BeanDefinitionParser 
 			"org.springframework.cache.jcache.interceptor.DefaultJCacheOperationSource",
 			AnnotationDrivenCacheBeanDefinitionParser.class.getClassLoader());
 
-
-	/**
-	 * Parses the '{@code <cache:annotation-driven>}' tag. Will
-	 * {@link AopNamespaceUtils#registerAutoProxyCreatorIfNecessary
-	 * register an AutoProxyCreator} with the container as necessary.
-	 */
-	@Override
-	@Nullable
-	public BeanDefinition parse(Element element, ParserContext parserContext) {
-		String mode = element.getAttribute("mode");
-		if ("aspectj".equals(mode)) {
-			// mode="aspectj"
-			registerCacheAspect(element, parserContext);
-		}
-		else {
-			// mode="proxy"
-			registerCacheAdvisor(element, parserContext);
-		}
-
-		return null;
-	}
-
-	private void registerCacheAspect(Element element, ParserContext parserContext) {
-		SpringCachingConfigurer.registerCacheAspect(element, parserContext);
-		if (jsr107Present && jcacheImplPresent) {
-			JCacheCachingConfigurer.registerCacheAspect(element, parserContext);
-		}
-	}
-
-	private void registerCacheAdvisor(Element element, ParserContext parserContext) {
-		AopNamespaceUtils.registerAutoProxyCreatorIfNecessary(parserContext, element);
-		SpringCachingConfigurer.registerCacheAdvisor(element, parserContext);
-		if (jsr107Present && jcacheImplPresent) {
-			JCacheCachingConfigurer.registerCacheAdvisor(element, parserContext);
-		}
-	}
-
 	/**
 	 * Parse the cache resolution strategy to use. If a 'cache-resolver' attribute
 	 * is set, it is injected. Otherwise the 'cache-manager' is set. If {@code setBoth}
@@ -129,6 +91,40 @@ class AnnotationDrivenCacheBeanDefinitionParser implements BeanDefinitionParser 
 		}
 	}
 
+	/**
+	 * Parses the '{@code <cache:annotation-driven>}' tag. Will
+	 * {@link AopNamespaceUtils#registerAutoProxyCreatorIfNecessary
+	 * register an AutoProxyCreator} with the container as necessary.
+	 */
+	@Override
+	@Nullable
+	public BeanDefinition parse(Element element, ParserContext parserContext) {
+		String mode = element.getAttribute("mode");
+		if ("aspectj".equals(mode)) {
+			// mode="aspectj"
+			registerCacheAspect(element, parserContext);
+		} else {
+			// mode="proxy"
+			registerCacheAdvisor(element, parserContext);
+		}
+
+		return null;
+	}
+
+	private void registerCacheAspect(Element element, ParserContext parserContext) {
+		SpringCachingConfigurer.registerCacheAspect(element, parserContext);
+		if (jsr107Present && jcacheImplPresent) {
+			JCacheCachingConfigurer.registerCacheAspect(element, parserContext);
+		}
+	}
+
+	private void registerCacheAdvisor(Element element, ParserContext parserContext) {
+		AopNamespaceUtils.registerAutoProxyCreatorIfNecessary(parserContext, element);
+		SpringCachingConfigurer.registerCacheAdvisor(element, parserContext);
+		if (jsr107Present && jcacheImplPresent) {
+			JCacheCachingConfigurer.registerCacheAdvisor(element, parserContext);
+		}
+	}
 
 	/**
 	 * Configure the necessary infrastructure to support the Spring's caching annotations.

@@ -16,15 +16,9 @@
 
 package org.springframework.context.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import example.profilescan.ProfileAnnotatedComponent;
 import example.scannable.AutowiredQualifierFooService;
 import org.junit.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -33,7 +27,12 @@ import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.filter.TypeFilter;
 
-import static org.hamcrest.CoreMatchers.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 /**
@@ -69,8 +68,7 @@ public class ComponentScanParserTests {
 			assertTrue(context.containsBean("stubFooDao"));
 			assertFalse(context.containsBean("scopedProxyTestBean"));
 			context.close();
-		}
-		finally {
+		} finally {
 			System.clearProperty("basePackage");
 			System.clearProperty("scanInclude");
 			System.clearProperty("scanExclude");
@@ -135,8 +133,8 @@ public class ComponentScanParserTests {
 			context.close();
 		}
 		{ // ensure the same works for AbstractRefreshableApplicationContext impls too
-			ConfigurableApplicationContext context = new ClassPathXmlApplicationContext(new String[] { xmlLocation },
-				false);
+			ConfigurableApplicationContext context = new ClassPathXmlApplicationContext(new String[]{xmlLocation},
+					false);
 			context.getEnvironment().setActiveProfiles(ProfileAnnotatedComponent.PROFILE_NAME);
 			context.refresh();
 			assertThat(context.containsBean(ProfileAnnotatedComponent.BEAN_NAME), is(true));

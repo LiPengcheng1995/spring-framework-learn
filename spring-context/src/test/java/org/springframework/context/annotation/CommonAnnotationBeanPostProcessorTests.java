@@ -16,14 +16,7 @@
 
 package org.springframework.context.annotation;
 
-import java.util.Properties;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
-import javax.ejb.EJB;
-
 import org.junit.Test;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanFactory;
@@ -43,6 +36,12 @@ import org.springframework.tests.sample.beans.ITestBean;
 import org.springframework.tests.sample.beans.NestedTestBean;
 import org.springframework.tests.sample.beans.TestBean;
 import org.springframework.util.SerializationTestUtils;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
+import javax.ejb.EJB;
+import java.util.Properties;
 
 import static org.junit.Assert.*;
 
@@ -408,8 +407,7 @@ public class CommonAnnotationBeanPostProcessorTests {
 
 		try {
 			bf.getBean("annotatedBean2");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			assertTrue(ex.getRootCause() instanceof NoSuchBeanDefinitionException);
 			NoSuchBeanDefinitionException innerEx = (NoSuchBeanDefinitionException) ex.getRootCause();
 			assertEquals("testBean9", innerEx.getBeanName());
@@ -512,6 +510,29 @@ public class CommonAnnotationBeanPostProcessorTests {
 	}
 
 
+	public interface InterfaceWithDefaultMethod {
+
+		@Resource
+		void setTestBean2(TestBean testBean2);
+
+		@Resource
+		default void setTestBean7(INestedTestBean testBean7) {
+			increaseCounter();
+		}
+
+		@PostConstruct
+		default void initDefault() {
+			increaseCounter();
+		}
+
+		@PreDestroy
+		default void destroyDefault() {
+			increaseCounter();
+		}
+
+		void increaseCounter();
+	}
+
 	public static class AnnotatedInitDestroyBean {
 
 		public boolean initCalled = false;
@@ -534,7 +555,6 @@ public class CommonAnnotationBeanPostProcessorTests {
 			this.destroyCalled = true;
 		}
 	}
-
 
 	public static class InitDestroyBeanPostProcessor implements DestructionAwareBeanPostProcessor {
 
@@ -566,7 +586,6 @@ public class CommonAnnotationBeanPostProcessorTests {
 			return true;
 		}
 	}
-
 
 	public static class ResourceInjectionBean extends AnnotatedInitDestroyBean {
 
@@ -627,14 +646,6 @@ public class CommonAnnotationBeanPostProcessorTests {
 			this.destroy3Called = true;
 		}
 
-		@Resource
-		public void setTestBean2(TestBean testBean2) {
-			if (this.testBean2 != null) {
-				throw new IllegalStateException("Already called");
-			}
-			this.testBean2 = testBean2;
-		}
-
 		public TestBean getTestBean() {
 			return testBean;
 		}
@@ -642,44 +653,31 @@ public class CommonAnnotationBeanPostProcessorTests {
 		public TestBean getTestBean2() {
 			return testBean2;
 		}
-	}
 
+		@Resource
+		public void setTestBean2(TestBean testBean2) {
+			if (this.testBean2 != null) {
+				throw new IllegalStateException("Already called");
+			}
+			this.testBean2 = testBean2;
+		}
+	}
 
 	static class NonPublicResourceInjectionBean<B> extends ResourceInjectionBean {
 
-		@Resource(name="testBean4", type=TestBean.class)
+		@Resource(name = "testBean4", type = TestBean.class)
 		protected ITestBean testBean3;
-
-		private B testBean4;
-
 		@Resource
 		INestedTestBean testBean5;
-
 		INestedTestBean testBean6;
-
 		@Resource
 		BeanFactory beanFactory;
+		private B testBean4;
 
 		@Override
 		@Resource
 		public void setTestBean2(TestBean testBean2) {
 			super.setTestBean2(testBean2);
-		}
-
-		@Resource(name="${tb}", type=ITestBean.class)
-		private void setTestBean4(B testBean4) {
-			if (this.testBean4 != null) {
-				throw new IllegalStateException("Already called");
-			}
-			this.testBean4 = testBean4;
-		}
-
-		@Resource
-		public void setTestBean6(INestedTestBean testBean6) {
-			if (this.testBean6 != null) {
-				throw new IllegalStateException("Already called");
-			}
-			this.testBean6 = testBean6;
 		}
 
 		public ITestBean getTestBean3() {
@@ -690,12 +688,28 @@ public class CommonAnnotationBeanPostProcessorTests {
 			return testBean4;
 		}
 
+		@Resource(name = "${tb}", type = ITestBean.class)
+		private void setTestBean4(B testBean4) {
+			if (this.testBean4 != null) {
+				throw new IllegalStateException("Already called");
+			}
+			this.testBean4 = testBean4;
+		}
+
 		public INestedTestBean getTestBean5() {
 			return testBean5;
 		}
 
 		public INestedTestBean getTestBean6() {
 			return testBean6;
+		}
+
+		@Resource
+		public void setTestBean6(INestedTestBean testBean6) {
+			if (this.testBean6 != null) {
+				throw new IllegalStateException("Already called");
+			}
+			this.testBean6 = testBean6;
 		}
 
 		@Override
@@ -714,34 +728,8 @@ public class CommonAnnotationBeanPostProcessorTests {
 		}
 	}
 
-
 	public static class ExtendedResourceInjectionBean extends NonPublicResourceInjectionBean<ITestBean> {
 	}
-
-
-	public interface InterfaceWithDefaultMethod {
-
-		@Resource
-		void setTestBean2(TestBean testBean2);
-
-		@Resource
-		default void setTestBean7(INestedTestBean testBean7) {
-			increaseCounter();
-		}
-
-		@PostConstruct
-		default void initDefault() {
-			increaseCounter();
-		}
-
-		@PreDestroy
-		default void destroyDefault() {
-			increaseCounter();
-		}
-
-		void increaseCounter();
-	}
-
 
 	public static class DefaultMethodResourceInjectionBean extends ResourceInjectionBean
 			implements InterfaceWithDefaultMethod {
@@ -757,7 +745,7 @@ public class CommonAnnotationBeanPostProcessorTests {
 
 	public static class ExtendedEjbInjectionBean extends ResourceInjectionBean {
 
-		@EJB(name="testBean4", beanInterface=TestBean.class)
+		@EJB(name = "testBean4", beanInterface = TestBean.class)
 		protected ITestBean testBean3;
 
 		private ITestBean testBean4;
@@ -776,14 +764,6 @@ public class CommonAnnotationBeanPostProcessorTests {
 			super.setTestBean2(testBean2);
 		}
 
-		@EJB(beanName="testBean3", beanInterface=ITestBean.class)
-		private void setTestBean4(ITestBean testBean4) {
-			if (this.testBean4 != null) {
-				throw new IllegalStateException("Already called");
-			}
-			this.testBean4 = testBean4;
-		}
-
 		@EJB
 		public void setTestBean6(INestedTestBean testBean6) {
 			if (this.testBean6 != null) {
@@ -798,6 +778,14 @@ public class CommonAnnotationBeanPostProcessorTests {
 
 		public ITestBean getTestBean4() {
 			return testBean4;
+		}
+
+		@EJB(beanName = "testBean3", beanInterface = ITestBean.class)
+		private void setTestBean4(ITestBean testBean4) {
+			if (this.testBean4 != null) {
+				throw new IllegalStateException("Already called");
+			}
+			this.testBean4 = testBean4;
 		}
 
 		@Override
@@ -819,21 +807,22 @@ public class CommonAnnotationBeanPostProcessorTests {
 
 	private static class NamedResourceInjectionBean {
 
-		@Resource(name="testBean9")
+		@Resource(name = "testBean9")
 		private INestedTestBean testBean;
 	}
 
 
 	private static class ConvertedResourceInjectionBean {
 
-		@Resource(name="value")
+		@Resource(name = "value")
 		private int value;
 	}
 
 
 	private static class LazyResourceFieldInjectionBean {
 
-		@Resource @Lazy
+		@Resource
+		@Lazy
 		private ITestBean testBean;
 	}
 
@@ -842,7 +831,8 @@ public class CommonAnnotationBeanPostProcessorTests {
 
 		private ITestBean testBean;
 
-		@Resource @Lazy
+		@Resource
+		@Lazy
 		public void setTestBean(ITestBean testBean) {
 			this.testBean = testBean;
 		}
@@ -853,7 +843,8 @@ public class CommonAnnotationBeanPostProcessorTests {
 
 		private TestBean testBean;
 
-		@Resource @Lazy
+		@Resource
+		@Lazy
 		public void setTestBean(TestBean testBean) {
 			this.testBean = testBean;
 		}

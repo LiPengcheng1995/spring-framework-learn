@@ -16,16 +16,15 @@
 
 package org.springframework.test.context;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.test.context.support.DefaultTestContextBootstrapper;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.context.web.WebTestContextBootstrapper;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
@@ -42,10 +41,9 @@ import static org.springframework.test.context.BootstrapUtils.resolveTestContext
  */
 public class BootstrapUtilsTests {
 
-	private final CacheAwareContextLoaderDelegate delegate = mock(CacheAwareContextLoaderDelegate.class);
-
 	@Rule
 	public final ExpectedException exception = ExpectedException.none();
+	private final CacheAwareContextLoaderDelegate delegate = mock(CacheAwareContextLoaderDelegate.class);
 
 	@Test
 	public void resolveTestContextBootstrapperForNonAnnotatedClass() {
@@ -85,7 +83,7 @@ public class BootstrapUtilsTests {
 	@Test
 	public void resolveTestContextBootstrapperWithDoubleMetaBootstrapWithAnnotation() {
 		BootstrapContext bootstrapContext = BootstrapTestUtils.buildBootstrapContext(
-			DoubleMetaAnnotatedBootstrapWithAnnotationClass.class, delegate);
+				DoubleMetaAnnotatedBootstrapWithAnnotationClass.class, delegate);
 
 		exception.expect(IllegalStateException.class);
 		exception.expectMessage(containsString("found multiple declarations of @BootstrapWith"));
@@ -104,36 +102,47 @@ public class BootstrapUtilsTests {
 
 	// -------------------------------------------------------------------
 
-	static class FooBootstrapper extends DefaultTestContextBootstrapper {}
-
-	static class BarBootstrapper extends DefaultTestContextBootstrapper {}
-
 	@BootstrapWith(FooBootstrapper.class)
 	@Retention(RetentionPolicy.RUNTIME)
-	static @interface BootWithFoo {}
+	static @interface BootWithFoo {
+	}
 
 	@BootstrapWith(BarBootstrapper.class)
 	@Retention(RetentionPolicy.RUNTIME)
-	static @interface BootWithBar {}
+	static @interface BootWithBar {
+	}
 
-	static class NonAnnotatedClass {}
+	static class FooBootstrapper extends DefaultTestContextBootstrapper {
+	}
+
+	static class BarBootstrapper extends DefaultTestContextBootstrapper {
+	}
+
+	static class NonAnnotatedClass {
+	}
 
 	@BootstrapWith
-	static class EmptyBootstrapWithAnnotationClass {}
+	static class EmptyBootstrapWithAnnotationClass {
+	}
 
 	@BootstrapWith(FooBootstrapper.class)
-	static class DirectBootstrapWithAnnotationClass {}
+	static class DirectBootstrapWithAnnotationClass {
+	}
 
-	static class InheritedBootstrapWithAnnotationClass extends DirectBootstrapWithAnnotationClass {}
+	static class InheritedBootstrapWithAnnotationClass extends DirectBootstrapWithAnnotationClass {
+	}
 
 	@BootWithBar
-	static class MetaAnnotatedBootstrapWithAnnotationClass {}
+	static class MetaAnnotatedBootstrapWithAnnotationClass {
+	}
 
 	@BootWithBar
 	@BootWithFoo
-	static class DoubleMetaAnnotatedBootstrapWithAnnotationClass {}
+	static class DoubleMetaAnnotatedBootstrapWithAnnotationClass {
+	}
 
 	@WebAppConfiguration
-	static class WebAppConfigurationAnnotatedClass {}
+	static class WebAppConfigurationAnnotatedClass {
+	}
 
 }

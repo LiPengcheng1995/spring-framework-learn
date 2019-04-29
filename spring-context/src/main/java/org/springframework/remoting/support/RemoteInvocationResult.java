@@ -16,10 +16,10 @@
 
 package org.springframework.remoting.support;
 
+import org.springframework.lang.Nullable;
+
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
-
-import org.springframework.lang.Nullable;
 
 /**
  * Encapsulates a remote invocation result, holding a result value or an exception.
@@ -32,12 +32,14 @@ import org.springframework.lang.Nullable;
  * for use with standard Java serialization as well as JavaBean-style serialization.
  *
  * @author Juergen Hoeller
- * @since 1.1
  * @see RemoteInvocation
+ * @since 1.1
  */
 public class RemoteInvocationResult implements Serializable {
 
-	/** Use serialVersionUID from Spring 1.1 for interoperability */
+	/**
+	 * Use serialVersionUID from Spring 1.1 for interoperability
+	 */
 	private static final long serialVersionUID = 2138555143707773549L;
 
 
@@ -50,8 +52,9 @@ public class RemoteInvocationResult implements Serializable {
 
 	/**
 	 * Create a new RemoteInvocationResult for the given result value.
+	 *
 	 * @param value the result value returned by a successful invocation
-	 * of the target method
+	 *              of the target method
 	 */
 	public RemoteInvocationResult(@Nullable Object value) {
 		this.value = value;
@@ -59,8 +62,9 @@ public class RemoteInvocationResult implements Serializable {
 
 	/**
 	 * Create a new RemoteInvocationResult for the given exception.
+	 *
 	 * @param exception the exception thrown by an unsuccessful invocation
-	 * of the target method
+	 *                  of the target method
 	 */
 	public RemoteInvocationResult(@Nullable Throwable exception) {
 		this.exception = exception;
@@ -69,27 +73,17 @@ public class RemoteInvocationResult implements Serializable {
 	/**
 	 * Create a new RemoteInvocationResult for JavaBean-style deserialization
 	 * (e.g. with Jackson).
+	 *
 	 * @see #setValue
 	 * @see #setException
 	 */
 	public RemoteInvocationResult() {
 	}
 
-
-	/**
-	 * Set the result value returned by a successful invocation of the
-	 * target method, if any.
-	 * <p>This setter is intended for JavaBean-style deserialization.
-	 * Use {@link #RemoteInvocationResult(Object)} otherwise.
-	 * @see #RemoteInvocationResult()
-	 */
-	public void setValue(@Nullable Object value) {
-		this.value = value;
-	}
-
 	/**
 	 * Return the result value returned by a successful invocation
 	 * of the target method, if any.
+	 *
 	 * @see #hasException
 	 */
 	@Nullable
@@ -98,19 +92,21 @@ public class RemoteInvocationResult implements Serializable {
 	}
 
 	/**
-	 * Set the exception thrown by an unsuccessful invocation of the
+	 * Set the result value returned by a successful invocation of the
 	 * target method, if any.
 	 * <p>This setter is intended for JavaBean-style deserialization.
-	 * Use {@link #RemoteInvocationResult(Throwable)} otherwise.
+	 * Use {@link #RemoteInvocationResult(Object)} otherwise.
+	 *
 	 * @see #RemoteInvocationResult()
 	 */
-	public void setException(@Nullable Throwable exception) {
-		this.exception = exception;
+	public void setValue(@Nullable Object value) {
+		this.value = value;
 	}
 
 	/**
 	 * Return the exception thrown by an unsuccessful invocation
 	 * of the target method, if any.
+	 *
 	 * @see #hasException
 	 */
 	@Nullable
@@ -119,9 +115,22 @@ public class RemoteInvocationResult implements Serializable {
 	}
 
 	/**
+	 * Set the exception thrown by an unsuccessful invocation of the
+	 * target method, if any.
+	 * <p>This setter is intended for JavaBean-style deserialization.
+	 * Use {@link #RemoteInvocationResult(Throwable)} otherwise.
+	 *
+	 * @see #RemoteInvocationResult()
+	 */
+	public void setException(@Nullable Throwable exception) {
+		this.exception = exception;
+	}
+
+	/**
 	 * Return whether this invocation result holds an exception.
 	 * If this returns {@code false}, the result value applies
 	 * (even if it is {@code null}).
+	 *
 	 * @see #getValue
 	 * @see #getException
 	 */
@@ -132,6 +141,7 @@ public class RemoteInvocationResult implements Serializable {
 	/**
 	 * Return whether this invocation result holds an InvocationTargetException,
 	 * thrown by an invocation of the target method itself.
+	 *
 	 * @see #hasException()
 	 */
 	public boolean hasInvocationTargetException() {
@@ -143,6 +153,7 @@ public class RemoteInvocationResult implements Serializable {
 	 * Recreate the invocation result, either returning the result value
 	 * in case of a successful invocation of the target method, or
 	 * rethrowing the exception thrown by the target method.
+	 *
 	 * @return the result value, if any
 	 * @throws Throwable the exception, if any
 	 */
@@ -155,8 +166,7 @@ public class RemoteInvocationResult implements Serializable {
 			}
 			RemoteInvocationUtils.fillInClientStackTraceIfPossible(exToThrow);
 			throw exToThrow;
-		}
-		else {
+		} else {
 			return this.value;
 		}
 	}

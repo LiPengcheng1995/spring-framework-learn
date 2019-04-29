@@ -16,15 +16,10 @@
 
 package org.springframework.util;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
 import org.springframework.lang.Nullable;
+
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * {@link LinkedHashMap} variant that stores String keys in a case-insensitive
@@ -51,6 +46,7 @@ public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable
 	/**
 	 * Create a new LinkedCaseInsensitiveMap that stores case-insensitive keys
 	 * according to the default Locale (by default in lower case).
+	 *
 	 * @see #convertKey(String)
 	 */
 	public LinkedCaseInsensitiveMap() {
@@ -60,6 +56,7 @@ public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable
 	/**
 	 * Create a new LinkedCaseInsensitiveMap that stores case-insensitive keys
 	 * according to the given Locale (by default in lower case).
+	 *
 	 * @param locale the Locale to use for case-insensitive key conversion
 	 * @see #convertKey(String)
 	 */
@@ -71,6 +68,7 @@ public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable
 	 * Create a new LinkedCaseInsensitiveMap that wraps a {@link LinkedHashMap}
 	 * with the given initial capacity and stores case-insensitive keys
 	 * according to the default Locale (by default in lower case).
+	 *
 	 * @param initialCapacity the initial capacity
 	 * @see #convertKey(String)
 	 */
@@ -82,8 +80,9 @@ public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable
 	 * Create a new LinkedCaseInsensitiveMap that wraps a {@link LinkedHashMap}
 	 * with the given initial capacity and stores case-insensitive keys
 	 * according to the given Locale (by default in lower case).
+	 *
 	 * @param initialCapacity the initial capacity
-	 * @param locale the Locale to use for case-insensitive key conversion
+	 * @param locale          the Locale to use for case-insensitive key conversion
 	 * @see #convertKey(String)
 	 */
 	public LinkedCaseInsensitiveMap(int initialCapacity, @Nullable Locale locale) {
@@ -92,6 +91,7 @@ public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable
 			public boolean containsKey(Object key) {
 				return LinkedCaseInsensitiveMap.this.containsKey(key);
 			}
+
 			@Override
 			protected boolean removeEldestEntry(Map.Entry<String, V> eldest) {
 				boolean doRemove = LinkedCaseInsensitiveMap.this.removeEldestEntry(eldest);
@@ -239,9 +239,10 @@ public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable
 	/**
 	 * Return the locale used by this {@code LinkedCaseInsensitiveMap}.
 	 * Used for case-insensitive key conversion.
-	 * @since 4.3.10
+	 *
 	 * @see #LinkedCaseInsensitiveMap(Locale)
 	 * @see #convertKey(String)
+	 * @since 4.3.10
 	 */
 	public Locale getLocale() {
 		return this.locale;
@@ -251,6 +252,7 @@ public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable
 	 * Convert the given key to a case-insensitive key.
 	 * <p>The default implementation converts the key
 	 * to lower-case according to this Map's Locale.
+	 *
 	 * @param key the user-specified key
 	 * @return the key to use for storing
 	 * @see String#toLowerCase(Locale)
@@ -261,6 +263,7 @@ public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable
 
 	/**
 	 * Determine whether this map should remove the given eldest entry.
+	 *
 	 * @param eldest the candidate entry
 	 * @return {@code true} for removing it, {@code false} for keeping it
 	 * @see LinkedHashMap#removeEldestEntry

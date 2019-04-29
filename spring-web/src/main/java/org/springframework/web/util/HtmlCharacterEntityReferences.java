@@ -16,15 +16,15 @@
 
 package org.springframework.web.util;
 
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 
 /**
  * Represents a set of character entity references defined by the
@@ -40,19 +40,12 @@ import org.springframework.util.Assert;
  */
 class HtmlCharacterEntityReferences {
 
-	private static final String PROPERTIES_FILE = "HtmlCharacterEntityReferences.properties";
-
 	static final char REFERENCE_START = '&';
-
 	static final String DECIMAL_REFERENCE_START = "&#";
-
 	static final String HEX_REFERENCE_START = "&#x";
-
 	static final char REFERENCE_END = ';';
-
 	static final char CHAR_NULL = (char) -1;
-
-
+	private static final String PROPERTIES_FILE = "HtmlCharacterEntityReferences.properties";
 	private final String[] characterToEntityReferenceMap = new String[3000];
 
 	private final Map<String, Character> entityReferenceToCharacterMap = new HashMap<>(512);
@@ -73,14 +66,12 @@ class HtmlCharacterEntityReferences {
 		try {
 			try {
 				entityReferences.load(is);
-			}
-			finally {
+			} finally {
 				is.close();
 			}
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			throw new IllegalStateException(
-					"Failed to parse reference definition file [HtmlCharacterEntityReferences.properties]: " +  ex.getMessage());
+					"Failed to parse reference definition file [HtmlCharacterEntityReferences.properties]: " + ex.getMessage());
 		}
 
 		// Parse reference definition properties
@@ -129,12 +120,13 @@ class HtmlCharacterEntityReferences {
 
 	/**
 	 * Return the reference mapped to the given character, or {@code null} if none found.
+	 *
 	 * @since 4.1.2
 	 */
 	@Nullable
 	public String convertToReference(char character, String encoding) {
-		if (encoding.startsWith("UTF-")){
-			switch (character){
+		if (encoding.startsWith("UTF-")) {
+			switch (character) {
 				case '<':
 					return "&lt;";
 				case '>':
@@ -146,8 +138,7 @@ class HtmlCharacterEntityReferences {
 				case '\'':
 					return "&#39;";
 			}
-		}
-		else if (character < 1000 || (character >= 8000 && character < 10000)) {
+		} else if (character < 1000 || (character >= 8000 && character < 10000)) {
 			int index = (character < 1000 ? character : character - 7000);
 			String entityReference = this.characterToEntityReferenceMap[index];
 			if (entityReference != null) {

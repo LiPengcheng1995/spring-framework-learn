@@ -16,15 +16,14 @@
 
 package org.springframework.ejb.access;
 
-import java.lang.reflect.Proxy;
+import org.junit.Test;
+import org.springframework.jndi.JndiTemplate;
+
 import javax.ejb.CreateException;
 import javax.ejb.EJBLocalHome;
 import javax.ejb.EJBLocalObject;
 import javax.naming.NamingException;
-
-import org.junit.Test;
-
-import org.springframework.jndi.JndiTemplate;
+import java.lang.reflect.Proxy;
 
 import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.*;
@@ -122,7 +121,7 @@ public class LocalStatelessSessionProxyFactoryBeanTests {
 
 		LocalStatelessSessionProxyFactoryBean fb = new LocalStatelessSessionProxyFactoryBean();
 		fb.setJndiName(jndiName);
-		fb.setResourceRef(false);	// no java:comp/env prefix
+		fb.setResourceRef(false);    // no java:comp/env prefix
 		fb.setBusinessInterface(MyBusinessMethods.class);
 		assertEquals(fb.getBusinessInterface(), MyBusinessMethods.class);
 		fb.setJndiTemplate(jt);
@@ -136,8 +135,7 @@ public class LocalStatelessSessionProxyFactoryBeanTests {
 		try {
 			mbm.getValue();
 			fail("Should have failed to create EJB");
-		}
-		catch (EjbAccessException ex) {
+		} catch (EjbAccessException ex) {
 			assertSame(cex, ex.getCause());
 		}
 	}
@@ -171,8 +169,7 @@ public class LocalStatelessSessionProxyFactoryBeanTests {
 		try {
 			fb.afterPropertiesSet();
 			fail("Should have failed to create EJB");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// TODO more appropriate exception?
 			assertTrue(ex.getMessage().indexOf("businessInterface") != 1);
 		}
@@ -188,7 +185,7 @@ public class LocalStatelessSessionProxyFactoryBeanTests {
 	}
 
 
-	public interface MyBusinessMethods  {
+	public interface MyBusinessMethods {
 
 		int getValue();
 	}

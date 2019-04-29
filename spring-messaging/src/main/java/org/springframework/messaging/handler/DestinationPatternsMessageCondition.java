@@ -16,21 +16,13 @@
 
 package org.springframework.messaging.handler;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
+
+import java.util.*;
 
 /**
  * A {@link MessageCondition} for matching the destination of a Message
@@ -53,6 +45,7 @@ public class DestinationPatternsMessageCondition
 	/**
 	 * Creates a new instance with the given destination patterns.
 	 * Each pattern that is not empty and does not start with "/" is prepended with "/".
+	 *
 	 * @param patterns 0 or more URL patterns; if 0 the condition will match to every request.
 	 */
 	public DestinationPatternsMessageCondition(String... patterns) {
@@ -61,7 +54,8 @@ public class DestinationPatternsMessageCondition
 
 	/**
 	 * Alternative constructor accepting a custom PathMatcher.
-	 * @param patterns the URL patterns to use; if 0, the condition will match to every request.
+	 *
+	 * @param patterns    the URL patterns to use; if 0, the condition will match to every request.
 	 * @param pathMatcher the PathMatcher to use
 	 */
 	public DestinationPatternsMessageCondition(String[] patterns, @Nullable PathMatcher pathMatcher) {
@@ -121,14 +115,11 @@ public class DestinationPatternsMessageCondition
 					result.add(this.pathMatcher.combine(pattern1, pattern2));
 				}
 			}
-		}
-		else if (!this.patterns.isEmpty()) {
+		} else if (!this.patterns.isEmpty()) {
 			result.addAll(this.patterns);
-		}
-		else if (!other.patterns.isEmpty()) {
+		} else if (!other.patterns.isEmpty()) {
 			result.addAll(other.patterns);
-		}
-		else {
+		} else {
 			result.add("");
 		}
 		return new DestinationPatternsMessageCondition(result, this.pathMatcher);
@@ -138,6 +129,7 @@ public class DestinationPatternsMessageCondition
 	 * Check if any of the patterns match the given Message destination and return an instance
 	 * that is guaranteed to contain matching patterns, sorted via
 	 * {@link org.springframework.util.PathMatcher#getPatternComparator(String)}.
+	 *
 	 * @param message the message to match to
 	 * @return the same instance if the condition contains no patterns;
 	 * or a new condition with sorted matching patterns;
@@ -197,11 +189,9 @@ public class DestinationPatternsMessageCondition
 
 		if (iterator.hasNext()) {
 			return -1;
-		}
-		else if (iteratorOther.hasNext()) {
+		} else if (iteratorOther.hasNext()) {
 			return 1;
-		}
-		else {
+		} else {
 			return 0;
 		}
 	}

@@ -16,31 +16,15 @@
 
 package org.springframework.core;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableMap;
-import java.util.NavigableSet;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
 import org.junit.Test;
-
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.util.*;
+
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.springframework.core.CollectionFactory.*;
 
 /**
@@ -75,8 +59,7 @@ public class CollectionFactoryTests {
 			// cannot be cast to a Color.
 			ints.add(42);
 			fail("Should have thrown a ClassCastException");
-		}
-		catch (ClassCastException e) {
+		} catch (ClassCastException e) {
 			/* expected */
 		}
 	}
@@ -93,8 +76,7 @@ public class CollectionFactoryTests {
 			// to a Color.
 			ints.add(42);
 			fail("Should have thrown a ClassCastException");
-		}
-		catch (ClassCastException e) {
+		} catch (ClassCastException e) {
 			/* expected */
 		}
 	}
@@ -121,8 +103,7 @@ public class CollectionFactoryTests {
 			// cast to a Color.
 			map.put("foo", 1);
 			fail("Should have thrown a ClassCastException");
-		}
-		catch (ClassCastException e) {
+		} catch (ClassCastException e) {
 			/* expected */
 		}
 	}
@@ -139,8 +120,7 @@ public class CollectionFactoryTests {
 			// Color.
 			map.put("foo", 1);
 			fail("Should have thrown a ClassCastException");
-		}
-		catch (ClassCastException e) {
+		} catch (ClassCastException e) {
 			/* expected */
 		}
 	}
@@ -157,8 +137,7 @@ public class CollectionFactoryTests {
 			// cast to a List.
 			map.put("foo", 1);
 			fail("Should have thrown a ClassCastException");
-		}
-		catch (ClassCastException e) {
+		} catch (ClassCastException e) {
 			/* expected */
 		}
 	}

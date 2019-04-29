@@ -16,12 +16,7 @@
 
 package org.springframework.test.context;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * {@code @BootstrapWith} defines class-level metadata that is used to determine
@@ -31,9 +26,9 @@ import java.lang.annotation.Target;
  * custom <em>composed annotations</em>.
  *
  * @author Sam Brannen
- * @since 4.1
  * @see BootstrapContext
  * @see TestContextBootstrapper
+ * @since 4.1
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

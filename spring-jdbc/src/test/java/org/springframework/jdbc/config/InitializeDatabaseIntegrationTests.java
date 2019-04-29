@@ -16,20 +16,19 @@
 
 package org.springframework.jdbc.config;
 
-import java.util.List;
-import java.util.Map;
-import javax.sql.DataSource;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import static org.junit.Assert.*;
+import javax.sql.DataSource;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Dave Syer
@@ -50,8 +49,7 @@ public class InitializeDatabaseIntegrationTests {
 	public void after() {
 		if (enabled != null) {
 			System.setProperty("ENABLED", enabled);
-		}
-		else {
+		} else {
 			System.clearProperty("ENABLED");
 		}
 		if (context != null) {
@@ -120,13 +118,13 @@ public class InitializeDatabaseIntegrationTests {
 
 		private JdbcTemplate jdbcTemplate;
 
-		private List<Map<String,Object>> cache;
+		private List<Map<String, Object>> cache;
 
 		public void setDataSource(DataSource dataSource) {
 			this.jdbcTemplate = new JdbcTemplate(dataSource);
 		}
 
-		public List<Map<String,Object>> getCachedData() {
+		public List<Map<String, Object>> getCachedData() {
 			return cache;
 		}
 

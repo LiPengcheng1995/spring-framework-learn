@@ -16,11 +16,7 @@
 
 package org.springframework.context.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Indicates that a bean should be given preference when multiple candidates
@@ -76,11 +72,11 @@ import java.lang.annotation.Target;
  *
  * @author Chris Beams
  * @author Juergen Hoeller
- * @since 3.0
  * @see Lazy
  * @see Bean
  * @see ComponentScan
  * @see org.springframework.stereotype.Component
+ * @since 3.0
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

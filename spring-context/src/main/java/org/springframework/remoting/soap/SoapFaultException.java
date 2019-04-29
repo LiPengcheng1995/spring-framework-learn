@@ -16,25 +16,26 @@
 
 package org.springframework.remoting.soap;
 
-import javax.xml.namespace.QName;
-
 import org.springframework.remoting.RemoteInvocationFailureException;
+
+import javax.xml.namespace.QName;
 
 /**
  * RemoteInvocationFailureException subclass that provides the details
  * of a SOAP fault.
  *
  * @author Juergen Hoeller
- * @since 2.5
  * @see javax.xml.rpc.soap.SOAPFaultException
  * @see javax.xml.ws.soap.SOAPFaultException
+ * @since 2.5
  */
 @SuppressWarnings("serial")
 public abstract class SoapFaultException extends RemoteInvocationFailureException {
 
 	/**
 	 * Constructor for SoapFaultException.
-	 * @param msg the detail message
+	 *
+	 * @param msg   the detail message
 	 * @param cause the root cause from the SOAP API in use
 	 */
 	protected SoapFaultException(String msg, Throwable cause) {

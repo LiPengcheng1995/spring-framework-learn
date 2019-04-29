@@ -16,11 +16,10 @@
 
 package org.springframework.core.io;
 
-import java.beans.PropertyEditor;
-
 import org.junit.Test;
-
 import org.springframework.core.env.StandardEnvironment;
+
+import java.beans.PropertyEditor;
 
 import static org.junit.Assert.*;
 
@@ -69,8 +68,7 @@ public class ResourceEditorTests {
 			editor.setAsText("${test.prop}-${bar}");
 			Resource resolved = (Resource) editor.getValue();
 			assertEquals("foo-${bar}", resolved.getFilename());
-		}
-		finally {
+		} finally {
 			System.getProperties().remove("test.prop");
 		}
 	}
@@ -83,8 +81,7 @@ public class ResourceEditorTests {
 			editor.setAsText("${test.prop}-${bar}");
 			Resource resolved = (Resource) editor.getValue();
 			assertEquals("foo-${bar}", resolved.getFilename());
-		}
-		finally {
+		} finally {
 			System.getProperties().remove("test.prop");
 		}
 	}

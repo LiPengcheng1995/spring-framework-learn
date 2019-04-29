@@ -16,6 +16,12 @@
 
 package org.springframework.http.converter;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.http.*;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
@@ -23,17 +29,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpInputMessage;
-import org.springframework.http.HttpOutputMessage;
-import org.springframework.http.MediaType;
-import org.springframework.http.StreamingHttpOutputMessage;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 
 /**
  * Abstract base class for most {@link HttpMessageConverter} implementations.
@@ -49,7 +44,9 @@ import org.springframework.util.Assert;
  */
 public abstract class AbstractHttpMessageConverter<T> implements HttpMessageConverter<T> {
 
-	/** Logger available to subclasses */
+	/**
+	 * Logger available to subclasses
+	 */
 	protected final Log logger = LogFactory.getLog(getClass());
 
 	private List<MediaType> supportedMediaTypes = Collections.emptyList();
@@ -60,6 +57,7 @@ public abstract class AbstractHttpMessageConverter<T> implements HttpMessageConv
 
 	/**
 	 * Construct an {@code AbstractHttpMessageConverter} with no supported media types.
+	 *
 	 * @see #setSupportedMediaTypes
 	 */
 	protected AbstractHttpMessageConverter() {
@@ -67,6 +65,7 @@ public abstract class AbstractHttpMessageConverter<T> implements HttpMessageConv
 
 	/**
 	 * Construct an {@code AbstractHttpMessageConverter} with one supported media type.
+	 *
 	 * @param supportedMediaType the supported media type
 	 */
 	protected AbstractHttpMessageConverter(MediaType supportedMediaType) {
@@ -75,6 +74,7 @@ public abstract class AbstractHttpMessageConverter<T> implements HttpMessageConv
 
 	/**
 	 * Construct an {@code AbstractHttpMessageConverter} with multiple supported media types.
+	 *
 	 * @param supportedMediaTypes the supported media types
 	 */
 	protected AbstractHttpMessageConverter(MediaType... supportedMediaTypes) {
@@ -84,7 +84,8 @@ public abstract class AbstractHttpMessageConverter<T> implements HttpMessageConv
 	/**
 	 * Construct an {@code AbstractHttpMessageConverter} with a default charset and
 	 * multiple supported media types.
-	 * @param defaultCharset the default character set
+	 *
+	 * @param defaultCharset      the default character set
 	 * @param supportedMediaTypes the supported media types
 	 * @since 4.3
 	 */
@@ -93,6 +94,10 @@ public abstract class AbstractHttpMessageConverter<T> implements HttpMessageConv
 		setSupportedMediaTypes(Arrays.asList(supportedMediaTypes));
 	}
 
+	@Override
+	public List<MediaType> getSupportedMediaTypes() {
+		return Collections.unmodifiableList(this.supportedMediaTypes);
+	}
 
 	/**
 	 * Set the list of {@link MediaType} objects supported by this converter.
@@ -102,21 +107,9 @@ public abstract class AbstractHttpMessageConverter<T> implements HttpMessageConv
 		this.supportedMediaTypes = new ArrayList<>(supportedMediaTypes);
 	}
 
-	@Override
-	public List<MediaType> getSupportedMediaTypes() {
-		return Collections.unmodifiableList(this.supportedMediaTypes);
-	}
-
-	/**
-	 * Set the default character set, if any.
-	 * @since 4.3
-	 */
-	public void setDefaultCharset(@Nullable Charset defaultCharset) {
-		this.defaultCharset = defaultCharset;
-	}
-
 	/**
 	 * Return the default character set, if any.
+	 *
 	 * @since 4.3
 	 */
 	@Nullable
@@ -124,6 +117,14 @@ public abstract class AbstractHttpMessageConverter<T> implements HttpMessageConv
 		return this.defaultCharset;
 	}
 
+	/**
+	 * Set the default character set, if any.
+	 *
+	 * @since 4.3
+	 */
+	public void setDefaultCharset(@Nullable Charset defaultCharset) {
+		this.defaultCharset = defaultCharset;
+	}
 
 	/**
 	 * This implementation checks if the given class is {@linkplain #supports(Class) supported},
@@ -139,8 +140,9 @@ public abstract class AbstractHttpMessageConverter<T> implements HttpMessageConv
 	 * Returns {@code true} if any of the {@linkplain #setSupportedMediaTypes(List)
 	 * supported} media types {@link MediaType#includes(MediaType) include} the
 	 * given media type.
+	 *
 	 * @param mediaType the media type to read, can be {@code null} if not specified.
-	 * Typically the value of a {@code Content-Type} header.
+	 *                  Typically the value of a {@code Content-Type} header.
 	 * @return {@code true} if the supported media types include the media type,
 	 * or if the media type is {@code null}
 	 */
@@ -170,8 +172,9 @@ public abstract class AbstractHttpMessageConverter<T> implements HttpMessageConv
 	/**
 	 * Returns {@code true} if the given media type includes any of the
 	 * {@linkplain #setSupportedMediaTypes(List) supported media types}.
+	 *
 	 * @param mediaType the media type to write, can be {@code null} if not specified.
-	 * Typically the value of an {@code Accept} header.
+	 *                  Typically the value of an {@code Accept} header.
 	 * @return {@code true} if the supported media types are compatible with the media type,
 	 * or if the media type is {@code null}
 	 */
@@ -216,13 +219,13 @@ public abstract class AbstractHttpMessageConverter<T> implements HttpMessageConv
 				public OutputStream getBody() {
 					return outputStream;
 				}
+
 				@Override
 				public HttpHeaders getHeaders() {
 					return headers;
 				}
 			}));
-		}
-		else {
+		} else {
 			writeInternal(t, outputMessage);
 			outputMessage.getBody().flush();
 		}
@@ -233,6 +236,7 @@ public abstract class AbstractHttpMessageConverter<T> implements HttpMessageConv
 	 * <p>This implementation delegates to {@link #getDefaultContentType(Object)} if a
 	 * content type was not provided, set if necessary the default character set, calls
 	 * {@link #getContentLength}, and sets the corresponding headers.
+	 *
 	 * @since 4.2
 	 */
 	protected void addDefaultHeaders(HttpHeaders headers, T t, @Nullable MediaType contentType) throws IOException {
@@ -240,8 +244,7 @@ public abstract class AbstractHttpMessageConverter<T> implements HttpMessageConv
 			MediaType contentTypeToUse = contentType;
 			if (contentType == null || contentType.isWildcardType() || contentType.isWildcardSubtype()) {
 				contentTypeToUse = getDefaultContentType(t);
-			}
-			else if (MediaType.APPLICATION_OCTET_STREAM.equals(contentType)) {
+			} else if (MediaType.APPLICATION_OCTET_STREAM.equals(contentType)) {
 				MediaType mediaType = getDefaultContentType(t);
 				contentTypeToUse = (mediaType != null ? mediaType : contentTypeToUse);
 			}
@@ -269,6 +272,7 @@ public abstract class AbstractHttpMessageConverter<T> implements HttpMessageConv
 	 * <p>By default, this returns the first element of the
 	 * {@link #setSupportedMediaTypes(List) supportedMediaTypes} property, if any.
 	 * Can be overridden in subclasses.
+	 *
 	 * @param t the type to return the content type for
 	 * @return the content type, or {@code null} if not known
 	 */
@@ -282,6 +286,7 @@ public abstract class AbstractHttpMessageConverter<T> implements HttpMessageConv
 	 * Returns the content length for the given type.
 	 * <p>By default, this returns {@code null}, meaning that the content length is unknown.
 	 * Can be overridden in subclasses.
+	 *
 	 * @param t the type to return the content length for
 	 * @return the content length, or {@code null} if not known
 	 */
@@ -293,6 +298,7 @@ public abstract class AbstractHttpMessageConverter<T> implements HttpMessageConv
 
 	/**
 	 * Indicates whether the given class is supported by this converter.
+	 *
 	 * @param clazz the class to test for support
 	 * @return {@code true} if supported; {@code false} otherwise
 	 */
@@ -300,10 +306,11 @@ public abstract class AbstractHttpMessageConverter<T> implements HttpMessageConv
 
 	/**
 	 * Abstract template method that reads the actual object. Invoked from {@link #read}.
-	 * @param clazz the type of object to return
+	 *
+	 * @param clazz        the type of object to return
 	 * @param inputMessage the HTTP input message to read from
 	 * @return the converted object
-	 * @throws IOException in case of I/O errors
+	 * @throws IOException                     in case of I/O errors
 	 * @throws HttpMessageNotReadableException in case of conversion errors
 	 */
 	protected abstract T readInternal(Class<? extends T> clazz, HttpInputMessage inputMessage)
@@ -311,9 +318,10 @@ public abstract class AbstractHttpMessageConverter<T> implements HttpMessageConv
 
 	/**
 	 * Abstract template method that writes the actual body. Invoked from {@link #write}.
-	 * @param t the object to write to the output message
+	 *
+	 * @param t             the object to write to the output message
 	 * @param outputMessage the HTTP output message to write to
-	 * @throws IOException in case of I/O errors
+	 * @throws IOException                     in case of I/O errors
 	 * @throws HttpMessageNotWritableException in case of conversion errors
 	 */
 	protected abstract void writeInternal(T t, HttpOutputMessage outputMessage)

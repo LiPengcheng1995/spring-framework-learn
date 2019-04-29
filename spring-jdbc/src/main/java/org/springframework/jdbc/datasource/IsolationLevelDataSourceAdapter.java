@@ -16,14 +16,14 @@
 
 package org.springframework.jdbc.datasource;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import org.springframework.core.Constants;
 import org.springframework.lang.Nullable;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * An adapter for a target {@link javax.sql.DataSource}, applying the current
@@ -47,15 +47,17 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  * <b>Make sure that the target DataSource properly cleans up such transaction state.</b>
  *
  * @author Juergen Hoeller
- * @since 2.0.3
  * @see #setIsolationLevel
  * @see #setIsolationLevelName
  * @see #setUsername
  * @see #setPassword
+ * @since 2.0.3
  */
 public class IsolationLevelDataSourceAdapter extends UserCredentialsDataSourceAdapter {
 
-	/** Constants instance for TransactionDefinition */
+	/**
+	 * Constants instance for TransactionDefinition
+	 */
 	private static final Constants constants = new Constants(TransactionDefinition.class);
 
 	@Nullable
@@ -69,6 +71,7 @@ public class IsolationLevelDataSourceAdapter extends UserCredentialsDataSourceAd
 	 * <p>If not specified, the target DataSource's default will be used.
 	 * Note that a transaction-specific isolation value will always override
 	 * any isolation setting specified at the DataSource level.
+	 *
 	 * @param constantName name of the constant
 	 * @see org.springframework.transaction.TransactionDefinition#ISOLATION_READ_UNCOMMITTED
 	 * @see org.springframework.transaction.TransactionDefinition#ISOLATION_READ_COMMITTED
@@ -84,6 +87,15 @@ public class IsolationLevelDataSourceAdapter extends UserCredentialsDataSourceAd
 	}
 
 	/**
+	 * Return the statically specified isolation level,
+	 * or {@code null} if none.
+	 */
+	@Nullable
+	protected Integer getIsolationLevel() {
+		return this.isolationLevel;
+	}
+
+	/**
 	 * Specify the default isolation level to use for Connection retrieval,
 	 * according to the JDBC {@link java.sql.Connection} constants
 	 * (equivalent to the corresponding Spring
@@ -91,6 +103,7 @@ public class IsolationLevelDataSourceAdapter extends UserCredentialsDataSourceAd
 	 * <p>If not specified, the target DataSource's default will be used.
 	 * Note that a transaction-specific isolation value will always override
 	 * any isolation setting specified at the DataSource level.
+	 *
 	 * @see java.sql.Connection#TRANSACTION_READ_UNCOMMITTED
 	 * @see java.sql.Connection#TRANSACTION_READ_COMMITTED
 	 * @see java.sql.Connection#TRANSACTION_REPEATABLE_READ
@@ -110,18 +123,9 @@ public class IsolationLevelDataSourceAdapter extends UserCredentialsDataSourceAd
 	}
 
 	/**
-	 * Return the statically specified isolation level,
-	 * or {@code null} if none.
-	 */
-	@Nullable
-	protected Integer getIsolationLevel() {
-		return this.isolationLevel;
-	}
-
-
-	/**
 	 * Applies the current isolation level value and read-only flag
 	 * to the returned Connection.
+	 *
 	 * @see #getCurrentIsolationLevel()
 	 * @see #getCurrentReadOnlyFlag()
 	 */
@@ -142,6 +146,7 @@ public class IsolationLevelDataSourceAdapter extends UserCredentialsDataSourceAd
 	/**
 	 * Determine the current isolation level: either the transaction's
 	 * isolation level or a statically defined isolation level.
+	 *
 	 * @return the current isolation level, or {@code null} if none
 	 * @see org.springframework.transaction.support.TransactionSynchronizationManager#getCurrentTransactionIsolationLevel()
 	 * @see #setIsolationLevel
@@ -158,6 +163,7 @@ public class IsolationLevelDataSourceAdapter extends UserCredentialsDataSourceAd
 	/**
 	 * Determine the current read-only flag: by default,
 	 * the transaction's read-only hint.
+	 *
 	 * @return whether there is a read-only hint for the current scope
 	 * @see org.springframework.transaction.support.TransactionSynchronizationManager#isCurrentTransactionReadOnly()
 	 */

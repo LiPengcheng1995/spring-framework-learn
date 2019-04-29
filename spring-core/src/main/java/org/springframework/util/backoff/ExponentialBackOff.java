@@ -86,6 +86,7 @@ public class ExponentialBackOff implements BackOff {
 
 	/**
 	 * Create an instance with the default settings.
+	 *
 	 * @see #DEFAULT_INITIAL_INTERVAL
 	 * @see #DEFAULT_MULTIPLIER
 	 * @see #DEFAULT_MAX_INTERVAL
@@ -96,8 +97,9 @@ public class ExponentialBackOff implements BackOff {
 
 	/**
 	 * Create an instance with the supplied settings.
+	 *
 	 * @param initialInterval the initial interval in milliseconds
-	 * @param multiplier the multiplier (should be greater than or equal to 1)
+	 * @param multiplier      the multiplier (should be greater than or equal to 1)
 	 */
 	public ExponentialBackOff(long initialInterval, double multiplier) {
 		checkMultiplier(multiplier);
@@ -105,6 +107,12 @@ public class ExponentialBackOff implements BackOff {
 		this.multiplier = multiplier;
 	}
 
+	/**
+	 * Return the initial interval in milliseconds.
+	 */
+	public long getInitialInterval() {
+		return initialInterval;
+	}
 
 	/**
 	 * The initial interval in milliseconds.
@@ -114,10 +122,10 @@ public class ExponentialBackOff implements BackOff {
 	}
 
 	/**
-	 * Return the initial interval in milliseconds.
+	 * Return the value to multiply the current interval by for each retry attempt.
 	 */
-	public long getInitialInterval() {
-		return initialInterval;
+	public double getMultiplier() {
+		return multiplier;
 	}
 
 	/**
@@ -129,10 +137,10 @@ public class ExponentialBackOff implements BackOff {
 	}
 
 	/**
-	 * Return the value to multiply the current interval by for each retry attempt.
+	 * Return the maximum back off time.
 	 */
-	public double getMultiplier() {
-		return multiplier;
+	public long getMaxInterval() {
+		return maxInterval;
 	}
 
 	/**
@@ -143,10 +151,11 @@ public class ExponentialBackOff implements BackOff {
 	}
 
 	/**
-	 * Return the maximum back off time.
+	 * Return the maximum elapsed time in milliseconds after which a call to
+	 * {@link BackOffExecution#nextBackOff()} returns {@link BackOffExecution#STOP}.
 	 */
-	public long getMaxInterval() {
-		return maxInterval;
+	public long getMaxElapsedTime() {
+		return maxElapsedTime;
 	}
 
 	/**
@@ -157,14 +166,6 @@ public class ExponentialBackOff implements BackOff {
 		this.maxElapsedTime = maxElapsedTime;
 	}
 
-	/**
-	 * Return the maximum elapsed time in milliseconds after which a call to
-	 * {@link BackOffExecution#nextBackOff()} returns {@link BackOffExecution#STOP}.
-	 */
-	public long getMaxElapsedTime() {
-		return maxElapsedTime;
-	}
-
 	@Override
 	public BackOffExecution start() {
 		return new ExponentialBackOffExecution();
@@ -172,7 +173,7 @@ public class ExponentialBackOff implements BackOff {
 
 	private void checkMultiplier(double multiplier) {
 		Assert.isTrue(multiplier >= 1, () -> "Invalid multiplier '" + multiplier + "'. Should be greater than " +
-					"or equal to 1. A multiplier of 1 is equivalent to a fixed interval.");
+				"or equal to 1. A multiplier of 1 is equivalent to a fixed interval.");
 	}
 
 
@@ -197,13 +198,11 @@ public class ExponentialBackOff implements BackOff {
 			long maxInterval = getMaxInterval();
 			if (this.currentInterval >= maxInterval) {
 				return maxInterval;
-			}
-			else if (this.currentInterval < 0) {
-			 	long initialInterval = getInitialInterval();
+			} else if (this.currentInterval < 0) {
+				long initialInterval = getInitialInterval();
 				this.currentInterval = (initialInterval < maxInterval
 						? initialInterval : maxInterval);
-			}
-			else {
+			} else {
 				this.currentInterval = multiplyInterval(maxInterval);
 			}
 			return this.currentInterval;

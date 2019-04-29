@@ -16,18 +16,10 @@
 
 package org.springframework.web.socket;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,7 +32,15 @@ import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
-import static org.junit.Assert.*;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Client and server-side WebSocket integration tests.
@@ -53,7 +53,7 @@ public class WebSocketHandshakeTests extends AbstractWebSocketIntegrationTests {
 
 	@Parameters(name = "server [{0}], client [{1}]")
 	public static Iterable<Object[]> arguments() {
-		return Arrays.asList(new Object[][] {
+		return Arrays.asList(new Object[][]{
 				{new JettyWebSocketTestServer(), new JettyWebSocketClient()},
 				{new TomcatWebSocketTestServer(), new StandardWebSocketClient()},
 				{new UndertowTestServer(), new JettyWebSocketClient()}
@@ -63,7 +63,7 @@ public class WebSocketHandshakeTests extends AbstractWebSocketIntegrationTests {
 
 	@Override
 	protected Class<?>[] getAnnotatedConfigClasses() {
-		return new Class<?>[] {TestConfig.class};
+		return new Class<?>[]{TestConfig.class};
 	}
 
 	@Test
@@ -79,7 +79,8 @@ public class WebSocketHandshakeTests extends AbstractWebSocketIntegrationTests {
 	@Test  // SPR-12727
 	public void unsolicitedPongWithEmptyPayload() throws Exception {
 		String url = getWsBaseUrl() + "/ws";
-		WebSocketSession session = this.webSocketClient.doHandshake(new AbstractWebSocketHandler() {}, url).get();
+		WebSocketSession session = this.webSocketClient.doHandshake(new AbstractWebSocketHandler() {
+		}, url).get();
 
 		TestWebSocketHandler serverHandler = this.wac.getBean(TestWebSocketHandler.class);
 		serverHandler.setWaitMessageCount(1);
@@ -116,12 +117,9 @@ public class WebSocketHandshakeTests extends AbstractWebSocketIntegrationTests {
 	@SuppressWarnings("rawtypes")
 	private static class TestWebSocketHandler extends AbstractWebSocketHandler {
 
-		private List<WebSocketMessage> receivedMessages = new ArrayList<>();
-
-		private int waitMessageCount;
-
 		private final CountDownLatch latch = new CountDownLatch(1);
-
+		private List<WebSocketMessage> receivedMessages = new ArrayList<>();
+		private int waitMessageCount;
 		private Throwable transportError;
 
 		public void setWaitMessageCount(int waitMessageCount) {

@@ -17,7 +17,6 @@
 package org.springframework.web.util;
 
 import org.junit.Test;
-
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.util.FileCopyUtils;
 
@@ -74,8 +73,7 @@ public class ContentCachingRequestWrapperTests {
 		try {
 			FileCopyUtils.copyToByteArray(wrapper.getInputStream());
 			fail("Should have thrown IllegalStateException");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertEquals("3", ex.getMessage());
 		}
 	}

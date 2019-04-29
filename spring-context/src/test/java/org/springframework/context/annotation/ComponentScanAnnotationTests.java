@@ -17,17 +17,19 @@
 package org.springframework.context.annotation;
 
 import org.junit.Test;
-
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.core.type.filter.TypeFilter;
+
+@interface MyAnnotation {
+}
 
 /**
  * Unit tests for the @ComponentScan annotation.
  *
  * @author Chris Beams
- * @since 3.1
  * @see ComponentScanAnnotationIntegrationTests
+ * @since 3.1
  */
 public class ComponentScanAnnotationTests {
 
@@ -38,25 +40,21 @@ public class ComponentScanAnnotationTests {
 	}
 }
 
-
-@interface MyAnnotation {
-}
-
 @Configuration
 @ComponentScan(
-	basePackageClasses = TestBean.class,
-	nameGenerator = DefaultBeanNameGenerator.class,
-	scopedProxy = ScopedProxyMode.NO,
-	scopeResolver = AnnotationScopeMetadataResolver.class,
-	resourcePattern = "**/*custom.class",
-	useDefaultFilters = false,
-	includeFilters = {
-		@Filter(type = FilterType.ANNOTATION, value = MyAnnotation.class)
-	},
-	excludeFilters = {
-		@Filter(type = FilterType.CUSTOM, value = TypeFilter.class)
-	},
-	lazyInit = true
+		basePackageClasses = TestBean.class,
+		nameGenerator = DefaultBeanNameGenerator.class,
+		scopedProxy = ScopedProxyMode.NO,
+		scopeResolver = AnnotationScopeMetadataResolver.class,
+		resourcePattern = "**/*custom.class",
+		useDefaultFilters = false,
+		includeFilters = {
+				@Filter(type = FilterType.ANNOTATION, value = MyAnnotation.class)
+		},
+		excludeFilters = {
+				@Filter(type = FilterType.CUSTOM, value = TypeFilter.class)
+		},
+		lazyInit = true
 )
 class MyConfig {
 }

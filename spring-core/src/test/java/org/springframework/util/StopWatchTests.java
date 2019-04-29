@@ -29,10 +29,9 @@ import static org.junit.Assert.*;
  */
 public class StopWatchTests {
 
-	private final StopWatch sw = new StopWatch();
-
 	@Rule
 	public final ExpectedException exception = ExpectedException.none();
+	private final StopWatch sw = new StopWatch();
 
 	@Test
 	public void validUsage() throws Exception {

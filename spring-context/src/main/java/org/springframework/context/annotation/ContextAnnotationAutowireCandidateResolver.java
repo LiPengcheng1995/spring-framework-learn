@@ -16,14 +16,6 @@
 
 package org.springframework.context.annotation;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.springframework.aop.TargetSource;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -34,6 +26,10 @@ import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  * Complete implementation of the
@@ -81,10 +77,12 @@ public class ContextAnnotationAutowireCandidateResolver extends QualifierAnnotat
 			public Class<?> getTargetClass() {
 				return descriptor.getDependencyType();
 			}
+
 			@Override
 			public boolean isStatic() {
 				return false;
 			}
+
 			@Override
 			public Object getTarget() {
 				Object target = beanFactory.doResolveDependency(descriptor, beanName, null, null);
@@ -92,11 +90,9 @@ public class ContextAnnotationAutowireCandidateResolver extends QualifierAnnotat
 					Class<?> type = getTargetClass();
 					if (Map.class == type) {
 						return Collections.emptyMap();
-					}
-					else if (List.class == type) {
+					} else if (List.class == type) {
 						return Collections.emptyList();
-					}
-					else if (Set.class == type || Collection.class == type) {
+					} else if (Set.class == type || Collection.class == type) {
 						return Collections.emptySet();
 					}
 					throw new NoSuchBeanDefinitionException(descriptor.getResolvableType(),
@@ -104,6 +100,7 @@ public class ContextAnnotationAutowireCandidateResolver extends QualifierAnnotat
 				}
 				return target;
 			}
+
 			@Override
 			public void releaseTarget(Object target) {
 			}

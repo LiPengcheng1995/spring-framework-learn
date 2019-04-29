@@ -16,18 +16,17 @@
 
 package org.springframework.jdbc.support;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.jdbc.CannotGetJdbcConnectionException;
+import org.springframework.lang.Nullable;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.concurrent.TimeUnit;
-import javax.sql.DataSource;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.jdbc.CannotGetJdbcConnectionException;
-import org.springframework.lang.Nullable;
 
 /**
  * Bean that checks if a database has already started up. To be referenced
@@ -129,8 +128,7 @@ public class DatabaseStartupValidator implements InitializingBean {
 					stmt = con.createStatement();
 					stmt.execute(this.validationQuery);
 					validated = true;
-				}
-				catch (SQLException ex) {
+				} catch (SQLException ex) {
 					latestEx = ex;
 					if (logger.isDebugEnabled()) {
 						logger.debug("Validation query [" + this.validationQuery + "] threw exception", ex);
@@ -142,8 +140,7 @@ public class DatabaseStartupValidator implements InitializingBean {
 									" seconds (timeout in " + rest + " seconds)");
 						}
 					}
-				}
-				finally {
+				} finally {
 					JdbcUtils.closeStatement(stmt);
 					JdbcUtils.closeConnection(con);
 				}
@@ -162,8 +159,7 @@ public class DatabaseStartupValidator implements InitializingBean {
 				float duration = ((float) (System.currentTimeMillis() - beginTime)) / 1000;
 				logger.info("Database startup detected after " + duration + " seconds");
 			}
-		}
-		catch (InterruptedException ex) {
+		} catch (InterruptedException ex) {
 			// Re-interrupt current thread, to allow other threads to react.
 			Thread.currentThread().interrupt();
 		}

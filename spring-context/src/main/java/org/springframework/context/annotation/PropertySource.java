@@ -16,14 +16,9 @@
 
 package org.springframework.context.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Repeatable;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.core.io.support.PropertySourceFactory;
+
+import java.lang.annotation.*;
 
 /**
  * Annotation providing a convenient and declarative mechanism for adding a
@@ -53,14 +48,14 @@ import org.springframework.core.io.support.PropertySourceFactory;
  *         return testBean;
  *     }
  * }</pre>
- *
+ * <p>
  * Notice that the {@code Environment} object is
  * {@link org.springframework.beans.factory.annotation.Autowired @Autowired} into the
  * configuration class and then used when populating the {@code TestBean} object. Given
  * the configuration above, a call to {@code testBean.getName()} will return "myTestBean".
  *
  * <h3>Resolving ${...} placeholders in {@code <bean>} and {@code @Value} annotations</h3>
- *
+ * <p>
  * In order to resolve ${...} placeholders in {@code <bean>} definitions or {@code @Value}
  * annotations using properties from a {@code PropertySource}, one must register
  * a {@code PropertySourcesPlaceholderConfigurer}. This happens automatically when using
@@ -71,7 +66,7 @@ import org.springframework.core.io.support.PropertySourceFactory;
  * for details and examples.
  *
  * <h3>Resolving ${...} placeholders within {@code @PropertySource} resource locations</h3>
- *
+ * <p>
  * Any ${...} placeholders present in a {@code @PropertySource} {@linkplain #value()
  * resource location} will be resolved against the set of property sources already
  * registered against the environment. For example:
@@ -91,7 +86,7 @@ import org.springframework.core.io.support.PropertySourceFactory;
  *         return testBean;
  *     }
  * }</pre>
- *
+ * <p>
  * Assuming that "my.placeholder" is present in one of the property sources already
  * registered, e.g. system properties or environment variables, the placeholder will
  * be resolved to the corresponding value. If not, then "default/path" will be used as a
@@ -100,10 +95,10 @@ import org.springframework.core.io.support.PropertySourceFactory;
  * IllegalArgumentException} will be thrown.
  *
  * <h3>A note on property overriding with @PropertySource</h3>
- *
+ * <p>
  * In cases where a given property key exists in more than one {@code .properties}
  * file, the last {@code @PropertySource} annotation processed will 'win' and override.
- *
+ * <p>
  * For example, given two properties files {@code a.properties} and
  * {@code b.properties}, consider the following two configuration classes
  * that reference them with {@code @PropertySource} annotations:
@@ -117,7 +112,7 @@ import org.springframework.core.io.support.PropertySourceFactory;
  * &#064;PropertySource("classpath:/com/myco/b.properties")
  * public class ConfigB { }
  * </pre>
- *
+ * <p>
  * The override ordering depends on the order in which these classes are registered
  * with the application context.
  *
@@ -127,7 +122,7 @@ import org.springframework.core.io.support.PropertySourceFactory;
  * ctx.register(ConfigB.class);
  * ctx.refresh();
  * </pre>
- *
+ * <p>
  * In the scenario above, the properties in {@code b.properties} will override any
  * duplicates that exist in {@code a.properties}, because {@code ConfigB} was registered
  * last.
@@ -150,12 +145,12 @@ import org.springframework.core.io.support.PropertySourceFactory;
  * @author Chris Beams
  * @author Juergen Hoeller
  * @author Phillip Webb
- * @since 3.1
  * @see PropertySources
  * @see Configuration
  * @see org.springframework.core.env.PropertySource
  * @see org.springframework.core.env.ConfigurableEnvironment#getPropertySources()
  * @see org.springframework.core.env.MutablePropertySources
+ * @since 3.1
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -166,6 +161,7 @@ public @interface PropertySource {
 	/**
 	 * Indicate the name of this property source. If omitted, a name will
 	 * be generated based on the description of the underlying resource.
+	 *
 	 * @see org.springframework.core.env.PropertySource#getName()
 	 * @see org.springframework.core.io.Resource#getDescription()
 	 */
@@ -191,12 +187,14 @@ public @interface PropertySource {
 	 * ignored.
 	 * <p>{@code true} is appropriate if the properties file is completely optional.
 	 * Default is {@code false}.
+	 *
 	 * @since 4.0
 	 */
 	boolean ignoreResourceNotFound() default false;
 
 	/**
 	 * A specific character encoding for the given resources, e.g. "UTF-8".
+	 *
 	 * @since 4.3
 	 */
 	String encoding() default "";
@@ -204,9 +202,10 @@ public @interface PropertySource {
 	/**
 	 * Specify a custom {@link PropertySourceFactory}, if any.
 	 * <p>By default, a default factory for standard resource files will be used.
-	 * @since 4.3
+	 *
 	 * @see org.springframework.core.io.support.DefaultPropertySourceFactory
 	 * @see org.springframework.core.io.support.ResourcePropertySource
+	 * @since 4.3
 	 */
 	Class<? extends PropertySourceFactory> factory() default PropertySourceFactory.class;
 

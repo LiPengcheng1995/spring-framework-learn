@@ -16,18 +16,17 @@
 
 package org.springframework.messaging.support;
 
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageHeaders;
+import org.springframework.util.IdGenerator;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageHeaders;
-import org.springframework.util.IdGenerator;
 
 import static org.junit.Assert.*;
 
@@ -121,20 +120,20 @@ public class MessageBuilderTests {
 	@Test
 	public void testRemove() {
 		Message<Integer> message1 = MessageBuilder.withPayload(1)
-			.setHeader("foo", "bar").build();
+				.setHeader("foo", "bar").build();
 		Message<Integer> message2 = MessageBuilder.fromMessage(message1)
-			.removeHeader("foo")
-			.build();
+				.removeHeader("foo")
+				.build();
 		assertFalse(message2.getHeaders().containsKey("foo"));
 	}
 
 	@Test
 	public void testSettingToNullRemoves() {
 		Message<Integer> message1 = MessageBuilder.withPayload(1)
-			.setHeader("foo", "bar").build();
+				.setHeader("foo", "bar").build();
 		Message<Integer> message2 = MessageBuilder.fromMessage(message1)
-			.setHeader("foo", null)
-			.build();
+				.setHeader("foo", null)
+				.build();
 		assertFalse(message2.getHeaders().containsKey("foo"));
 	}
 

@@ -16,14 +16,6 @@
 
 package org.springframework.web.server;
 
-import java.security.Principal;
-import java.time.Instant;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
-import reactor.core.publisher.Mono;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.i18n.LocaleContext;
 import org.springframework.http.codec.multipart.Part;
@@ -32,6 +24,13 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.MultiValueMap;
+import reactor.core.publisher.Mono;
+
+import java.security.Principal;
+import java.time.Instant;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Contract for an HTTP request-response interaction. Provides access to the HTTP
@@ -60,8 +59,9 @@ public interface ServerWebExchange {
 
 	/**
 	 * Return the request attribute value if present.
+	 *
 	 * @param name the attribute name
-	 * @param <T> the attribute type
+	 * @param <T>  the attribute type
 	 * @return the attribute value
 	 */
 	@SuppressWarnings("unchecked")
@@ -73,8 +73,9 @@ public interface ServerWebExchange {
 	/**
 	 * Return the request attribute value or if not present raise an
 	 * {@link IllegalArgumentException}.
+	 *
 	 * @param name the attribute name
-	 * @param <T> the attribute type
+	 * @param <T>  the attribute type
 	 * @return the attribute value
 	 */
 	@SuppressWarnings("unchecked")
@@ -86,9 +87,10 @@ public interface ServerWebExchange {
 
 	/**
 	 * Return the request attribute value, or a default, fallback value.
-	 * @param name the attribute name
+	 *
+	 * @param name         the attribute name
 	 * @param defaultValue a default value to return instead
-	 * @param <T> the attribute type
+	 * @param <T>          the attribute type
 	 * @return the attribute value
 	 */
 	@SuppressWarnings("unchecked")
@@ -139,8 +141,9 @@ public interface ServerWebExchange {
 	 * Return the {@link ApplicationContext} associated with the web application,
 	 * if it was initialized with one via
 	 * {@link org.springframework.web.server.adapter.WebHttpHandlerBuilder#applicationContext(ApplicationContext)}.
-	 * @since 5.0.3
+	 *
 	 * @see org.springframework.web.server.adapter.WebHttpHandlerBuilder#applicationContext(ApplicationContext)
+	 * @since 5.0.3
 	 */
 	@Nullable
 	ApplicationContext getApplicationContext();
@@ -154,6 +157,7 @@ public interface ServerWebExchange {
 	/**
 	 * An overloaded variant of {@link #checkNotModified(String, Instant)} with
 	 * a last-modified timestamp only.
+	 *
 	 * @param lastModified the last-modified time
 	 * @return whether the request qualifies as not modified
 	 */
@@ -162,6 +166,7 @@ public interface ServerWebExchange {
 	/**
 	 * An overloaded variant of {@link #checkNotModified(String, Instant)} with
 	 * an {@code ETag} (entity tag) value only.
+	 *
 	 * @param etag the entity tag for the underlying resource.
 	 * @return true if the request does not require further processing.
 	 */
@@ -178,11 +183,12 @@ public interface ServerWebExchange {
 	 * ETag and Last-Modified values, but you can also use
 	 * {@code #checkNotModified(String)} or
 	 * {@link #checkNotModified(Instant)}.
-	 * @param etag the entity tag that the application determined for the
-	 * underlying resource. This parameter will be padded with quotes (")
-	 * if necessary.
+	 *
+	 * @param etag         the entity tag that the application determined for the
+	 *                     underlying resource. This parameter will be padded with quotes (")
+	 *                     if necessary.
 	 * @param lastModified the last-modified timestamp that the application
-	 * determined for the underlying resource
+	 *                     determined for the underlying resource
 	 * @return true if the request does not require further processing.
 	 */
 	boolean checkNotModified(@Nullable String etag, Instant lastModified);
@@ -191,6 +197,7 @@ public interface ServerWebExchange {
 	 * Transform the given url according to the registered transformation function(s).
 	 * By default, this method returns the given {@code url}, though additional
 	 * transformation functions can by registered with {@link #addUrlTransformer}
+	 *
 	 * @param url the URL to transform
 	 * @return the transformed URL
 	 */
@@ -201,6 +208,7 @@ public interface ServerWebExchange {
 	 * The given function can be used to insert an id for authentication, a nonce for CSRF
 	 * protection, etc.
 	 * <p>Note that the given function is applied after any previously registered functions.
+	 *
 	 * @param transformer a URL transformation function to add
 	 */
 	void addUrlTransformer(Function<String, String> transformer);
@@ -235,6 +243,7 @@ public interface ServerWebExchange {
 		 *
 		 * exchange.mutate().request(request);
 		 * </pre>
+		 *
 		 * @see ServerHttpRequest#mutate()
 		 */
 		Builder request(Consumer<ServerHttpRequest.Builder> requestBuilderConsumer);
@@ -243,12 +252,14 @@ public interface ServerWebExchange {
 		 * Set the request to use especially when there is a need to override
 		 * {@link ServerHttpRequest} methods. To simply mutate request properties
 		 * see {@link #request(Consumer)} instead.
+		 *
 		 * @see org.springframework.http.server.reactive.ServerHttpRequestDecorator
 		 */
 		Builder request(ServerHttpRequest request);
 
 		/**
 		 * Set the response to use.
+		 *
 		 * @see org.springframework.http.server.reactive.ServerHttpResponseDecorator
 		 */
 		Builder response(ServerHttpResponse response);

@@ -16,14 +16,14 @@
 
 package org.springframework.web.util;
 
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 
 /**
  * Abstract base class for {@link UriTemplateHandler} implementations.
@@ -39,17 +39,24 @@ import org.springframework.util.Assert;
 @Deprecated
 public abstract class AbstractUriTemplateHandler implements UriTemplateHandler {
 
+	private final Map<String, Object> defaultUriVariables = new HashMap<>();
 	@Nullable
 	private String baseUrl;
 
-	private final Map<String, Object> defaultUriVariables = new HashMap<>();
-
+	/**
+	 * Return the configured base URL.
+	 */
+	@Nullable
+	public String getBaseUrl() {
+		return this.baseUrl;
+	}
 
 	/**
 	 * Configure a base URL to prepend URI templates with. The base URL must
 	 * have a scheme and host but may optionally contain a port and a path.
 	 * The base URL must be fully expanded and encoded which can be done via
 	 * {@link UriComponentsBuilder}.
+	 *
 	 * @param baseUrl the base URL.
 	 */
 	public void setBaseUrl(@Nullable String baseUrl) {
@@ -64,11 +71,10 @@ public abstract class AbstractUriTemplateHandler implements UriTemplateHandler {
 	}
 
 	/**
-	 * Return the configured base URL.
+	 * Return a read-only copy of the configured default URI variables.
 	 */
-	@Nullable
-	public String getBaseUrl() {
-		return this.baseUrl;
+	public Map<String, ?> getDefaultUriVariables() {
+		return Collections.unmodifiableMap(this.defaultUriVariables);
 	}
 
 	/**
@@ -76,6 +82,7 @@ public abstract class AbstractUriTemplateHandler implements UriTemplateHandler {
 	 * template. These default values apply only when expanding with a Map, and
 	 * not with an array, where the Map supplied to {@link #expand(String, Map)}
 	 * can override the default values.
+	 *
 	 * @param defaultUriVariables the default URI variable values
 	 * @since 4.3
 	 */
@@ -85,14 +92,6 @@ public abstract class AbstractUriTemplateHandler implements UriTemplateHandler {
 			this.defaultUriVariables.putAll(defaultUriVariables);
 		}
 	}
-
-	/**
-	 * Return a read-only copy of the configured default URI variables.
-	 */
-	public Map<String, ?> getDefaultUriVariables() {
-		return Collections.unmodifiableMap(this.defaultUriVariables);
-	}
-
 
 	@Override
 	public URI expand(String uriTemplate, Map<String, ?> uriVariables) {
@@ -134,8 +133,7 @@ public abstract class AbstractUriTemplateHandler implements UriTemplateHandler {
 				url = new URI(baseUrl + url.toString());
 			}
 			return url;
-		}
-		catch (URISyntaxException ex) {
+		} catch (URISyntaxException ex) {
 			throw new IllegalArgumentException("Invalid URL after inserting base URL: " + url, ex);
 		}
 	}

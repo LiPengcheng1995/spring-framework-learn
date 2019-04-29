@@ -19,7 +19,6 @@ package org.springframework.aop.target;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.aop.framework.Advised;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
@@ -32,7 +31,7 @@ import org.springframework.tests.sample.beans.SideEffectBean;
 import org.springframework.util.SerializationTestUtils;
 
 import static org.junit.Assert.*;
-import static org.springframework.tests.TestResourceUtils.*;
+import static org.springframework.tests.TestResourceUtils.qualifiedResource;
 
 /**
  * @author Rod Johnson
@@ -40,7 +39,9 @@ import static org.springframework.tests.TestResourceUtils.*;
  */
 public class HotSwappableTargetSourceTests {
 
-	/** Initial count value set in bean factory XML */
+	/**
+	 * Initial count value set in bean factory XML
+	 */
 	private static final int INITIAL_COUNT = 10;
 
 	private DefaultListableBeanFactory beanFactory;
@@ -112,8 +113,7 @@ public class HotSwappableTargetSourceTests {
 		try {
 			swapper.swap(null);
 			fail("Shouldn't be able to swap to invalid value");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// Ok
 			aopex = ex;
 		}

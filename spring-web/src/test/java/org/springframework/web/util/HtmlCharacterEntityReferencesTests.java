@@ -16,15 +16,11 @@
 
 package org.springframework.web.util;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StreamTokenizer;
+import org.junit.Test;
+
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.junit.Test;
 
 import static org.junit.Assert.*;
 
@@ -46,20 +42,18 @@ public class HtmlCharacterEntityReferencesTests {
 			if (referenceName != null) {
 				String fullReference =
 						HtmlCharacterEntityReferences.REFERENCE_START +
-						referenceName +
-						HtmlCharacterEntityReferences.REFERENCE_END;
+								referenceName +
+								HtmlCharacterEntityReferences.REFERENCE_END;
 				assertTrue("The unicode character " + character + " should be mapped to a reference",
 						entityReferences.isMappedToReference((char) character));
 				assertEquals("The reference of unicode character " + character + " should be entity " + referenceName,
 						fullReference, entityReferences.convertToReference((char) character));
 				assertEquals("The entity reference [" + referenceName + "] should be mapped to unicode character " +
 						character, (char) character, entityReferences.convertToCharacter(referenceName));
-			}
-			else if (character == 39) {
+			} else if (character == 39) {
 				assertTrue(entityReferences.isMappedToReference((char) character));
 				assertEquals("&#39;", entityReferences.convertToReference((char) character));
-			}
-			else {
+			} else {
 				assertFalse("The unicode character " + character + " should not be mapped to a reference",
 						entityReferences.isMappedToReference((char) character));
 				assertNull("No entity reference of unicode character " + character + " should exist",
@@ -117,8 +111,7 @@ public class HtmlCharacterEntityReferencesTests {
 					throw new IOException("Cannot find definition resource [" + DTD_FILE + "]");
 				}
 				tokenizer = new StreamTokenizer(new BufferedReader(new InputStreamReader(inputStream, "UTF-8")));
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				throw new IllegalStateException("Failed to open definition resource [" + DTD_FILE + "]");
 			}
 		}
@@ -154,8 +147,7 @@ public class HtmlCharacterEntityReferencesTests {
 					}
 				}
 				return false;
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				throw new IllegalStateException("Could not parse definition resource: " + ex.getMessage());
 			}
 		}

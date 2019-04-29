@@ -16,21 +16,19 @@
 
 package org.springframework.web.filter;
 
-import java.io.IOException;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-
 import org.junit.Test;
-
 import org.springframework.mock.web.test.MockFilterConfig;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.mock.web.test.MockHttpServletResponse;
 import org.springframework.mock.web.test.MockServletContext;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import java.io.IOException;
 
 import static org.junit.Assert.*;
 
@@ -58,6 +56,7 @@ public class RequestContextFilterTests {
 		// Expect one invocation by the filter being tested
 		class DummyFilterChain implements FilterChain {
 			public int invocations = 0;
+
 			@Override
 			public void doFilter(ServletRequest req, ServletResponse resp) throws IOException, ServletException {
 				++invocations;
@@ -67,12 +66,12 @@ public class RequestContextFilterTests {
 					if (sex != null) {
 						throw sex;
 					}
-				}
-				else {
+				} else {
 					throw new IllegalStateException("Too many invocations");
 				}
 			}
-		};
+		}
+		;
 
 		DummyFilterChain fc = new DummyFilterChain();
 		MockFilterConfig mfc = new MockFilterConfig(new MockServletContext(), "foo");
@@ -85,16 +84,14 @@ public class RequestContextFilterTests {
 			if (sex != null) {
 				fail();
 			}
-		}
-		catch (ServletException ex) {
+		} catch (ServletException ex) {
 			assertNotNull(sex);
 		}
 
 		try {
 			RequestContextHolder.currentRequestAttributes();
 			fail();
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			// Ok
 		}
 

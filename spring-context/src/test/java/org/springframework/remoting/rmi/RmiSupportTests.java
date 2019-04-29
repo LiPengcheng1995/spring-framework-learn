@@ -16,26 +16,17 @@
 
 package org.springframework.remoting.rmi;
 
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.rmi.ConnectException;
-import java.rmi.ConnectIOException;
-import java.rmi.MarshalException;
-import java.rmi.NoSuchObjectException;
-import java.rmi.Remote;
-import java.rmi.RemoteException;
-import java.rmi.StubNotFoundException;
-import java.rmi.UnknownHostException;
-import java.rmi.UnmarshalException;
-
 import org.aopalliance.intercept.MethodInvocation;
 import org.junit.Test;
-
 import org.springframework.remoting.RemoteAccessException;
 import org.springframework.remoting.RemoteConnectFailureException;
 import org.springframework.remoting.RemoteProxyFailureException;
 import org.springframework.remoting.support.RemoteInvocation;
+
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.rmi.*;
 
 import static org.junit.Assert.*;
 
@@ -109,12 +100,10 @@ public class RmiSupportTests {
 		try {
 			proxy.setName(exceptionClass.getName());
 			fail("Should have thrown " + exceptionClass.getName());
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			if (exceptionClass.isInstance(ex)) {
 				// expected
-			}
-			else {
+			} else {
 				throw ex;
 			}
 		}
@@ -157,12 +146,10 @@ public class RmiSupportTests {
 		try {
 			proxy.setName(exceptionClass.getName());
 			fail("Should have thrown " + exceptionClass.getName());
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			if (exceptionClass.isInstance(ex)) {
 				// expected
-			}
-			else {
+			} else {
 				throw ex;
 			}
 		}
@@ -195,8 +182,7 @@ public class RmiSupportTests {
 		try {
 			proxy.setOtherName("name");
 			fail("Should have thrown RemoteProxyFailureException");
-		}
-		catch (RemoteProxyFailureException ex) {
+		} catch (RemoteProxyFailureException ex) {
 			assertTrue(ex.getCause() instanceof NoSuchMethodException);
 			assertTrue(ex.getMessage().contains("setOtherName"));
 			assertTrue(ex.getMessage().contains("IWrongBusinessBean"));
@@ -253,12 +239,10 @@ public class RmiSupportTests {
 		try {
 			proxy.setName(rmiExceptionClass.getName());
 			fail("Should have thrown " + rmiExceptionClass.getName());
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			if (springExceptionClass.isInstance(ex)) {
 				// expected
-			}
-			else {
+			} else {
 				throw ex;
 			}
 		}
@@ -315,33 +299,29 @@ public class RmiSupportTests {
 		try {
 			proxy.setName(rmiExceptionClass.getName());
 			fail("Should have thrown " + rmiExceptionClass.getName());
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			if (springExceptionClass.isInstance(ex)) {
 				// expected
-			}
-			else {
+			} else {
 				throw ex;
 			}
 		}
 		if (RemoteConnectFailureException.class.isAssignableFrom(springExceptionClass)) {
 			assertEquals(2, factory.counter);
-		}
-		else {
+		} else {
 			assertEquals(1, factory.counter);
 		}
 	}
 
 	@Test
-	public void rmiClientInterceptorRequiresUrl() throws Exception{
+	public void rmiClientInterceptorRequiresUrl() throws Exception {
 		RmiClientInterceptor client = new RmiClientInterceptor();
 		client.setServiceInterface(IRemoteBean.class);
 
 		try {
 			client.afterPropertiesSet();
 			fail("url isn't set, expected IllegalArgumentException");
-		}
-		catch (IllegalArgumentException ex){
+		} catch (IllegalArgumentException ex) {
 			// expected
 		}
 	}
@@ -358,18 +338,22 @@ public class RmiSupportTests {
 			public Method getMethod() {
 				return setNameMethod;
 			}
+
 			@Override
 			public Object[] getArguments() {
-				return new Object[] {"bla"};
+				return new Object[]{"bla"};
 			}
+
 			@Override
 			public Object proceed() throws Throwable {
 				throw new UnsupportedOperationException();
 			}
+
 			@Override
 			public Object getThis() {
 				return rb;
 			}
+
 			@Override
 			public AccessibleObject getStaticPart() {
 				return setNameMethod;
@@ -384,14 +368,14 @@ public class RmiSupportTests {
 
 		// this is a bit BS, but we need to test it
 		inv = new RemoteInvocation();
-		inv.setArguments(new Object[] { "bla" });
+		inv.setArguments(new Object[]{"bla"});
 		assertEquals("bla", inv.getArguments()[0]);
 		inv.setMethodName("setName");
 		assertEquals("setName", inv.getMethodName());
-		inv.setParameterTypes(new Class<?>[] {String.class});
+		inv.setParameterTypes(new Class<?>[]{String.class});
 		assertEquals(String.class, inv.getParameterTypes()[0]);
 
-		inv = new RemoteInvocation("setName", new Class<?>[] {String.class}, new Object[] {"bla"});
+		inv = new RemoteInvocation("setName", new Class<?>[]{String.class}, new Object[]{"bla"});
 		assertEquals("bla", inv.getArguments()[0]);
 		assertEquals("setName", inv.getMethodName());
 		assertEquals(String.class, inv.getParameterTypes()[0]);
@@ -408,6 +392,7 @@ public class RmiSupportTests {
 					public String getTargetInterfaceName() {
 						return null;
 					}
+
 					@Override
 					public Object invoke(RemoteInvocation invocation) throws RemoteException {
 						throw new RemoteException();
@@ -430,21 +415,8 @@ public class RmiSupportTests {
 		try {
 			proxy.setName("test");
 			fail("Should have thrown RemoteAccessException");
-		}
-		catch (RemoteAccessException ex) {
+		} catch (RemoteAccessException ex) {
 			// expected
-		}
-	}
-
-
-	private static class CountingRmiProxyFactoryBean extends RmiProxyFactoryBean {
-
-		private int counter = 0;
-
-		@Override
-		protected Remote lookupStub() {
-			counter++;
-			return new RemoteBean();
 		}
 	}
 
@@ -466,6 +438,16 @@ public class RmiSupportTests {
 		void setName(String name) throws RemoteException;
 	}
 
+	private static class CountingRmiProxyFactoryBean extends RmiProxyFactoryBean {
+
+		private int counter = 0;
+
+		@Override
+		protected Remote lookupStub() {
+			counter++;
+			return new RemoteBean();
+		}
+	}
 
 	public static class RemoteBean implements IRemoteBean {
 
@@ -479,8 +461,7 @@ public class RmiSupportTests {
 					Class<?> exClass = Class.forName(nam);
 					Constructor<?> ctor = exClass.getConstructor(String.class);
 					rex = (RemoteException) ctor.newInstance("myMessage");
-				}
-				catch (Exception ex) {
+				} catch (Exception ex) {
 					throw new RemoteException("Illegal exception class name: " + nam, ex);
 				}
 				throw rex;

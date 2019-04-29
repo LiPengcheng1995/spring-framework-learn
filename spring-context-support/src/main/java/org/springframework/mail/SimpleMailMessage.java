@@ -16,13 +16,13 @@
 
 package org.springframework.mail;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Models a simple mail message, including data such as the from, to, cc, subject,
@@ -34,12 +34,12 @@ import org.springframework.util.StringUtils;
  *
  * @author Dmitriy Kopylenko
  * @author Juergen Hoeller
- * @since 10.09.2003
  * @see MailSender
  * @see org.springframework.mail.javamail.JavaMailSender
  * @see org.springframework.mail.javamail.MimeMessagePreparator
  * @see org.springframework.mail.javamail.MimeMessageHelper
  * @see org.springframework.mail.javamail.MimeMailMessage
+ * @since 10.09.2003
  */
 @SuppressWarnings("serial")
 public class SimpleMailMessage implements MailMessage, Serializable {
@@ -91,10 +91,18 @@ public class SimpleMailMessage implements MailMessage, Serializable {
 		this.text = original.getText();
 	}
 
+	@Nullable
+	private static String[] copyOrNull(@Nullable String[] state) {
+		if (state == null) {
+			return null;
+		}
+		return copy(state);
+	}
 
-	@Override
-	public void setFrom(String from) {
-		this.from = from;
+	private static String[] copy(String[] state) {
+		String[] copy = new String[state.length];
+		System.arraycopy(state, 0, copy, 0, state.length);
+		return copy;
 	}
 
 	@Nullable
@@ -103,8 +111,8 @@ public class SimpleMailMessage implements MailMessage, Serializable {
 	}
 
 	@Override
-	public void setReplyTo(String replyTo) {
-		this.replyTo = replyTo;
+	public void setFrom(String from) {
+		this.from = from;
 	}
 
 	@Nullable
@@ -113,13 +121,8 @@ public class SimpleMailMessage implements MailMessage, Serializable {
 	}
 
 	@Override
-	public void setTo(String to) {
-		this.to = new String[] {to};
-	}
-
-	@Override
-	public void setTo(String... to) {
-		this.to = to;
+	public void setReplyTo(String replyTo) {
+		this.replyTo = replyTo;
 	}
 
 	@Nullable
@@ -128,13 +131,13 @@ public class SimpleMailMessage implements MailMessage, Serializable {
 	}
 
 	@Override
-	public void setCc(String cc) {
-		this.cc = new String[] {cc};
+	public void setTo(String to) {
+		this.to = new String[]{to};
 	}
 
 	@Override
-	public void setCc(String... cc) {
-		this.cc = cc;
+	public void setTo(String... to) {
+		this.to = to;
 	}
 
 	@Nullable
@@ -143,13 +146,13 @@ public class SimpleMailMessage implements MailMessage, Serializable {
 	}
 
 	@Override
-	public void setBcc(String bcc) {
-		this.bcc = new String[] {bcc};
+	public void setCc(String cc) {
+		this.cc = new String[]{cc};
 	}
 
 	@Override
-	public void setBcc(String... bcc) {
-		this.bcc = bcc;
+	public void setCc(String... cc) {
+		this.cc = cc;
 	}
 
 	@Nullable
@@ -158,8 +161,13 @@ public class SimpleMailMessage implements MailMessage, Serializable {
 	}
 
 	@Override
-	public void setSentDate(Date sentDate) {
-		this.sentDate = sentDate;
+	public void setBcc(String bcc) {
+		this.bcc = new String[]{bcc};
+	}
+
+	@Override
+	public void setBcc(String... bcc) {
+		this.bcc = bcc;
 	}
 
 	@Nullable
@@ -168,8 +176,8 @@ public class SimpleMailMessage implements MailMessage, Serializable {
 	}
 
 	@Override
-	public void setSubject(String subject) {
-		this.subject = subject;
+	public void setSentDate(Date sentDate) {
+		this.sentDate = sentDate;
 	}
 
 	@Nullable
@@ -178,8 +186,8 @@ public class SimpleMailMessage implements MailMessage, Serializable {
 	}
 
 	@Override
-	public void setText(String text) {
-		this.text = text;
+	public void setSubject(String subject) {
+		this.subject = subject;
 	}
 
 	@Nullable
@@ -187,9 +195,14 @@ public class SimpleMailMessage implements MailMessage, Serializable {
 		return this.text;
 	}
 
+	@Override
+	public void setText(String text) {
+		this.text = text;
+	}
 
 	/**
 	 * Copy the contents of this message to the given target message.
+	 *
 	 * @param target the {@code MailMessage} to copy to
 	 */
 	public void copyTo(MailMessage target) {
@@ -219,7 +232,6 @@ public class SimpleMailMessage implements MailMessage, Serializable {
 			target.setText(getText());
 		}
 	}
-
 
 	@Override
 	public boolean equals(Object other) {
@@ -264,21 +276,6 @@ public class SimpleMailMessage implements MailMessage, Serializable {
 		sb.append("subject=").append(this.subject).append("; ");
 		sb.append("text=").append(this.text);
 		return sb.toString();
-	}
-
-
-	@Nullable
-	private static String[] copyOrNull(@Nullable String[] state) {
-		if (state == null) {
-			return null;
-		}
-		return copy(state);
-	}
-
-	private static String[] copy(String[] state) {
-		String[] copy = new String[state.length];
-		System.arraycopy(state, 0, copy, 0, state.length);
-		return copy;
 	}
 
 }

@@ -16,12 +16,12 @@
 
 package org.springframework.beans.propertyeditors;
 
-import java.beans.PropertyEditorSupport;
-import java.text.NumberFormat;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.NumberUtils;
 import org.springframework.util.StringUtils;
+
+import java.beans.PropertyEditorSupport;
+import java.text.NumberFormat;
 
 /**
  * Property editor for any Number subclass such as Short, Integer, Long,
@@ -38,10 +38,10 @@ import org.springframework.util.StringUtils;
  * {@code binder.registerCustomEditor} calls.
  *
  * @author Juergen Hoeller
- * @since 06.06.2003
  * @see Number
  * @see java.text.NumberFormat
  * @see org.springframework.validation.DataBinder#registerCustomEditor
+ * @since 06.06.2003
  */
 public class CustomNumberEditor extends PropertyEditorSupport {
 
@@ -60,8 +60,9 @@ public class CustomNumberEditor extends PropertyEditorSupport {
 	 * <p>The "allowEmpty" parameter states if an empty String should
 	 * be allowed for parsing, i.e. get interpreted as {@code null} value.
 	 * Else, an IllegalArgumentException gets thrown in that case.
+	 *
 	 * @param numberClass Number subclass to generate
-	 * @param allowEmpty if empty strings should be allowed
+	 * @param allowEmpty  if empty strings should be allowed
 	 * @throws IllegalArgumentException if an invalid numberClass has been specified
 	 * @see org.springframework.util.NumberUtils#parseNumber(String, Class)
 	 * @see Integer#valueOf
@@ -77,16 +78,17 @@ public class CustomNumberEditor extends PropertyEditorSupport {
 	 * <p>The allowEmpty parameter states if an empty String should
 	 * be allowed for parsing, i.e. get interpreted as {@code null} value.
 	 * Else, an IllegalArgumentException gets thrown in that case.
-	 * @param numberClass Number subclass to generate
+	 *
+	 * @param numberClass  Number subclass to generate
 	 * @param numberFormat NumberFormat to use for parsing and rendering
-	 * @param allowEmpty if empty strings should be allowed
+	 * @param allowEmpty   if empty strings should be allowed
 	 * @throws IllegalArgumentException if an invalid numberClass has been specified
 	 * @see org.springframework.util.NumberUtils#parseNumber(String, Class, java.text.NumberFormat)
 	 * @see java.text.NumberFormat#parse
 	 * @see java.text.NumberFormat#format
 	 */
 	public CustomNumberEditor(Class<? extends Number> numberClass,
-			@Nullable NumberFormat numberFormat, boolean allowEmpty) throws IllegalArgumentException {
+							  @Nullable NumberFormat numberFormat, boolean allowEmpty) throws IllegalArgumentException {
 
 		if (!Number.class.isAssignableFrom(numberClass)) {
 			throw new IllegalArgumentException("Property class must be a subclass of Number");
@@ -96,26 +98,6 @@ public class CustomNumberEditor extends PropertyEditorSupport {
 		this.allowEmpty = allowEmpty;
 	}
 
-
-	/**
-	 * Parse the Number from the given text, using the specified NumberFormat.
-	 */
-	@Override
-	public void setAsText(String text) throws IllegalArgumentException {
-		if (this.allowEmpty && !StringUtils.hasText(text)) {
-			// Treat empty String as null value.
-			setValue(null);
-		}
-		else if (this.numberFormat != null) {
-			// Use given NumberFormat for parsing text.
-			setValue(NumberUtils.parseNumber(text, this.numberClass, this.numberFormat));
-		}
-		else {
-			// Use default valueOf methods for parsing text.
-			setValue(NumberUtils.parseNumber(text, this.numberClass));
-		}
-	}
-
 	/**
 	 * Coerce a Number value into the required target class, if necessary.
 	 */
@@ -123,8 +105,7 @@ public class CustomNumberEditor extends PropertyEditorSupport {
 	public void setValue(@Nullable Object value) {
 		if (value instanceof Number) {
 			super.setValue(NumberUtils.convertNumberToTargetClass((Number) value, this.numberClass));
-		}
-		else {
+		} else {
 			super.setValue(value);
 		}
 	}
@@ -141,10 +122,26 @@ public class CustomNumberEditor extends PropertyEditorSupport {
 		if (this.numberFormat != null) {
 			// Use NumberFormat for rendering value.
 			return this.numberFormat.format(value);
-		}
-		else {
+		} else {
 			// Use toString method for rendering value.
 			return value.toString();
+		}
+	}
+
+	/**
+	 * Parse the Number from the given text, using the specified NumberFormat.
+	 */
+	@Override
+	public void setAsText(String text) throws IllegalArgumentException {
+		if (this.allowEmpty && !StringUtils.hasText(text)) {
+			// Treat empty String as null value.
+			setValue(null);
+		} else if (this.numberFormat != null) {
+			// Use given NumberFormat for parsing text.
+			setValue(NumberUtils.parseNumber(text, this.numberClass, this.numberFormat));
+		} else {
+			// Use default valueOf methods for parsing text.
+			setValue(NumberUtils.parseNumber(text, this.numberClass));
 		}
 	}
 

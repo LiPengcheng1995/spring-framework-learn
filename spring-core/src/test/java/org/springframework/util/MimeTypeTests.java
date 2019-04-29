@@ -16,18 +16,17 @@
 
 package org.springframework.util;
 
+import org.junit.Test;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
+
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import org.junit.Test;
-
-import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.support.DefaultConversionService;
-
-import static java.util.Collections.*;
+import static java.util.Collections.singletonMap;
 import static org.junit.Assert.*;
 
 /**
@@ -329,6 +328,7 @@ public class MimeTypeTests {
 
 	/**
 	 * SPR-13157
+	 *
 	 * @since 4.2
 	 */
 	@Test

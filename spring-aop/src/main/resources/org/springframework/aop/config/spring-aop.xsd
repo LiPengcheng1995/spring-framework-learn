@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 
-<xsd:schema xmlns="http://www.springframework.org/schema/aop"
-			xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 			xmlns:tool="http://www.springframework.org/schema/tool"
+			xmlns="http://www.springframework.org/schema/aop"
 			targetNamespace="http://www.springframework.org/schema/aop"
 			elementFormDefault="qualified"
 			attributeFormDefault="unqualified">
 
-	<xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="https://www.springframework.org/schema/beans/spring-beans.xsd"/>
-	<xsd:import namespace="http://www.springframework.org/schema/tool" schemaLocation="https://www.springframework.org/schema/tool/spring-tool.xsd"/>
+	<xsd:import namespace="http://www.springframework.org/schema/beans"
+				schemaLocation="https://www.springframework.org/schema/beans/spring-beans.xsd"/>
+	<xsd:import namespace="http://www.springframework.org/schema/tool"
+				schemaLocation="https://www.springframework.org/schema/tool/spring-tool.xsd"/>
 
 	<xsd:annotation>
 		<xsd:documentation><![CDATA[
@@ -69,7 +71,9 @@
 
 	<xsd:element name="aspectj-autoproxy">
 		<xsd:annotation>
-			<xsd:documentation source="java:org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator"><![CDATA[
+			<xsd:documentation
+					source="java:org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator">
+				<![CDATA[
 	Enables the use of the @AspectJ style of Spring AOP.
 
 	See org.springframework.context.annotation.EnableAspectJAutoProxy Javadoc

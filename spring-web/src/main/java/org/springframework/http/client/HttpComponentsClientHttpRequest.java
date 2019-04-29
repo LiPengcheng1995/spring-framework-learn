@@ -16,9 +16,6 @@
 
 package org.springframework.http.client;
 
-import java.io.IOException;
-import java.net.URI;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpResponse;
@@ -27,10 +24,12 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.util.StringUtils;
+
+import java.io.IOException;
+import java.net.URI;
 
 /**
  * {@link ClientHttpRequest} implementation based on
@@ -41,8 +40,8 @@ import org.springframework.util.StringUtils;
  * @author Oleg Kalnichevski
  * @author Arjen Poutsma
  * @author Juergen Hoeller
- * @since 3.1
  * @see HttpComponentsClientHttpRequestFactory#createRequest(URI, HttpMethod)
+ * @since 3.1
  */
 final class HttpComponentsClientHttpRequest extends AbstractBufferingClientHttpRequest {
 
@@ -59,6 +58,25 @@ final class HttpComponentsClientHttpRequest extends AbstractBufferingClientHttpR
 		this.httpContext = context;
 	}
 
+	/**
+	 * Add the given headers to the given HTTP request.
+	 *
+	 * @param httpRequest the request to add the headers to
+	 * @param headers     the headers to add
+	 */
+	static void addHeaders(HttpUriRequest httpRequest, HttpHeaders headers) {
+		headers.forEach((headerName, headerValues) -> {
+			if (HttpHeaders.COOKIE.equalsIgnoreCase(headerName)) {  // RFC 6265
+				String headerValue = StringUtils.collectionToDelimitedString(headerValues, "; ");
+				httpRequest.addHeader(headerName, headerValue);
+			} else if (!HTTP.CONTENT_LEN.equalsIgnoreCase(headerName) &&
+					!HTTP.TRANSFER_ENCODING.equalsIgnoreCase(headerName)) {
+				for (String headerValue : headerValues) {
+					httpRequest.addHeader(headerName, headerValue);
+				}
+			}
+		});
+	}
 
 	@Override
 	public String getMethodValue() {
@@ -74,7 +92,6 @@ final class HttpComponentsClientHttpRequest extends AbstractBufferingClientHttpR
 		return this.httpContext;
 	}
 
-
 	@Override
 	protected ClientHttpResponse executeInternal(HttpHeaders headers, byte[] bufferedOutput) throws IOException {
 		addHeaders(this.httpRequest, headers);
@@ -86,27 +103,6 @@ final class HttpComponentsClientHttpRequest extends AbstractBufferingClientHttpR
 		}
 		HttpResponse httpResponse = this.httpClient.execute(this.httpRequest, this.httpContext);
 		return new HttpComponentsClientHttpResponse(httpResponse);
-	}
-
-
-	/**
-	 * Add the given headers to the given HTTP request.
-	 * @param httpRequest the request to add the headers to
-	 * @param headers the headers to add
-	 */
-	static void addHeaders(HttpUriRequest httpRequest, HttpHeaders headers) {
-		headers.forEach((headerName, headerValues) -> {
-			if (HttpHeaders.COOKIE.equalsIgnoreCase(headerName)) {  // RFC 6265
-				String headerValue = StringUtils.collectionToDelimitedString(headerValues, "; ");
-				httpRequest.addHeader(headerName, headerValue);
-			}
-			else if (!HTTP.CONTENT_LEN.equalsIgnoreCase(headerName) &&
-					!HTTP.TRANSFER_ENCODING.equalsIgnoreCase(headerName)) {
-				for (String headerValue : headerValues) {
-					httpRequest.addHeader(headerName, headerValue);
-				}
-			}
-		});
 	}
 
 }

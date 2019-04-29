@@ -16,15 +16,15 @@
 
 package org.springframework.http.converter;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.io.IOException;
+import java.nio.charset.Charset;
 
 /**
  * An {@code HttpMessageConverter} that uses {@link StringHttpMessageConverter}
@@ -60,6 +60,7 @@ public class ObjectToStringHttpMessageConverter extends AbstractHttpMessageConve
 	 * A constructor accepting a {@code ConversionService} to use to convert the
 	 * (String) message body to/from the target class type. This constructor uses
 	 * {@link StringHttpMessageConverter#DEFAULT_CHARSET} as the default charset.
+	 *
 	 * @param conversionService the conversion service
 	 */
 	public ObjectToStringHttpMessageConverter(ConversionService conversionService) {
@@ -68,8 +69,9 @@ public class ObjectToStringHttpMessageConverter extends AbstractHttpMessageConve
 
 	/**
 	 * A constructor accepting a {@code ConversionService} as well as a default charset.
+	 *
 	 * @param conversionService the conversion service
-	 * @param defaultCharset the default charset
+	 * @param defaultCharset    the default charset
 	 */
 	public ObjectToStringHttpMessageConverter(ConversionService conversionService, Charset defaultCharset) {
 		super(defaultCharset, MediaType.TEXT_PLAIN);

@@ -26,11 +26,9 @@ import java.util.Map;
  */
 public class JmsListenerContainerTestFactory implements JmsListenerContainerFactory<MessageListenerTestContainer> {
 
-	private boolean autoStartup = true;
-
 	private final Map<String, MessageListenerTestContainer> listenerContainers =
 			new LinkedHashMap<>();
-
+	private boolean autoStartup = true;
 
 	public void setAutoStartup(boolean autoStartup) {
 		this.autoStartup = autoStartup;

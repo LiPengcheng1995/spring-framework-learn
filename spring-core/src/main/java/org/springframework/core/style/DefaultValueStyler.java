@@ -16,16 +16,12 @@
 
 package org.springframework.core.style;
 
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
+
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  * Converts objects to String form, generally for debugging purposes,
@@ -53,30 +49,22 @@ public class DefaultValueStyler implements ValueStyler {
 	public String style(@Nullable Object value) {
 		if (value == null) {
 			return NULL;
-		}
-		else if (value instanceof String) {
+		} else if (value instanceof String) {
 			return "\'" + value + "\'";
-		}
-		else if (value instanceof Class) {
+		} else if (value instanceof Class) {
 			return ClassUtils.getShortName((Class<?>) value);
-		}
-		else if (value instanceof Method) {
+		} else if (value instanceof Method) {
 			Method method = (Method) value;
 			return method.getName() + "@" + ClassUtils.getShortName(method.getDeclaringClass());
-		}
-		else if (value instanceof Map) {
+		} else if (value instanceof Map) {
 			return style((Map<?, ?>) value);
-		}
-		else if (value instanceof Map.Entry) {
-			return style((Map.Entry<? ,?>) value);
-		}
-		else if (value instanceof Collection) {
+		} else if (value instanceof Map.Entry) {
+			return style((Map.Entry<?, ?>) value);
+		} else if (value instanceof Collection) {
 			return style((Collection<?>) value);
-		}
-		else if (value.getClass().isArray()) {
+		} else if (value.getClass().isArray()) {
 			return styleArray(ObjectUtils.toObjectArray(value));
-		}
-		else {
+		} else {
 			return String.valueOf(value);
 		}
 	}
@@ -84,7 +72,7 @@ public class DefaultValueStyler implements ValueStyler {
 	private <K, V> String style(Map<K, V> value) {
 		StringBuilder result = new StringBuilder(value.size() * 8 + 16);
 		result.append(MAP + "[");
-		for (Iterator<Map.Entry<K, V>> it = value.entrySet().iterator(); it.hasNext();) {
+		for (Iterator<Map.Entry<K, V>> it = value.entrySet().iterator(); it.hasNext(); ) {
 			Map.Entry<K, V> entry = it.next();
 			result.append(style(entry));
 			if (it.hasNext()) {
@@ -105,7 +93,7 @@ public class DefaultValueStyler implements ValueStyler {
 	private String style(Collection<?> value) {
 		StringBuilder result = new StringBuilder(value.size() * 8 + 16);
 		result.append(getCollectionTypeString(value)).append('[');
-		for (Iterator<?> i = value.iterator(); i.hasNext();) {
+		for (Iterator<?> i = value.iterator(); i.hasNext(); ) {
 			result.append(style(i.next()));
 			if (i.hasNext()) {
 				result.append(',').append(' ');
@@ -121,11 +109,9 @@ public class DefaultValueStyler implements ValueStyler {
 	private String getCollectionTypeString(Collection<?> value) {
 		if (value instanceof List) {
 			return LIST;
-		}
-		else if (value instanceof Set) {
+		} else if (value instanceof Set) {
 			return SET;
-		}
-		else {
+		} else {
 			return COLLECTION;
 		}
 	}
@@ -139,8 +125,7 @@ public class DefaultValueStyler implements ValueStyler {
 		}
 		if (array.length > 0) {
 			result.append(style(array[array.length - 1]));
-		}
-		else {
+		} else {
 			result.append(EMPTY);
 		}
 		result.append("]");

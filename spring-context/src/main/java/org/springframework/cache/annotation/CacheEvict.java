@@ -16,14 +16,9 @@
 
 package org.springframework.cache.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.core.annotation.AliasFor;
+
+import java.lang.annotation.*;
 
 /**
  * Annotation indicating that a method (or all methods on a class) triggers a
@@ -35,8 +30,8 @@ import org.springframework.core.annotation.AliasFor;
  * @author Costin Leau
  * @author Stephane Nicoll
  * @author Sam Brannen
- * @since 3.1
  * @see CacheConfig
+ * @since 3.1
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
@@ -54,9 +49,10 @@ public @interface CacheEvict {
 	 * Names of the caches to use for the cache eviction operation.
 	 * <p>Names may be used to determine the target cache (or caches), matching
 	 * the qualifier value or bean name of a specific bean definition.
-	 * @since 4.2
+	 *
 	 * @see #value
 	 * @see CacheConfig#cacheNames
+	 * @since 4.2
 	 */
 	@AliasFor("value")
 	String[] cacheNames() default {};
@@ -88,6 +84,7 @@ public @interface CacheEvict {
 	 * The bean name of the custom {@link org.springframework.cache.interceptor.KeyGenerator}
 	 * to use.
 	 * <p>Mutually exclusive with the {@link #key} attribute.
+	 *
 	 * @see CacheConfig#keyGenerator
 	 */
 	String keyGenerator() default "";
@@ -97,6 +94,7 @@ public @interface CacheEvict {
 	 * create a default {@link org.springframework.cache.interceptor.CacheResolver} if none
 	 * is set already.
 	 * <p>Mutually exclusive with the {@link #cacheResolver} attribute.
+	 *
 	 * @see org.springframework.cache.interceptor.SimpleCacheResolver
 	 * @see CacheConfig#cacheManager
 	 */
@@ -105,6 +103,7 @@ public @interface CacheEvict {
 	/**
 	 * The bean name of the custom {@link org.springframework.cache.interceptor.CacheResolver}
 	 * to use.
+	 *
 	 * @see CacheConfig#cacheResolver
 	 */
 	String cacheResolver() default "";

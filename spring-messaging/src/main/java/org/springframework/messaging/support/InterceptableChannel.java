@@ -29,11 +29,6 @@ import java.util.List;
 public interface InterceptableChannel {
 
 	/**
-	 * Set the list of channel interceptors clearing any existing interceptors.
-	 */
-	void setInterceptors(List<ChannelInterceptor> interceptors);
-
-	/**
 	 * Add a channel interceptor to the end of the list.
 	 */
 	void addInterceptor(ChannelInterceptor interceptor);
@@ -47,6 +42,11 @@ public interface InterceptableChannel {
 	 * Return the list of configured interceptors.
 	 */
 	List<ChannelInterceptor> getInterceptors();
+
+	/**
+	 * Set the list of channel interceptors clearing any existing interceptors.
+	 */
+	void setInterceptors(List<ChannelInterceptor> interceptors);
 
 	/**
 	 * Remove the given interceptor.

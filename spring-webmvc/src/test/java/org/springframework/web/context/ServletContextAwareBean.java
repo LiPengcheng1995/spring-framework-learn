@@ -25,12 +25,12 @@ public class ServletContextAwareBean implements ServletContextAware {
 
 	private ServletContext servletContext;
 
+	public ServletContext getServletContext() {
+		return servletContext;
+	}
+
 	@Override
 	public void setServletContext(ServletContext servletContext) {
 		this.servletContext = servletContext;
-	}
-
-	public ServletContext getServletContext() {
-		return servletContext;
 	}
 }

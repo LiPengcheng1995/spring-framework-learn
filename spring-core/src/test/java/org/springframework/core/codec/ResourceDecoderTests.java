@@ -16,13 +16,7 @@
 
 package org.springframework.core.codec;
 
-import java.io.IOException;
-import java.util.Collections;
-
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -30,9 +24,14 @@ import org.springframework.core.io.buffer.AbstractDataBufferAllocatingTestCase;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.StreamUtils;
+import reactor.core.publisher.Flux;
+import reactor.test.StepVerifier;
+
+import java.io.IOException;
+import java.util.Collections;
 
 import static org.junit.Assert.*;
-import static org.springframework.core.ResolvableType.*;
+import static org.springframework.core.ResolvableType.forClass;
 
 /**
  * @author Arjen Poutsma
@@ -64,8 +63,7 @@ public class ResourceDecoderTests extends AbstractDataBufferAllocatingTestCase {
 					try {
 						byte[] bytes = StreamUtils.copyToByteArray(resource.getInputStream());
 						assertEquals("foobar", new String(bytes));
-					}
-					catch (IOException e) {
+					} catch (IOException e) {
 						fail(e.getMessage());
 					}
 				})

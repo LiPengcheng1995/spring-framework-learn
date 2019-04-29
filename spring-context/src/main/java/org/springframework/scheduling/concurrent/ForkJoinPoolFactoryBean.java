@@ -16,13 +16,13 @@
 
 package org.springframework.scheduling.concurrent;
 
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
-
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.lang.Nullable;
+
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A Spring {@link FactoryBean} that builds and exposes a preconfigured {@link ForkJoinPool}.
@@ -59,8 +59,9 @@ public class ForkJoinPoolFactoryBean implements FactoryBean<ForkJoinPool>, Initi
 	 * properties on this FactoryBean, reusing the shared common JDK {@link ForkJoinPool}
 	 * instead. This is a fine choice on JDK 8 but does remove the application's ability
 	 * to customize ForkJoinPool behavior, in particular the use of custom threads.
-	 * @since 3.2
+	 *
 	 * @see java.util.concurrent.ForkJoinPool#commonPool()
+	 * @since 3.2
 	 */
 	public void setCommonPool(boolean commonPool) {
 		this.commonPool = commonPool;
@@ -113,6 +114,7 @@ public class ForkJoinPoolFactoryBean implements FactoryBean<ForkJoinPool>, Initi
 	 * <p>Note that this feature works for the {@link #setCommonPool "commonPool"}
 	 * mode as well. The underlying ForkJoinPool won't actually terminate in that
 	 * case but will wait for all tasks to terminate.
+	 *
 	 * @see java.util.concurrent.ForkJoinPool#shutdown()
 	 * @see java.util.concurrent.ForkJoinPool#awaitTermination
 	 */
@@ -154,8 +156,7 @@ public class ForkJoinPoolFactoryBean implements FactoryBean<ForkJoinPool>, Initi
 			if (this.awaitTerminationSeconds > 0) {
 				try {
 					this.forkJoinPool.awaitTermination(this.awaitTerminationSeconds, TimeUnit.SECONDS);
-				}
-				catch (InterruptedException ex) {
+				} catch (InterruptedException ex) {
 					Thread.currentThread().interrupt();
 				}
 			}

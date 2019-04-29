@@ -16,11 +16,10 @@
 
 package org.springframework.cache;
 
-import java.util.UUID;
-
 import org.junit.Test;
-
 import org.springframework.cache.support.NoOpCacheManager;
+
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -78,8 +77,7 @@ public class NoOpCacheManagerTests {
 			cache.get(key, () -> {
 				throw new UnsupportedOperationException("Expected exception");
 			});
-		}
-		catch (Cache.ValueRetrievalException ex) {
+		} catch (Cache.ValueRetrievalException ex) {
 			assertNotNull(ex.getCause());
 			assertEquals(UnsupportedOperationException.class, ex.getCause().getClass());
 		}
