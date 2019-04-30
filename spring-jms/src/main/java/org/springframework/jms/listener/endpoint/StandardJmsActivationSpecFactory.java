@@ -16,20 +16,20 @@
 
 package org.springframework.jms.listener.endpoint;
 
-import java.util.Map;
-import javax.jms.JMSException;
-import javax.jms.Queue;
-import javax.jms.Session;
-import javax.jms.Topic;
-import javax.resource.spi.ActivationSpec;
-import javax.resource.spi.ResourceAdapter;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.jms.support.destination.DestinationResolutionException;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.lang.Nullable;
+
+import javax.jms.JMSException;
+import javax.jms.Queue;
+import javax.jms.Session;
+import javax.jms.Topic;
+import javax.resource.spi.ActivationSpec;
+import javax.resource.spi.ResourceAdapter;
+import java.util.Map;
 
 /**
  * Standard implementation of the {@link JmsActivationSpecFactory} interface.
@@ -45,9 +45,9 @@ import org.springframework.lang.Nullable;
  * JMS 1.5 specification.
  *
  * @author Juergen Hoeller
- * @since 2.5
  * @see #setActivationSpecClass
  * @see DefaultJmsActivationSpecFactory
+ * @since 2.5
  */
 public class StandardJmsActivationSpecFactory implements JmsActivationSpecFactory {
 
@@ -80,6 +80,14 @@ public class StandardJmsActivationSpecFactory implements JmsActivationSpecFactor
 	}
 
 	/**
+	 * Return the {@link DestinationResolver} to use for resolving destinations names.
+	 */
+	@Nullable
+	public DestinationResolver getDestinationResolver() {
+		return this.destinationResolver;
+	}
+
+	/**
 	 * Set the DestinationResolver to use for resolving destination names
 	 * into the JCA 1.5 ActivationSpec "destination" property.
 	 * <p>If not specified, destination names will simply be passed in as Strings.
@@ -93,15 +101,6 @@ public class StandardJmsActivationSpecFactory implements JmsActivationSpecFactor
 	public void setDestinationResolver(@Nullable DestinationResolver destinationResolver) {
 		this.destinationResolver = destinationResolver;
 	}
-
-	/**
-	 * Return the {@link DestinationResolver} to use for resolving destinations names.
-	 */
-	@Nullable
-	public DestinationResolver getDestinationResolver() {
-		return this.destinationResolver;
-	}
-
 
 	@Override
 	public ActivationSpec createActivationSpec(ResourceAdapter adapter, JmsActivationSpecConfig config) {
@@ -125,6 +124,7 @@ public class StandardJmsActivationSpecFactory implements JmsActivationSpecFactor
 	/**
 	 * Determine the ActivationSpec class for the given ResourceAdapter,
 	 * if possible. Called if no 'activationSpecClass' has been set explicitly
+	 *
 	 * @param adapter the ResourceAdapter to check
 	 * @return the corresponding ActivationSpec class, or {@code null}
 	 * if not determinable
@@ -140,7 +140,8 @@ public class StandardJmsActivationSpecFactory implements JmsActivationSpecFactor
 	 * defined in the given configuration object.
 	 * <p>This implementation applies all standard JMS settings, but ignores
 	 * "maxConcurrency" and "prefetchSize" - not supported in standard JCA 1.5.
-	 * @param bw the BeanWrapper wrapping the ActivationSpec object
+	 *
+	 * @param bw     the BeanWrapper wrapping the ActivationSpec object
 	 * @param config the configured object holding common JMS settings
 	 */
 	protected void populateActivationSpecProperties(BeanWrapper bw, JmsActivationSpecConfig config) {
@@ -151,8 +152,7 @@ public class StandardJmsActivationSpecFactory implements JmsActivationSpecFactor
 			if (this.destinationResolver != null) {
 				try {
 					destination = this.destinationResolver.resolveDestinationName(null, destinationName, pubSubDomain);
-				}
-				catch (JMSException ex) {
+				} catch (JMSException ex) {
 					throw new DestinationResolutionException(
 							"Cannot resolve destination name [" + destinationName + "]", ex);
 				}
@@ -163,8 +163,7 @@ public class StandardJmsActivationSpecFactory implements JmsActivationSpecFactor
 
 		if (bw.isWritableProperty("subscriptionDurability")) {
 			bw.setPropertyValue("subscriptionDurability", config.isSubscriptionDurable() ? "Durable" : "NonDurable");
-		}
-		else if (config.isSubscriptionDurable()) {
+		} else if (config.isSubscriptionDurable()) {
 			// Standard JCA 1.5 "subscriptionDurability" apparently not supported...
 			throw new IllegalArgumentException("Durable subscriptions not supported by underlying provider");
 		}
@@ -190,9 +189,10 @@ public class StandardJmsActivationSpecFactory implements JmsActivationSpecFactor
 	 * "Auto-acknowledge" and "Dups-ok-acknowledge". It throws an exception in
 	 * case of {@code CLIENT_ACKNOWLEDGE} or {@code SESSION_TRANSACTED}
 	 * having been requested.
-	 * @param bw the BeanWrapper wrapping the ActivationSpec object
+	 *
+	 * @param bw      the BeanWrapper wrapping the ActivationSpec object
 	 * @param ackMode the configured acknowledge mode
-	 * (according to the constants in {@link javax.jms.Session}
+	 *                (according to the constants in {@link javax.jms.Session}
 	 * @see javax.jms.Session#AUTO_ACKNOWLEDGE
 	 * @see javax.jms.Session#DUPS_OK_ACKNOWLEDGE
 	 * @see javax.jms.Session#CLIENT_ACKNOWLEDGE
@@ -202,16 +202,13 @@ public class StandardJmsActivationSpecFactory implements JmsActivationSpecFactor
 		if (ackMode == Session.SESSION_TRANSACTED) {
 			throw new IllegalArgumentException("No support for SESSION_TRANSACTED: Only \"Auto-acknowledge\" " +
 					"and \"Dups-ok-acknowledge\" supported in standard JCA 1.5");
-		}
-		else if (ackMode == Session.CLIENT_ACKNOWLEDGE) {
+		} else if (ackMode == Session.CLIENT_ACKNOWLEDGE) {
 			throw new IllegalArgumentException("No support for CLIENT_ACKNOWLEDGE: Only \"Auto-acknowledge\" " +
 					"and \"Dups-ok-acknowledge\" supported in standard JCA 1.5");
-		}
-		else if (bw.isWritableProperty("acknowledgeMode")) {
+		} else if (bw.isWritableProperty("acknowledgeMode")) {
 			bw.setPropertyValue("acknowledgeMode",
 					ackMode == Session.DUPS_OK_ACKNOWLEDGE ? "Dups-ok-acknowledge" : "Auto-acknowledge");
-		}
-		else if (ackMode == Session.DUPS_OK_ACKNOWLEDGE) {
+		} else if (ackMode == Session.DUPS_OK_ACKNOWLEDGE) {
 			// Standard JCA 1.5 "acknowledgeMode" apparently not supported (e.g. WebSphere MQ 6.0.2.1)
 			throw new IllegalArgumentException("Dups-ok-acknowledge not supported by underlying provider");
 		}

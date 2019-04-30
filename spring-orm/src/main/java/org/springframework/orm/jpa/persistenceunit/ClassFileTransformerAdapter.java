@@ -16,15 +16,14 @@
 
 package org.springframework.orm.jpa.persistenceunit;
 
-import java.lang.instrument.ClassFileTransformer;
-import java.security.ProtectionDomain;
-import javax.persistence.spi.ClassTransformer;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import javax.persistence.spi.ClassTransformer;
+import java.lang.instrument.ClassFileTransformer;
+import java.security.ProtectionDomain;
 
 /**
  * Simple adapter that implements the {@code java.lang.instrument.ClassFileTransformer}
@@ -33,8 +32,8 @@ import org.springframework.util.Assert;
  *
  * @author Rod Johnson
  * @author Juergen Hoeller
- * @since 2.0
  * @see javax.persistence.spi.PersistenceUnitInfo#addTransformer(javax.persistence.spi.ClassTransformer)
+ * @since 2.0
  */
 class ClassFileTransformerAdapter implements ClassFileTransformer {
 
@@ -75,23 +74,20 @@ class ClassFileTransformerAdapter implements ClassFileTransformer {
 							classfileBuffer.length + "; bytes out=" + transformed.length);
 				}
 				return transformed;
-			}
-			catch (ClassCircularityError ex) {
+			} catch (ClassCircularityError ex) {
 				if (logger.isErrorEnabled()) {
 					logger.error("Circularity error while weaving class [" + className + "] with " +
 							"transformer of class [" + this.classTransformer.getClass().getName() + "]", ex);
 				}
 				throw new IllegalStateException("Failed to weave class [" + className + "]", ex);
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				if (logger.isWarnEnabled()) {
 					logger.warn("Error weaving class [" + className + "] with transformer of class [" +
 							this.classTransformer.getClass().getName() + "]", ex);
 				}
 				// The exception will be ignored by the class loader, anyway...
 				throw new IllegalStateException("Could not weave class [" + className + "]", ex);
-			}
-			finally {
+			} finally {
 				this.currentlyTransforming = false;
 			}
 		}

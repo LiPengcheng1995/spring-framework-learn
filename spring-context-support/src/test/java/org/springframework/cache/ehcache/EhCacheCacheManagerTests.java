@@ -21,7 +21,6 @@ import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.Configuration;
 import org.junit.After;
 import org.junit.Before;
-
 import org.springframework.cache.transaction.AbstractTransactionSupportingCacheManagerTests;
 
 /**
@@ -61,8 +60,7 @@ public class EhCacheCacheManagerTests extends AbstractTransactionSupportingCache
 	protected EhCacheCacheManager getCacheManager(boolean transactionAware) {
 		if (transactionAware) {
 			return transactionalCacheManager;
-		}
-		else {
+		} else {
 			return cacheManager;
 		}
 	}

@@ -16,12 +16,6 @@
 
 package org.springframework.web.filter.reactive;
 
-import java.net.URI;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
-import reactor.core.publisher.Mono;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.lang.Nullable;
@@ -29,6 +23,11 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Mono;
+
+import java.net.URI;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Extract values from "Forwarded" and "X-Forwarded-*" headers in order to change
@@ -39,6 +38,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  * <p><strong>Note:</strong> This filter can also be used in a
  * {@link #setRemoveOnly removeOnly} mode where "Forwarded" and "X-Forwarded-*"
  * headers are only eliminated without being used.
+ *
  * @author Arjen Poutsma
  * @see <a href="https://tools.ietf.org/html/rfc7239">https://tools.ietf.org/html/rfc7239</a>
  * @since 5.0
@@ -57,9 +57,21 @@ public class ForwardedHeaderFilter implements WebFilter {
 
 	private boolean removeOnly;
 
+	@Nullable
+	private static String getForwardedPrefix(HttpHeaders headers) {
+		String prefix = headers.getFirst("X-Forwarded-Prefix");
+		if (prefix != null) {
+			while (prefix.endsWith("/")) {
+				prefix = prefix.substring(0, prefix.length() - 1);
+			}
+		}
+		return prefix;
+	}
+
 	/**
 	 * Enables mode in which any "Forwarded" or "X-Forwarded-*" headers are
 	 * removed only and the information in them ignored.
+	 *
 	 * @param removeOnly whether to discard and ignore forwarded headers
 	 */
 	public void setRemoveOnly(boolean removeOnly) {
@@ -82,8 +94,7 @@ public class ForwardedHeaderFilter implements WebFilter {
 								}
 							})).build();
 			return chain.filter(withoutForwardHeaders);
-		}
-		else {
+		} else {
 			URI uri = UriComponentsBuilder.fromHttpRequest(exchange.getRequest()).build(true).toUri();
 			String prefix = getForwardedPrefix(exchange.getRequest().getHeaders());
 
@@ -108,17 +119,6 @@ public class ForwardedHeaderFilter implements WebFilter {
 			}
 		}
 		return true;
-	}
-
-	@Nullable
-	private static String getForwardedPrefix(HttpHeaders headers) {
-		String prefix = headers.getFirst("X-Forwarded-Prefix");
-		if (prefix != null) {
-			while (prefix.endsWith("/")) {
-				prefix = prefix.substring(0, prefix.length() - 1);
-			}
-		}
-		return prefix;
 	}
 
 }

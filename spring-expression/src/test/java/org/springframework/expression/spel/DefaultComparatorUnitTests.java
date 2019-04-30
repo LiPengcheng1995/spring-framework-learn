@@ -15,15 +15,15 @@
  */
 package org.springframework.expression.spel;
 
-import java.math.BigDecimal;
-
 import org.junit.Test;
-
 import org.springframework.expression.EvaluationException;
 import org.springframework.expression.TypeComparator;
 import org.springframework.expression.spel.support.StandardTypeComparator;
 
-import static org.junit.Assert.*;
+import java.math.BigDecimal;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for type comparison
@@ -94,29 +94,29 @@ public class DefaultComparatorUnitTests {
 	@Test
 	public void testNulls() throws EvaluationException {
 		TypeComparator comparator = new StandardTypeComparator();
-		assertTrue(comparator.compare(null,"abc")<0);
-		assertTrue(comparator.compare(null,null)==0);
-		assertTrue(comparator.compare("abc",null)>0);
+		assertTrue(comparator.compare(null, "abc") < 0);
+		assertTrue(comparator.compare(null, null) == 0);
+		assertTrue(comparator.compare("abc", null) > 0);
 	}
 
 	@Test
 	public void testObjects() throws EvaluationException {
 		TypeComparator comparator = new StandardTypeComparator();
-		assertTrue(comparator.compare("a","a")==0);
-		assertTrue(comparator.compare("a","b")<0);
-		assertTrue(comparator.compare("b","a")>0);
+		assertTrue(comparator.compare("a", "a") == 0);
+		assertTrue(comparator.compare("a", "b") < 0);
+		assertTrue(comparator.compare("b", "a") > 0);
 	}
 
 	@Test
 	public void testCanCompare() throws EvaluationException {
 		TypeComparator comparator = new StandardTypeComparator();
-		assertTrue(comparator.canCompare(null,1));
-		assertTrue(comparator.canCompare(1,null));
+		assertTrue(comparator.canCompare(null, 1));
+		assertTrue(comparator.canCompare(1, null));
 
-		assertTrue(comparator.canCompare(2,1));
-		assertTrue(comparator.canCompare("abc","def"));
-		assertTrue(comparator.canCompare("abc",3));
-		assertFalse(comparator.canCompare(String.class,3));
+		assertTrue(comparator.canCompare(2, 1));
+		assertTrue(comparator.canCompare("abc", "def"));
+		assertTrue(comparator.canCompare("abc", 3));
+		assertFalse(comparator.canCompare(String.class, 3));
 	}
 
 }

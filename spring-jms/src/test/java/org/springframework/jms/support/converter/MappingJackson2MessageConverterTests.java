@@ -16,17 +16,6 @@
 
 package org.springframework.jms.support.converter;
 
-import java.io.ByteArrayInputStream;
-import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import javax.jms.BytesMessage;
-import javax.jms.JMSException;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-
 import com.fasterxml.jackson.annotation.JsonView;
 import org.junit.Before;
 import org.junit.Rule;
@@ -34,10 +23,20 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-
 import org.springframework.core.MethodParameter;
 
-import static org.junit.Assert.*;
+import javax.jms.BytesMessage;
+import javax.jms.JMSException;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+import java.io.ByteArrayInputStream;
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.*;
 
 /**
@@ -135,7 +134,7 @@ public class MappingJackson2MessageConverterTests {
 		given(textMessageMock.getStringProperty("__typeid__")).willReturn(MyBean.class.getName());
 		given(textMessageMock.getText()).willReturn(text);
 
-		MyBean result = (MyBean)converter.fromMessage(textMessageMock);
+		MyBean result = (MyBean) converter.fromMessage(textMessageMock);
 		assertEquals("Invalid result", result, unmarshalled);
 	}
 
@@ -148,7 +147,7 @@ public class MappingJackson2MessageConverterTests {
 		given(textMessageMock.getStringProperty("__typeid__")).willReturn(MyBean.class.getName());
 		given(textMessageMock.getText()).willReturn(text);
 
-		MyBean result = (MyBean)converter.fromMessage(textMessageMock);
+		MyBean result = (MyBean) converter.fromMessage(textMessageMock);
 		assertEquals("Invalid result", result, unmarshalled);
 	}
 
@@ -263,7 +262,17 @@ public class MappingJackson2MessageConverterTests {
 		return new MyAnotherBean();
 	}
 
+	private interface Summary {
+	}
+
+	private interface Full extends Summary {
+	}
+
+	;
+
 	public static class MyBean {
+
+		private String foo;
 
 		public MyBean() {
 		}
@@ -271,8 +280,6 @@ public class MappingJackson2MessageConverterTests {
 		public MyBean(String foo) {
 			this.foo = foo;
 		}
-
-		private String foo;
 
 		public String getFoo() {
 			return foo;
@@ -306,8 +313,7 @@ public class MappingJackson2MessageConverterTests {
 		}
 	}
 
-	private interface Summary {};
-	private interface Full extends Summary {};
+	;
 
 	private static class MyAnotherBean {
 

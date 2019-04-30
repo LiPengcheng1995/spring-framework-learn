@@ -16,13 +16,9 @@
 
 package org.springframework.web.bind.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.core.annotation.AliasFor;
+
+import java.lang.annotation.*;
 
 /**
  * Annotation which indicates that a method parameter should be bound to a web request header.
@@ -36,10 +32,10 @@ import org.springframework.core.annotation.AliasFor;
  *
  * @author Juergen Hoeller
  * @author Sam Brannen
- * @since 3.0
  * @see RequestMapping
  * @see RequestParam
  * @see CookieValue
+ * @since 3.0
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
@@ -54,6 +50,7 @@ public @interface RequestHeader {
 
 	/**
 	 * The name of the request header to bind to.
+	 *
 	 * @since 4.2
 	 */
 	@AliasFor("value")

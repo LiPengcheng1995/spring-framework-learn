@@ -16,31 +16,28 @@
 
 package org.springframework.jms.support.destination;
 
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Queue;
-import javax.jms.Session;
-import javax.jms.Topic;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import javax.jms.*;
 
 /**
  * Simple {@link DestinationResolver} implementation resolving destination names
  * as dynamic destinations.
  *
  * @author Juergen Hoeller
- * @since 1.1
  * @see javax.jms.Session#createQueue
  * @see javax.jms.Session#createTopic
+ * @since 1.1
  */
 public class DynamicDestinationResolver implements DestinationResolver {
 
 	/**
 	 * Resolve the specified destination name as a dynamic destination.
-	 * @param session the current JMS Session
+	 *
+	 * @param session         the current JMS Session
 	 * @param destinationName the name of the destination
-	 * @param pubSubDomain {@code true} if the domain is pub-sub, {@code false} if P2P
+	 * @param pubSubDomain    {@code true} if the domain is pub-sub, {@code false} if P2P
 	 * @return the JMS destination (either a topic or a queue)
 	 * @throws javax.jms.JMSException if resolution failed
 	 * @see #resolveTopic(javax.jms.Session, String)
@@ -54,8 +51,7 @@ public class DynamicDestinationResolver implements DestinationResolver {
 		Assert.notNull(destinationName, "Destination name must not be null");
 		if (pubSubDomain) {
 			return resolveTopic(session, destinationName);
-		}
-		else {
+		} else {
 			return resolveQueue(session, destinationName);
 		}
 	}
@@ -63,7 +59,8 @@ public class DynamicDestinationResolver implements DestinationResolver {
 
 	/**
 	 * Resolve the given destination name to a {@link Topic}.
-	 * @param session the current JMS Session
+	 *
+	 * @param session   the current JMS Session
 	 * @param topicName the name of the desired {@link Topic}
 	 * @return the JMS {@link Topic}
 	 * @throws javax.jms.JMSException if resolution failed
@@ -75,7 +72,8 @@ public class DynamicDestinationResolver implements DestinationResolver {
 
 	/**
 	 * Resolve the given destination name to a {@link Queue}.
-	 * @param session the current JMS Session
+	 *
+	 * @param session   the current JMS Session
 	 * @param queueName the name of the desired {@link Queue}
 	 * @return the JMS {@link Queue}
 	 * @throws javax.jms.JMSException if resolution failed

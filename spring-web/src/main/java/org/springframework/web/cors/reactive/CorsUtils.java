@@ -51,7 +51,7 @@ public abstract class CorsUtils {
 	/**
 	 * Check if the request is a same-origin one, based on {@code Origin}, {@code Host},
 	 * {@code Forwarded}, {@code X-Forwarded-Proto}, {@code X-Forwarded-Host} and
-	 * @code X-Forwarded-Port} headers.
+	 *
 	 * @return {@code true} if the request is a same-origin one, {@code false} in case
 	 * of a cross-origin request
 	 * <p><strong>Note:</strong> this method uses values from "Forwarded"
@@ -61,6 +61,7 @@ public abstract class CorsUtils {
 	 * Consider using the {@code ForwardedHeaderFilter} in order to choose from a
 	 * central place whether to extract and use, or to discard such headers.
 	 * See the Spring Framework reference for more on this filter.
+	 * @code X-Forwarded-Port} headers.
 	 */
 	public static boolean isSameOrigin(ServerHttpRequest request) {
 		String origin = request.getHeaders().getOrigin();
@@ -83,8 +84,7 @@ public abstract class CorsUtils {
 		if (port == -1) {
 			if ("http".equals(scheme) || "ws".equals(scheme)) {
 				port = 80;
-			}
-			else if ("https".equals(scheme) || "wss".equals(scheme)) {
+			} else if ("https".equals(scheme) || "wss".equals(scheme)) {
 				port = 443;
 			}
 		}

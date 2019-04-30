@@ -16,19 +16,19 @@
 
 package org.springframework.aop.aspectj.annotation;
 
-import java.io.Serializable;
-import java.util.Arrays;
-
 import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.junit.Test;
+import org.springframework.util.SerializationTestUtils;
 import test.aop.PerThisAspect;
 
-import org.springframework.util.SerializationTestUtils;
+import java.io.Serializable;
+import java.util.Arrays;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Rob Harrop
@@ -135,6 +135,18 @@ public class AspectProxyFactoryTests {
 	}
 
 
+	public enum MyEnum implements MyInterface {
+
+		A, B;
+	}
+
+
+	public enum MyOtherEnum implements MyInterface {
+
+		C, D;
+	}
+
+
 	public interface ITestBean {
 
 		int getAge();
@@ -143,6 +155,9 @@ public class AspectProxyFactoryTests {
 		<V extends MyInterface> boolean doWithVarargs(V... args);
 	}
 
+
+	public interface MyInterface {
+	}
 
 	@SuppressWarnings("serial")
 	public static class TestBean implements ITestBean, Serializable {
@@ -164,23 +179,6 @@ public class AspectProxyFactoryTests {
 			return true;
 		}
 	}
-
-
-	public interface MyInterface {
-	}
-
-
-	public enum MyEnum implements MyInterface {
-
-		A, B;
-	}
-
-
-	public enum MyOtherEnum implements MyInterface {
-
-		C, D;
-	}
-
 
 	@Aspect
 	@SuppressWarnings("serial")
@@ -210,16 +208,15 @@ public class AspectProxyFactoryTests {
 @SuppressWarnings("serial")
 class MultiplyReturnValue implements Serializable {
 
-	private int multiple = 2;
-
 	public int invocations;
-
-	public void setMultiple(int multiple) {
-		this.multiple = multiple;
-	}
+	private int multiple = 2;
 
 	public int getMultiple() {
 		return this.multiple;
+	}
+
+	public void setMultiple(int multiple) {
+		this.multiple = multiple;
 	}
 
 	@Around("execution(int *.getAge())")

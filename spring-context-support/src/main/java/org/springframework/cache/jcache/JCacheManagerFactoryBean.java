@@ -16,16 +16,16 @@
 
 package org.springframework.cache.jcache;
 
-import java.net.URI;
-import java.util.Properties;
-import javax.cache.CacheManager;
-import javax.cache.Caching;
-
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.lang.Nullable;
+
+import javax.cache.CacheManager;
+import javax.cache.Caching;
+import java.net.URI;
+import java.util.Properties;
 
 /**
  * {@link FactoryBean} for a JCache {@link javax.cache.CacheManager},
@@ -35,9 +35,9 @@ import org.springframework.lang.Nullable;
  * <p>Note: This class has been updated for JCache 1.0, as of Spring 4.0.
  *
  * @author Juergen Hoeller
- * @since 3.2
  * @see javax.cache.Caching#getCachingProvider()
  * @see javax.cache.spi.CachingProvider#getCacheManager()
+ * @since 3.2
  */
 public class JCacheManagerFactoryBean
 		implements FactoryBean<CacheManager>, BeanClassLoaderAware, InitializingBean, DisposableBean {
@@ -66,6 +66,7 @@ public class JCacheManagerFactoryBean
 	/**
 	 * Specify properties for the to-be-created CacheManager.
 	 * Default is {@code null} (i.e. no special properties to apply).
+	 *
 	 * @see javax.cache.spi.CachingProvider#getCacheManager(URI, ClassLoader, Properties)
 	 */
 	public void setCacheManagerProperties(@Nullable Properties cacheManagerProperties) {

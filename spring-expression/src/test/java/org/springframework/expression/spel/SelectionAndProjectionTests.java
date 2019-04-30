@@ -16,16 +16,7 @@
 
 package org.springframework.expression.spel;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-
 import org.junit.Test;
-
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
@@ -33,7 +24,10 @@ import org.springframework.expression.TypedValue;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
-import static org.junit.Assert.*;
+import java.util.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Mark Fisher
@@ -393,10 +387,6 @@ public class SelectionAndProjectionTests {
 			this.wrapper = new IntegerWrapper(value);
 		}
 
-		public IntegerWrapper getWrapper() {
-			return this.wrapper;
-		}
-
 		static List<IntegerTestBean> createList() {
 			List<IntegerTestBean> list = new ArrayList<>();
 			for (int i = 0; i < 3; i++) {
@@ -428,12 +418,15 @@ public class SelectionAndProjectionTests {
 			for (int i = 0; i < 3; i++) {
 				if (i == 1) {
 					array[i] = new IntegerTestBean(5.9f);
-				}
-				else {
+				} else {
 					array[i] = new IntegerTestBean(i + 5);
 				}
 			}
 			return array;
+		}
+
+		public IntegerWrapper getWrapper() {
+			return this.wrapper;
 		}
 	}
 

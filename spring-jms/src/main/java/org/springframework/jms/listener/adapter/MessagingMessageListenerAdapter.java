@@ -16,9 +16,6 @@
 
 package org.springframework.jms.listener.adapter;
 
-import javax.jms.JMSException;
-import javax.jms.Session;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.jms.support.JmsHeaderMapper;
 import org.springframework.jms.support.converter.MessageConversionException;
@@ -29,6 +26,9 @@ import org.springframework.messaging.core.AbstractMessageSendingTemplate;
 import org.springframework.messaging.handler.invocation.InvocableHandlerMethod;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.util.Assert;
+
+import javax.jms.JMSException;
+import javax.jms.Session;
 
 /**
  * A {@link javax.jms.MessageListener} adapter that invokes a configurable
@@ -43,16 +43,20 @@ import org.springframework.util.Assert;
  * method arguments if necessary.
  *
  * @author Stephane Nicoll
- * @since 4.1
  * @see Message
  * @see JmsHeaderMapper
  * @see InvocableHandlerMethod
+ * @since 4.1
  */
 public class MessagingMessageListenerAdapter extends AbstractAdaptableMessageListener {
 
 	@Nullable
 	private InvocableHandlerMethod handlerMethod;
 
+	private InvocableHandlerMethod getHandlerMethod() {
+		Assert.state(this.handlerMethod != null, "No HandlerMethod set");
+		return this.handlerMethod;
+	}
 
 	/**
 	 * Set the {@link InvocableHandlerMethod} to use to invoke the method
@@ -61,12 +65,6 @@ public class MessagingMessageListenerAdapter extends AbstractAdaptableMessageLis
 	public void setHandlerMethod(InvocableHandlerMethod handlerMethod) {
 		this.handlerMethod = handlerMethod;
 	}
-
-	private InvocableHandlerMethod getHandlerMethod() {
-		Assert.state(this.handlerMethod != null, "No HandlerMethod set");
-		return this.handlerMethod;
-	}
-
 
 	@Override
 	public void onMessage(javax.jms.Message jmsMessage, @Nullable Session session) throws JMSException {
@@ -77,8 +75,7 @@ public class MessagingMessageListenerAdapter extends AbstractAdaptableMessageLis
 		Object result = invokeHandler(jmsMessage, session, message);
 		if (result != null) {
 			handleResult(result, jmsMessage, session);
-		}
-		else {
+		} else {
 			logger.trace("No result object given - no result to handle");
 		}
 	}
@@ -97,8 +94,7 @@ public class MessagingMessageListenerAdapter extends AbstractAdaptableMessageLis
 	protected Message<?> toMessagingMessage(javax.jms.Message jmsMessage) {
 		try {
 			return (Message<?>) getMessagingMessageConverter().fromMessage(jmsMessage);
-		}
-		catch (JMSException ex) {
+		} catch (JMSException ex) {
 			throw new MessageConversionException("Could not convert JMS message", ex);
 		}
 	}
@@ -112,12 +108,10 @@ public class MessagingMessageListenerAdapter extends AbstractAdaptableMessageLis
 		InvocableHandlerMethod handlerMethod = getHandlerMethod();
 		try {
 			return handlerMethod.invoke(message, jmsMessage, session);
-		}
-		catch (MessagingException ex) {
+		} catch (MessagingException ex) {
 			throw new ListenerExecutionFailedException(
 					createMessagingErrorMessage("Listener method could not be invoked with incoming message"), ex);
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new ListenerExecutionFailedException("Listener method '" +
 					handlerMethod.getMethod().toGenericString() + "' threw exception", ex);
 		}

@@ -16,33 +16,21 @@
 
 package org.springframework.mail.javamail;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Properties;
-import javax.activation.FileTypeMap;
-import javax.mail.Address;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.NoSuchProviderException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.URLName;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.mail.MailParseException;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.util.ObjectUtils;
+
+import javax.activation.FileTypeMap;
+import javax.mail.*;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.io.IOException;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -314,8 +302,7 @@ public class JavaMailSenderTests {
 		simpleMessage.setFrom("");
 		try {
 			sender.send(simpleMessage);
-		}
-		catch (MailParseException ex) {
+		} catch (MailParseException ex) {
 			// expected
 			assertTrue(ex.getCause() instanceof AddressException);
 		}
@@ -332,8 +319,7 @@ public class JavaMailSenderTests {
 		};
 		try {
 			sender.send(preparator);
-		}
-		catch (MailParseException ex) {
+		} catch (MailParseException ex) {
 			// expected
 			assertTrue(ex.getCause() instanceof AddressException);
 		}
@@ -406,8 +392,7 @@ public class JavaMailSenderTests {
 		try {
 			sender.send(simpleMessage1);
 			fail("Should have thrown MailSendException");
-		}
-		catch (MailSendException ex) {
+		} catch (MailSendException ex) {
 			// expected
 			ex.printStackTrace();
 			assertTrue(ex.getFailedMessages() != null);
@@ -427,8 +412,7 @@ public class JavaMailSenderTests {
 		try {
 			sender.send(simpleMessage1);
 			fail("Should have thrown MailSendException");
-		}
-		catch (MailSendException ex) {
+		} catch (MailSendException ex) {
 			// expected
 			ex.printStackTrace();
 			assertTrue(ex.getFailedMessages() != null);
@@ -451,8 +435,7 @@ public class JavaMailSenderTests {
 
 		try {
 			sender.send(simpleMessage1, simpleMessage2);
-		}
-		catch (MailSendException ex) {
+		} catch (MailSendException ex) {
 			ex.printStackTrace();
 			assertEquals("host", sender.transport.getConnectedHost());
 			assertEquals("username", sender.transport.getConnectedUsername());
@@ -483,8 +466,7 @@ public class JavaMailSenderTests {
 
 		try {
 			sender.send(mimeMessage1, mimeMessage2);
-		}
-		catch (MailSendException ex) {
+		} catch (MailSendException ex) {
 			ex.printStackTrace();
 			assertEquals("host", sender.transport.getConnectedHost());
 			assertEquals("username", sender.transport.getConnectedUsername());

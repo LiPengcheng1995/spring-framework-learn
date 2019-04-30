@@ -16,13 +16,13 @@
 
 package org.springframework.cache.transaction;
 
-import java.util.concurrent.Callable;
-
 import org.springframework.cache.Cache;
 import org.springframework.lang.Nullable;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
+
+import java.util.concurrent.Callable;
 
 /**
  * Cache decorator which synchronizes its {@link #put}, {@link #evict} and {@link #clear}
@@ -37,8 +37,8 @@ import org.springframework.util.Assert;
  * @author Juergen Hoeller
  * @author Stephane Nicoll
  * @author Stas Volsky
- * @since 3.2
  * @see TransactionAwareCacheManagerProxy
+ * @since 3.2
  */
 public class TransactionAwareCacheDecorator implements Cache {
 
@@ -47,6 +47,7 @@ public class TransactionAwareCacheDecorator implements Cache {
 
 	/**
 	 * Create a new TransactionAwareCache for the given target Cache.
+	 *
 	 * @param targetCache the target Cache to decorate
 	 */
 	public TransactionAwareCacheDecorator(Cache targetCache) {
@@ -97,8 +98,7 @@ public class TransactionAwareCacheDecorator implements Cache {
 					TransactionAwareCacheDecorator.this.targetCache.put(key, value);
 				}
 			});
-		}
-		else {
+		} else {
 			this.targetCache.put(key, value);
 		}
 	}
@@ -118,8 +118,7 @@ public class TransactionAwareCacheDecorator implements Cache {
 					TransactionAwareCacheDecorator.this.targetCache.evict(key);
 				}
 			});
-		}
-		else {
+		} else {
 			this.targetCache.evict(key);
 		}
 	}
@@ -133,8 +132,7 @@ public class TransactionAwareCacheDecorator implements Cache {
 					targetCache.clear();
 				}
 			});
-		}
-		else {
+		} else {
 			this.targetCache.clear();
 		}
 	}

@@ -16,17 +16,17 @@
 
 package org.springframework.web.jsf.el;
 
-import java.beans.FeatureDescriptor;
-import java.util.Iterator;
+import org.springframework.lang.Nullable;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.jsf.FacesContextUtils;
+
 import javax.el.ELContext;
 import javax.el.ELException;
 import javax.el.ELResolver;
 import javax.el.PropertyNotWritableException;
 import javax.faces.context.FacesContext;
-
-import org.springframework.lang.Nullable;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.jsf.FacesContextUtils;
+import java.beans.FeatureDescriptor;
+import java.util.Iterator;
 
 /**
  * JSF {@code ELResolver} that delegates to the Spring root {@code WebApplicationContext},
@@ -39,7 +39,7 @@ import org.springframework.web.jsf.FacesContextUtils;
  *   ...
  *   &lt;el-resolver>org.springframework.web.jsf.el.SpringBeanFacesELResolver&lt;/el-resolver>
  * &lt;/application></pre>
- *
+ * <p>
  * All your JSF expressions can then implicitly refer to the names of
  * Spring-managed service layer beans, for example in property values of
  * JSF-managed beans:
@@ -54,7 +54,7 @@ import org.springframework.web.jsf.FacesContextUtils;
  *     &lt;value>#{mySpringManagedBusinessObject}&lt;/value>
  *   &lt;/managed-property>
  * &lt;/managed-bean></pre>
- *
+ * <p>
  * with "mySpringManagedBusinessObject" defined as Spring bean in
  * applicationContext.xml:
  *
@@ -64,9 +64,9 @@ import org.springframework.web.jsf.FacesContextUtils;
  * &lt;/bean></pre>
  *
  * @author Juergen Hoeller
- * @since 2.5
  * @see WebApplicationContextFacesELResolver
  * @see org.springframework.web.jsf.FacesContextUtils#getRequiredWebApplicationContext
+ * @since 2.5
  */
 public class SpringBeanFacesELResolver extends ELResolver {
 
@@ -107,8 +107,7 @@ public class SpringBeanFacesELResolver extends ELResolver {
 				if (value == wac.getBean(beanName)) {
 					// Setting the bean reference to the same value is alright - can simply be ignored...
 					elContext.setPropertyResolved(true);
-				}
-				else {
+				} else {
 					throw new PropertyNotWritableException(
 							"Variable '" + beanName + "' refers to a Spring bean which by definition is not writable");
 				}
@@ -142,6 +141,7 @@ public class SpringBeanFacesELResolver extends ELResolver {
 	/**
 	 * Retrieve the web application context to delegate bean name resolution to.
 	 * <p>The default implementation delegates to FacesContextUtils.
+	 *
 	 * @param elContext the current JSF ELContext
 	 * @return the Spring web application context (never {@code null})
 	 * @see org.springframework.web.jsf.FacesContextUtils#getRequiredWebApplicationContext

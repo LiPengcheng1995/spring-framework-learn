@@ -17,11 +17,10 @@
 package org.springframework.expression.spel;
 
 import org.junit.Test;
-
 import org.springframework.expression.spel.standard.SpelExpression;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
 
 /**
  * Tests the evaluation of basic literals: boolean, integer, hex integer, long, real, null, date
@@ -164,11 +163,11 @@ public class LiteralTests extends AbstractExpressionTests {
 
 	@Test
 	public void testNotWritable() throws Exception {
-		SpelExpression expr = (SpelExpression)parser.parseExpression("37");
+		SpelExpression expr = (SpelExpression) parser.parseExpression("37");
 		assertFalse(expr.isWritable(new StandardEvaluationContext()));
-		expr = (SpelExpression)parser.parseExpression("37L");
+		expr = (SpelExpression) parser.parseExpression("37L");
 		assertFalse(expr.isWritable(new StandardEvaluationContext()));
-		expr = (SpelExpression)parser.parseExpression("true");
+		expr = (SpelExpression) parser.parseExpression("true");
 		assertFalse(expr.isWritable(new StandardEvaluationContext()));
 	}
 }

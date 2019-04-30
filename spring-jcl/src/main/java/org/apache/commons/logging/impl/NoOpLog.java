@@ -16,9 +16,9 @@
 
 package org.apache.commons.logging.impl;
 
-import java.io.Serializable;
-
 import org.apache.commons.logging.Log;
+
+import java.io.Serializable;
 
 /**
  * Trivial implementation of {@link Log} that throws away all messages.

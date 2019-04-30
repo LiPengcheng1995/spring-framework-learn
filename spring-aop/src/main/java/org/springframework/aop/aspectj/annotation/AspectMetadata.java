@@ -16,20 +16,19 @@
 
 package org.springframework.aop.aspectj.annotation;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
-
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.AjType;
 import org.aspectj.lang.reflect.AjTypeSystem;
 import org.aspectj.lang.reflect.PerClauseKind;
-
 import org.springframework.aop.Pointcut;
 import org.springframework.aop.aspectj.AspectJExpressionPointcut;
 import org.springframework.aop.aspectj.TypePatternClassFilter;
 import org.springframework.aop.framework.AopConfigException;
 import org.springframework.aop.support.ComposablePointcut;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 
 /**
  * Metadata for an AspectJ aspect class, with an additional Spring AOP pointcut
@@ -40,8 +39,8 @@ import org.springframework.aop.support.ComposablePointcut;
  *
  * @author Rod Johnson
  * @author Juergen Hoeller
- * @since 2.0
  * @see org.springframework.aop.aspectj.AspectJExpressionPointcut
+ * @since 2.0
  */
 @SuppressWarnings("serial")
 public class AspectMetadata implements Serializable {
@@ -58,25 +57,24 @@ public class AspectMetadata implements Serializable {
 	 * corresponding AjType on deserialization.
 	 */
 	private final Class<?> aspectClass;
-
-	/**
-	 * AspectJ reflection information (AspectJ 5 / Java 5 specific).
-	 * Re-resolved on deserialization since it isn't serializable itself.
-	 */
-	private transient AjType<?> ajType;
-
 	/**
 	 * Spring AOP pointcut corresponding to the per clause of the
 	 * aspect. Will be the Pointcut.TRUE canonical instance in the
 	 * case of a singleton, otherwise an AspectJExpressionPointcut.
 	 */
 	private final Pointcut perClausePointcut;
+	/**
+	 * AspectJ reflection information (AspectJ 5 / Java 5 specific).
+	 * Re-resolved on deserialization since it isn't serializable itself.
+	 */
+	private transient AjType<?> ajType;
 
 
 	/**
 	 * Create a new AspectMetadata instance for the given aspect class.
+	 *
 	 * @param aspectClass the aspect class
-	 * @param aspectName the name of the aspect
+	 * @param aspectName  the name of the aspect
 	 */
 	public AspectMetadata(Class<?> aspectClass, String aspectName) {
 		this.aspectName = aspectName;

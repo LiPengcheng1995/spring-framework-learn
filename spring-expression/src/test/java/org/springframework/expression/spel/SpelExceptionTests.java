@@ -16,17 +16,16 @@
 
 package org.springframework.expression.spel;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import org.junit.Test;
-
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
-import static org.junit.Assert.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * SpelEvaluationException tests (SPR-16544).
@@ -146,7 +145,7 @@ public class SpelExceptionTests {
 		StandardEvaluationContext ctx = new StandardEvaluationContext();
 		ctx.setVariables(new HashMap<String, Object>() {
 			{
-				put("anArray", new int[] {1,2,3});
+				put("anArray", new int[]{1, 2, 3});
 			}
 		});
 		boolean result = spelExpression.getValue(ctx, Boolean.class);

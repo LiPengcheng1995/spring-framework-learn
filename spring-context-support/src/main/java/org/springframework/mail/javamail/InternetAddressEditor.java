@@ -16,11 +16,11 @@
 
 package org.springframework.mail.javamail;
 
-import java.beans.PropertyEditorSupport;
+import org.springframework.util.StringUtils;
+
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
-
-import org.springframework.util.StringUtils;
+import java.beans.PropertyEditorSupport;
 
 /**
  * Editor for {@code java.mail.internet.InternetAddress},
@@ -30,30 +30,28 @@ import org.springframework.util.StringUtils;
  * a String argument. Converts empty Strings into null values.
  *
  * @author Juergen Hoeller
- * @since 1.2.3
  * @see javax.mail.internet.InternetAddress
+ * @since 1.2.3
  */
 public class InternetAddressEditor extends PropertyEditorSupport {
+
+	@Override
+	public String getAsText() {
+		InternetAddress value = (InternetAddress) getValue();
+		return (value != null ? value.toUnicodeString() : "");
+	}
 
 	@Override
 	public void setAsText(String text) throws IllegalArgumentException {
 		if (StringUtils.hasText(text)) {
 			try {
 				setValue(new InternetAddress(text));
-			}
-			catch (AddressException ex) {
+			} catch (AddressException ex) {
 				throw new IllegalArgumentException("Could not parse mail address: " + ex.getMessage());
 			}
-		}
-		else {
+		} else {
 			setValue(null);
 		}
-	}
-
-	@Override
-	public String getAsText() {
-		InternetAddress value = (InternetAddress) getValue();
-		return (value != null ? value.toUnicodeString() : "");
 	}
 
 }

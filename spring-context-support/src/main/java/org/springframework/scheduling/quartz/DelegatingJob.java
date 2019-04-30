@@ -19,7 +19,6 @@ package org.springframework.scheduling.quartz;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-
 import org.springframework.util.Assert;
 
 /**
@@ -31,9 +30,9 @@ import org.springframework.util.Assert;
  * that way instead of via the JobExecutionContext.
  *
  * @author Juergen Hoeller
- * @since 2.0
  * @see SpringBeanJobFactory
  * @see org.quartz.Job#execute(org.quartz.JobExecutionContext)
+ * @since 2.0
  */
 public class DelegatingJob implements Job {
 
@@ -42,6 +41,7 @@ public class DelegatingJob implements Job {
 
 	/**
 	 * Create a new DelegatingJob.
+	 *
 	 * @param delegate the Runnable implementation to delegate to
 	 */
 	public DelegatingJob(Runnable delegate) {

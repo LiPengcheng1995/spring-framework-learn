@@ -16,21 +16,16 @@
 
 package org.springframework.expression.spel;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Ignore;
 import org.junit.Test;
-
 import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.expression.AccessException;
-import org.springframework.expression.ConstructorExecutor;
-import org.springframework.expression.ConstructorResolver;
-import org.springframework.expression.EvaluationContext;
-import org.springframework.expression.Expression;
+import org.springframework.expression.*;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.expression.spel.testresources.PlaceOfBirth;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -50,42 +45,6 @@ public class ConstructorInvocationTests extends AbstractExpressionTests {
 	public void testNonExistentType() {
 		evaluateAndCheckError("new FooBar()", SpelMessage.CONSTRUCTOR_INVOCATION_PROBLEM);
 	}
-
-
-	@SuppressWarnings("serial")
-	static class TestException extends Exception {
-
-	}
-
-	static class Tester {
-
-		public static int counter;
-		public int i;
-
-
-		public Tester() {
-		}
-
-		public Tester(int i) throws Exception {
-			counter++;
-			if (i == 1) {
-				throw new IllegalArgumentException("IllegalArgumentException for 1");
-			}
-			if (i == 2) {
-				throw new RuntimeException("RuntimeException for 2");
-			}
-			if (i == 4) {
-				throw new TestException();
-			}
-			this.i = i;
-		}
-
-		public Tester(PlaceOfBirth pob) {
-
-		}
-
-	}
-
 
 	@Test
 	public void testConstructorThrowingException_SPR6760() {
@@ -129,8 +88,7 @@ public class ConstructorInvocationTests extends AbstractExpressionTests {
 		try {
 			o = expr.getValue(eContext);
 			fail("Should have failed");
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			// A problem occurred whilst attempting to construct an object of type
 			// 'org.springframework.expression.spel.ConstructorInvocationTests$Tester'
 			// using arguments '(java.lang.Integer)'
@@ -148,8 +106,7 @@ public class ConstructorInvocationTests extends AbstractExpressionTests {
 		try {
 			o = expr.getValue(eContext);
 			fail("Should have failed");
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			// A problem occurred whilst attempting to construct an object of type
 			// 'org.springframework.expression.spel.ConstructorInvocationTests$Tester'
 			// using arguments '(java.lang.Integer)'
@@ -184,23 +141,11 @@ public class ConstructorInvocationTests extends AbstractExpressionTests {
 		assertEquals(2, ctx.getConstructorResolvers().size());
 	}
 
-
-	static class DummyConstructorResolver implements ConstructorResolver {
-
-		@Override
-		public ConstructorExecutor resolve(EvaluationContext context, String typeName,
-				List<TypeDescriptor> argumentTypes) throws AccessException {
-			throw new UnsupportedOperationException("Auto-generated method stub");
-		}
-
-	}
-
-
 	@Test
 	public void testVarargsInvocation01() {
 		// Calling 'Fruit(String... strings)'
 		evaluate("new org.springframework.expression.spel.testresources.Fruit('a','b','c').stringscount()", 3,
-			Integer.class);
+				Integer.class);
 		evaluate("new org.springframework.expression.spel.testresources.Fruit('a').stringscount()", 1, Integer.class);
 		evaluate("new org.springframework.expression.spel.testresources.Fruit().stringscount()", 0, Integer.class);
 		// all need converting to strings
@@ -209,23 +154,23 @@ public class ConstructorInvocationTests extends AbstractExpressionTests {
 		evaluate("new org.springframework.expression.spel.testresources.Fruit(1).stringscount()", 1, Integer.class);
 		// first and last need conversion
 		evaluate("new org.springframework.expression.spel.testresources.Fruit(1,'a',3.0d).stringscount()", 3,
-			Integer.class);
+				Integer.class);
 	}
 
 	@Test
 	public void testVarargsInvocation02() {
 		// Calling 'Fruit(int i, String... strings)' - returns int+length_of_strings
 		evaluate("new org.springframework.expression.spel.testresources.Fruit(5,'a','b','c').stringscount()", 8,
-			Integer.class);
+				Integer.class);
 		evaluate("new org.springframework.expression.spel.testresources.Fruit(2,'a').stringscount()", 3, Integer.class);
 		evaluate("new org.springframework.expression.spel.testresources.Fruit(4).stringscount()", 4, Integer.class);
 		evaluate("new org.springframework.expression.spel.testresources.Fruit(8,2,3).stringscount()", 10, Integer.class);
 		evaluate("new org.springframework.expression.spel.testresources.Fruit(9).stringscount()", 9, Integer.class);
 		evaluate("new org.springframework.expression.spel.testresources.Fruit(2,'a',3.0d).stringscount()", 4,
-			Integer.class);
+				Integer.class);
 		evaluate(
-			"new org.springframework.expression.spel.testresources.Fruit(8,stringArrayOfThreeItems).stringscount()",
-			11, Integer.class);
+				"new org.springframework.expression.spel.testresources.Fruit(8,stringArrayOfThreeItems).stringscount()",
+				11, Integer.class);
 	}
 
 	/*
@@ -247,6 +192,50 @@ public class ConstructorInvocationTests extends AbstractExpressionTests {
 		// TODO currently failing as with new ObjectToArray converter closest constructor
 		// matched becomes String(byte[]) which fails...
 		evaluate("new String(3.0d)", "3.0", String.class);
+	}
+
+	@SuppressWarnings("serial")
+	static class TestException extends Exception {
+
+	}
+
+	static class Tester {
+
+		public static int counter;
+		public int i;
+
+
+		public Tester() {
+		}
+
+		public Tester(int i) throws Exception {
+			counter++;
+			if (i == 1) {
+				throw new IllegalArgumentException("IllegalArgumentException for 1");
+			}
+			if (i == 2) {
+				throw new RuntimeException("RuntimeException for 2");
+			}
+			if (i == 4) {
+				throw new TestException();
+			}
+			this.i = i;
+		}
+
+		public Tester(PlaceOfBirth pob) {
+
+		}
+
+	}
+
+	static class DummyConstructorResolver implements ConstructorResolver {
+
+		@Override
+		public ConstructorExecutor resolve(EvaluationContext context, String typeName,
+										   List<TypeDescriptor> argumentTypes) throws AccessException {
+			throw new UnsupportedOperationException("Auto-generated method stub");
+		}
+
 	}
 
 }

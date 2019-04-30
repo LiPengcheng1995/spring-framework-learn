@@ -16,11 +16,11 @@
 
 package org.springframework.ui.freemarker;
 
-import java.io.IOException;
-import java.io.StringWriter;
-
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+
+import java.io.IOException;
+import java.io.StringWriter;
 
 /**
  * Utility class for working with FreeMarker.
@@ -36,10 +36,11 @@ public abstract class FreeMarkerTemplateUtils {
 	 * the result to the given Writer.
 	 * <p>When using this method to prepare a text for a mail to be sent with Spring's
 	 * mail support, consider wrapping IO/TemplateException in MailPreparationException.
+	 *
 	 * @param model the model object, typically a Map that contains model names
-	 * as keys and model objects as values
+	 *              as keys and model objects as values
 	 * @return the result as String
-	 * @throws IOException if the template wasn't found or couldn't be read
+	 * @throws IOException                           if the template wasn't found or couldn't be read
 	 * @throws freemarker.template.TemplateException if rendering failed
 	 * @see org.springframework.mail.MailPreparationException
 	 */

@@ -16,13 +16,12 @@
 
 package org.springframework.jca.cci.core;
 
-import java.sql.SQLException;
+import org.springframework.dao.DataAccessException;
+import org.springframework.lang.Nullable;
 
 import javax.resource.ResourceException;
 import javax.resource.cci.Record;
-
-import org.springframework.dao.DataAccessException;
-import org.springframework.lang.Nullable;
+import java.sql.SQLException;
 
 /**
  * Callback interface for extracting a result object from a CCI Record instance.
@@ -39,24 +38,25 @@ import org.springframework.lang.Nullable;
  *
  * @author Thierry Templier
  * @author Juergen Hoeller
- * @since 1.2
  * @see CciTemplate#execute(javax.resource.cci.InteractionSpec, Record, RecordExtractor)
  * @see CciTemplate#execute(javax.resource.cci.InteractionSpec, RecordCreator, RecordExtractor)
  * @see javax.resource.cci.ResultSet
+ * @since 1.2
  */
 @FunctionalInterface
 public interface RecordExtractor<T> {
 
 	/**
 	 * Process the data in the given Record, creating a corresponding result object.
+	 *
 	 * @param record the Record to extract data from
-	 * (possibly a CCI ResultSet)
+	 *               (possibly a CCI ResultSet)
 	 * @return an arbitrary result object, or {@code null} if none
 	 * (the extractor will typically be stateful in the latter case)
-	 * @throws ResourceException if thrown by a CCI method, to be auto-converted
-	 * to a DataAccessException
-	 * @throws SQLException if thrown by a ResultSet method, to be auto-converted
-	 * to a DataAccessException
+	 * @throws ResourceException   if thrown by a CCI method, to be auto-converted
+	 *                             to a DataAccessException
+	 * @throws SQLException        if thrown by a ResultSet method, to be auto-converted
+	 *                             to a DataAccessException
 	 * @throws DataAccessException in case of custom exceptions
 	 * @see javax.resource.cci.ResultSet
 	 */

@@ -16,9 +16,6 @@
 
 package org.springframework.web.method.annotation;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
@@ -29,6 +26,9 @@ import org.springframework.web.bind.support.WebBindingInitializer;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.method.support.InvocableHandlerMethod;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Adds initialization to a WebDataBinder via {@code @InitBinder} methods.
@@ -43,11 +43,12 @@ public class InitBinderDataBinderFactory extends DefaultDataBinderFactory {
 
 	/**
 	 * Create a new InitBinderDataBinderFactory instance.
+	 *
 	 * @param binderMethods {@code @InitBinder} methods
-	 * @param initializer for global data binder initialization
+	 * @param initializer   for global data binder initialization
 	 */
 	public InitBinderDataBinderFactory(@Nullable List<InvocableHandlerMethod> binderMethods,
-			@Nullable WebBindingInitializer initializer) {
+									   @Nullable WebBindingInitializer initializer) {
 
 		super(initializer);
 		this.binderMethods = (binderMethods != null ? binderMethods : Collections.emptyList());
@@ -58,6 +59,7 @@ public class InitBinderDataBinderFactory extends DefaultDataBinderFactory {
 	 * Initialize a WebDataBinder with {@code @InitBinder} methods.
 	 * <p>If the {@code @InitBinder} annotation specifies attributes names,
 	 * it is invoked only if the names include the target object name.
+	 *
 	 * @throws Exception if one of the invoked @{@link InitBinder} methods fails
 	 * @see #isBinderMethodApplicable
 	 */

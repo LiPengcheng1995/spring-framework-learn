@@ -16,12 +16,12 @@
 
 package org.springframework.jms.listener.endpoint;
 
-import javax.jms.Session;
-
 import org.springframework.core.Constants;
 import org.springframework.jms.support.QosSettings;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.lang.Nullable;
+
+import javax.jms.Session;
 
 /**
  * Common configuration object for activating a JMS message endpoint.
@@ -33,14 +33,16 @@ import org.springframework.lang.Nullable;
  *
  * @author Juergen Hoeller
  * @author Stephane Nicoll
- * @since 2.5
  * @see JmsActivationSpecFactory
  * @see JmsMessageEndpointManager#setActivationSpecConfig
  * @see javax.resource.spi.ResourceAdapter#endpointActivation
+ * @since 2.5
  */
 public class JmsActivationSpecConfig {
 
-	/** Constants instance for javax.jms.Session */
+	/**
+	 * Constants instance for javax.jms.Session
+	 */
 	private static final Constants sessionConstants = new Constants(Session.class);
 
 
@@ -77,44 +79,46 @@ public class JmsActivationSpecConfig {
 	@Nullable
 	private MessageConverter messageConverter;
 
-
-	public void setDestinationName(@Nullable String destinationName) {
-		this.destinationName = destinationName;
-	}
-
 	@Nullable
 	public String getDestinationName() {
 		return this.destinationName;
 	}
 
-	public void setPubSubDomain(boolean pubSubDomain) {
-		this.pubSubDomain = pubSubDomain;
+	public void setDestinationName(@Nullable String destinationName) {
+		this.destinationName = destinationName;
 	}
 
 	public boolean isPubSubDomain() {
 		return this.pubSubDomain;
 	}
 
-	public void setReplyPubSubDomain(boolean replyPubSubDomain) {
-		this.replyPubSubDomain = replyPubSubDomain;
+	public void setPubSubDomain(boolean pubSubDomain) {
+		this.pubSubDomain = pubSubDomain;
 	}
 
 	public boolean isReplyPubSubDomain() {
 		if (this.replyPubSubDomain != null) {
 			return this.replyPubSubDomain;
-		}
-		else {
+		} else {
 			return isPubSubDomain();
 		}
+	}
+
+	public void setReplyPubSubDomain(boolean replyPubSubDomain) {
+		this.replyPubSubDomain = replyPubSubDomain;
+	}
+
+	@Nullable
+	public QosSettings getReplyQosSettings() {
+		return this.replyQosSettings;
 	}
 
 	public void setReplyQosSettings(@Nullable QosSettings replyQosSettings) {
 		this.replyQosSettings = replyQosSettings;
 	}
 
-	@Nullable
-	public QosSettings getReplyQosSettings() {
-		return this.replyQosSettings;
+	public boolean isSubscriptionDurable() {
+		return this.subscriptionDurable;
 	}
 
 	public void setSubscriptionDurable(boolean subscriptionDurable) {
@@ -124,8 +128,8 @@ public class JmsActivationSpecConfig {
 		}
 	}
 
-	public boolean isSubscriptionDurable() {
-		return this.subscriptionDurable;
+	public boolean isSubscriptionShared() {
+		return this.subscriptionShared;
 	}
 
 	public void setSubscriptionShared(boolean subscriptionShared) {
@@ -135,8 +139,9 @@ public class JmsActivationSpecConfig {
 		}
 	}
 
-	public boolean isSubscriptionShared() {
-		return this.subscriptionShared;
+	@Nullable
+	public String getSubscriptionName() {
+		return this.subscriptionName;
 	}
 
 	public void setSubscriptionName(@Nullable String subscriptionName) {
@@ -144,8 +149,8 @@ public class JmsActivationSpecConfig {
 	}
 
 	@Nullable
-	public String getSubscriptionName() {
-		return this.subscriptionName;
+	public String getDurableSubscriptionName() {
+		return (this.subscriptionDurable ? this.subscriptionName : null);
 	}
 
 	public void setDurableSubscriptionName(@Nullable String durableSubscriptionName) {
@@ -154,8 +159,8 @@ public class JmsActivationSpecConfig {
 	}
 
 	@Nullable
-	public String getDurableSubscriptionName() {
-		return (this.subscriptionDurable ? this.subscriptionName : null);
+	public String getClientId() {
+		return this.clientId;
 	}
 
 	public void setClientId(@Nullable String clientId) {
@@ -163,17 +168,12 @@ public class JmsActivationSpecConfig {
 	}
 
 	@Nullable
-	public String getClientId() {
-		return this.clientId;
+	public String getMessageSelector() {
+		return this.messageSelector;
 	}
 
 	public void setMessageSelector(@Nullable String messageSelector) {
 		this.messageSelector = messageSelector;
-	}
-
-	@Nullable
-	public String getMessageSelector() {
-		return this.messageSelector;
 	}
 
 	/**
@@ -183,6 +183,7 @@ public class JmsActivationSpecConfig {
 	 * (see Spring's {@link StandardJmsActivationSpecFactory}). ActiveMQ also
 	 * supports "SESSION_TRANSACTED" in the form of RA-managed transactions
 	 * (automatically translated by Spring's {@link DefaultJmsActivationSpecFactory}.
+	 *
 	 * @param constantName the name of the {@link Session} acknowledge mode constant
 	 * @see javax.jms.Session#AUTO_ACKNOWLEDGE
 	 * @see javax.jms.Session#CLIENT_ACKNOWLEDGE
@@ -196,7 +197,15 @@ public class JmsActivationSpecConfig {
 	}
 
 	/**
+	 * Return the JMS acknowledgement mode to use.
+	 */
+	public int getAcknowledgeMode() {
+		return this.acknowledgeMode;
+	}
+
+	/**
 	 * Set the JMS acknowledgement mode to use.
+	 *
 	 * @see javax.jms.Session#AUTO_ACKNOWLEDGE
 	 * @see javax.jms.Session#CLIENT_ACKNOWLEDGE
 	 * @see javax.jms.Session#DUPS_OK_ACKNOWLEDGE
@@ -204,13 +213,6 @@ public class JmsActivationSpecConfig {
 	 */
 	public void setAcknowledgeMode(int acknowledgeMode) {
 		this.acknowledgeMode = acknowledgeMode;
-	}
-
-	/**
-	 * Return the JMS acknowledgement mode to use.
-	 */
-	public int getAcknowledgeMode() {
-		return this.acknowledgeMode;
 	}
 
 	/**
@@ -227,17 +229,22 @@ public class JmsActivationSpecConfig {
 			int separatorIndex = concurrency.indexOf('-');
 			if (separatorIndex != -1) {
 				setMaxConcurrency(Integer.parseInt(concurrency.substring(separatorIndex + 1, concurrency.length())));
-			}
-			else {
+			} else {
 				setMaxConcurrency(Integer.parseInt(concurrency));
 			}
-		}
-		catch (NumberFormatException ex) {
+		} catch (NumberFormatException ex) {
 			throw new IllegalArgumentException("Invalid concurrency value [" + concurrency + "]: only " +
 					"single maximum integer (e.g. \"5\") and minimum-maximum combo (e.g. \"3-5\") supported. " +
 					"Note that JmsActivationSpecConfig will effectively ignore the minimum value and " +
 					"scale from zero up to the number of consumers according to the maximum value.");
 		}
+	}
+
+	/**
+	 * Return the maximum number of consumers/sessions to use.
+	 */
+	public int getMaxConcurrency() {
+		return this.maxConcurrency;
 	}
 
 	/**
@@ -249,10 +256,10 @@ public class JmsActivationSpecConfig {
 	}
 
 	/**
-	 * Return the maximum number of consumers/sessions to use.
+	 * Return the maximum number of messages to load into a session.
 	 */
-	public int getMaxConcurrency() {
-		return this.maxConcurrency;
+	public int getPrefetchSize() {
+		return this.prefetchSize;
 	}
 
 	/**
@@ -264,26 +271,20 @@ public class JmsActivationSpecConfig {
 	}
 
 	/**
-	 * Return the maximum number of messages to load into a session.
-	 */
-	public int getPrefetchSize() {
-		return this.prefetchSize;
-	}
-
-	/**
-	 * Set the {@link MessageConverter} strategy for converting JMS Messages.
-	 * @param messageConverter the message converter to use
-	 */
-	public void setMessageConverter(@Nullable MessageConverter messageConverter) {
-		this.messageConverter = messageConverter;
-	}
-
-	/**
 	 * Return the {@link MessageConverter} to use, if any.
 	 */
 	@Nullable
 	public MessageConverter getMessageConverter() {
 		return this.messageConverter;
+	}
+
+	/**
+	 * Set the {@link MessageConverter} strategy for converting JMS Messages.
+	 *
+	 * @param messageConverter the message converter to use
+	 */
+	public void setMessageConverter(@Nullable MessageConverter messageConverter) {
+		this.messageConverter = messageConverter;
 	}
 
 }

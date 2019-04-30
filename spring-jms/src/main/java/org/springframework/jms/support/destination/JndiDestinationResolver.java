@@ -16,18 +16,14 @@
 
 package org.springframework.jms.support.destination;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Queue;
-import javax.jms.Session;
-import javax.jms.Topic;
-import javax.naming.NamingException;
-
 import org.springframework.jndi.JndiLocatorSupport;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import javax.jms.*;
+import javax.naming.NamingException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * {@link DestinationResolver} implementation which interprets destination names
@@ -47,22 +43,18 @@ import org.springframework.util.Assert;
  *
  * @author Mark Pollack
  * @author Juergen Hoeller
- * @since 1.1
  * @see #setJndiTemplate
  * @see #setJndiEnvironment
  * @see #setCache
  * @see #setFallbackToDynamicDestination
+ * @since 1.1
  */
 public class JndiDestinationResolver extends JndiLocatorSupport implements CachingDestinationResolver {
 
-	private boolean cache = true;
-
-	private boolean fallbackToDynamicDestination = false;
-
-	private DestinationResolver dynamicDestinationResolver = new DynamicDestinationResolver();
-
 	private final Map<String, Destination> destinationCache = new ConcurrentHashMap<>(16);
-
+	private boolean cache = true;
+	private boolean fallbackToDynamicDestination = false;
+	private DestinationResolver dynamicDestinationResolver = new DynamicDestinationResolver();
 
 	/**
 	 * Set whether to cache resolved destinations. Default is "true".
@@ -81,6 +73,7 @@ public class JndiDestinationResolver extends JndiLocatorSupport implements Cachi
 	 * Set whether this resolver is supposed to create dynamic destinations
 	 * if the destination name is not found in JNDI. Default is "false".
 	 * <p>Turn this flag on to enable transparent fallback to dynamic destinations.
+	 *
 	 * @see #setDynamicDestinationResolver
 	 */
 	public void setFallbackToDynamicDestination(boolean fallbackToDynamicDestination) {
@@ -91,6 +84,7 @@ public class JndiDestinationResolver extends JndiLocatorSupport implements Cachi
 	 * Set the {@link DestinationResolver} to use when falling back to dynamic
 	 * destinations.
 	 * <p>The default is Spring's standard {@link DynamicDestinationResolver}.
+	 *
 	 * @see #setFallbackToDynamicDestination
 	 * @see DynamicDestinationResolver
 	 */
@@ -107,20 +101,17 @@ public class JndiDestinationResolver extends JndiLocatorSupport implements Cachi
 		Destination dest = this.destinationCache.get(destinationName);
 		if (dest != null) {
 			validateDestination(dest, destinationName, pubSubDomain);
-		}
-		else {
+		} else {
 			try {
 				dest = lookup(destinationName, Destination.class);
 				validateDestination(dest, destinationName, pubSubDomain);
-			}
-			catch (NamingException ex) {
+			} catch (NamingException ex) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Destination [" + destinationName + "] not found in JNDI", ex);
 				}
 				if (this.fallbackToDynamicDestination) {
 					dest = this.dynamicDestinationResolver.resolveDestinationName(session, destinationName, pubSubDomain);
-				}
-				else {
+				} else {
 					throw new DestinationResolutionException(
 							"Destination [" + destinationName + "] not found in JNDI", ex);
 				}
@@ -135,10 +126,11 @@ public class JndiDestinationResolver extends JndiLocatorSupport implements Cachi
 	/**
 	 * Validate the given Destination object, checking whether it matches
 	 * the expected type.
-	 * @param destination the Destination object to validate
+	 *
+	 * @param destination     the Destination object to validate
 	 * @param destinationName the name of the destination
-	 * @param pubSubDomain {@code true} if a Topic is expected,
-	 * {@code false} in case of a Queue
+	 * @param pubSubDomain    {@code true} if a Topic is expected,
+	 *                        {@code false} in case of a Queue
 	 */
 	protected void validateDestination(Destination destination, String destinationName, boolean pubSubDomain) {
 		Class<?> targetClass = Queue.class;

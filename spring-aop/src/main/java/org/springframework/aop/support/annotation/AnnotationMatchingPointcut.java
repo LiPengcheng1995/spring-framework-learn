@@ -16,13 +16,13 @@
 
 package org.springframework.aop.support.annotation;
 
-import java.lang.annotation.Annotation;
-
 import org.springframework.aop.ClassFilter;
 import org.springframework.aop.MethodMatcher;
 import org.springframework.aop.Pointcut;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.lang.annotation.Annotation;
 
 /**
  * Simple Pointcut that looks for a specific Java 5 annotation
@@ -30,9 +30,9 @@ import org.springframework.util.Assert;
  * {@link #forMethodAnnotation method}.
  *
  * @author Juergen Hoeller
- * @since 2.0
  * @see AnnotationClassFilter
  * @see AnnotationMethodMatcher
+ * @since 2.0
  */
 public class AnnotationMatchingPointcut implements Pointcut {
 
@@ -43,6 +43,7 @@ public class AnnotationMatchingPointcut implements Pointcut {
 
 	/**
 	 * Create a new AnnotationMatchingPointcut for the given annotation type.
+	 *
 	 * @param classAnnotationType the annotation type to look for at the class level
 	 */
 	public AnnotationMatchingPointcut(Class<? extends Annotation> classAnnotationType) {
@@ -51,9 +52,10 @@ public class AnnotationMatchingPointcut implements Pointcut {
 
 	/**
 	 * Create a new AnnotationMatchingPointcut for the given annotation type.
+	 *
 	 * @param classAnnotationType the annotation type to look for at the class level
-	 * @param checkInherited whether to also check the superclasses and interfaces
-	 * as well as meta-annotations for the annotation type
+	 * @param checkInherited      whether to also check the superclasses and interfaces
+	 *                            as well as meta-annotations for the annotation type
 	 * @see AnnotationClassFilter#AnnotationClassFilter(Class, boolean)
 	 */
 	public AnnotationMatchingPointcut(Class<? extends Annotation> classAnnotationType, boolean checkInherited) {
@@ -63,50 +65,73 @@ public class AnnotationMatchingPointcut implements Pointcut {
 
 	/**
 	 * Create a new AnnotationMatchingPointcut for the given annotation type.
-	 * @param classAnnotationType the annotation type to look for at the class level
-	 * (can be {@code null})
+	 *
+	 * @param classAnnotationType  the annotation type to look for at the class level
+	 *                             (can be {@code null})
 	 * @param methodAnnotationType the annotation type to look for at the method level
-	 * (can be {@code null})
+	 *                             (can be {@code null})
 	 */
 	public AnnotationMatchingPointcut(@Nullable Class<? extends Annotation> classAnnotationType,
-			@Nullable Class<? extends Annotation> methodAnnotationType) {
+									  @Nullable Class<? extends Annotation> methodAnnotationType) {
 
 		this(classAnnotationType, methodAnnotationType, false);
 	}
 
 	/**
 	 * Create a new AnnotationMatchingPointcut for the given annotation type.
-	 * @param classAnnotationType the annotation type to look for at the class level
-	 * (can be {@code null})
+	 *
+	 * @param classAnnotationType  the annotation type to look for at the class level
+	 *                             (can be {@code null})
 	 * @param methodAnnotationType the annotation type to look for at the method level
-	 * (can be {@code null})
-	 * @param checkInherited whether to also check the superclasses and interfaces
-	 * as well as meta-annotations for the annotation type
-	 * @since 5.0
+	 *                             (can be {@code null})
+	 * @param checkInherited       whether to also check the superclasses and interfaces
+	 *                             as well as meta-annotations for the annotation type
 	 * @see AnnotationClassFilter#AnnotationClassFilter(Class, boolean)
 	 * @see AnnotationMethodMatcher#AnnotationMethodMatcher(Class, boolean)
+	 * @since 5.0
 	 */
 	public AnnotationMatchingPointcut(@Nullable Class<? extends Annotation> classAnnotationType,
-			@Nullable Class<? extends Annotation> methodAnnotationType, boolean checkInherited) {
+									  @Nullable Class<? extends Annotation> methodAnnotationType, boolean checkInherited) {
 
 		Assert.isTrue((classAnnotationType != null || methodAnnotationType != null),
 				"Either Class annotation type or Method annotation type needs to be specified (or both)");
 
 		if (classAnnotationType != null) {
 			this.classFilter = new AnnotationClassFilter(classAnnotationType, checkInherited);
-		}
-		else {
+		} else {
 			this.classFilter = ClassFilter.TRUE;
 		}
 
 		if (methodAnnotationType != null) {
 			this.methodMatcher = new AnnotationMethodMatcher(methodAnnotationType, checkInherited);
-		}
-		else {
+		} else {
 			this.methodMatcher = MethodMatcher.TRUE;
 		}
 	}
 
+	/**
+	 * Factory method for an AnnotationMatchingPointcut that matches
+	 * for the specified annotation at the class level.
+	 *
+	 * @param annotationType the annotation type to look for at the class level
+	 * @return the corresponding AnnotationMatchingPointcut
+	 */
+	public static AnnotationMatchingPointcut forClassAnnotation(Class<? extends Annotation> annotationType) {
+		Assert.notNull(annotationType, "Annotation type must not be null");
+		return new AnnotationMatchingPointcut(annotationType);
+	}
+
+	/**
+	 * Factory method for an AnnotationMatchingPointcut that matches
+	 * for the specified annotation at the method level.
+	 *
+	 * @param annotationType the annotation type to look for at the method level
+	 * @return the corresponding AnnotationMatchingPointcut
+	 */
+	public static AnnotationMatchingPointcut forMethodAnnotation(Class<? extends Annotation> annotationType) {
+		Assert.notNull(annotationType, "Annotation type must not be null");
+		return new AnnotationMatchingPointcut(null, annotationType);
+	}
 
 	@Override
 	public ClassFilter getClassFilter() {
@@ -138,30 +163,7 @@ public class AnnotationMatchingPointcut implements Pointcut {
 
 	@Override
 	public String toString() {
-		return "AnnotationMatchingPointcut: " + this.classFilter + ", " +this.methodMatcher;
-	}
-
-
-	/**
-	 * Factory method for an AnnotationMatchingPointcut that matches
-	 * for the specified annotation at the class level.
-	 * @param annotationType the annotation type to look for at the class level
-	 * @return the corresponding AnnotationMatchingPointcut
-	 */
-	public static AnnotationMatchingPointcut forClassAnnotation(Class<? extends Annotation> annotationType) {
-		Assert.notNull(annotationType, "Annotation type must not be null");
-		return new AnnotationMatchingPointcut(annotationType);
-	}
-
-	/**
-	 * Factory method for an AnnotationMatchingPointcut that matches
-	 * for the specified annotation at the method level.
-	 * @param annotationType the annotation type to look for at the method level
-	 * @return the corresponding AnnotationMatchingPointcut
-	 */
-	public static AnnotationMatchingPointcut forMethodAnnotation(Class<? extends Annotation> annotationType) {
-		Assert.notNull(annotationType, "Annotation type must not be null");
-		return new AnnotationMatchingPointcut(null, annotationType);
+		return "AnnotationMatchingPointcut: " + this.classFilter + ", " + this.methodMatcher;
 	}
 
 }

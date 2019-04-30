@@ -16,10 +16,10 @@
 
 package org.springframework.aop.aspectj.annotation;
 
-import java.io.Serializable;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.io.Serializable;
 
 /**
  * Decorator to cause a {@link MetadataAwareAspectInstanceFactory} to instantiate only once.
@@ -39,6 +39,7 @@ public class LazySingletonAspectInstanceFactoryDecorator implements MetadataAwar
 
 	/**
 	 * Create a new lazily initializing decorator for the given AspectInstanceFactory.
+	 *
 	 * @param maaif the MetadataAwareAspectInstanceFactory to decorate
 	 */
 	public LazySingletonAspectInstanceFactoryDecorator(MetadataAwareAspectInstanceFactory maaif) {
@@ -55,8 +56,7 @@ public class LazySingletonAspectInstanceFactoryDecorator implements MetadataAwar
 			if (mutex == null) {
 				aspectInstance = this.maaif.getAspectInstance();
 				this.materialized = aspectInstance;
-			}
-			else {
+			} else {
 				synchronized (mutex) {
 					aspectInstance = this.materialized;
 					if (aspectInstance == null) {

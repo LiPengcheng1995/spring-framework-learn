@@ -16,12 +16,12 @@
 
 package org.springframework.context.index;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * A {@link StereotypesProvider} implementation that extracts the stereotypes
@@ -82,7 +82,7 @@ class IndexedStereotypesProvider implements StereotypesProvider {
 	}
 
 	private Element collectStereotypes(Set<Element> seen, Set<String> stereotypes, Element element,
-			AnnotationMirror annotation) {
+									   AnnotationMirror annotation) {
 
 		if (isIndexedAnnotation(annotation)) {
 			stereotypes.add(this.typeHelper.getType(element));

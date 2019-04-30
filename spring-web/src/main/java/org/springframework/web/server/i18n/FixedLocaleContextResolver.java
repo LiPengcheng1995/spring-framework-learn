@@ -16,14 +16,14 @@
 
 package org.springframework.web.server.i18n;
 
-import java.util.Locale;
-import java.util.TimeZone;
-
 import org.springframework.context.i18n.LocaleContext;
 import org.springframework.context.i18n.TimeZoneAwareLocaleContext;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.web.server.ServerWebExchange;
+
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * {@link LocaleContextResolver} implementation that always returns a fixed locale
@@ -53,6 +53,7 @@ public class FixedLocaleContextResolver implements LocaleContextResolver {
 
 	/**
 	 * Create a FixedLocaleResolver that exposes the given locale.
+	 *
 	 * @param locale the locale to expose
 	 */
 	public FixedLocaleContextResolver(Locale locale) {
@@ -61,7 +62,8 @@ public class FixedLocaleContextResolver implements LocaleContextResolver {
 
 	/**
 	 * Create a FixedLocaleResolver that exposes the given locale and time zone.
-	 * @param locale the locale to expose
+	 *
+	 * @param locale   the locale to expose
 	 * @param timeZone the time zone to expose
 	 */
 	public FixedLocaleContextResolver(Locale locale, @Nullable TimeZone timeZone) {
@@ -78,6 +80,7 @@ public class FixedLocaleContextResolver implements LocaleContextResolver {
 			public Locale getLocale() {
 				return locale;
 			}
+
 			@Override
 			@Nullable
 			public TimeZone getTimeZone() {

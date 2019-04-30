@@ -16,19 +16,7 @@
 
 package org.springframework.scheduling.commonj;
 
-import java.util.Collection;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
-import javax.naming.NamingException;
-
-import commonj.work.Work;
-import commonj.work.WorkException;
-import commonj.work.WorkItem;
-import commonj.work.WorkListener;
-import commonj.work.WorkManager;
-import commonj.work.WorkRejectedException;
-
+import commonj.work.*;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.task.AsyncListenableTaskExecutor;
 import org.springframework.core.task.TaskDecorator;
@@ -40,6 +28,12 @@ import org.springframework.scheduling.SchedulingTaskExecutor;
 import org.springframework.util.Assert;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureTask;
+
+import javax.naming.NamingException;
+import java.util.Collection;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
 /**
  * TaskExecutor implementation that delegates to a CommonJ WorkManager,
@@ -83,6 +77,7 @@ public class WorkManagerTaskExecutor extends JndiLocatorSupport
 	/**
 	 * Specify the CommonJ WorkManager to delegate to.
 	 * <p>Alternatively, you can also specify the JNDI name of the target WorkManager.
+	 *
 	 * @see #setWorkManagerName
 	 */
 	public void setWorkManager(WorkManager workManager) {
@@ -93,6 +88,7 @@ public class WorkManagerTaskExecutor extends JndiLocatorSupport
 	 * Set the JNDI name of the CommonJ WorkManager.
 	 * <p>This can either be a fully qualified JNDI name, or the JNDI name relative
 	 * to the current environment naming context if "resourceRef" is set to "true".
+	 *
 	 * @see #setWorkManager
 	 * @see #setResourceRef
 	 */
@@ -117,6 +113,7 @@ public class WorkManagerTaskExecutor extends JndiLocatorSupport
 	 * execution callback (which may be a wrapper around the user-supplied task).
 	 * <p>The primary use case is to set some execution context around the task's
 	 * invocation, or to provide some monitoring/statistics for task execution.
+	 *
 	 * @since 4.3
 	 */
 	public void setTaskDecorator(TaskDecorator taskDecorator) {
@@ -149,15 +146,12 @@ public class WorkManagerTaskExecutor extends JndiLocatorSupport
 		try {
 			if (this.workListener != null) {
 				obtainWorkManager().schedule(work, this.workListener);
-			}
-			else {
+			} else {
 				obtainWorkManager().schedule(work);
 			}
-		}
-		catch (WorkRejectedException ex) {
+		} catch (WorkRejectedException ex) {
 			throw new TaskRejectedException("CommonJ WorkManager did not accept task: " + task, ex);
-		}
-		catch (WorkException ex) {
+		} catch (WorkException ex) {
 			throw new SchedulingException("Could not schedule task on CommonJ WorkManager", ex);
 		}
 	}

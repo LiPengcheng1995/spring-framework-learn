@@ -17,7 +17,6 @@
 package org.springframework.expression.spel;
 
 import org.junit.Test;
-
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
@@ -25,7 +24,7 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.tests.Assume;
 import org.springframework.tests.TestGroup;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 ///CLOVER:OFF
 
@@ -38,11 +37,9 @@ public class PerformanceTests {
 
 	public static final int ITERATIONS = 10000;
 	public static final boolean report = true;
-
+	private static final boolean DEBUG = false;
 	private static ExpressionParser parser = new SpelExpressionParser();
 	private static EvaluationContext eContext = TestScenarioCreator.getTestEvaluationContext();
-
-	private static final boolean DEBUG = false;
 
 	@Test
 	public void testPerformanceOfPropertyAccess() throws Exception {
@@ -71,7 +68,7 @@ public class PerformanceTests {
 		endtime = System.currentTimeMillis();
 		long freshParseTime = endtime - starttime;
 		if (DEBUG) {
-			System.out.println("PropertyAccess: Time for parsing and evaluation x 10000: "+freshParseTime+"ms");
+			System.out.println("PropertyAccess: Time for parsing and evaluation x 10000: " + freshParseTime + "ms");
 		}
 
 		Expression expr = parser.parseExpression("placeOfBirth.city");
@@ -85,7 +82,7 @@ public class PerformanceTests {
 		endtime = System.currentTimeMillis();
 		long reuseTime = endtime - starttime;
 		if (DEBUG) {
-			System.out.println("PropertyAccess: Time for just evaluation x 10000: "+reuseTime+"ms");
+			System.out.println("PropertyAccess: Time for just evaluation x 10000: " + reuseTime + "ms");
 		}
 		if (reuseTime > freshParseTime) {
 			System.out.println("Fresh parse every time, ITERATIONS iterations = " + freshParseTime + "ms");
@@ -121,7 +118,7 @@ public class PerformanceTests {
 		endtime = System.currentTimeMillis();
 		long freshParseTime = endtime - starttime;
 		if (DEBUG) {
-			System.out.println("MethodExpression: Time for parsing and evaluation x 10000: "+freshParseTime+"ms");
+			System.out.println("MethodExpression: Time for parsing and evaluation x 10000: " + freshParseTime + "ms");
 		}
 
 		Expression expr = parser.parseExpression("getPlaceOfBirth().getCity()");
@@ -135,7 +132,7 @@ public class PerformanceTests {
 		endtime = System.currentTimeMillis();
 		long reuseTime = endtime - starttime;
 		if (DEBUG) {
-			System.out.println("MethodExpression: Time for just evaluation x 10000: "+reuseTime+"ms");
+			System.out.println("MethodExpression: Time for just evaluation x 10000: " + reuseTime + "ms");
 		}
 
 		if (reuseTime > freshParseTime) {

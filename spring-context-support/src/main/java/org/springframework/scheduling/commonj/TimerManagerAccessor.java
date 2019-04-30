@@ -16,10 +16,7 @@
 
 package org.springframework.scheduling.commonj;
 
-import javax.naming.NamingException;
-
 import commonj.timers.TimerManager;
-
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.Lifecycle;
@@ -27,13 +24,15 @@ import org.springframework.jndi.JndiLocatorSupport;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
+import javax.naming.NamingException;
+
 /**
  * Base class for classes that are accessing a CommonJ {@link commonj.timers.TimerManager}
  * Defines common configuration settings and common lifecycle handling.
  *
  * @author Juergen Hoeller
- * @since 3.0
  * @see commonj.timers.TimerManager
+ * @since 3.0
  */
 public abstract class TimerManagerAccessor extends JndiLocatorSupport
 		implements InitializingBean, DisposableBean, Lifecycle {
@@ -46,23 +45,11 @@ public abstract class TimerManagerAccessor extends JndiLocatorSupport
 
 	private boolean shared = false;
 
-
-	/**
-	 * Specify the CommonJ TimerManager to delegate to.
-	 * <p>Note that the given TimerManager's lifecycle will be managed
-	 * by this FactoryBean.
-	 * <p>Alternatively (and typically), you can specify the JNDI name
-	 * of the target TimerManager.
-	 * @see #setTimerManagerName
-	 */
-	public void setTimerManager(TimerManager timerManager) {
-		this.timerManager = timerManager;
-	}
-
 	/**
 	 * Set the JNDI name of the CommonJ TimerManager.
 	 * <p>This can either be a fully qualified JNDI name, or the JNDI name relative
 	 * to the current environment naming context if "resourceRef" is set to "true".
+	 *
 	 * @see #setTimerManager
 	 * @see #setResourceRef
 	 */
@@ -89,6 +76,7 @@ public abstract class TimerManagerAccessor extends JndiLocatorSupport
 	 * the underlying TimerManager in case of an independent (non-shared) instance.
 	 * This only affects the {@link org.springframework.context.Lifecycle} support
 	 * as well as application context shutdown.
+	 *
 	 * @see #stop()
 	 * @see #start()
 	 * @see #destroy()
@@ -97,7 +85,6 @@ public abstract class TimerManagerAccessor extends JndiLocatorSupport
 	public void setShared(boolean shared) {
 		this.shared = shared;
 	}
-
 
 	@Override
 	public void afterPropertiesSet() throws NamingException {
@@ -111,6 +98,7 @@ public abstract class TimerManagerAccessor extends JndiLocatorSupport
 
 	/**
 	 * Return the configured TimerManager, if any.
+	 *
 	 * @return the TimerManager, or {@code null} if not available
 	 */
 	@Nullable
@@ -119,7 +107,21 @@ public abstract class TimerManagerAccessor extends JndiLocatorSupport
 	}
 
 	/**
+	 * Specify the CommonJ TimerManager to delegate to.
+	 * <p>Note that the given TimerManager's lifecycle will be managed
+	 * by this FactoryBean.
+	 * <p>Alternatively (and typically), you can specify the JNDI name
+	 * of the target TimerManager.
+	 *
+	 * @see #setTimerManagerName
+	 */
+	public void setTimerManager(TimerManager timerManager) {
+		this.timerManager = timerManager;
+	}
+
+	/**
 	 * Obtain the TimerManager for actual use.
+	 *
 	 * @return the TimerManager (never {@code null})
 	 * @throws IllegalStateException in case of no TimerManager set
 	 * @since 5.0
@@ -136,6 +138,7 @@ public abstract class TimerManagerAccessor extends JndiLocatorSupport
 
 	/**
 	 * Resumes the underlying TimerManager (if not shared).
+	 *
 	 * @see commonj.timers.TimerManager#resume()
 	 */
 	@Override
@@ -147,6 +150,7 @@ public abstract class TimerManagerAccessor extends JndiLocatorSupport
 
 	/**
 	 * Suspends the underlying TimerManager (if not shared).
+	 *
 	 * @see commonj.timers.TimerManager#suspend()
 	 */
 	@Override
@@ -159,6 +163,7 @@ public abstract class TimerManagerAccessor extends JndiLocatorSupport
 	/**
 	 * Considers the underlying TimerManager as running if it is
 	 * neither suspending nor stopping.
+	 *
 	 * @see commonj.timers.TimerManager#isSuspending()
 	 * @see commonj.timers.TimerManager#isStopping()
 	 */
@@ -175,6 +180,7 @@ public abstract class TimerManagerAccessor extends JndiLocatorSupport
 
 	/**
 	 * Stops the underlying TimerManager (if not shared).
+	 *
 	 * @see commonj.timers.TimerManager#stop()
 	 */
 	@Override

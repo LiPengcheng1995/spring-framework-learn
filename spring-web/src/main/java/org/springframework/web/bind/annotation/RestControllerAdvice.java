@@ -16,14 +16,9 @@
 
 package org.springframework.web.bind.annotation;
 
-import java.lang.annotation.Annotation;
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.core.annotation.AliasFor;
+
+import java.lang.annotation.*;
 
 /**
  * A convenience annotation that is itself annotated with
@@ -40,9 +35,9 @@ import org.springframework.core.annotation.AliasFor;
  * which are the default in the MVC Java config and the MVC namespace.
  *
  * @author Rossen Stoyanchev
- * @since 4.3
  * @see RestController
  * @see ControllerAdvice
+ * @since 4.3
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -56,6 +51,7 @@ public @interface RestControllerAdvice {
 	 * <p>Allows for more concise annotation declarations e.g.:
 	 * {@code @ControllerAdvice("org.my.pkg")} is equivalent to
 	 * {@code @ControllerAdvice(basePackages="org.my.pkg")}.
+	 *
 	 * @see #basePackages()
 	 */
 	@AliasFor("basePackages")

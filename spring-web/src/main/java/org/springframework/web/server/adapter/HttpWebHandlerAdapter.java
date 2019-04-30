@@ -16,14 +16,8 @@
 
 package org.springframework.web.server.adapter;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import reactor.core.publisher.Mono;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.http.HttpStatus;
@@ -40,6 +34,11 @@ import org.springframework.web.server.i18n.AcceptHeaderLocaleContextResolver;
 import org.springframework.web.server.i18n.LocaleContextResolver;
 import org.springframework.web.server.session.DefaultWebSessionManager;
 import org.springframework.web.server.session.WebSessionManager;
+import reactor.core.publisher.Mono;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Default adapter of {@link WebHandler} to the {@link HttpHandler} contract.
@@ -72,6 +71,7 @@ public class HttpWebHandlerAdapter extends WebHandlerDecorator implements HttpHa
 	 * <p>TODO:
 	 * This definition is currently duplicated between HttpWebHandlerAdapter
 	 * and AbstractSockJsSession. It is a candidate for a common utility class.
+	 *
 	 * @see #isDisconnectedClientError(Throwable)
 	 */
 	private static final Set<String> DISCONNECTED_CLIENT_EXCEPTIONS =
@@ -99,19 +99,6 @@ public class HttpWebHandlerAdapter extends WebHandlerDecorator implements HttpHa
 		super(delegate);
 	}
 
-
-	/**
-	 * Configure a custom {@link WebSessionManager} to use for managing web
-	 * sessions. The provided instance is set on each created
-	 * {@link DefaultServerWebExchange}.
-	 * <p>By default this is set to {@link DefaultWebSessionManager}.
-	 * @param sessionManager the session manager to use
-	 */
-	public void setSessionManager(WebSessionManager sessionManager) {
-		Assert.notNull(sessionManager, "WebSessionManager must not be null");
-		this.sessionManager = sessionManager;
-	}
-
 	/**
 	 * Return the configured {@link WebSessionManager}.
 	 */
@@ -120,14 +107,16 @@ public class HttpWebHandlerAdapter extends WebHandlerDecorator implements HttpHa
 	}
 
 	/**
-	 * Configure a custom {@link ServerCodecConfigurer}. The provided instance is set on
-	 * each created {@link DefaultServerWebExchange}.
-	 * <p>By default this is set to {@link ServerCodecConfigurer#create()}.
-	 * @param codecConfigurer the codec configurer to use
+	 * Configure a custom {@link WebSessionManager} to use for managing web
+	 * sessions. The provided instance is set on each created
+	 * {@link DefaultServerWebExchange}.
+	 * <p>By default this is set to {@link DefaultWebSessionManager}.
+	 *
+	 * @param sessionManager the session manager to use
 	 */
-	public void setCodecConfigurer(ServerCodecConfigurer codecConfigurer) {
-		Assert.notNull(codecConfigurer, "ServerCodecConfigurer is required");
-		this.codecConfigurer = codecConfigurer;
+	public void setSessionManager(WebSessionManager sessionManager) {
+		Assert.notNull(sessionManager, "WebSessionManager must not be null");
+		this.sessionManager = sessionManager;
 	}
 
 	/**
@@ -138,14 +127,15 @@ public class HttpWebHandlerAdapter extends WebHandlerDecorator implements HttpHa
 	}
 
 	/**
-	 * Configure a custom {@link LocaleContextResolver}. The provided instance is set on
+	 * Configure a custom {@link ServerCodecConfigurer}. The provided instance is set on
 	 * each created {@link DefaultServerWebExchange}.
-	 * <p>By default this is set to
-	 * {@link org.springframework.web.server.i18n.AcceptHeaderLocaleContextResolver}.
-	 * @param localeContextResolver the locale context resolver to use
+	 * <p>By default this is set to {@link ServerCodecConfigurer#create()}.
+	 *
+	 * @param codecConfigurer the codec configurer to use
 	 */
-	public void setLocaleContextResolver(LocaleContextResolver localeContextResolver) {
-		this.localeContextResolver = localeContextResolver;
+	public void setCodecConfigurer(ServerCodecConfigurer codecConfigurer) {
+		Assert.notNull(codecConfigurer, "ServerCodecConfigurer is required");
+		this.codecConfigurer = codecConfigurer;
 	}
 
 	/**
@@ -157,18 +147,20 @@ public class HttpWebHandlerAdapter extends WebHandlerDecorator implements HttpHa
 	}
 
 	/**
-	 * Configure the {@code ApplicationContext} associated with the web application,
-	 * if it was initialized with one via
-	 * {@link org.springframework.web.server.adapter.WebHttpHandlerBuilder#applicationContext(ApplicationContext)}.
-	 * @param applicationContext the context
-	 * @since 5.0.3
+	 * Configure a custom {@link LocaleContextResolver}. The provided instance is set on
+	 * each created {@link DefaultServerWebExchange}.
+	 * <p>By default this is set to
+	 * {@link org.springframework.web.server.i18n.AcceptHeaderLocaleContextResolver}.
+	 *
+	 * @param localeContextResolver the locale context resolver to use
 	 */
-	public void setApplicationContext(ApplicationContext applicationContext) {
-		this.applicationContext = applicationContext;
+	public void setLocaleContextResolver(LocaleContextResolver localeContextResolver) {
+		this.localeContextResolver = localeContextResolver;
 	}
 
 	/**
 	 * Return the configured {@code ApplicationContext}, if any.
+	 *
 	 * @since 5.0.3
 	 */
 	@Nullable
@@ -176,6 +168,17 @@ public class HttpWebHandlerAdapter extends WebHandlerDecorator implements HttpHa
 		return this.applicationContext;
 	}
 
+	/**
+	 * Configure the {@code ApplicationContext} associated with the web application,
+	 * if it was initialized with one via
+	 * {@link org.springframework.web.server.adapter.WebHttpHandlerBuilder#applicationContext(ApplicationContext)}.
+	 *
+	 * @param applicationContext the context
+	 * @since 5.0.3
+	 */
+	public void setApplicationContext(ApplicationContext applicationContext) {
+		this.applicationContext = applicationContext;
+	}
 
 	@Override
 	public Mono<Void> handle(ServerHttpRequest request, ServerHttpResponse response) {
@@ -194,8 +197,7 @@ public class HttpWebHandlerAdapter extends WebHandlerDecorator implements HttpHa
 		if (isDisconnectedClientError(ex)) {
 			if (disconnectedClientLogger.isTraceEnabled()) {
 				disconnectedClientLogger.trace("Looks like the client has gone away", ex);
-			}
-			else if (disconnectedClientLogger.isDebugEnabled()) {
+			} else if (disconnectedClientLogger.isDebugEnabled()) {
 				disconnectedClientLogger.debug("Looks like the client has gone away: " + ex +
 						" (For a full stack trace, set the log category '" + DISCONNECTED_CLIENT_LOG_CATEGORY +
 						"' to TRACE level.)");

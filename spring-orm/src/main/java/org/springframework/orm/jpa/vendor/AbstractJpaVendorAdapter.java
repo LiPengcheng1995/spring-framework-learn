@@ -16,15 +16,15 @@
 
 package org.springframework.orm.jpa.vendor;
 
-import java.util.Collections;
-import java.util.Map;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.spi.PersistenceUnitInfo;
-
 import org.springframework.lang.Nullable;
 import org.springframework.orm.jpa.JpaDialect;
 import org.springframework.orm.jpa.JpaVendorAdapter;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.spi.PersistenceUnitInfo;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * Abstract {@link JpaVendorAdapter} implementation that defines common properties,
@@ -45,6 +45,12 @@ public abstract class AbstractJpaVendorAdapter implements JpaVendorAdapter {
 
 	private boolean showSql = false;
 
+	/**
+	 * Return the target database to operate on.
+	 */
+	protected Database getDatabase() {
+		return this.database;
+	}
 
 	/**
 	 * Specify the target database to operate on, as a value of the {@code Database} enum:
@@ -59,10 +65,11 @@ public abstract class AbstractJpaVendorAdapter implements JpaVendorAdapter {
 	}
 
 	/**
-	 * Return the target database to operate on.
+	 * Return the name of the target database to operate on.
 	 */
-	protected Database getDatabase() {
-		return this.database;
+	@Nullable
+	protected String getDatabasePlatform() {
+		return this.databasePlatform;
 	}
 
 	/**
@@ -74,11 +81,11 @@ public abstract class AbstractJpaVendorAdapter implements JpaVendorAdapter {
 	}
 
 	/**
-	 * Return the name of the target database to operate on.
+	 * Return whether to generate DDL after the EntityManagerFactory has been initialized
+	 * creating/updating all relevant tables.
 	 */
-	@Nullable
-	protected String getDatabasePlatform() {
-		return this.databasePlatform;
+	protected boolean isGenerateDdl() {
+		return this.generateDdl;
 	}
 
 	/**
@@ -91,28 +98,11 @@ public abstract class AbstractJpaVendorAdapter implements JpaVendorAdapter {
 	 * {@code javax.persistence.schema-generation.database.action} property.</b>
 	 * These two schema generation mechanisms - standard JPA versus provider-native -
 	 * are mutually exclusive, e.g. with Hibernate 5.
+	 *
 	 * @see org.springframework.orm.jpa.AbstractEntityManagerFactoryBean#setJpaProperties
 	 */
 	public void setGenerateDdl(boolean generateDdl) {
 		this.generateDdl = generateDdl;
-	}
-
-	/**
-	 * Return whether to generate DDL after the EntityManagerFactory has been initialized
-	 * creating/updating all relevant tables.
-	 */
-	protected boolean isGenerateDdl() {
-		return this.generateDdl;
-	}
-
-	/**
-	 * Set whether to show SQL in the log (or in the console).
-	 * <p>For more specific logging configuration, specify the appropriate
-	 * vendor-specific settings as "jpaProperties".
-	 * @see org.springframework.orm.jpa.AbstractEntityManagerFactoryBean#setJpaProperties
-	 */
-	public void setShowSql(boolean showSql) {
-		this.showSql = showSql;
 	}
 
 	/**
@@ -122,6 +112,16 @@ public abstract class AbstractJpaVendorAdapter implements JpaVendorAdapter {
 		return this.showSql;
 	}
 
+	/**
+	 * Set whether to show SQL in the log (or in the console).
+	 * <p>For more specific logging configuration, specify the appropriate
+	 * vendor-specific settings as "jpaProperties".
+	 *
+	 * @see org.springframework.orm.jpa.AbstractEntityManagerFactoryBean#setJpaProperties
+	 */
+	public void setShowSql(boolean showSql) {
+		this.showSql = showSql;
+	}
 
 	@Override
 	@Nullable

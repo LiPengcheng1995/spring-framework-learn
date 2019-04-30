@@ -16,17 +16,17 @@
 
 package org.springframework.context.index;
 
+import org.junit.Test;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import org.junit.Test;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.springframework.context.index.Metadata.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertThat;
+import static org.springframework.context.index.Metadata.hasComponent;
 
 /**
  * Tests for {@link PropertiesMarshaller}.
@@ -34,6 +34,10 @@ import static org.springframework.context.index.Metadata.*;
  * @author Stephane Nicoll
  */
 public class PropertiesMarshallerTests {
+
+	private static ItemMetadata createItem(String type, String... stereotypes) {
+		return new ItemMetadata(type, new HashSet<>(Arrays.asList(stereotypes)));
+	}
 
 	@Test
 	public void readWrite() throws IOException {
@@ -48,10 +52,6 @@ public class PropertiesMarshallerTests {
 		assertThat(readMetadata, hasComponent("com.foo", "first", "second"));
 		assertThat(readMetadata, hasComponent("com.bar", "first"));
 		assertThat(readMetadata.getItems(), hasSize(2));
-	}
-
-	private static ItemMetadata createItem(String type, String... stereotypes) {
-		return new ItemMetadata(type, new HashSet<>(Arrays.asList(stereotypes)));
 	}
 
 }

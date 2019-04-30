@@ -16,24 +16,14 @@
 
 package org.springframework.context.index;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 import javax.annotation.processing.Completion;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.*;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Annotation {@link Processor} that writes {@link CandidateComponentsMetadata}
@@ -56,6 +46,15 @@ public class CandidateComponentsIndexer implements Processor {
 
 	private List<StereotypesProvider> stereotypesProviders;
 
+	private static List<TypeElement> staticTypesIn(Iterable<? extends Element> elements) {
+		List<TypeElement> list = new ArrayList<>();
+		for (Element element : elements) {
+			if (TYPE_KINDS.contains(element.getKind()) && element.getModifiers().contains(Modifier.STATIC)) {
+				list.add(TypeElement.class.cast(element));
+			}
+		}
+		return list;
+	}
 
 	@Override
 	public Set<String> getSupportedOptions() {
@@ -97,7 +96,6 @@ public class CandidateComponentsIndexer implements Processor {
 		return Collections.emptyList();
 	}
 
-
 	private List<StereotypesProvider> getStereotypesProviders(ProcessingEnvironment env) {
 		List<StereotypesProvider> result = new ArrayList<>();
 		TypeHelper typeHelper = new TypeHelper(env);
@@ -125,21 +123,10 @@ public class CandidateComponentsIndexer implements Processor {
 		if (!metadata.getItems().isEmpty()) {
 			try {
 				this.metadataStore.writeMetadata(metadata);
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				throw new IllegalStateException("Failed to write metadata", ex);
 			}
 		}
-	}
-
-	private static List<TypeElement> staticTypesIn(Iterable<? extends Element> elements) {
-		List<TypeElement> list = new ArrayList<>();
-		for (Element element : elements) {
-			if (TYPE_KINDS.contains(element.getKind()) && element.getModifiers().contains(Modifier.STATIC)) {
-				list.add(TypeElement.class.cast(element));
-			}
-		}
-		return list;
 	}
 
 }

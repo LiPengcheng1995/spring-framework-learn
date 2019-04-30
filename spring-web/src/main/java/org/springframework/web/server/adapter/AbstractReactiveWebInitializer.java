@@ -16,12 +16,6 @@
 
 package org.springframework.web.server.adapter;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -29,6 +23,8 @@ import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.ServletHttpHandlerAdapter;
 import org.springframework.util.Assert;
 import org.springframework.web.WebApplicationInitializer;
+
+import javax.servlet.*;
 
 /**
  * Base class for a {@link org.springframework.web.WebApplicationInitializer}
@@ -119,9 +115,10 @@ public abstract class AbstractReactiveWebInitializer implements WebApplicationIn
 	/**
 	 * Register a {@link ServletContextListener} that closes the given
 	 * application context when the servlet context is destroyed.
-	 * @param servletContext the servlet context to listen to
+	 *
+	 * @param servletContext     the servlet context to listen to
 	 * @param applicationContext the application context that is to be
-	 * closed when {@code servletContext} is destroyed
+	 *                           closed when {@code servletContext} is destroyed
 	 */
 	protected void registerCloseListener(ServletContext servletContext, ApplicationContext applicationContext) {
 		if (applicationContext instanceof ConfigurableApplicationContext) {

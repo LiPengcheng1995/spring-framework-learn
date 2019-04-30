@@ -16,19 +16,19 @@
 
 package org.springframework.aop.support.annotation;
 
-import java.lang.annotation.Annotation;
-
 import org.springframework.aop.ClassFilter;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
+
+import java.lang.annotation.Annotation;
 
 /**
  * Simple ClassFilter that looks for a specific Java 5 annotation
  * being present on a class.
  *
  * @author Juergen Hoeller
- * @since 2.0
  * @see AnnotationMatchingPointcut
+ * @since 2.0
  */
 public class AnnotationClassFilter implements ClassFilter {
 
@@ -39,6 +39,7 @@ public class AnnotationClassFilter implements ClassFilter {
 
 	/**
 	 * Create a new AnnotationClassFilter for the given annotation type.
+	 *
 	 * @param annotationType the annotation type to look for
 	 */
 	public AnnotationClassFilter(Class<? extends Annotation> annotationType) {
@@ -47,11 +48,12 @@ public class AnnotationClassFilter implements ClassFilter {
 
 	/**
 	 * Create a new AnnotationClassFilter for the given annotation type.
+	 *
 	 * @param annotationType the annotation type to look for
 	 * @param checkInherited whether to also check the superclasses and
-	 * interfaces as well as meta-annotations for the annotation type
-	 * (i.e. whether to use {@link AnnotationUtils#findAnnotation(Class, Class)}
-	 * semantics instead of standard Java {@link Class#isAnnotationPresent})
+	 *                       interfaces as well as meta-annotations for the annotation type
+	 *                       (i.e. whether to use {@link AnnotationUtils#findAnnotation(Class, Class)}
+	 *                       semantics instead of standard Java {@link Class#isAnnotationPresent})
 	 */
 	public AnnotationClassFilter(Class<? extends Annotation> annotationType, boolean checkInherited) {
 		Assert.notNull(annotationType, "Annotation type must not be null");

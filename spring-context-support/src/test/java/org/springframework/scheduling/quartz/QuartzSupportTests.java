@@ -16,20 +16,10 @@
 
 package org.springframework.scheduling.quartz;
 
-import java.util.HashMap;
-import java.util.Map;
-import javax.sql.DataSource;
-
 import org.junit.Test;
-import org.quartz.Job;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerContext;
-import org.quartz.SchedulerFactory;
+import org.quartz.*;
 import org.quartz.impl.JobDetailImpl;
 import org.quartz.impl.SchedulerRepository;
-
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -40,6 +30,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.tests.Assume;
 import org.springframework.tests.TestGroup;
 import org.springframework.tests.sample.beans.TestBean;
+
+import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.*;
@@ -82,8 +76,7 @@ public class QuartzSupportTests {
 			Scheduler returnedScheduler = schedulerFactoryBean.getObject();
 			assertEquals(tb, returnedScheduler.getContext().get("testBean"));
 			assertEquals(ac, returnedScheduler.getContext().get("appCtx"));
-		}
-		finally {
+		} finally {
 			schedulerFactoryBean.destroy();
 		}
 
@@ -126,7 +119,7 @@ public class QuartzSupportTests {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void jobDetailWithRunnableInsteadOfJob() {
 		JobDetailImpl jobDetail = new JobDetailImpl();
 		jobDetail.setJobClass((Class) DummyRunnable.class);
@@ -301,8 +294,7 @@ public class QuartzSupportTests {
 			assertNotSame(scheduler1, scheduler2);
 			assertEquals("quartz1", scheduler1.getSchedulerName());
 			assertEquals("quartz2", scheduler2.getSchedulerName());
-		}
-		finally {
+		} finally {
 			ctx.close();
 		}
 	}
@@ -320,8 +312,7 @@ public class QuartzSupportTests {
 			assertEquals("doExport not called on exportService", 2, exportService.getExportCount());
 			assertEquals("doImport not called on importService", 2, importService.getImportCount());
 			assertEquals("doExport called on importService", 0, importService.getExportCount());
-		}
-		finally {
+		} finally {
 			ctx.close();
 		}
 	}
@@ -339,8 +330,7 @@ public class QuartzSupportTests {
 			assertEquals("doExport not called on exportService", 2, exportService.getExportCount());
 			assertEquals("doImport not called on importService", 2, importService.getImportCount());
 			assertEquals("doExport called on importService", 0, importService.getExportCount());
-		}
-		finally {
+		} finally {
 			ctx.close();
 		}
 	}

@@ -16,31 +16,35 @@
 
 package org.springframework.expression.spel;
 
+import org.junit.Test;
+import org.springframework.expression.*;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import org.junit.Test;
-
-import org.springframework.expression.AccessException;
-import org.springframework.expression.EvaluationContext;
-import org.springframework.expression.EvaluationException;
-import org.springframework.expression.Expression;
-import org.springframework.expression.PropertyAccessor;
-import org.springframework.expression.TypedValue;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("rawtypes")
 public class IndexingTests {
+
+	@FieldAnnotation
+	public Object property;
+	public Map<Integer, Integer> parameterizedMap;
+	public List<Integer> parameterizedList;
+	public List<List<Integer>> parameterizedListOfList;
+	public List property2;
+	@FieldAnnotation
+	public List listNotGeneric;
+	@FieldAnnotation
+	public Map mapNotGeneric;
+	public List listOfScalarNotGeneric;
+	public List listOfMapsNotGeneric;
 
 	@Test
 	public void indexIntoGenericPropertyContainingMap() {
@@ -55,9 +59,6 @@ public class IndexingTests {
 		expression = parser.parseExpression("property['foo']");
 		assertEquals("bar", expression.getValue(this));
 	}
-
-	@FieldAnnotation
-	public Object property;
 
 	@Test
 	public void indexIntoGenericPropertyContainingMapObject() {
@@ -75,37 +76,6 @@ public class IndexingTests {
 		assertEquals(map, expression.getValue(context, Map.class));
 		expression = parser.parseExpression("property['foo']");
 		assertEquals("bar", expression.getValue(context));
-	}
-
-	public static class MapAccessor implements PropertyAccessor {
-
-		@Override
-		public boolean canRead(EvaluationContext context, Object target, String name) throws AccessException {
-			return (((Map<?, ?>) target).containsKey(name));
-		}
-
-		@Override
-		public TypedValue read(EvaluationContext context, Object target, String name) throws AccessException {
-			return new TypedValue(((Map<?, ?>) target).get(name));
-		}
-
-		@Override
-		public boolean canWrite(EvaluationContext context, Object target, String name) throws AccessException {
-			return true;
-		}
-
-		@Override
-		@SuppressWarnings("unchecked")
-		public void write(EvaluationContext context, Object target, String name, Object newValue)
-				throws AccessException {
-			((Map) target).put(name, newValue);
-		}
-
-		@Override
-		public Class<?>[] getSpecificTargetClasses() {
-			return new Class<?>[] {Map.class};
-		}
-
 	}
 
 	@Test
@@ -137,8 +107,6 @@ public class IndexingTests {
 		expression.setValue(this, "37");
 		assertEquals(37, expression.getValue(this));
 	}
-
-	public Map<Integer, Integer> parameterizedMap;
 
 	@Test
 	public void setPropertyContainingMapAutoGrow() {
@@ -191,8 +159,7 @@ public class IndexingTests {
 		expression = parser.parseExpression("property[0]");
 		try {
 			expression.setValue(this, "4");
-		}
-		catch (EvaluationException ex) {
+		} catch (EvaluationException ex) {
 			assertTrue(ex.getMessage().startsWith("EL1053E"));
 		}
 	}
@@ -210,8 +177,6 @@ public class IndexingTests {
 		assertEquals(3, expression.getValue(this));
 	}
 
-	public List<Integer> parameterizedList;
-
 	@Test
 	public void indexIntoPropertyContainingListOfList() {
 		List<List<Integer>> property = new ArrayList<>();
@@ -224,8 +189,6 @@ public class IndexingTests {
 		expression = parser.parseExpression("parameterizedListOfList[0][0]");
 		assertEquals(3, expression.getValue(this));
 	}
-
-	public List<List<Integer>> parameterizedListOfList;
 
 	@Test
 	public void setPropertyContainingList() {
@@ -252,8 +215,7 @@ public class IndexingTests {
 		expression = parser.parseExpression("property[0]");
 		try {
 			assertEquals("bar", expression.getValue(this));
-		}
-		catch (EvaluationException ex) {
+		} catch (EvaluationException ex) {
 			assertTrue(ex.getMessage().startsWith("EL1027E"));
 		}
 	}
@@ -270,8 +232,7 @@ public class IndexingTests {
 		expression = parser.parseExpression("property[0]");
 		try {
 			assertEquals("bar", expression.getValue(this));
-		}
-		catch (EvaluationException ex) {
+		} catch (EvaluationException ex) {
 			assertTrue(ex.getMessage().startsWith("EL1053E"));
 		}
 	}
@@ -288,17 +249,14 @@ public class IndexingTests {
 		expression = parser.parseExpression("property2[0]");
 		try {
 			assertEquals("bar", expression.getValue(this));
-		}
-		catch (EvaluationException ex) {
+		} catch (EvaluationException ex) {
 			assertTrue(ex.getMessage().startsWith("EL1053E"));
 		}
 	}
 
-	public List property2;
-
 	@Test
 	public void indexIntoGenericPropertyContainingArray() {
-		String[] property = new String[] { "bar" };
+		String[] property = new String[]{"bar"};
 		this.property = property;
 		SpelExpressionParser parser = new SpelExpressionParser();
 		Expression expression = parser.parseExpression("property");
@@ -336,15 +294,6 @@ public class IndexingTests {
 		assertEquals("@org.springframework.expression.spel.IndexingTests$FieldAnnotation java.util.List<?>", expression.getValueTypeDescriptor(this).toString());
 	}
 
-	@FieldAnnotation
-	public List listNotGeneric;
-
-	@Target({ElementType.FIELD})
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface FieldAnnotation {
-
-	}
-
 	@SuppressWarnings("unchecked")
 	@Test
 	public void resolveMapKeyValueTypes() {
@@ -356,9 +305,6 @@ public class IndexingTests {
 		assertEquals("@org.springframework.expression.spel.IndexingTests$FieldAnnotation java.util.HashMap<?, ?>", expression.getValueTypeDescriptor(this).toString());
 	}
 
-	@FieldAnnotation
-	public Map mapNotGeneric;
-
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testListOfScalar() {
@@ -368,9 +314,6 @@ public class IndexingTests {
 		Expression expression = parser.parseExpression("listOfScalarNotGeneric[0]");
 		assertEquals(new Integer(5), expression.getValue(this, Integer.class));
 	}
-
-	public List listOfScalarNotGeneric;
-
 
 	@SuppressWarnings("unchecked")
 	@Test
@@ -384,6 +327,42 @@ public class IndexingTests {
 		assertEquals("apple", expression.getValue(this, String.class));
 	}
 
-	public List listOfMapsNotGeneric;
+
+	@Target({ElementType.FIELD})
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface FieldAnnotation {
+
+	}
+
+	public static class MapAccessor implements PropertyAccessor {
+
+		@Override
+		public boolean canRead(EvaluationContext context, Object target, String name) throws AccessException {
+			return (((Map<?, ?>) target).containsKey(name));
+		}
+
+		@Override
+		public TypedValue read(EvaluationContext context, Object target, String name) throws AccessException {
+			return new TypedValue(((Map<?, ?>) target).get(name));
+		}
+
+		@Override
+		public boolean canWrite(EvaluationContext context, Object target, String name) throws AccessException {
+			return true;
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public void write(EvaluationContext context, Object target, String name, Object newValue)
+				throws AccessException {
+			((Map) target).put(name, newValue);
+		}
+
+		@Override
+		public Class<?>[] getSpecificTargetClasses() {
+			return new Class<?>[]{Map.class};
+		}
+
+	}
 
 }

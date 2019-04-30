@@ -16,29 +16,18 @@
 
 package org.springframework.scheduling.quartz;
 
-import java.lang.reflect.InvocationTargetException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.quartz.DisallowConcurrentExecution;
-import org.quartz.JobDetail;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
-import org.quartz.PersistJobDataAfterExecution;
-import org.quartz.Scheduler;
+import org.quartz.*;
 import org.quartz.impl.JobDetailImpl;
-
-import org.springframework.beans.factory.BeanClassLoaderAware;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.BeanNameAware;
-import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.*;
 import org.springframework.beans.support.ArgumentConvertingMethodInvoker;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.MethodInvoker;
+
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * {@link org.springframework.beans.factory.FactoryBean} that exposes a
@@ -68,11 +57,11 @@ import org.springframework.util.MethodInvoker;
  *
  * @author Juergen Hoeller
  * @author Alef Arendsen
- * @since 18.02.2004
  * @see #setTargetBeanName
  * @see #setTargetObject
  * @see #setTargetMethod
  * @see #setConcurrent
+ * @since 18.02.2004
  */
 public class MethodInvokingJobDetailFactoryBean extends ArgumentConvertingMethodInvoker
 		implements FactoryBean<JobDetail>, BeanNameAware, BeanClassLoaderAware, BeanFactoryAware, InitializingBean {
@@ -111,6 +100,7 @@ public class MethodInvokingJobDetailFactoryBean extends ArgumentConvertingMethod
 	/**
 	 * Set the group of the job.
 	 * <p>Default is the default group of the Scheduler.
+	 *
 	 * @see org.quartz.Scheduler#DEFAULT_GROUP
 	 */
 	public void setGroup(String group) {
@@ -189,6 +179,7 @@ public class MethodInvokingJobDetailFactoryBean extends ArgumentConvertingMethod
 	/**
 	 * Callback for post-processing the JobDetail to be exposed by this FactoryBean.
 	 * <p>The default implementation is empty. Can be overridden in subclasses.
+	 *
 	 * @param jobDetail the JobDetail prepared by this FactoryBean
 	 */
 	protected void postProcessJobDetail(JobDetail jobDetail) {
@@ -265,18 +256,15 @@ public class MethodInvokingJobDetailFactoryBean extends ArgumentConvertingMethod
 			Assert.state(this.methodInvoker != null, "No MethodInvoker set");
 			try {
 				context.setResult(this.methodInvoker.invoke());
-			}
-			catch (InvocationTargetException ex) {
+			} catch (InvocationTargetException ex) {
 				if (ex.getTargetException() instanceof JobExecutionException) {
 					// -> JobExecutionException, to be logged at info level by Quartz
 					throw (JobExecutionException) ex.getTargetException();
-				}
-				else {
+				} else {
 					// -> "unhandled exception", to be logged at error level by Quartz
 					throw new JobMethodInvocationFailedException(this.methodInvoker, ex.getTargetException());
 				}
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				// -> "unhandled exception", to be logged at error level by Quartz
 				throw new JobMethodInvocationFailedException(this.methodInvoker, ex);
 			}

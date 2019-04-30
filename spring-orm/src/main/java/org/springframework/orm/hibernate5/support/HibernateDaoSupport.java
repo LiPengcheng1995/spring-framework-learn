@@ -18,7 +18,6 @@ package org.springframework.orm.hibernate5.support;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.support.DaoSupport;
 import org.springframework.lang.Nullable;
@@ -48,34 +47,22 @@ import org.springframework.util.Assert;
  * based data access code, to benefit from bug fixes in Hibernate 5.x.</b>
  *
  * @author Juergen Hoeller
- * @since 4.2
  * @see #setSessionFactory
  * @see #getHibernateTemplate
  * @see org.springframework.orm.hibernate5.HibernateTemplate
+ * @since 4.2
  */
 public abstract class HibernateDaoSupport extends DaoSupport {
 
 	@Nullable
 	private HibernateTemplate hibernateTemplate;
 
-
-	/**
-	 * Set the Hibernate SessionFactory to be used by this DAO.
-	 * Will automatically create a HibernateTemplate for the given SessionFactory.
-	 * @see #createHibernateTemplate
-	 * @see #setHibernateTemplate
-	 */
-	public final void setSessionFactory(SessionFactory sessionFactory) {
-		if (this.hibernateTemplate == null || sessionFactory != this.hibernateTemplate.getSessionFactory()) {
-			this.hibernateTemplate = createHibernateTemplate(sessionFactory);
-		}
-	}
-
 	/**
 	 * Create a HibernateTemplate for the given SessionFactory.
 	 * Only invoked if populating the DAO with a SessionFactory reference!
 	 * <p>Can be overridden in subclasses to provide a HibernateTemplate instance
 	 * with different configuration, or a custom HibernateTemplate subclass.
+	 *
 	 * @param sessionFactory the Hibernate SessionFactory to create a HibernateTemplate for
 	 * @return the new HibernateTemplate instance
 	 * @see #setSessionFactory
@@ -93,12 +80,16 @@ public abstract class HibernateDaoSupport extends DaoSupport {
 	}
 
 	/**
-	 * Set the HibernateTemplate for this DAO explicitly,
-	 * as an alternative to specifying a SessionFactory.
-	 * @see #setSessionFactory
+	 * Set the Hibernate SessionFactory to be used by this DAO.
+	 * Will automatically create a HibernateTemplate for the given SessionFactory.
+	 *
+	 * @see #createHibernateTemplate
+	 * @see #setHibernateTemplate
 	 */
-	public final void setHibernateTemplate(@Nullable HibernateTemplate hibernateTemplate) {
-		this.hibernateTemplate = hibernateTemplate;
+	public final void setSessionFactory(SessionFactory sessionFactory) {
+		if (this.hibernateTemplate == null || sessionFactory != this.hibernateTemplate.getSessionFactory()) {
+			this.hibernateTemplate = createHibernateTemplate(sessionFactory);
+		}
 	}
 
 	/**
@@ -113,7 +104,17 @@ public abstract class HibernateDaoSupport extends DaoSupport {
 	 */
 	@Nullable
 	public final HibernateTemplate getHibernateTemplate() {
-	  return this.hibernateTemplate;
+		return this.hibernateTemplate;
+	}
+
+	/**
+	 * Set the HibernateTemplate for this DAO explicitly,
+	 * as an alternative to specifying a SessionFactory.
+	 *
+	 * @see #setSessionFactory
+	 */
+	public final void setHibernateTemplate(@Nullable HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	@Override
@@ -126,6 +127,7 @@ public abstract class HibernateDaoSupport extends DaoSupport {
 
 	/**
 	 * Conveniently obtain the current Hibernate Session.
+	 *
 	 * @return the Hibernate Session
 	 * @throws DataAccessResourceFailureException if the Session couldn't be created
 	 * @see SessionFactory#getCurrentSession()

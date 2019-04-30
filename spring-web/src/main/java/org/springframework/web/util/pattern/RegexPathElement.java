@@ -16,13 +16,13 @@
 
 package org.springframework.web.util.pattern;
 
+import org.springframework.http.server.PathContainer.PathSegment;
+import org.springframework.web.util.pattern.PathPattern.MatchingContext;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.springframework.http.server.PathContainer.PathSegment;
-import org.springframework.web.util.pattern.PathPattern.MatchingContext;
 
 /**
  * A regex path element. Used to represent any complicated element of the path.
@@ -38,17 +38,11 @@ class RegexPathElement extends PathElement {
 	private static final Pattern GLOB_PATTERN = Pattern.compile("\\?|\\*|\\{((?:\\{[^/]+?\\}|[^/{}]|\\\\[{}])+?)\\}");
 
 	private static final String DEFAULT_VARIABLE_PATTERN = "(.*)";
-
-
-	private char[] regex;
-
 	private final boolean caseSensitive;
-
 	private final Pattern pattern;
-
-	private int wildcardCount;
-
 	private final List<String> variableNames = new LinkedList<>();
+	private char[] regex;
+	private int wildcardCount;
 
 
 	RegexPathElement(int pos, char[] regex, boolean caseSensitive, char[] completePattern, char separator) {
@@ -70,17 +64,15 @@ class RegexPathElement extends PathElement {
 			String match = matcher.group();
 			if ("?".equals(match)) {
 				patternBuilder.append('.');
-			}
-			else if ("*".equals(match)) {
+			} else if ("*".equals(match)) {
 				patternBuilder.append(".*");
 				int pos = matcher.start();
-				if (pos < 1 || text.charAt(pos-1) != '.') {
+				if (pos < 1 || text.charAt(pos - 1) != '.') {
 					// To be compatible with the AntPathMatcher comparator, 
 					// '.*' is not considered a wildcard usage
 					this.wildcardCount++;
 				}
-			}
-			else if (match.startsWith("{") && match.endsWith("}")) {
+			} else if (match.startsWith("{") && match.endsWith("}")) {
 				int colonIdx = match.indexOf(':');
 				if (colonIdx == -1) {
 					patternBuilder.append(DEFAULT_VARIABLE_PATTERN);
@@ -90,8 +82,7 @@ class RegexPathElement extends PathElement {
 								PatternParseException.PatternMessage.ILLEGAL_DOUBLE_CAPTURE, variableName);
 					}
 					this.variableNames.add(variableName);
-				}
-				else {
+				} else {
 					String variablePattern = match.substring(colonIdx + 1, match.length() - 1);
 					patternBuilder.append('(');
 					patternBuilder.append(variablePattern);
@@ -110,8 +101,7 @@ class RegexPathElement extends PathElement {
 		patternBuilder.append(quote(text, end, text.length()));
 		if (this.caseSensitive) {
 			return Pattern.compile(patternBuilder.toString());
-		}
-		else {
+		} else {
 			return Pattern.compile(patternBuilder.toString(), Pattern.CASE_INSENSITIVE);
 		}
 	}
@@ -129,30 +119,28 @@ class RegexPathElement extends PathElement {
 
 	@Override
 	public boolean matches(int pathIndex, MatchingContext matchingContext) {
-		String textToMatch = matchingContext.pathElementValue(pathIndex);		
+		String textToMatch = matchingContext.pathElementValue(pathIndex);
 		Matcher matcher = this.pattern.matcher(textToMatch);
 		boolean matches = matcher.matches();
 
 		if (matches) {
 			if (isNoMorePattern()) {
-				if (matchingContext.determineRemainingPath && 
-					(this.variableNames.isEmpty() ? true : textToMatch.length() > 0)) {
+				if (matchingContext.determineRemainingPath &&
+						(this.variableNames.isEmpty() ? true : textToMatch.length() > 0)) {
 					matchingContext.remainingPathIndex = pathIndex + 1;
 					matches = true;
-				}
-				else {
+				} else {
 					// No more pattern, is there more data?
 					// If pattern is capturing variables there must be some actual data to bind to them
 					matches = (pathIndex + 1) >= matchingContext.pathLength &&
-							  (this.variableNames.isEmpty() || textToMatch.length() > 0);
+							(this.variableNames.isEmpty() || textToMatch.length() > 0);
 					if (!matches && matchingContext.isMatchOptionalTrailingSeparator()) {
 						matches = (this.variableNames.isEmpty() || textToMatch.length() > 0) &&
-							      (pathIndex + 2) >= matchingContext.pathLength &&
-							      matchingContext.isSeparator(pathIndex + 1);
+								(pathIndex + 2) >= matchingContext.pathLength &&
+								matchingContext.isSeparator(pathIndex + 1);
 					}
 				}
-			}
-			else {
+			} else {
 				matches = (this.next != null && this.next.matches(pathIndex + 1, matchingContext));
 			}
 		}
@@ -169,14 +157,14 @@ class RegexPathElement extends PathElement {
 				String name = this.variableNames.get(i - 1);
 				String value = matcher.group(i);
 				matchingContext.set(name, value,
-						(i == this.variableNames.size())?
-								((PathSegment)matchingContext.pathElements.get(pathIndex)).parameters():
+						(i == this.variableNames.size()) ?
+								((PathSegment) matchingContext.pathElements.get(pathIndex)).parameters() :
 								NO_PARAMETERS);
 			}
 		}
 		return matches;
 	}
-	
+
 	@Override
 	public int getNormalizedLength() {
 		int varsLength = 0;

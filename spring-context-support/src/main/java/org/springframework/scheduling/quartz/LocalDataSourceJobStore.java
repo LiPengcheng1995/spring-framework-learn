@@ -16,10 +16,6 @@
 
 package org.springframework.scheduling.quartz;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import javax.sql.DataSource;
-
 import org.quartz.SchedulerConfigException;
 import org.quartz.impl.jdbcjobstore.JobStoreCMT;
 import org.quartz.impl.jdbcjobstore.SimpleSemaphore;
@@ -27,11 +23,14 @@ import org.quartz.spi.ClassLoadHelper;
 import org.quartz.spi.SchedulerSignaler;
 import org.quartz.utils.ConnectionProvider;
 import org.quartz.utils.DBConnectionManager;
-
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.MetaDataAccessException;
 import org.springframework.lang.Nullable;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * Subclass of Quartz's {@link JobStoreCMT} class that delegates to a Spring-managed
@@ -53,11 +52,11 @@ import org.springframework.lang.Nullable;
  * as they assume to get proper locks etc.
  *
  * @author Juergen Hoeller
- * @since 1.1
  * @see SchedulerFactoryBean#setDataSource
  * @see SchedulerFactoryBean#setNonTransactionalDataSource
  * @see org.springframework.jdbc.datasource.DataSourceUtils#doGetConnection
  * @see org.springframework.jdbc.datasource.DataSourceUtils#releaseConnection
+ * @since 1.1
  */
 @SuppressWarnings("unchecked")  // due to a warning in Quartz 2.2's JobStoreCMT
 public class LocalDataSourceJobStore extends JobStoreCMT {
@@ -65,6 +64,7 @@ public class LocalDataSourceJobStore extends JobStoreCMT {
 	/**
 	 * Name used for the transactional ConnectionProvider for Quartz.
 	 * This provider will delegate to the local Spring-managed DataSource.
+	 *
 	 * @see org.quartz.utils.DBConnectionManager#addConnectionProvider
 	 * @see SchedulerFactoryBean#setDataSource
 	 */
@@ -73,6 +73,7 @@ public class LocalDataSourceJobStore extends JobStoreCMT {
 	/**
 	 * Name used for the non-transactional ConnectionProvider for Quartz.
 	 * This provider will delegate to the local Spring-managed DataSource.
+	 *
 	 * @see org.quartz.utils.DBConnectionManager#addConnectionProvider
 	 * @see SchedulerFactoryBean#setDataSource
 	 */
@@ -105,10 +106,12 @@ public class LocalDataSourceJobStore extends JobStoreCMT {
 						// Return a transactional Connection, if any.
 						return DataSourceUtils.doGetConnection(dataSource);
 					}
+
 					@Override
 					public void shutdown() {
 						// Do nothing - a Spring-managed DataSource has its own lifecycle.
 					}
+
 					/* Quartz 2.2 initialize method */
 					public void initialize() {
 						// Do nothing - a Spring-managed DataSource has its own lifecycle.
@@ -133,10 +136,12 @@ public class LocalDataSourceJobStore extends JobStoreCMT {
 						// Always return a non-transactional Connection.
 						return nonTxDataSourceToUse.getConnection();
 					}
+
 					@Override
 					public void shutdown() {
 						// Do nothing - a Spring-managed DataSource has its own lifecycle.
 					}
+
 					/* Quartz 2.2 initialize method */
 					public void initialize() {
 						// Do nothing - a Spring-managed DataSource has its own lifecycle.
@@ -152,8 +157,7 @@ public class LocalDataSourceJobStore extends JobStoreCMT {
 				setUseDBLocks(false);
 				setLockHandler(new SimpleSemaphore());
 			}
-		}
-		catch (MetaDataAccessException ex) {
+		} catch (MetaDataAccessException ex) {
 			logWarnIfNonZero(1, "Could not detect database type. Assuming locks can be taken.");
 		}
 

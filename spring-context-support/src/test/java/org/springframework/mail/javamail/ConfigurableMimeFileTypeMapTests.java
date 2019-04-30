@@ -16,14 +16,13 @@
 
 package org.springframework.mail.javamail;
 
-import java.io.File;
-
 import org.junit.Test;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-import static org.junit.Assert.*;
+import java.io.File;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Rob Harrop
@@ -53,7 +52,7 @@ public class ConfigurableMimeFileTypeMapTests {
 	@Test
 	public void withAdditionalMappings() throws Exception {
 		ConfigurableMimeFileTypeMap ftm = new ConfigurableMimeFileTypeMap();
-		ftm.setMappings(new String[] {"foo/bar HTM foo", "foo/cpp c++"});
+		ftm.setMappings(new String[]{"foo/bar HTM foo", "foo/cpp c++"});
 		ftm.afterPropertiesSet();
 
 		assertEquals("Invalid content type for HTM - override didn't work", "foo/bar", ftm.getContentType("foobar.HTM"));

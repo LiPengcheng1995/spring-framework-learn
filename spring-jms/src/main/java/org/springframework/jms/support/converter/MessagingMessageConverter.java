@@ -16,10 +16,6 @@
 
 package org.springframework.jms.support.converter;
 
-import java.util.Map;
-import javax.jms.JMSException;
-import javax.jms.Session;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jms.support.JmsHeaderMapper;
 import org.springframework.jms.support.SimpleJmsHeaderMapper;
@@ -29,6 +25,10 @@ import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.core.AbstractMessagingTemplate;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.util.Assert;
+
+import javax.jms.JMSException;
+import javax.jms.Session;
+import java.util.Map;
 
 /**
  * Convert a {@link Message} from the messaging abstraction to and from a
@@ -48,6 +48,7 @@ public class MessagingMessageConverter implements MessageConverter, Initializing
 
 	/**
 	 * Create an instance with a default payload converter.
+	 *
 	 * @see org.springframework.jms.support.converter.SimpleMessageConverter
 	 * @see org.springframework.jms.support.SimpleJmsHeaderMapper
 	 */
@@ -57,6 +58,7 @@ public class MessagingMessageConverter implements MessageConverter, Initializing
 
 	/**
 	 * Create an instance with the specific payload converter.
+	 *
 	 * @param payloadConverter the payload converter to use
 	 * @since 4.3.12
 	 */
@@ -134,6 +136,7 @@ public class MessagingMessageConverter implements MessageConverter, Initializing
 	 * Create a JMS message for the specified payload and conversionHint.
 	 * The conversion hint is an extra object passed to the {@link MessageConverter},
 	 * e.g. the associated {@code MethodParameter} (may be {@code null}}.
+	 *
 	 * @see MessageConverter#toMessage(Object, Session)
 	 * @since 4.3
 	 */

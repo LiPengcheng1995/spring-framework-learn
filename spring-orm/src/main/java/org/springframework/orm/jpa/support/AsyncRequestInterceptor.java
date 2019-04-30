@@ -16,12 +16,8 @@
 
 package org.springframework.orm.jpa.support;
 
-import java.util.concurrent.Callable;
-import javax.persistence.EntityManagerFactory;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
 import org.springframework.orm.jpa.EntityManagerHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -30,10 +26,13 @@ import org.springframework.web.context.request.async.CallableProcessingIntercept
 import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.context.request.async.DeferredResultProcessingInterceptor;
 
+import javax.persistence.EntityManagerFactory;
+import java.util.concurrent.Callable;
+
 /**
  * An interceptor with asynchronous web requests used in OpenSessionInViewFilter and
  * OpenSessionInViewInterceptor.
- *
+ * <p>
  * Ensures the following:
  * 1) The session is bound/unbound when "callable processing" is started
  * 2) The session is closed if an async request times out or an error occurred

@@ -1,13 +1,12 @@
 package org.springframework.web.cors.reactive;
 
-import reactor.core.publisher.Mono;
-
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.Assert;
-import org.springframework.web.cors.*;
+import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
+import reactor.core.publisher.Mono;
 
 
 /**
@@ -22,8 +21,8 @@ import org.springframework.web.server.WebFilterChain;
  * mostly useful for applications using the functional API.
  *
  * @author Sebastien Deleuze
- * @since 5.0
  * @see <a href="https://www.w3.org/TR/cors/">CORS W3C recommendation</a>
+ * @since 5.0
  */
 public class CorsWebFilter implements WebFilter {
 
@@ -35,6 +34,7 @@ public class CorsWebFilter implements WebFilter {
 	/**
 	 * Constructor accepting a {@link CorsConfigurationSource} used by the filter
 	 * to find the {@link CorsConfiguration} to use for each incoming request.
+	 *
 	 * @see UrlBasedCorsConfigurationSource
 	 */
 	public CorsWebFilter(CorsConfigurationSource configSource) {
@@ -46,6 +46,7 @@ public class CorsWebFilter implements WebFilter {
 	 * to find the {@link CorsConfiguration} to use for each incoming request and a
 	 * custom {@link CorsProcessor} to use to apply the matched
 	 * {@link CorsConfiguration} for a request.
+	 *
 	 * @see UrlBasedCorsConfigurationSource
 	 */
 	public CorsWebFilter(CorsConfigurationSource configSource, CorsProcessor processor) {

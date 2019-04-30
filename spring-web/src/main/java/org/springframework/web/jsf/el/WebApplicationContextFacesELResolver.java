@@ -16,20 +16,19 @@
 
 package org.springframework.web.jsf.el;
 
-import java.beans.FeatureDescriptor;
-import java.util.Iterator;
-import javax.el.ELContext;
-import javax.el.ELException;
-import javax.el.ELResolver;
-import javax.faces.context.FacesContext;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.BeansException;
 import org.springframework.lang.Nullable;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.jsf.FacesContextUtils;
+
+import javax.el.ELContext;
+import javax.el.ELException;
+import javax.el.ELResolver;
+import javax.faces.context.FacesContext;
+import java.beans.FeatureDescriptor;
+import java.util.Iterator;
 
 /**
  * Special JSF {@code ELResolver} that exposes the Spring {@code WebApplicationContext}
@@ -50,9 +49,9 @@ import org.springframework.web.jsf.FacesContextUtils;
  * &lt;/application></pre>
  *
  * @author Juergen Hoeller
- * @since 2.5
  * @see SpringBeanFacesELResolver
  * @see org.springframework.web.jsf.FacesContextUtils#getWebApplicationContext
+ * @since 2.5
  */
 public class WebApplicationContextFacesELResolver extends ELResolver {
 
@@ -62,7 +61,9 @@ public class WebApplicationContextFacesELResolver extends ELResolver {
 	public static final String WEB_APPLICATION_CONTEXT_VARIABLE_NAME = "webApplicationContext";
 
 
-	/** Logger available to subclasses */
+	/**
+	 * Logger available to subclasses
+	 */
 	protected final Log logger = LogFactory.getLog(getClass());
 
 
@@ -83,18 +84,15 @@ public class WebApplicationContextFacesELResolver extends ELResolver {
 					elContext.setPropertyResolved(true);
 					try {
 						return wac.getBean(beanName);
-					}
-					catch (BeansException ex) {
+					} catch (BeansException ex) {
 						throw new ELException(ex);
 					}
-				}
-				else {
+				} else {
 					// Mimic standard JSF/JSP behavior when base is a Map by returning null.
 					return null;
 				}
 			}
-		}
-		else {
+		} else {
 			if (WEB_APPLICATION_CONTEXT_VARIABLE_NAME.equals(property)) {
 				elContext.setPropertyResolved(true);
 				return getWebApplicationContext(elContext);
@@ -121,18 +119,15 @@ public class WebApplicationContextFacesELResolver extends ELResolver {
 					elContext.setPropertyResolved(true);
 					try {
 						return wac.getType(beanName);
-					}
-					catch (BeansException ex) {
+					} catch (BeansException ex) {
 						throw new ELException(ex);
 					}
-				}
-				else {
+				} else {
 					// Mimic standard JSF/JSP behavior when base is a Map by returning null.
 					return null;
 				}
 			}
-		}
-		else {
+		} else {
 			if (WEB_APPLICATION_CONTEXT_VARIABLE_NAME.equals(property)) {
 				elContext.setPropertyResolved(true);
 				return WebApplicationContext.class;
@@ -171,6 +166,7 @@ public class WebApplicationContextFacesELResolver extends ELResolver {
 	 * Retrieve the {@link WebApplicationContext} reference to expose.
 	 * <p>The default implementation delegates to {@link FacesContextUtils},
 	 * returning {@code null} if no {@code WebApplicationContext} found.
+	 *
 	 * @param elContext the current JSF ELContext
 	 * @return the Spring web application context
 	 * @see org.springframework.web.jsf.FacesContextUtils#getWebApplicationContext

@@ -16,12 +16,6 @@
 
 package org.springframework.web.server.adapter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Consumer;
-
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -41,6 +35,12 @@ import org.springframework.web.server.i18n.LocaleContextResolver;
 import org.springframework.web.server.session.DefaultWebSessionManager;
 import org.springframework.web.server.session.WebSessionManager;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Consumer;
+
 /**
  * This builder has two purposes:
  *
@@ -57,21 +57,29 @@ import org.springframework.web.server.session.WebSessionManager;
  *
  * @author Rossen Stoyanchev
  * @author Sebastien Deleuze
- * @since 5.0
  * @see HttpWebHandlerAdapter
+ * @since 5.0
  */
 public class WebHttpHandlerBuilder {
 
-	/** Well-known name for the target WebHandler in the bean factory. */
+	/**
+	 * Well-known name for the target WebHandler in the bean factory.
+	 */
 	public static final String WEB_HANDLER_BEAN_NAME = "webHandler";
 
-	/** Well-known name for the WebSessionManager in the bean factory. */
+	/**
+	 * Well-known name for the WebSessionManager in the bean factory.
+	 */
 	public static final String WEB_SESSION_MANAGER_BEAN_NAME = "webSessionManager";
 
-	/** Well-known name for the ServerCodecConfigurer in the bean factory. */
+	/**
+	 * Well-known name for the ServerCodecConfigurer in the bean factory.
+	 */
 	public static final String SERVER_CODEC_CONFIGURER_BEAN_NAME = "serverCodecConfigurer";
 
-	/** Well-known name for the LocaleContextResolver in the bean factory. */
+	/**
+	 * Well-known name for the LocaleContextResolver in the bean factory.
+	 */
 	public static final String LOCALE_CONTEXT_RESOLVER_BEAN_NAME = "localeContextResolver";
 
 
@@ -119,6 +127,7 @@ public class WebHttpHandlerBuilder {
 
 	/**
 	 * Static factory method to create a new builder instance.
+	 *
 	 * @param webHandler the target handler for the request
 	 * @return the prepared builder
 	 */
@@ -143,6 +152,7 @@ public class WebHttpHandlerBuilder {
 	 * <li>{@link LocaleContextResolver} [0..1] -- looked up by the name
 	 * {@link #LOCALE_CONTEXT_RESOLVER_BEAN_NAME}.
 	 * </ul>
+	 *
 	 * @param context the application context to use for the lookup
 	 * @return the prepared builder
 	 */
@@ -160,24 +170,21 @@ public class WebHttpHandlerBuilder {
 		try {
 			builder.sessionManager(
 					context.getBean(WEB_SESSION_MANAGER_BEAN_NAME, WebSessionManager.class));
-		}
-		catch (NoSuchBeanDefinitionException ex) {
+		} catch (NoSuchBeanDefinitionException ex) {
 			// Fall back on default
 		}
 
 		try {
 			builder.codecConfigurer(
 					context.getBean(SERVER_CODEC_CONFIGURER_BEAN_NAME, ServerCodecConfigurer.class));
-		}
-		catch (NoSuchBeanDefinitionException ex) {
+		} catch (NoSuchBeanDefinitionException ex) {
 			// Fall back on default
 		}
 
 		try {
 			builder.localeContextResolver(
 					context.getBean(LOCALE_CONTEXT_RESOLVER_BEAN_NAME, LocaleContextResolver.class));
-		}
-		catch (NoSuchBeanDefinitionException ex) {
+		} catch (NoSuchBeanDefinitionException ex) {
 			// Fall back on default
 		}
 
@@ -187,6 +194,7 @@ public class WebHttpHandlerBuilder {
 
 	/**
 	 * Add the given filter(s).
+	 *
 	 * @param filters the filter(s) to add that's
 	 */
 	public WebHttpHandlerBuilder filter(WebFilter... filters) {
@@ -198,6 +206,7 @@ public class WebHttpHandlerBuilder {
 
 	/**
 	 * Manipulate the "live" list of currently configured filters.
+	 *
 	 * @param consumer the consumer to use
 	 */
 	public WebHttpHandlerBuilder filters(Consumer<List<WebFilter>> consumer) {
@@ -207,6 +216,7 @@ public class WebHttpHandlerBuilder {
 
 	/**
 	 * Add the given exception handler(s).
+	 *
 	 * @param handlers the exception handler(s)
 	 */
 	public WebHttpHandlerBuilder exceptionHandler(WebExceptionHandler... handlers) {
@@ -218,6 +228,7 @@ public class WebHttpHandlerBuilder {
 
 	/**
 	 * Manipulate the "live" list of currently configured exception handlers.
+	 *
 	 * @param consumer the consumer to use
 	 */
 	public WebHttpHandlerBuilder exceptionHandlers(Consumer<List<WebExceptionHandler>> consumer) {
@@ -229,6 +240,7 @@ public class WebHttpHandlerBuilder {
 	 * Configure the {@link WebSessionManager} to set on the
 	 * {@link ServerWebExchange WebServerExchange}.
 	 * <p>By default {@link DefaultWebSessionManager} is used.
+	 *
 	 * @param manager the session manager
 	 * @see HttpWebHandlerAdapter#setSessionManager(WebSessionManager)
 	 */
@@ -240,6 +252,7 @@ public class WebHttpHandlerBuilder {
 	/**
 	 * Whether a {@code WebSessionManager} is configured or not, either detected from an
 	 * {@code ApplicationContext} or explicitly configured via {@link #sessionManager}.
+	 *
 	 * @since 5.0.9
 	 */
 	public boolean hasSessionManager() {
@@ -248,6 +261,7 @@ public class WebHttpHandlerBuilder {
 
 	/**
 	 * Configure the {@link ServerCodecConfigurer} to set on the {@code WebServerExchange}.
+	 *
 	 * @param codecConfigurer the codec configurer
 	 */
 	public WebHttpHandlerBuilder codecConfigurer(ServerCodecConfigurer codecConfigurer) {
@@ -259,6 +273,7 @@ public class WebHttpHandlerBuilder {
 	/**
 	 * Whether a {@code ServerCodecConfigurer} is configured or not, either detected from an
 	 * {@code ApplicationContext} or explicitly configured via {@link #codecConfigurer}.
+	 *
 	 * @since 5.0.9
 	 */
 	public boolean hasCodecConfigurer() {
@@ -268,6 +283,7 @@ public class WebHttpHandlerBuilder {
 	/**
 	 * Configure the {@link LocaleContextResolver} to set on the
 	 * {@link ServerWebExchange WebServerExchange}.
+	 *
 	 * @param localeContextResolver the locale context resolver
 	 */
 	public WebHttpHandlerBuilder localeContextResolver(LocaleContextResolver localeContextResolver) {
@@ -278,6 +294,7 @@ public class WebHttpHandlerBuilder {
 	/**
 	 * Whether a {@code LocaleContextResolver} is configured or not, either detected from an
 	 * {@code ApplicationContext} or explicitly configured via {@link #localeContextResolver}.
+	 *
 	 * @since 5.0.9
 	 */
 	public boolean hasLocaleContextResolver() {
@@ -290,7 +307,7 @@ public class WebHttpHandlerBuilder {
 	 */
 	public HttpHandler build() {
 		WebHandler decorated = new FilteringWebHandler(this.webHandler, this.filters);
-		decorated = new ExceptionHandlingWebHandler(decorated,  this.exceptionHandlers);
+		decorated = new ExceptionHandlingWebHandler(decorated, this.exceptionHandlers);
 
 		HttpWebHandlerAdapter adapted = new HttpWebHandlerAdapter(decorated);
 		if (this.sessionManager != null) {
@@ -311,6 +328,7 @@ public class WebHttpHandlerBuilder {
 
 	/**
 	 * Clone this {@link WebHttpHandlerBuilder}.
+	 *
 	 * @return the cloned builder instance
 	 */
 	@Override
@@ -325,22 +343,22 @@ public class WebHttpHandlerBuilder {
 
 		private List<WebExceptionHandler> exceptionHandlers = Collections.emptyList();
 
-		@Autowired(required = false)
-		public void setFilters(List<WebFilter> filters) {
-			this.filters = filters;
-		}
-
 		public List<WebFilter> getFilters() {
 			return this.filters;
 		}
 
 		@Autowired(required = false)
-		public void setExceptionHandlers(List<WebExceptionHandler> exceptionHandlers) {
-			this.exceptionHandlers = exceptionHandlers;
+		public void setFilters(List<WebFilter> filters) {
+			this.filters = filters;
 		}
 
 		public List<WebExceptionHandler> getExceptionHandlers() {
 			return this.exceptionHandlers;
+		}
+
+		@Autowired(required = false)
+		public void setExceptionHandlers(List<WebExceptionHandler> exceptionHandlers) {
+			this.exceptionHandlers = exceptionHandlers;
 		}
 	}
 

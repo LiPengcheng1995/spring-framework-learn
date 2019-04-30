@@ -16,13 +16,8 @@
 
 package org.springframework.scheduling.quartz;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
-
 import org.quartz.SchedulerConfigException;
 import org.quartz.simpl.SimpleThreadPool;
-
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.task.AsyncListenableTaskExecutor;
@@ -31,6 +26,10 @@ import org.springframework.scheduling.SchedulingTaskExecutor;
 import org.springframework.util.Assert;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureTask;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
 /**
  * Subclass of Quartz's SimpleThreadPool that implements Spring's
@@ -42,10 +41,10 @@ import org.springframework.util.concurrent.ListenableFutureTask;
  * a Quartz Scheduler (as plain TaskExecutor backend).
  *
  * @author Juergen Hoeller
- * @since 2.0
  * @see org.quartz.simpl.SimpleThreadPool
  * @see org.springframework.core.task.TaskExecutor
  * @see SchedulerFactoryBean#setTaskExecutor
+ * @since 2.0
  */
 public class SimpleThreadPoolTaskExecutor extends SimpleThreadPool
 		implements AsyncListenableTaskExecutor, SchedulingTaskExecutor, InitializingBean, DisposableBean {
@@ -56,6 +55,7 @@ public class SimpleThreadPoolTaskExecutor extends SimpleThreadPool
 	/**
 	 * Set whether to wait for running jobs to complete on shutdown.
 	 * Default is "false".
+	 *
 	 * @see org.quartz.simpl.SimpleThreadPool#shutdown(boolean)
 	 */
 	public void setWaitForJobsToCompleteOnShutdown(boolean waitForJobsToCompleteOnShutdown) {

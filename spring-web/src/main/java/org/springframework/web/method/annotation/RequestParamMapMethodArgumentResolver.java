@@ -16,9 +16,6 @@
 
 package org.springframework.web.method.annotation;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.lang.Nullable;
 import org.springframework.util.LinkedMultiValueMap;
@@ -29,6 +26,9 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Resolves {@link Map} method arguments annotated with an @{@link RequestParam}
@@ -43,8 +43,8 @@ import org.springframework.web.method.support.ModelAndViewContainer;
  *
  * @author Arjen Poutsma
  * @author Rossen Stoyanchev
- * @since 3.1
  * @see RequestParamMethodArgumentResolver
+ * @since 3.1
  */
 public class RequestParamMapMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
@@ -57,7 +57,7 @@ public class RequestParamMapMethodArgumentResolver implements HandlerMethodArgum
 
 	@Override
 	public Object resolveArgument(MethodParameter parameter, @Nullable ModelAndViewContainer mavContainer,
-			NativeWebRequest webRequest, @Nullable WebDataBinderFactory binderFactory) throws Exception {
+								  NativeWebRequest webRequest, @Nullable WebDataBinderFactory binderFactory) throws Exception {
 
 		Map<String, String[]> parameterMap = webRequest.getParameterMap();
 		if (MultiValueMap.class.isAssignableFrom(parameter.getParameterType())) {
@@ -68,8 +68,7 @@ public class RequestParamMapMethodArgumentResolver implements HandlerMethodArgum
 				}
 			});
 			return result;
-		}
-		else {
+		} else {
 			Map<String, String> result = new LinkedHashMap<>(parameterMap.size());
 			parameterMap.forEach((key, values) -> {
 				if (values.length > 0) {

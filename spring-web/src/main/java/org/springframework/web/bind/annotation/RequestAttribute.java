@@ -16,13 +16,9 @@
 
 package org.springframework.web.bind.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.core.annotation.AliasFor;
+
+import java.lang.annotation.*;
 
 /**
  * Annotation to bind a method parameter to a request attribute.
@@ -32,9 +28,9 @@ import org.springframework.core.annotation.AliasFor;
  * target method parameter type.
  *
  * @author Rossen Stoyanchev
- * @since 4.3
  * @see RequestMapping
  * @see SessionAttribute
+ * @since 4.3
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)

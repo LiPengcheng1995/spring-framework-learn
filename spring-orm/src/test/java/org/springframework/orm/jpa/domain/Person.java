@@ -16,17 +16,9 @@
 
 package org.springframework.orm.jpa.domain;
 
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-
 import org.springframework.tests.sample.beans.TestBean;
+
+import javax.persistence.*;
 
 /**
  * Simple JavaBean domain object representing an person.
@@ -57,36 +49,36 @@ public class Person {
 		return id;
 	}
 
-	public void setTestBean(TestBean testBean) {
-		this.testBean = testBean;
-	}
-
 	public TestBean getTestBean() {
 		return testBean;
 	}
 
-	public void setFirstName(String firstName) {
-		this.first_name = firstName;
+	public void setTestBean(TestBean testBean) {
+		this.testBean = testBean;
 	}
 
 	public String getFirstName() {
 		return this.first_name;
 	}
 
-	public void setLastName(String lastName) {
-		this.last_name = lastName;
+	public void setFirstName(String firstName) {
+		this.first_name = firstName;
 	}
 
 	public String getLastName() {
 		return this.last_name;
 	}
 
-	public void setDriversLicense(DriversLicense driversLicense) {
-		this.driversLicense = driversLicense;
+	public void setLastName(String lastName) {
+		this.last_name = lastName;
 	}
 
 	public DriversLicense getDriversLicense() {
 		return this.driversLicense;
+	}
+
+	public void setDriversLicense(DriversLicense driversLicense) {
+		this.driversLicense = driversLicense;
 	}
 
 	@Override

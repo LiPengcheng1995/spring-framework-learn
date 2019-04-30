@@ -1129,7 +1129,7 @@ public abstract class AbstractAopProxyTests {
 		/**
 		 * Changes the name, then changes it back.
 		 */
-		MethodInterceptor nameReverter = new 		class NameSaver implements MethodInterceptor {
+		MethodInterceptor nameReverter = new class NameSaver implements MethodInterceptor {
 			private List<Object> names = new LinkedList<>();
 
 			@Override
@@ -1137,11 +1137,12 @@ public abstract class AbstractAopProxyTests {
 				names.add(mi.getArguments()[0]);
 				return mi.proceed();
 			}
-		};
+		}
+		;
 
-MethodInterceptor() {
+		MethodInterceptor() {
 			@Override
-			public Object invoke(MethodInvocation mi) throws Throwable {
+			public Object invoke (MethodInvocation mi) throws Throwable {
 				MethodInvocation clone = ((ReflectiveMethodInvocation) mi).invocableClone();
 				String oldName = ((ITestBean) mi.getThis()).getName();
 				clone.getArguments()[0] = oldName;

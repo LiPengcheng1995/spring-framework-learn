@@ -16,13 +16,8 @@
 
 package org.springframework.web.cors.reactive;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -32,6 +27,10 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.server.ServerWebExchange;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * The default implementation of {@link CorsProcessor},
@@ -77,8 +76,7 @@ public class DefaultCorsProcessor implements CorsProcessor {
 			if (preFlightRequest) {
 				rejectRequest(response);
 				return false;
-			}
-			else {
+			} else {
 				return true;
 			}
 		}
@@ -102,7 +100,7 @@ public class DefaultCorsProcessor implements CorsProcessor {
 	 * Handle the given request.
 	 */
 	protected boolean handleInternal(ServerWebExchange exchange,
-			CorsConfiguration config, boolean preFlightRequest) {
+									 CorsConfiguration config, boolean preFlightRequest) {
 
 		ServerHttpRequest request = exchange.getRequest();
 		ServerHttpResponse response = exchange.getResponse();

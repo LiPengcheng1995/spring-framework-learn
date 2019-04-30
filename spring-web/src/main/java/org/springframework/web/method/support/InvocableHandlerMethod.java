@@ -16,10 +16,6 @@
 
 package org.springframework.web.method.support;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
@@ -31,6 +27,10 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.HandlerMethod;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 
 /**
  * Provides a method for invoking the handler method for a given request after resolving its
@@ -72,8 +72,9 @@ public class InvocableHandlerMethod extends HandlerMethod {
 
 	/**
 	 * Construct a new handler method with the given bean instance, method name and parameters.
-	 * @param bean the object bean
-	 * @param methodName the method name
+	 *
+	 * @param bean           the object bean
+	 * @param methodName     the method name
 	 * @param parameterTypes the method parameter types
 	 * @throws NoSuchMethodException when the method cannot be found
 	 */
@@ -87,6 +88,7 @@ public class InvocableHandlerMethod extends HandlerMethod {
 	/**
 	 * Set the {@link WebDataBinderFactory} to be passed to argument resolvers allowing them to create
 	 * a {@link WebDataBinder} for data binding and type conversion purposes.
+	 *
 	 * @param dataBinderFactory the data binder factory.
 	 */
 	public void setDataBinderFactory(WebDataBinderFactory dataBinderFactory) {
@@ -117,16 +119,17 @@ public class InvocableHandlerMethod extends HandlerMethod {
 	 * i.e. without argument resolution. Examples of provided argument values include a
 	 * {@link WebDataBinder}, a {@link SessionStatus}, or a thrown exception instance.
 	 * Provided argument values are checked before argument resolvers.
-	 * @param request the current request
+	 *
+	 * @param request      the current request
 	 * @param mavContainer the ModelAndViewContainer for this request
 	 * @param providedArgs "given" arguments matched by type, not resolved
 	 * @return the raw value returned by the invoked method
 	 * @throws Exception raised if no suitable argument resolver can be found,
-	 * or if the method raised an exception
+	 *                   or if the method raised an exception
 	 */
 	@Nullable
 	public Object invokeForRequest(NativeWebRequest request, @Nullable ModelAndViewContainer mavContainer,
-			Object... providedArgs) throws Exception {
+								   Object... providedArgs) throws Exception {
 
 		Object[] args = getMethodArgumentValues(request, mavContainer, providedArgs);
 		if (logger.isTraceEnabled()) {
@@ -145,7 +148,7 @@ public class InvocableHandlerMethod extends HandlerMethod {
 	 * Get the method argument values for the current request.
 	 */
 	private Object[] getMethodArgumentValues(NativeWebRequest request, @Nullable ModelAndViewContainer mavContainer,
-			Object... providedArgs) throws Exception {
+											 Object... providedArgs) throws Exception {
 
 		MethodParameter[] parameters = getMethodParameters();
 		Object[] args = new Object[parameters.length];
@@ -161,8 +164,7 @@ public class InvocableHandlerMethod extends HandlerMethod {
 					args[i] = this.argumentResolvers.resolveArgument(
 							parameter, mavContainer, request, this.dataBinderFactory);
 					continue;
-				}
-				catch (Exception ex) {
+				} catch (Exception ex) {
 					if (logger.isDebugEnabled()) {
 						logger.debug(getArgumentResolutionErrorMessage("Failed to resolve", i), ex);
 					}
@@ -207,25 +209,20 @@ public class InvocableHandlerMethod extends HandlerMethod {
 		ReflectionUtils.makeAccessible(getBridgedMethod());
 		try {
 			return getBridgedMethod().invoke(getBean(), args);
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			assertTargetBean(getBridgedMethod(), getBean(), args);
 			String text = (ex.getMessage() != null ? ex.getMessage() : "Illegal argument");
 			throw new IllegalStateException(getInvocationErrorMessage(text, args), ex);
-		}
-		catch (InvocationTargetException ex) {
+		} catch (InvocationTargetException ex) {
 			// Unwrap for HandlerExceptionResolvers ...
 			Throwable targetException = ex.getTargetException();
 			if (targetException instanceof RuntimeException) {
 				throw (RuntimeException) targetException;
-			}
-			else if (targetException instanceof Error) {
+			} else if (targetException instanceof Error) {
 				throw (Error) targetException;
-			}
-			else if (targetException instanceof Exception) {
+			} else if (targetException instanceof Exception) {
 				throw (Exception) targetException;
-			}
-			else {
+			} else {
 				String text = getInvocationErrorMessage("Failed to invoke handler method", args);
 				throw new IllegalStateException(text, targetException);
 			}
@@ -258,8 +255,7 @@ public class InvocableHandlerMethod extends HandlerMethod {
 			sb.append("[").append(i).append("] ");
 			if (resolvedArgs[i] == null) {
 				sb.append("[null] \n");
-			}
-			else {
+			} else {
 				sb.append("[type=").append(resolvedArgs[i].getClass().getName()).append("] ");
 				sb.append("[value=").append(resolvedArgs[i]).append("]\n");
 			}
@@ -269,6 +265,7 @@ public class InvocableHandlerMethod extends HandlerMethod {
 
 	/**
 	 * Adds HandlerMethod details such as the bean type and method signature to the message.
+	 *
 	 * @param text error message to append the HandlerMethod details to
 	 */
 	protected String getDetailedErrorMessage(String text) {

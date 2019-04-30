@@ -16,16 +16,15 @@
 
 package org.springframework.cache.ehcache;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
-
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Status;
-
 import org.springframework.cache.Cache;
 import org.springframework.cache.transaction.AbstractTransactionSupportingCacheManager;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.util.Collection;
+import java.util.LinkedHashSet;
 
 /**
  * CacheManager backed by an EhCache {@link net.sf.ehcache.CacheManager}.
@@ -50,17 +49,10 @@ public class EhCacheCacheManager extends AbstractTransactionSupportingCacheManag
 
 	/**
 	 * Create a new EhCacheCacheManager for the given backing EhCache CacheManager.
+	 *
 	 * @param cacheManager the backing EhCache {@link net.sf.ehcache.CacheManager}
 	 */
 	public EhCacheCacheManager(net.sf.ehcache.CacheManager cacheManager) {
-		this.cacheManager = cacheManager;
-	}
-
-
-	/**
-	 * Set the backing EhCache {@link net.sf.ehcache.CacheManager}.
-	 */
-	public void setCacheManager(@Nullable net.sf.ehcache.CacheManager cacheManager) {
 		this.cacheManager = cacheManager;
 	}
 
@@ -70,6 +62,13 @@ public class EhCacheCacheManager extends AbstractTransactionSupportingCacheManag
 	@Nullable
 	public net.sf.ehcache.CacheManager getCacheManager() {
 		return this.cacheManager;
+	}
+
+	/**
+	 * Set the backing EhCache {@link net.sf.ehcache.CacheManager}.
+	 */
+	public void setCacheManager(@Nullable net.sf.ehcache.CacheManager cacheManager) {
+		this.cacheManager = cacheManager;
 	}
 
 	@Override

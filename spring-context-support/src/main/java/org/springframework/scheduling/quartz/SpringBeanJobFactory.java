@@ -18,7 +18,6 @@ package org.springframework.scheduling.quartz;
 
 import org.quartz.SchedulerContext;
 import org.quartz.spi.TriggerFiredBundle;
-
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -37,9 +36,9 @@ import org.springframework.lang.Nullable;
  * <p>Compatible with Quartz 2.1.4 and higher, as of Spring 4.1.
  *
  * @author Juergen Hoeller
- * @since 2.0
  * @see SchedulerFactoryBean#setJobFactory
  * @see QuartzJobBean
+ * @since 2.0
  */
 public class SpringBeanJobFactory extends AdaptableJobFactory implements SchedulerContextAware {
 
@@ -90,8 +89,7 @@ public class SpringBeanJobFactory extends AdaptableJobFactory implements Schedul
 					}
 				}
 				bw.setPropertyValues(pvs);
-			}
-			else {
+			} else {
 				bw.setPropertyValues(pvs, true);
 			}
 		}
@@ -103,6 +101,7 @@ public class SpringBeanJobFactory extends AdaptableJobFactory implements Schedul
 	 * its bean properties populated.
 	 * <p>The default implementation ignores {@link QuartzJobBean} instances,
 	 * which will inject bean properties themselves.
+	 *
 	 * @param jobObject the job object to introspect
 	 * @see QuartzJobBean
 	 */

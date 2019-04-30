@@ -16,26 +16,15 @@
 
 package org.springframework.jms.listener.adapter;
 
-import java.io.ByteArrayInputStream;
-import java.io.Serializable;
-import javax.jms.BytesMessage;
-import javax.jms.InvalidDestinationException;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageProducer;
-import javax.jms.ObjectMessage;
-import javax.jms.Queue;
-import javax.jms.QueueSender;
-import javax.jms.QueueSession;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-
 import org.springframework.jms.support.converter.MessageConversionException;
 import org.springframework.jms.support.converter.SimpleMessageConverter;
+
+import javax.jms.*;
+import java.io.ByteArrayInputStream;
+import java.io.Serializable;
 
 import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.*;
@@ -306,8 +295,7 @@ public class MessageListenerAdapterTests {
 		try {
 			adapter.onMessage(sentTextMessage, session);
 			fail("expected CouldNotSendReplyException with InvalidDestinationException");
-		}
-		catch (ReplyFailureException ex) {
+		} catch (ReplyFailureException ex) {
 			assertEquals(InvalidDestinationException.class, ex.getCause().getClass());
 		}
 
@@ -345,8 +333,7 @@ public class MessageListenerAdapterTests {
 		try {
 			adapter.onMessage(sentTextMessage, session);
 			fail("expected CouldNotSendReplyException with JMSException");
-		}
-		catch (ReplyFailureException ex) {
+		} catch (ReplyFailureException ex) {
 			assertEquals(JMSException.class, ex.getCause().getClass());
 		}
 
@@ -372,8 +359,7 @@ public class MessageListenerAdapterTests {
 		try {
 			adapter.onMessage(message, session);
 			fail("expected ListenerExecutionFailedException");
-		}
-		catch (ListenerExecutionFailedException ex) { /* expected */ }
+		} catch (ListenerExecutionFailedException ex) { /* expected */ }
 	}
 
 	@Test
@@ -393,8 +379,7 @@ public class MessageListenerAdapterTests {
 		try {
 			adapter.onMessage(sentTextMessage, session);
 			fail("expected CouldNotSendReplyException with MessageConversionException");
-		}
-		catch (ReplyFailureException ex) {
+		} catch (ReplyFailureException ex) {
 			assertEquals(MessageConversionException.class, ex.getCause().getClass());
 		}
 	}

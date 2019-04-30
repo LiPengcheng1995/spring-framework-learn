@@ -16,14 +16,14 @@
 
 package org.springframework.jms.listener.endpoint;
 
+import org.springframework.jca.endpoint.AbstractMessageEndpointFactory;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.resource.ResourceException;
 import javax.resource.spi.UnavailableException;
-
-import org.springframework.jca.endpoint.AbstractMessageEndpointFactory;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 
 /**
  * JMS-specific implementation of the JCA 1.7
@@ -42,23 +42,15 @@ import org.springframework.util.Assert;
  *
  * @author Juergen Hoeller
  * @author Stephane Nicoll
- * @since 2.5
  * @see #setMessageListener
  * @see #setTransactionManager
  * @see JmsMessageEndpointManager
+ * @since 2.5
  */
-public class JmsMessageEndpointFactory extends AbstractMessageEndpointFactory  {
+public class JmsMessageEndpointFactory extends AbstractMessageEndpointFactory {
 
 	@Nullable
 	private MessageListener messageListener;
-
-
-	/**
-	 * Set the JMS MessageListener for this endpoint.
-	 */
-	public void setMessageListener(MessageListener messageListener) {
-		this.messageListener = messageListener;
-	}
 
 	/**
 	 * Return the JMS MessageListener for this endpoint.
@@ -69,59 +61,19 @@ public class JmsMessageEndpointFactory extends AbstractMessageEndpointFactory  {
 	}
 
 	/**
+	 * Set the JMS MessageListener for this endpoint.
+	 */
+	public void setMessageListener(MessageListener messageListener) {
+		this.messageListener = messageListener;
+	}
+
+	/**
 	 * Creates a concrete JMS message endpoint, internal to this factory.
 	 */
 	@Override
 	protected AbstractMessageEndpoint createEndpointInternal() throws UnavailableException {
 		return new JmsMessageEndpoint();
 	}
-
-
-	/**
-	 * Private inner class that implements the concrete JMS message endpoint.
-	 */
-	private class JmsMessageEndpoint extends AbstractMessageEndpoint implements MessageListener {
-
-		@Override
-		public void onMessage(Message message) {
-			Throwable endpointEx = null;
-			boolean applyDeliveryCalls = !hasBeforeDeliveryBeenCalled();
-			if (applyDeliveryCalls) {
-				try {
-					beforeDelivery(null);
-				}
-				catch (ResourceException ex) {
-					throw new JmsResourceException(ex);
-				}
-			}
-			try {
-				getMessageListener().onMessage(message);
-			}
-			catch (RuntimeException | Error ex) {
-				endpointEx = ex;
-				onEndpointException(ex);
-				throw ex;
-			}
-			finally {
-				if (applyDeliveryCalls) {
-					try {
-						afterDelivery();
-					}
-					catch (ResourceException ex) {
-						if (endpointEx == null) {
-							throw new JmsResourceException(ex);
-						}
-					}
-				}
-			}
-		}
-
-		@Override
-		protected ClassLoader getEndpointClassLoader() {
-			return getMessageListener().getClass().getClassLoader();
-		}
-	}
-
 
 	/**
 	 * Internal exception thrown when a ResourceException has been encountered
@@ -136,6 +88,47 @@ public class JmsMessageEndpointFactory extends AbstractMessageEndpointFactory  {
 
 		public JmsResourceException(ResourceException cause) {
 			super(cause);
+		}
+	}
+
+	/**
+	 * Private inner class that implements the concrete JMS message endpoint.
+	 */
+	private class JmsMessageEndpoint extends AbstractMessageEndpoint implements MessageListener {
+
+		@Override
+		public void onMessage(Message message) {
+			Throwable endpointEx = null;
+			boolean applyDeliveryCalls = !hasBeforeDeliveryBeenCalled();
+			if (applyDeliveryCalls) {
+				try {
+					beforeDelivery(null);
+				} catch (ResourceException ex) {
+					throw new JmsResourceException(ex);
+				}
+			}
+			try {
+				getMessageListener().onMessage(message);
+			} catch (RuntimeException | Error ex) {
+				endpointEx = ex;
+				onEndpointException(ex);
+				throw ex;
+			} finally {
+				if (applyDeliveryCalls) {
+					try {
+						afterDelivery();
+					} catch (ResourceException ex) {
+						if (endpointEx == null) {
+							throw new JmsResourceException(ex);
+						}
+					}
+				}
+			}
+		}
+
+		@Override
+		protected ClassLoader getEndpointClassLoader() {
+			return getMessageListener().getClass().getClassLoader();
 		}
 	}
 

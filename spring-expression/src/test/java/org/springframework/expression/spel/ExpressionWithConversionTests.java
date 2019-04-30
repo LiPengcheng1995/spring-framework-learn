@@ -16,14 +16,8 @@
 
 package org.springframework.expression.spel;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
@@ -32,6 +26,11 @@ import org.springframework.expression.EvaluationException;
 import org.springframework.expression.Expression;
 import org.springframework.expression.TypeConverter;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -74,13 +73,13 @@ public class ExpressionWithConversionTests extends AbstractExpressionTests {
 
 		// ArrayList containing List<Integer> to List<String>
 		Class<?> clazz = typeDescriptorForListOfString.getElementTypeDescriptor().getType();
-		assertEquals(String.class,clazz);
+		assertEquals(String.class, clazz);
 		List<?> l = (List<?>) tcs.convertValue(listOfInteger, TypeDescriptor.forObject(listOfInteger), typeDescriptorForListOfString);
 		assertNotNull(l);
 
 		// ArrayList containing List<String> to List<Integer>
 		clazz = typeDescriptorForListOfInteger.getElementTypeDescriptor().getType();
-		assertEquals(Integer.class,clazz);
+		assertEquals(Integer.class, clazz);
 
 		l = (List<?>) tcs.convertValue(listOfString, TypeDescriptor.forObject(listOfString), typeDescriptorForListOfString);
 		assertNotNull(l);
@@ -90,13 +89,13 @@ public class ExpressionWithConversionTests extends AbstractExpressionTests {
 	public void testSetParameterizedList() throws Exception {
 		StandardEvaluationContext context = TestScenarioCreator.getTestEvaluationContext();
 		Expression e = parser.parseExpression("listOfInteger.size()");
-		assertEquals(0,e.getValue(context,Integer.class).intValue());
+		assertEquals(0, e.getValue(context, Integer.class).intValue());
 		context.setTypeConverter(new TypeConvertorUsingConversionService());
 		// Assign a List<String> to the List<Integer> field - the component elements should be converted
-		parser.parseExpression("listOfInteger").setValue(context,listOfString);
-		assertEquals(3,e.getValue(context,Integer.class).intValue()); // size now 3
+		parser.parseExpression("listOfInteger").setValue(context, listOfString);
+		assertEquals(3, e.getValue(context, Integer.class).intValue()); // size now 3
 		Class<?> clazz = parser.parseExpression("listOfInteger[1].getClass()").getValue(context, Class.class); // element type correctly Integer
-		assertEquals(Integer.class,clazz);
+		assertEquals(Integer.class, clazz);
 	}
 
 	@Test
@@ -195,12 +194,12 @@ public class ExpressionWithConversionTests extends AbstractExpressionTests {
 			this.value = value;
 		}
 
-		public void setFoos(Collection<Foo> foos) {
-			this.foos = foos;
-		}
-
 		public Collection<Foo> getFoos() {
 			return this.foos;
+		}
+
+		public void setFoos(Collection<Foo> foos) {
+			this.foos = foos;
 		}
 
 		public Collection<String> getFoosAsStrings() {

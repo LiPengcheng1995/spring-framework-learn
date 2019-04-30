@@ -16,23 +16,8 @@
 
 package org.springframework.jca.cci.core;
 
-import java.sql.SQLException;
-import javax.resource.NotSupportedException;
-import javax.resource.ResourceException;
-import javax.resource.cci.Connection;
-import javax.resource.cci.ConnectionFactory;
-import javax.resource.cci.ConnectionSpec;
-import javax.resource.cci.IndexedRecord;
-import javax.resource.cci.Interaction;
-import javax.resource.cci.InteractionSpec;
-import javax.resource.cci.MappedRecord;
-import javax.resource.cci.Record;
-import javax.resource.cci.RecordFactory;
-import javax.resource.cci.ResultSet;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.jca.cci.CannotCreateRecordException;
@@ -43,6 +28,11 @@ import org.springframework.jca.cci.connection.ConnectionFactoryUtils;
 import org.springframework.jca.cci.connection.NotSupportedRecordFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import javax.resource.NotSupportedException;
+import javax.resource.ResourceException;
+import javax.resource.cci.*;
+import java.sql.SQLException;
 
 /**
  * <b>This is the central class in the CCI core package.</b>
@@ -64,9 +54,9 @@ import org.springframework.util.Assert;
  *
  * @author Thierry Templier
  * @author Juergen Hoeller
- * @since 1.2
  * @see RecordCreator
  * @see RecordExtractor
+ * @since 1.2
  */
 public class CciTemplate implements CciOperations {
 
@@ -85,6 +75,7 @@ public class CciTemplate implements CciOperations {
 	/**
 	 * Construct a new CciTemplate for bean usage.
 	 * <p>Note: The ConnectionFactory has to be set before using the instance.
+	 *
 	 * @see #setConnectionFactory
 	 */
 	public CciTemplate() {
@@ -93,6 +84,7 @@ public class CciTemplate implements CciOperations {
 	/**
 	 * Construct a new CciTemplate, given a ConnectionFactory to obtain Connections from.
 	 * Note: This will trigger eager initialization of the exception translator.
+	 *
 	 * @param connectionFactory JCA ConnectionFactory to obtain Connections from
 	 */
 	public CciTemplate(ConnectionFactory connectionFactory) {
@@ -103,9 +95,10 @@ public class CciTemplate implements CciOperations {
 	/**
 	 * Construct a new CciTemplate, given a ConnectionFactory to obtain Connections from.
 	 * Note: This will trigger eager initialization of the exception translator.
+	 *
 	 * @param connectionFactory JCA ConnectionFactory to obtain Connections from
-	 * @param connectionSpec the CCI ConnectionSpec to obtain Connections for
-	 * (may be {@code null})
+	 * @param connectionSpec    the CCI ConnectionSpec to obtain Connections for
+	 *                          (may be {@code null})
 	 */
 	public CciTemplate(ConnectionFactory connectionFactory, @Nullable ConnectionSpec connectionSpec) {
 		setConnectionFactory(connectionFactory);
@@ -113,14 +106,6 @@ public class CciTemplate implements CciOperations {
 			setConnectionSpec(connectionSpec);
 		}
 		afterPropertiesSet();
-	}
-
-
-	/**
-	 * Set the CCI ConnectionFactory to obtain Connections from.
-	 */
-	public void setConnectionFactory(@Nullable ConnectionFactory connectionFactory) {
-		this.connectionFactory = connectionFactory;
 	}
 
 	/**
@@ -131,18 +116,17 @@ public class CciTemplate implements CciOperations {
 		return this.connectionFactory;
 	}
 
+	/**
+	 * Set the CCI ConnectionFactory to obtain Connections from.
+	 */
+	public void setConnectionFactory(@Nullable ConnectionFactory connectionFactory) {
+		this.connectionFactory = connectionFactory;
+	}
+
 	private ConnectionFactory obtainConnectionFactory() {
 		ConnectionFactory connectionFactory = getConnectionFactory();
 		Assert.state(connectionFactory != null, "No ConnectionFactory set");
 		return connectionFactory;
-	}
-
-	/**
-	 * Set the CCI ConnectionSpec that this template instance is
-	 * supposed to obtain Connections for.
-	 */
-	public void setConnectionSpec(@Nullable ConnectionSpec connectionSpec) {
-		this.connectionSpec = connectionSpec;
 	}
 
 	/**
@@ -154,19 +138,11 @@ public class CciTemplate implements CciOperations {
 	}
 
 	/**
-	 * Set a RecordCreator that should be used for creating default output Records.
-	 * <p>Default is none: When no explicit output Record gets passed into an
-	 * {@code execute} method, CCI's {@code Interaction.execute} variant
-	 * that returns an output Record will be called.
-	 * <p>Specify a RecordCreator here if you always need to call CCI's
-	 * {@code Interaction.execute} variant with a passed-in output Record.
-	 * Unless there is an explicitly specified output Record, CciTemplate will
-	 * then invoke this RecordCreator to create a default output Record instance.
-	 * @see javax.resource.cci.Interaction#execute(javax.resource.cci.InteractionSpec, Record)
-	 * @see javax.resource.cci.Interaction#execute(javax.resource.cci.InteractionSpec, Record, Record)
+	 * Set the CCI ConnectionSpec that this template instance is
+	 * supposed to obtain Connections for.
 	 */
-	public void setOutputRecordCreator(@Nullable RecordCreator creator) {
-		this.outputRecordCreator = creator;
+	public void setConnectionSpec(@Nullable ConnectionSpec connectionSpec) {
+		this.connectionSpec = connectionSpec;
 	}
 
 	/**
@@ -175,6 +151,23 @@ public class CciTemplate implements CciOperations {
 	@Nullable
 	public RecordCreator getOutputRecordCreator() {
 		return this.outputRecordCreator;
+	}
+
+	/**
+	 * Set a RecordCreator that should be used for creating default output Records.
+	 * <p>Default is none: When no explicit output Record gets passed into an
+	 * {@code execute} method, CCI's {@code Interaction.execute} variant
+	 * that returns an output Record will be called.
+	 * <p>Specify a RecordCreator here if you always need to call CCI's
+	 * {@code Interaction.execute} variant with a passed-in output Record.
+	 * Unless there is an explicitly specified output Record, CciTemplate will
+	 * then invoke this RecordCreator to create a default output Record instance.
+	 *
+	 * @see javax.resource.cci.Interaction#execute(javax.resource.cci.InteractionSpec, Record)
+	 * @see javax.resource.cci.Interaction#execute(javax.resource.cci.InteractionSpec, Record, Record)
+	 */
+	public void setOutputRecordCreator(@Nullable RecordCreator creator) {
+		this.outputRecordCreator = creator;
 	}
 
 	public void afterPropertiesSet() {
@@ -188,8 +181,9 @@ public class CciTemplate implements CciOperations {
 	 * Create a template derived from this template instance,
 	 * inheriting the ConnectionFactory and other settings but
 	 * overriding the ConnectionSpec used for obtaining Connections.
+	 *
 	 * @param connectionSpec the CCI ConnectionSpec that the derived template
-	 * instance is supposed to obtain Connections for
+	 *                       instance is supposed to obtain Connections for
 	 * @return the derived template instance
 	 * @see #setConnectionSpec
 	 */
@@ -211,17 +205,13 @@ public class CciTemplate implements CciOperations {
 		Connection con = ConnectionFactoryUtils.getConnection(connectionFactory, getConnectionSpec());
 		try {
 			return action.doInConnection(con, connectionFactory);
-		}
-		catch (NotSupportedException ex) {
+		} catch (NotSupportedException ex) {
 			throw new CciOperationNotSupportedException("CCI operation not supported by connector", ex);
-		}
-		catch (ResourceException ex) {
+		} catch (ResourceException ex) {
 			throw new DataAccessResourceFailureException("CCI operation failed", ex);
-		}
-		catch (SQLException ex) {
+		} catch (SQLException ex) {
 			throw new InvalidResultSetAccessException("Parsing of CCI ResultSet failed", ex);
-		}
-		finally {
+		} finally {
 			ConnectionFactoryUtils.releaseConnection(con, getConnectionFactory());
 		}
 	}
@@ -234,8 +224,7 @@ public class CciTemplate implements CciOperations {
 			Interaction interaction = connection.createInteraction();
 			try {
 				return action.doInInteraction(interaction, connectionFactory);
-			}
-			finally {
+			} finally {
 				closeInteraction(interaction);
 			}
 		});
@@ -276,10 +265,11 @@ public class CciTemplate implements CciOperations {
 	/**
 	 * Execute the specified interaction on an EIS with CCI.
 	 * All other interaction execution methods go through this.
-	 * @param spec the CCI InteractionSpec instance that defines
-	 * the interaction (connector-specific)
-	 * @param inputRecord the input record
-	 * @param outputRecord output record (can be {@code null})
+	 *
+	 * @param spec            the CCI InteractionSpec instance that defines
+	 *                        the interaction (connector-specific)
+	 * @param inputRecord     the input record
+	 * @param outputRecord    output record (can be {@code null})
 	 * @param outputExtractor object to convert the output record to a result object
 	 * @return the output data extracted with the RecordExtractor object
 	 * @throws DataAccessException if there is any problem
@@ -299,13 +289,11 @@ public class CciTemplate implements CciOperations {
 						outputRecordToUse = getOutputRecordCreator().createRecord(recordFactory);
 					}
 					interaction.execute(spec, inputRecord, outputRecordToUse);
-				}
-				else {
+				} else {
 					outputRecordToUse = interaction.execute(spec, inputRecord);
 				}
 				return (outputExtractor != null ? outputExtractor.extractData(outputRecordToUse) : null);
-			}
-			finally {
+			} finally {
 				if (outputRecordToUse instanceof ResultSet) {
 					closeResultSet((ResultSet) outputRecordToUse);
 				}
@@ -316,6 +304,7 @@ public class CciTemplate implements CciOperations {
 
 	/**
 	 * Create an indexed Record through the ConnectionFactory's RecordFactory.
+	 *
 	 * @param name the name of the record
 	 * @return the Record
 	 * @throws DataAccessException if creation of the Record failed
@@ -326,17 +315,16 @@ public class CciTemplate implements CciOperations {
 		try {
 			RecordFactory recordFactory = getRecordFactory(obtainConnectionFactory());
 			return recordFactory.createIndexedRecord(name);
-		}
-		catch (NotSupportedException ex) {
+		} catch (NotSupportedException ex) {
 			throw new RecordTypeNotSupportedException("Creation of indexed Record not supported by connector", ex);
-		}
-		catch (ResourceException ex) {
+		} catch (ResourceException ex) {
 			throw new CannotCreateRecordException("Creation of indexed Record failed", ex);
 		}
 	}
 
 	/**
 	 * Create a mapped Record from the ConnectionFactory's RecordFactory.
+	 *
 	 * @param name record name
 	 * @return the Record
 	 * @throws DataAccessException if creation of the Record failed
@@ -347,11 +335,9 @@ public class CciTemplate implements CciOperations {
 		try {
 			RecordFactory recordFactory = getRecordFactory(obtainConnectionFactory());
 			return recordFactory.createMappedRecord(name);
-		}
-		catch (NotSupportedException ex) {
+		} catch (NotSupportedException ex) {
 			throw new RecordTypeNotSupportedException("Creation of mapped Record not supported by connector", ex);
-		}
-		catch (ResourceException ex) {
+		} catch (ResourceException ex) {
 			throw new CannotCreateRecordException("Creation of mapped Record failed", ex);
 		}
 	}
@@ -359,6 +345,7 @@ public class CciTemplate implements CciOperations {
 	/**
 	 * Invoke the given RecordCreator, converting JCA ResourceExceptions
 	 * to Spring's DataAccessException hierarchy.
+	 *
 	 * @param recordCreator the RecordCreator to invoke
 	 * @return the created Record
 	 * @throws DataAccessException if creation of the Record failed
@@ -369,12 +356,10 @@ public class CciTemplate implements CciOperations {
 		try {
 			RecordFactory recordFactory = getRecordFactory(obtainConnectionFactory());
 			return recordCreator.createRecord(recordFactory);
-		}
-		catch (NotSupportedException ex) {
+		} catch (NotSupportedException ex) {
 			throw new RecordTypeNotSupportedException(
 					"Creation of the desired Record type not supported by connector", ex);
-		}
-		catch (ResourceException ex) {
+		} catch (ResourceException ex) {
 			throw new CannotCreateRecordException("Creation of the desired Record failed", ex);
 		}
 	}
@@ -385,6 +370,7 @@ public class CciTemplate implements CciOperations {
 	 * available, falling back to a NotSupportedRecordFactory placeholder.
 	 * This allows to invoke a RecordCreator callback with a non-null
 	 * RecordFactory reference in any case.
+	 *
 	 * @param connectionFactory the CCI ConnectionFactory
 	 * @return the CCI RecordFactory for the ConnectionFactory
 	 * @throws ResourceException if thrown by CCI methods
@@ -393,8 +379,7 @@ public class CciTemplate implements CciOperations {
 	protected RecordFactory getRecordFactory(ConnectionFactory connectionFactory) throws ResourceException {
 		try {
 			return connectionFactory.getRecordFactory();
-		}
-		catch (NotSupportedException ex) {
+		} catch (NotSupportedException ex) {
 			return new NotSupportedRecordFactory();
 		}
 	}
@@ -403,6 +388,7 @@ public class CciTemplate implements CciOperations {
 	/**
 	 * Close the given CCI Interaction and ignore any thrown exception.
 	 * This is useful for typical finally blocks in manual CCI code.
+	 *
 	 * @param interaction the CCI Interaction to close
 	 * @see javax.resource.cci.Interaction#close()
 	 */
@@ -410,11 +396,9 @@ public class CciTemplate implements CciOperations {
 		if (interaction != null) {
 			try {
 				interaction.close();
-			}
-			catch (ResourceException ex) {
+			} catch (ResourceException ex) {
 				logger.trace("Could not close CCI Interaction", ex);
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				// We don't trust the CCI driver: It might throw RuntimeException or Error.
 				logger.trace("Unexpected exception on closing CCI Interaction", ex);
 			}
@@ -424,6 +408,7 @@ public class CciTemplate implements CciOperations {
 	/**
 	 * Close the given CCI ResultSet and ignore any thrown exception.
 	 * This is useful for typical finally blocks in manual CCI code.
+	 *
 	 * @param resultSet the CCI ResultSet to close
 	 * @see javax.resource.cci.ResultSet#close()
 	 */
@@ -431,11 +416,9 @@ public class CciTemplate implements CciOperations {
 		if (resultSet != null) {
 			try {
 				resultSet.close();
-			}
-			catch (SQLException ex) {
+			} catch (SQLException ex) {
 				logger.trace("Could not close CCI ResultSet", ex);
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				// We don't trust the CCI driver: It might throw RuntimeException or Error.
 				logger.trace("Unexpected exception on closing CCI ResultSet", ex);
 			}

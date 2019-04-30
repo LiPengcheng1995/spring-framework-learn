@@ -15,12 +15,11 @@
  */
 package org.springframework.expression.spel;
 
-import java.util.List;
-
 import org.junit.Test;
-
 import org.springframework.expression.EvaluationException;
 import org.springframework.expression.spel.support.StandardTypeLocator;
+
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -34,28 +33,27 @@ public class StandardTypeLocatorTests {
 	@Test
 	public void testImports() throws EvaluationException {
 		StandardTypeLocator locator = new StandardTypeLocator();
-		assertEquals(Integer.class,locator.findType("java.lang.Integer"));
-		assertEquals(String.class,locator.findType("java.lang.String"));
+		assertEquals(Integer.class, locator.findType("java.lang.Integer"));
+		assertEquals(String.class, locator.findType("java.lang.String"));
 
 		List<String> prefixes = locator.getImportPrefixes();
-		assertEquals(1,prefixes.size());
+		assertEquals(1, prefixes.size());
 		assertTrue(prefixes.contains("java.lang"));
 		assertFalse(prefixes.contains("java.util"));
 
-		assertEquals(Boolean.class,locator.findType("Boolean"));
+		assertEquals(Boolean.class, locator.findType("Boolean"));
 		// currently does not know about java.util by default
 //		assertEquals(java.util.List.class,locator.findType("List"));
 
 		try {
 			locator.findType("URL");
 			fail("Should have failed");
-		}
-		catch (EvaluationException ee) {
-			SpelEvaluationException sEx = (SpelEvaluationException)ee;
-			assertEquals(SpelMessage.TYPE_NOT_FOUND,sEx.getMessageCode());
+		} catch (EvaluationException ee) {
+			SpelEvaluationException sEx = (SpelEvaluationException) ee;
+			assertEquals(SpelMessage.TYPE_NOT_FOUND, sEx.getMessageCode());
 		}
 		locator.registerImport("java.net");
-		assertEquals(java.net.URL.class,locator.findType("URL"));
+		assertEquals(java.net.URL.class, locator.findType("URL"));
 	}
 
 }

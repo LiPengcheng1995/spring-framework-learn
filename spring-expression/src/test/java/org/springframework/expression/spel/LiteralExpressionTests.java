@@ -17,7 +17,6 @@
 package org.springframework.expression.spel;
 
 import org.junit.Test;
-
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.EvaluationException;
 import org.springframework.expression.common.LiteralExpression;
@@ -41,14 +40,12 @@ public class LiteralExpressionTests {
 		checkString("somevalue", lEx.getValue(new Rooty()));
 		checkString("somevalue", lEx.getValue(new Rooty(), String.class));
 		checkString("somevalue", lEx.getValue(ctx, new Rooty()));
-		checkString("somevalue", lEx.getValue(ctx, new Rooty(),String.class));
+		checkString("somevalue", lEx.getValue(ctx, new Rooty(), String.class));
 		assertEquals("somevalue", lEx.getExpressionString());
 		assertFalse(lEx.isWritable(new StandardEvaluationContext()));
 		assertFalse(lEx.isWritable(new Rooty()));
 		assertFalse(lEx.isWritable(new StandardEvaluationContext(), new Rooty()));
 	}
-
-	static class Rooty {}
 
 	@Test
 	public void testSetValue() {
@@ -56,8 +53,7 @@ public class LiteralExpressionTests {
 			LiteralExpression lEx = new LiteralExpression("somevalue");
 			lEx.setValue(new StandardEvaluationContext(), "flibble");
 			fail("Should have got an exception that the value cannot be set");
-		}
-		catch (EvaluationException ee) {
+		} catch (EvaluationException ee) {
 			// success, not allowed - whilst here, check the expression value in the exception
 			assertEquals("somevalue", ee.getExpressionString());
 		}
@@ -65,8 +61,7 @@ public class LiteralExpressionTests {
 			LiteralExpression lEx = new LiteralExpression("somevalue");
 			lEx.setValue(new Rooty(), "flibble");
 			fail("Should have got an exception that the value cannot be set");
-		}
-		catch (EvaluationException ee) {
+		} catch (EvaluationException ee) {
 			// success, not allowed - whilst here, check the expression value in the exception
 			assertEquals("somevalue", ee.getExpressionString());
 		}
@@ -74,8 +69,7 @@ public class LiteralExpressionTests {
 			LiteralExpression lEx = new LiteralExpression("somevalue");
 			lEx.setValue(new StandardEvaluationContext(), new Rooty(), "flibble");
 			fail("Should have got an exception that the value cannot be set");
-		}
-		catch (EvaluationException ee) {
+		} catch (EvaluationException ee) {
 			// success, not allowed - whilst here, check the expression value in the exception
 			assertEquals("somevalue", ee.getExpressionString());
 		}
@@ -101,6 +95,9 @@ public class LiteralExpressionTests {
 		if (!((String) value).equals(expectedString)) {
 			fail("Did not get expected result.  Should have been '" + expectedString + "' but was '" + value + "'");
 		}
+	}
+
+	static class Rooty {
 	}
 
 }

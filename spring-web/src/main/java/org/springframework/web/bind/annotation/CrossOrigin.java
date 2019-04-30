@@ -16,14 +16,10 @@
 
 package org.springframework.web.bind.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.web.cors.CorsConfiguration;
+
+import java.lang.annotation.*;
 
 /**
  * Annotation for permitting cross-origin requests on specific handler classes
@@ -47,24 +43,32 @@ import org.springframework.web.cors.CorsConfiguration;
  * @author Sam Brannen
  * @since 4.2
  */
-@Target({ ElementType.METHOD, ElementType.TYPE })
+@Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface CrossOrigin {
 
-	/** @deprecated as of Spring 5.0, in favor of {@link CorsConfiguration#applyPermitDefaultValues} */
+	/**
+	 * @deprecated as of Spring 5.0, in favor of {@link CorsConfiguration#applyPermitDefaultValues}
+	 */
 	@Deprecated
-	String[] DEFAULT_ORIGINS = { "*" };
+	String[] DEFAULT_ORIGINS = {"*"};
 
-	/** @deprecated as of Spring 5.0, in favor of {@link CorsConfiguration#applyPermitDefaultValues} */
+	/**
+	 * @deprecated as of Spring 5.0, in favor of {@link CorsConfiguration#applyPermitDefaultValues}
+	 */
 	@Deprecated
-	String[] DEFAULT_ALLOWED_HEADERS = { "*" };
+	String[] DEFAULT_ALLOWED_HEADERS = {"*"};
 
-	/** @deprecated as of Spring 5.0, in favor of {@link CorsConfiguration#applyPermitDefaultValues} */
+	/**
+	 * @deprecated as of Spring 5.0, in favor of {@link CorsConfiguration#applyPermitDefaultValues}
+	 */
 	@Deprecated
 	boolean DEFAULT_ALLOW_CREDENTIALS = false;
 
-	/** @deprecated as of Spring 5.0, in favor of {@link CorsConfiguration#applyPermitDefaultValues} */
+	/**
+	 * @deprecated as of Spring 5.0, in favor of {@link CorsConfiguration#applyPermitDefaultValues}
+	 */
 	@Deprecated
 	long DEFAULT_MAX_AGE = 1800;
 
@@ -88,6 +92,7 @@ public @interface CrossOrigin {
 	 * Consider using the {@code ForwardedHeaderFilter} in order to choose from a
 	 * central place whether to extract and use, or to discard such headers.
 	 * See the Spring Framework reference for more on this filter.
+	 *
 	 * @see #value
 	 */
 	@AliasFor("value")

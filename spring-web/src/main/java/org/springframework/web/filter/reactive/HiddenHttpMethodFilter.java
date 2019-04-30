@@ -16,13 +16,6 @@
 
 package org.springframework.web.filter.reactive;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-
-import reactor.core.publisher.Mono;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.Assert;
@@ -30,6 +23,12 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
+import reactor.core.publisher.Mono;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Reactive {@link WebFilter} that converts posted method parameters into HTTP methods,
@@ -48,14 +47,13 @@ import org.springframework.web.server.WebFilterChain;
  */
 public class HiddenHttpMethodFilter implements WebFilter {
 
+	/**
+	 * Default name of the form parameter with the HTTP method to use
+	 */
+	public static final String DEFAULT_METHOD_PARAMETER_NAME = "_method";
 	private static final List<HttpMethod> ALLOWED_METHODS =
 			Collections.unmodifiableList(Arrays.asList(HttpMethod.PUT,
 					HttpMethod.DELETE, HttpMethod.PATCH));
-
-	/** Default name of the form parameter with the HTTP method to use */
-	public static final String DEFAULT_METHOD_PARAMETER_NAME = "_method";
-
-
 	private String methodParamName = DEFAULT_METHOD_PARAMETER_NAME;
 
 
@@ -73,7 +71,7 @@ public class HiddenHttpMethodFilter implements WebFilter {
 	 * Transform an HTTP POST into another method based on {@code methodParamName}
 	 *
 	 * @param exchange the current server exchange
-	 * @param chain provides a way to delegate to the next filter
+	 * @param chain    provides a way to delegate to the next filter
 	 * @return {@code Mono<Void>} to indicate when request processing is complete
 	 */
 	@Override
@@ -96,8 +94,7 @@ public class HiddenHttpMethodFilter implements WebFilter {
 		Assert.notNull(httpMethod, () -> "HttpMethod '" + methodParamValue + "' not supported");
 		if (ALLOWED_METHODS.contains(httpMethod)) {
 			return exchange.mutate().request(builder -> builder.method(httpMethod)).build();
-		}
-		else {
+		} else {
 			return exchange;
 		}
 	}

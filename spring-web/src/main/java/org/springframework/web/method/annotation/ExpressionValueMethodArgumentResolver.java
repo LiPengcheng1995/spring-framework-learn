@@ -16,8 +16,6 @@
 
 package org.springframework.web.method.annotation;
 
-import javax.servlet.ServletException;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.core.MethodParameter;
@@ -25,6 +23,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.context.request.NativeWebRequest;
+
+import javax.servlet.ServletException;
 
 /**
  * Resolves method arguments annotated with {@code @Value}.
@@ -43,8 +43,8 @@ public class ExpressionValueMethodArgumentResolver extends AbstractNamedValueMet
 
 	/**
 	 * @param beanFactory a bean factory to use for resolving  ${...}
-	 * placeholder and #{...} SpEL expressions in default values;
-	 * or {@code null} if default values are not expected to contain expressions
+	 *                    placeholder and #{...} SpEL expressions in default values;
+	 *                    or {@code null} if default values are not expected to contain expressions
 	 */
 	public ExpressionValueMethodArgumentResolver(@Nullable ConfigurableBeanFactory beanFactory) {
 		super(beanFactory);

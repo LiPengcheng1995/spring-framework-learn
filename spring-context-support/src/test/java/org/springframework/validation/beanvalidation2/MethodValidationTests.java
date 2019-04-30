@@ -16,15 +16,7 @@
 
 package org.springframework.validation.beanvalidation2;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import javax.validation.Validator;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.NotNull;
-import javax.validation.groups.Default;
-
 import org.junit.Test;
-
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.FactoryBean;
@@ -40,6 +32,13 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.validation.beanvalidation.CustomValidatorBean;
 import org.springframework.validation.beanvalidation.MethodValidationInterceptor;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
+
+import javax.validation.Validator;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotNull;
+import javax.validation.groups.Default;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 import static org.junit.Assert.*;
 
@@ -75,22 +74,19 @@ public class MethodValidationTests {
 		try {
 			assertNotNull(proxy.myValidMethod("value", 15));
 			fail("Should have thrown ValidationException");
-		}
-		catch (javax.validation.ValidationException ex) {
+		} catch (javax.validation.ValidationException ex) {
 			// expected
 		}
 		try {
 			assertNotNull(proxy.myValidMethod(null, 5));
 			fail("Should have thrown ValidationException");
-		}
-		catch (javax.validation.ValidationException ex) {
+		} catch (javax.validation.ValidationException ex) {
 			// expected
 		}
 		try {
 			assertNotNull(proxy.myValidMethod("value", 0));
 			fail("Should have thrown ValidationException");
-		}
-		catch (javax.validation.ValidationException ex) {
+		} catch (javax.validation.ValidationException ex) {
 			// expected
 		}
 
@@ -98,15 +94,13 @@ public class MethodValidationTests {
 		try {
 			proxy.myValidAsyncMethod("value", 15);
 			fail("Should have thrown ValidationException");
-		}
-		catch (javax.validation.ValidationException ex) {
+		} catch (javax.validation.ValidationException ex) {
 			// expected
 		}
 		try {
 			proxy.myValidAsyncMethod(null, 5);
 			fail("Should have thrown ValidationException");
-		}
-		catch (javax.validation.ValidationException ex) {
+		} catch (javax.validation.ValidationException ex) {
 			// expected
 		}
 
@@ -114,8 +108,7 @@ public class MethodValidationTests {
 		try {
 			proxy.myGenericMethod(null);
 			fail("Should have thrown ValidationException");
-		}
-		catch (javax.validation.ValidationException ex) {
+		} catch (javax.validation.ValidationException ex) {
 			// expected
 		}
 	}
@@ -137,6 +130,37 @@ public class MethodValidationTests {
 	}
 
 
+	public interface MyValidInterface<T> {
+
+		@NotNull Object myValidMethod(@NotNull(groups = MyGroup.class) String arg1, @Max(10) int arg2);
+
+		@MyValid
+		@Async
+		void myValidAsyncMethod(@NotNull(groups = OtherGroup.class) String arg1, @Max(10) int arg2);
+
+		T myGenericMethod(@NotNull T value);
+	}
+
+
+	public interface MyGroup {
+	}
+
+
+	public interface OtherGroup {
+	}
+
+
+	@Validated({MyGroup.class, Default.class})
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface MyStereotype {
+	}
+
+
+	@Validated({OtherGroup.class, Default.class})
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface MyValid {
+	}
+
 	@MyStereotype
 	public static class MyValidBean implements MyValidInterface<String> {
 
@@ -154,7 +178,6 @@ public class MethodValidationTests {
 			return value;
 		}
 	}
-
 
 	@MyStereotype
 	public static class MyValidFactoryBean implements FactoryBean<String>, MyValidInterface<String> {
@@ -183,38 +206,6 @@ public class MethodValidationTests {
 			return value;
 		}
 	}
-
-
-	public interface MyValidInterface<T> {
-
-		@NotNull Object myValidMethod(@NotNull(groups = MyGroup.class) String arg1, @Max(10) int arg2);
-
-		@MyValid
-		@Async void myValidAsyncMethod(@NotNull(groups = OtherGroup.class) String arg1, @Max(10) int arg2);
-
-		T myGenericMethod(@NotNull T value);
-	}
-
-
-	public interface MyGroup {
-	}
-
-
-	public interface OtherGroup {
-	}
-
-
-	@Validated({MyGroup.class, Default.class})
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface MyStereotype {
-	}
-
-
-	@Validated({OtherGroup.class, Default.class})
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface MyValid {
-	}
-
 
 	@Configuration
 	public static class LazyMethodValidationConfig {

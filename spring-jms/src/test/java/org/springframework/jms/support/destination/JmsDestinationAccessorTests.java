@@ -16,12 +16,13 @@
 
 package org.springframework.jms.support.destination;
 
-import javax.jms.ConnectionFactory;
-
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import javax.jms.ConnectionFactory;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.mock;
 
 /**
  * @author Rick Evans
@@ -39,8 +40,7 @@ public class JmsDestinationAccessorTests {
 			accessor.setDestinationResolver(null);
 			accessor.afterPropertiesSet();
 			fail("expected IllegalArgumentException");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// expected
 		}
 
@@ -50,8 +50,8 @@ public class JmsDestinationAccessorTests {
 	public void testSessionTransactedModeReallyDoesDefaultToFalse() throws Exception {
 		JmsDestinationAccessor accessor = new StubJmsDestinationAccessor();
 		assertFalse("The [pubSubDomain] property of JmsDestinationAccessor must default to " +
-				"false (i.e. Queues are used by default). Change this test (and the " +
-				"attendant Javadoc) if you have changed the default.",
+						"false (i.e. Queues are used by default). Change this test (and the " +
+						"attendant Javadoc) if you have changed the default.",
 				accessor.isPubSubDomain());
 	}
 

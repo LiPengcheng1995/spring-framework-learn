@@ -25,15 +25,21 @@ import org.springframework.cache.support.AbstractCacheManager;
  * on explicitly through the {@link #setTransactionAware} bean property.
  *
  * @author Juergen Hoeller
- * @since 3.2
  * @see #setTransactionAware
  * @see TransactionAwareCacheDecorator
  * @see TransactionAwareCacheManagerProxy
+ * @since 3.2
  */
 public abstract class AbstractTransactionSupportingCacheManager extends AbstractCacheManager {
 
 	private boolean transactionAware = false;
 
+	/**
+	 * Return whether this CacheManager has been configured to be transaction-aware.
+	 */
+	public boolean isTransactionAware() {
+		return this.transactionAware;
+	}
 
 	/**
 	 * Set whether this CacheManager should expose transaction-aware Cache objects.
@@ -44,14 +50,6 @@ public abstract class AbstractTransactionSupportingCacheManager extends Abstract
 	public void setTransactionAware(boolean transactionAware) {
 		this.transactionAware = transactionAware;
 	}
-
-	/**
-	 * Return whether this CacheManager has been configured to be transaction-aware.
-	 */
-	public boolean isTransactionAware() {
-		return this.transactionAware;
-	}
-
 
 	@Override
 	protected Cache decorateCache(Cache cache) {

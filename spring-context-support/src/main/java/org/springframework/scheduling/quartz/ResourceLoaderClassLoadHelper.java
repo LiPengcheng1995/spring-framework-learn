@@ -16,14 +16,9 @@
 
 package org.springframework.scheduling.quartz;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.spi.ClassLoadHelper;
-
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -31,14 +26,18 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+
 /**
  * Wrapper that adapts from the Quartz {@link ClassLoadHelper} interface
  * onto Spring's {@link ResourceLoader} interface. Used by default when
  * the SchedulerFactoryBean runs in a Spring ApplicationContext.
  *
  * @author Juergen Hoeller
- * @since 2.5.5
  * @see SchedulerFactoryBean#setApplicationContext
+ * @since 2.5.5
  */
 public class ResourceLoaderClassLoadHelper implements ClassLoadHelper {
 
@@ -51,6 +50,7 @@ public class ResourceLoaderClassLoadHelper implements ClassLoadHelper {
 	/**
 	 * Create a new ResourceLoaderClassLoadHelper for the default
 	 * ResourceLoader.
+	 *
 	 * @see SchedulerFactoryBean#getConfigTimeResourceLoader()
 	 */
 	public ResourceLoaderClassLoadHelper() {
@@ -58,6 +58,7 @@ public class ResourceLoaderClassLoadHelper implements ClassLoadHelper {
 
 	/**
 	 * Create a new ResourceLoaderClassLoadHelper for the given ResourceLoader.
+	 *
 	 * @param resourceLoader the ResourceLoader to delegate to
 	 */
 	public ResourceLoaderClassLoadHelper(@Nullable ResourceLoader resourceLoader) {
@@ -94,15 +95,13 @@ public class ResourceLoaderClassLoadHelper implements ClassLoadHelper {
 		if (resource.exists()) {
 			try {
 				return resource.getURL();
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				if (logger.isWarnEnabled()) {
 					logger.warn("Could not load " + resource);
 				}
 				return null;
 			}
-		}
-		else {
+		} else {
 			return getClassLoader().getResource(name);
 		}
 	}
@@ -115,15 +114,13 @@ public class ResourceLoaderClassLoadHelper implements ClassLoadHelper {
 		if (resource.exists()) {
 			try {
 				return resource.getInputStream();
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				if (logger.isWarnEnabled()) {
 					logger.warn("Could not load " + resource);
 				}
 				return null;
 			}
-		}
-		else {
+		} else {
 			return getClassLoader().getResourceAsStream(name);
 		}
 	}

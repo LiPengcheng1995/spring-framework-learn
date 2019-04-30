@@ -16,33 +16,22 @@
 
 package org.springframework.jms.listener.adapter;
 
-import javax.jms.BytesMessage;
-import javax.jms.Destination;
-import javax.jms.InvalidDestinationException;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.jms.listener.SessionAwareMessageListener;
 import org.springframework.jms.support.JmsHeaderMapper;
 import org.springframework.jms.support.JmsUtils;
 import org.springframework.jms.support.QosSettings;
 import org.springframework.jms.support.SimpleJmsHeaderMapper;
-import org.springframework.jms.support.converter.MessageConversionException;
-import org.springframework.jms.support.converter.MessageConverter;
-import org.springframework.jms.support.converter.MessagingMessageConverter;
-import org.springframework.jms.support.converter.SimpleMessageConverter;
-import org.springframework.jms.support.converter.SmartMessageConverter;
+import org.springframework.jms.support.converter.*;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.util.Assert;
+
+import javax.jms.*;
+import java.lang.IllegalStateException;
 
 /**
  * An abstract JMS {@link MessageListener} adapter providing the necessary
@@ -50,26 +39,23 @@ import org.springframework.util.Assert;
  *
  * @author Juergen Hoeller
  * @author Stephane Nicoll
- * @since 4.1
  * @see MessageListener
  * @see SessionAwareMessageListener
+ * @since 4.1
  */
 public abstract class AbstractAdaptableMessageListener
 		implements MessageListener, SessionAwareMessageListener<Message> {
 
-	/** Logger available to subclasses */
+	/**
+	 * Logger available to subclasses
+	 */
 	protected final Log logger = LogFactory.getLog(getClass());
-
+	private final MessagingMessageConverterAdapter messagingMessageConverter = new MessagingMessageConverterAdapter();
 	@Nullable
 	private Object defaultResponseDestination;
-
 	private DestinationResolver destinationResolver = new DynamicDestinationResolver();
-
 	@Nullable
 	private MessageConverter messageConverter = new SimpleMessageConverter();
-
-	private final MessagingMessageConverterAdapter messagingMessageConverter = new MessagingMessageConverterAdapter();
-
 	@Nullable
 	private QosSettings responseQosSettings;
 
@@ -82,6 +68,7 @@ public abstract class AbstractAdaptableMessageListener
 	 * response destination.
 	 * <p>Alternatively, specify a "defaultResponseQueueName" or "defaultResponseTopicName",
 	 * to be dynamically resolved via the DestinationResolver.
+	 *
 	 * @see #setDefaultResponseQueueName(String)
 	 * @see #setDefaultResponseTopicName(String)
 	 * @see #getResponseDestination
@@ -95,6 +82,7 @@ public abstract class AbstractAdaptableMessageListener
 	 * This will be applied in case of a request message that does not carry a
 	 * "JMSReplyTo" field.
 	 * <p>Alternatively, specify a JMS Destination object as "defaultResponseDestination".
+	 *
 	 * @see #setDestinationResolver
 	 * @see #setDefaultResponseDestination(javax.jms.Destination)
 	 */
@@ -107,6 +95,7 @@ public abstract class AbstractAdaptableMessageListener
 	 * This will be applied in case of a request message that does not carry a
 	 * "JMSReplyTo" field.
 	 * <p>Alternatively, specify a JMS Destination object as "defaultResponseDestination".
+	 *
 	 * @see #setDestinationResolver
 	 * @see #setDefaultResponseDestination(javax.jms.Destination)
 	 */
@@ -115,10 +104,18 @@ public abstract class AbstractAdaptableMessageListener
 	}
 
 	/**
+	 * Return the DestinationResolver for this adapter.
+	 */
+	protected DestinationResolver getDestinationResolver() {
+		return this.destinationResolver;
+	}
+
+	/**
 	 * Set the DestinationResolver that should be used to resolve response
 	 * destination names for this adapter.
 	 * <p>The default resolver is a DynamicDestinationResolver. Specify a
 	 * JndiDestinationResolver for resolving destination names as JNDI locations.
+	 *
 	 * @see org.springframework.jms.support.destination.DynamicDestinationResolver
 	 * @see org.springframework.jms.support.destination.JndiDestinationResolver
 	 */
@@ -128,10 +125,13 @@ public abstract class AbstractAdaptableMessageListener
 	}
 
 	/**
-	 * Return the DestinationResolver for this adapter.
+	 * Return the converter that will convert incoming JMS messages to
+	 * listener method arguments, and objects returned from listener
+	 * methods back to JMS messages.
 	 */
-	protected DestinationResolver getDestinationResolver() {
-		return this.destinationResolver;
+	@Nullable
+	protected MessageConverter getMessageConverter() {
+		return this.messageConverter;
 	}
 
 	/**
@@ -148,18 +148,9 @@ public abstract class AbstractAdaptableMessageListener
 	}
 
 	/**
-	 * Return the converter that will convert incoming JMS messages to
-	 * listener method arguments, and objects returned from listener
-	 * methods back to JMS messages.
-	 */
-	@Nullable
-	protected MessageConverter getMessageConverter() {
-		return this.messageConverter;
-	}
-
-	/**
 	 * Set the {@link JmsHeaderMapper} implementation to use to map the standard
 	 * JMS headers. By default, a {@link SimpleJmsHeaderMapper} is used.
+	 *
 	 * @see SimpleJmsHeaderMapper
 	 */
 	public void setHeaderMapper(JmsHeaderMapper headerMapper) {
@@ -176,19 +167,9 @@ public abstract class AbstractAdaptableMessageListener
 	}
 
 	/**
-	 * Set the {@link QosSettings} to use when sending a response. Can be set to
-	 * {@code null} to indicate that the broker's defaults should be used.
-	 * @param responseQosSettings the QoS settings to use when sending a response or
-	 * {@code null} to use the default values.
-	 * @since 5.0
-	 */
-	public void setResponseQosSettings(@Nullable QosSettings responseQosSettings) {
-		this.responseQosSettings = responseQosSettings;
-	}
-
-	/**
 	 * Return the {@link QosSettings} to use when sending a response,
 	 * or {@code null} if the defaults should be used.
+	 *
 	 * @since 5.0
 	 */
 	@Nullable
@@ -196,6 +177,17 @@ public abstract class AbstractAdaptableMessageListener
 		return this.responseQosSettings;
 	}
 
+	/**
+	 * Set the {@link QosSettings} to use when sending a response. Can be set to
+	 * {@code null} to indicate that the broker's defaults should be used.
+	 *
+	 * @param responseQosSettings the QoS settings to use when sending a response or
+	 *                            {@code null} to use the default values.
+	 * @since 5.0
+	 */
+	public void setResponseQosSettings(@Nullable QosSettings responseQosSettings) {
+		this.responseQosSettings = responseQosSettings;
+	}
 
 	/**
 	 * Standard JMS {@link MessageListener} entry point.
@@ -206,6 +198,7 @@ public abstract class AbstractAdaptableMessageListener
 	 * result objects returned from listener methods. Use the
 	 * {@link SessionAwareMessageListener} entry point (typically through a Spring
 	 * message listener container) for handling result objects as well.
+	 *
 	 * @param message the incoming JMS message
 	 * @see #handleListenerException
 	 * @see #onMessage(javax.jms.Message, javax.jms.Session)
@@ -214,8 +207,7 @@ public abstract class AbstractAdaptableMessageListener
 	public void onMessage(Message message) {
 		try {
 			onMessage(message, null);
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			handleListenerException(ex);
 		}
 	}
@@ -229,6 +221,7 @@ public abstract class AbstractAdaptableMessageListener
 	 * <p>This method only applies when used as standard JMS {@link MessageListener}.
 	 * In case of the Spring {@link SessionAwareMessageListener} mechanism,
 	 * exceptions get handled by the caller instead.
+	 *
 	 * @param ex the exception to handle
 	 * @see #onMessage(javax.jms.Message)
 	 */
@@ -239,20 +232,20 @@ public abstract class AbstractAdaptableMessageListener
 
 	/**
 	 * Extract the message body from the given JMS message.
+	 *
 	 * @param message the JMS {@code Message}
 	 * @return the content of the message, to be passed into the listener method
 	 * as an argument
 	 * @throws MessageConversionException if the message could not be extracted
 	 */
-	protected Object extractMessage(Message message)  {
+	protected Object extractMessage(Message message) {
 		try {
 			MessageConverter converter = getMessageConverter();
 			if (converter != null) {
 				return converter.fromMessage(message);
 			}
 			return message;
-		}
-		catch (JMSException ex) {
+		} catch (JMSException ex) {
 			throw new MessageConversionException("Could not convert JMS message", ex);
 		}
 	}
@@ -260,7 +253,8 @@ public abstract class AbstractAdaptableMessageListener
 	/**
 	 * Handle the given result object returned from the listener method,
 	 * sending a response message back.
-	 * @param result the result object to handle (never {@code null})
+	 *
+	 * @param result  the result object to handle (never {@code null})
 	 * @param request the original request message
 	 * @param session the JMS Session to operate on (may be {@code null})
 	 * @throws ReplyFailureException if the response message could not be sent
@@ -280,13 +274,10 @@ public abstract class AbstractAdaptableMessageListener
 				postProcessResponse(request, response);
 				Destination destination = getResponseDestination(request, response, session, result);
 				sendResponse(session, destination, response);
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				throw new ReplyFailureException("Failed to send reply with payload [" + result + "]", ex);
 			}
-		}
-
-		else {
+		} else {
 			// No JMS Session available
 			if (logger.isWarnEnabled()) {
 				logger.warn("Listener method returned result [" + result +
@@ -297,8 +288,9 @@ public abstract class AbstractAdaptableMessageListener
 
 	/**
 	 * Build a JMS message to be sent as response based on the given result object.
+	 *
 	 * @param session the JMS Session to operate on
-	 * @param result the content of the message, as returned from the listener method
+	 * @param result  the content of the message, as returned from the listener method
 	 * @return the JMS {@code Message} (never {@code null})
 	 * @throws JMSException if thrown by JMS API methods
 	 * @see #setMessageConverter
@@ -311,8 +303,7 @@ public abstract class AbstractAdaptableMessageListener
 		if (converter != null) {
 			if (content instanceof org.springframework.messaging.Message) {
 				return this.messagingMessageConverter.toMessage(content, session);
-			}
-			else {
+			} else {
 				return converter.toMessage(content, session);
 			}
 		}
@@ -326,6 +317,7 @@ public abstract class AbstractAdaptableMessageListener
 
 	/**
 	 * Pre-process the given result before it is converted to a {@link Message}.
+	 *
 	 * @param result the result of the invocation
 	 * @return the payload response to handle, either the {@code result} argument
 	 * or any other object (for instance wrapping the result).
@@ -340,7 +332,8 @@ public abstract class AbstractAdaptableMessageListener
 	 * <p>The default implementation sets the response's correlation id
 	 * to the request message's correlation id, if any; otherwise to the
 	 * request message id.
-	 * @param request the original incoming JMS message
+	 *
+	 * @param request  the original incoming JMS message
 	 * @param response the outgoing JMS message about to be sent
 	 * @throws JMSException if thrown by JMS API methods
 	 * @see javax.jms.Message#setJMSCorrelationID
@@ -374,11 +367,12 @@ public abstract class AbstractAdaptableMessageListener
 	 * {@link #resolveDefaultResponseDestination default response destination}
 	 * is returned; if this too is {@code null}, then an
 	 * {@link javax.jms.InvalidDestinationException} is thrown.
-	 * @param request the original incoming JMS message
+	 *
+	 * @param request  the original incoming JMS message
 	 * @param response the outgoing JMS message about to be sent
-	 * @param session the JMS Session to operate on
+	 * @param session  the JMS Session to operate on
 	 * @return the response destination (never {@code null})
-	 * @throws JMSException if thrown by JMS API methods
+	 * @throws JMSException                          if thrown by JMS API methods
 	 * @throws javax.jms.InvalidDestinationException if no {@link Destination} can be determined
 	 * @see #setDefaultResponseDestination
 	 * @see javax.jms.Message#getJMSReplyTo()
@@ -400,6 +394,7 @@ public abstract class AbstractAdaptableMessageListener
 	/**
 	 * Resolve the default response destination into a JMS {@link Destination}, using this
 	 * accessor's {@link DestinationResolver} in case of a destination name.
+	 *
 	 * @return the located {@link Destination}
 	 * @throws javax.jms.JMSException if resolution failed
 	 * @see #setDefaultResponseDestination
@@ -421,9 +416,10 @@ public abstract class AbstractAdaptableMessageListener
 
 	/**
 	 * Send the given response message to the given destination.
-	 * @param response the JMS message to send
+	 *
+	 * @param response    the JMS message to send
 	 * @param destination the JMS destination to send to
-	 * @param session the JMS session to operate on
+	 * @param session     the JMS session to operate on
 	 * @throws JMSException if thrown by JMS API methods
 	 * @see #postProcessProducer
 	 * @see javax.jms.Session#createProducer
@@ -437,12 +433,10 @@ public abstract class AbstractAdaptableMessageListener
 			if (settings != null) {
 				producer.send(response, settings.getDeliveryMode(), settings.getPriority(),
 						settings.getTimeToLive());
-			}
-			else {
+			} else {
 				producer.send(response);
 			}
-		}
-		finally {
+		} finally {
 			JmsUtils.closeMessageProducer(producer);
 		}
 	}
@@ -450,6 +444,7 @@ public abstract class AbstractAdaptableMessageListener
 	/**
 	 * Post-process the given message producer before using it to send the response.
 	 * <p>The default implementation is empty.
+	 *
 	 * @param producer the JMS message producer that will be used to send the message
 	 * @param response the outgoing JMS message about to be sent
 	 * @throws JMSException if thrown by JMS API methods
@@ -457,6 +452,21 @@ public abstract class AbstractAdaptableMessageListener
 	protected void postProcessProducer(MessageProducer producer, Message response) throws JMSException {
 	}
 
+	/**
+	 * Internal class combining a destination name
+	 * and its target destination type (queue or topic).
+	 */
+	private static class DestinationNameHolder {
+
+		public final String name;
+
+		public final boolean isTopic;
+
+		public DestinationNameHolder(String name, boolean isTopic) {
+			this.name = name;
+			this.isTopic = isTopic;
+		}
+	}
 
 	/**
 	 * A {@link MessagingMessageConverter} that lazily invoke payload extraction and
@@ -479,8 +489,7 @@ public abstract class AbstractAdaptableMessageListener
 					// In case the BytesMessage is going to be received as a user argument:
 					// reset it, otherwise it would appear empty to such processing code...
 					((BytesMessage) message).reset();
-				}
-				catch (JMSException ex) {
+				} catch (JMSException ex) {
 					// Continue since the BytesMessage typically won't be used any further.
 					logger.debug("Failed to reset BytesMessage after payload extraction", ex);
 				}
@@ -523,8 +532,7 @@ public abstract class AbstractAdaptableMessageListener
 				if (this.payload == null) {
 					try {
 						this.payload = unwrapPayload();
-					}
-					catch (JMSException ex) {
+					} catch (JMSException ex) {
 						throw new MessageConversionException(
 								"Failed to extract payload from [" + this.message + "]", ex);
 					}
@@ -536,6 +544,7 @@ public abstract class AbstractAdaptableMessageListener
 			 * Extract the payload of the current message. Since we deferred the resolution
 			 * of the payload, a custom converter may still return a full message for it. In
 			 * this case, its payload is returned.
+			 *
 			 * @return the payload of the message
 			 */
 			private Object unwrapPayload() throws JMSException {
@@ -553,23 +562,6 @@ public abstract class AbstractAdaptableMessageListener
 				}
 				return this.headers;
 			}
-		}
-	}
-
-
-	/**
-	 * Internal class combining a destination name
-	 * and its target destination type (queue or topic).
-	 */
-	private static class DestinationNameHolder {
-
-		public final String name;
-
-		public final boolean isTopic;
-
-		public DestinationNameHolder(String name, boolean isTopic) {
-			this.name = name;
-			this.isTopic = isTopic;
 		}
 	}
 

@@ -16,15 +16,15 @@
 
 package org.springframework.cache.jcache;
 
-import java.util.concurrent.Callable;
+import org.springframework.cache.support.AbstractValueAdaptingCache;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+
 import javax.cache.Cache;
 import javax.cache.processor.EntryProcessor;
 import javax.cache.processor.EntryProcessorException;
 import javax.cache.processor.MutableEntry;
-
-import org.springframework.cache.support.AbstractValueAdaptingCache;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
+import java.util.concurrent.Callable;
 
 /**
  * {@link org.springframework.cache.Cache} implementation on top of a
@@ -43,6 +43,7 @@ public class JCacheCache extends AbstractValueAdaptingCache {
 
 	/**
 	 * Create an {@link org.springframework.cache.jcache.JCacheCache} instance.
+	 *
 	 * @param jcache backing JCache Cache instance
 	 */
 	public JCacheCache(Cache<Object, Object> jcache) {
@@ -51,7 +52,8 @@ public class JCacheCache extends AbstractValueAdaptingCache {
 
 	/**
 	 * Create an {@link org.springframework.cache.jcache.JCacheCache} instance.
-	 * @param jcache backing JCache Cache instance
+	 *
+	 * @param jcache          backing JCache Cache instance
 	 * @param allowNullValues whether to accept and convert null values for this cache
 	 */
 	public JCacheCache(Cache<Object, Object> jcache, boolean allowNullValues) {
@@ -82,8 +84,7 @@ public class JCacheCache extends AbstractValueAdaptingCache {
 	public <T> T get(Object key, Callable<T> valueLoader) {
 		try {
 			return this.cache.invoke(key, new ValueLoaderEntryProcessor<T>(), valueLoader);
-		}
-		catch (EntryProcessorException ex) {
+		} catch (EntryProcessorException ex) {
 			throw new ValueRetrievalException(key, valueLoader, ex.getCause());
 		}
 	}
@@ -120,13 +121,11 @@ public class JCacheCache extends AbstractValueAdaptingCache {
 			Callable<T> valueLoader = (Callable<T>) arguments[0];
 			if (entry.exists()) {
 				return (T) fromStoreValue(entry.getValue());
-			}
-			else {
+			} else {
 				T value;
 				try {
 					value = valueLoader.call();
-				}
-				catch (Exception ex) {
+				} catch (Exception ex) {
 					throw new EntryProcessorException("Value loader '" + valueLoader + "' failed " +
 							"to compute  value for key '" + entry.getKey() + "'", ex);
 				}

@@ -16,10 +16,6 @@
 
 package org.springframework.web.method.support;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.ui.Model;
@@ -27,6 +23,10 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.support.BindingAwareModelMap;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.bind.support.SimpleSessionStatus;
+
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Records model and view related decisions made by
@@ -49,27 +49,18 @@ import org.springframework.web.bind.support.SimpleSessionStatus;
  */
 public class ModelAndViewContainer {
 
+	private final ModelMap defaultModel = new BindingAwareModelMap();
+	private final Set<String> noBinding = new HashSet<>(4);
+	private final Set<String> bindingDisabled = new HashSet<>(4);
+	private final SessionStatus sessionStatus = new SimpleSessionStatus();
 	private boolean ignoreDefaultModelOnRedirect = false;
-
 	@Nullable
 	private Object view;
-
-	private final ModelMap defaultModel = new BindingAwareModelMap();
-
 	@Nullable
 	private ModelMap redirectModel;
-
 	private boolean redirectModelScenario = false;
-
 	@Nullable
 	private HttpStatus status;
-
-	private final Set<String> noBinding = new HashSet<>(4);
-
-	private final Set<String> bindingDisabled = new HashSet<>(4);
-
-	private final SessionStatus sessionStatus = new SimpleSessionStatus();
-
 	private boolean requestHandled = false;
 
 
@@ -90,14 +81,6 @@ public class ModelAndViewContainer {
 	}
 
 	/**
-	 * Set a view name to be resolved by the DispatcherServlet via a ViewResolver.
-	 * Will override any pre-existing view name or View.
-	 */
-	public void setViewName(@Nullable String viewName) {
-		this.view = viewName;
-	}
-
-	/**
 	 * Return the view name to be resolved by the DispatcherServlet via a
 	 * ViewResolver, or {@code null} if a View object is set.
 	 */
@@ -107,11 +90,11 @@ public class ModelAndViewContainer {
 	}
 
 	/**
-	 * Set a View object to be used by the DispatcherServlet.
+	 * Set a view name to be resolved by the DispatcherServlet via a ViewResolver.
 	 * Will override any pre-existing view name or View.
 	 */
-	public void setView(@Nullable Object view) {
-		this.view = view;
+	public void setViewName(@Nullable String viewName) {
+		this.view = viewName;
 	}
 
 	/**
@@ -121,6 +104,14 @@ public class ModelAndViewContainer {
 	@Nullable
 	public Object getView() {
 		return this.view;
+	}
+
+	/**
+	 * Set a View object to be used by the DispatcherServlet.
+	 * Will override any pre-existing view name or View.
+	 */
+	public void setView(@Nullable Object view) {
+		this.view = view;
 	}
 
 	/**
@@ -140,8 +131,7 @@ public class ModelAndViewContainer {
 	public ModelMap getModel() {
 		if (useDefaultModel()) {
 			return this.defaultModel;
-		}
-		else {
+		} else {
 			if (this.redirectModel == null) {
 				this.redirectModel = new ModelMap();
 			}
@@ -163,6 +153,7 @@ public class ModelAndViewContainer {
 	 * model (redirect URL preparation). Use of this method may be needed for
 	 * advanced cases when access to the "default" model is needed regardless,
 	 * e.g. to save model attributes specified via {@code @SessionAttributes}.
+	 *
 	 * @return the default model (never {@code null})
 	 * @since 4.1.4
 	 */
@@ -189,16 +180,8 @@ public class ModelAndViewContainer {
 	}
 
 	/**
-	 * Provide an HTTP status that will be passed on to with the
-	 * {@code ModelAndView} used for view rendering purposes.
-	 * @since 4.3
-	 */
-	public void setStatus(@Nullable HttpStatus status) {
-		this.status = status;
-	}
-
-	/**
 	 * Return the configured HTTP status, if any.
+	 *
 	 * @since 4.3
 	 */
 	@Nullable
@@ -207,8 +190,19 @@ public class ModelAndViewContainer {
 	}
 
 	/**
+	 * Provide an HTTP status that will be passed on to with the
+	 * {@code ModelAndView} used for view rendering purposes.
+	 *
+	 * @since 4.3
+	 */
+	public void setStatus(@Nullable HttpStatus status) {
+		this.status = status;
+	}
+
+	/**
 	 * Programmatically register an attribute for which data binding should not occur,
 	 * not even for a subsequent {@code @ModelAttribute} declaration.
+	 *
 	 * @param attributeName the name of the attribute
 	 * @since 4.3
 	 */
@@ -218,6 +212,7 @@ public class ModelAndViewContainer {
 
 	/**
 	 * Whether binding is disabled for the given model attribute.
+	 *
 	 * @since 4.3
 	 */
 	public boolean isBindingDisabled(String name) {
@@ -229,14 +224,14 @@ public class ModelAndViewContainer {
 	 * corresponding to an {@code @ModelAttribute(binding=true/false)} declaration.
 	 * <p>Note: While this flag will be taken into account by {@link #isBindingDisabled},
 	 * a hard {@link #setBindingDisabled} declaration will always override it.
+	 *
 	 * @param attributeName the name of the attribute
 	 * @since 4.3.13
 	 */
 	public void setBinding(String attributeName, boolean enabled) {
 		if (!enabled) {
 			this.noBinding.add(attributeName);
-		}
-		else {
+		} else {
 			this.noBinding.remove(attributeName);
 		}
 	}
@@ -250,6 +245,13 @@ public class ModelAndViewContainer {
 	}
 
 	/**
+	 * Whether the request has been handled fully within the handler.
+	 */
+	public boolean isRequestHandled() {
+		return this.requestHandled;
+	}
+
+	/**
 	 * Whether the request has been handled fully within the handler, e.g.
 	 * {@code @ResponseBody} method, and therefore view resolution is not
 	 * necessary. This flag can also be set when controller methods declare an
@@ -258,13 +260,6 @@ public class ModelAndViewContainer {
 	 */
 	public void setRequestHandled(boolean requestHandled) {
 		this.requestHandled = requestHandled;
-	}
-
-	/**
-	 * Whether the request has been handled fully within the handler.
-	 */
-	public boolean isRequestHandled() {
-		return this.requestHandled;
 	}
 
 	/**
@@ -334,19 +329,16 @@ public class ModelAndViewContainer {
 		if (!isRequestHandled()) {
 			if (isViewReference()) {
 				sb.append("reference to view with name '").append(this.view).append("'");
-			}
-			else {
+			} else {
 				sb.append("View is [").append(this.view).append(']');
 			}
 			if (useDefaultModel()) {
 				sb.append("; default model ");
-			}
-			else {
+			} else {
 				sb.append("; redirect model ");
 			}
 			sb.append(getModel());
-		}
-		else {
+		} else {
 			sb.append("Request handled directly");
 		}
 		return sb.toString();

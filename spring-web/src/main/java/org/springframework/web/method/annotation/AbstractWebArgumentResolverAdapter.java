@@ -18,7 +18,6 @@ package org.springframework.web.method.annotation;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
@@ -74,12 +73,10 @@ public abstract class AbstractWebArgumentResolverAdapter implements HandlerMetho
 			Object result = this.adaptee.resolveArgument(parameter, webRequest);
 			if (result == WebArgumentResolver.UNRESOLVED) {
 				return false;
-			}
-			else {
+			} else {
 				return ClassUtils.isAssignableValue(parameter.getParameterType(), result);
 			}
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			// ignore (see class-level doc)
 			logger.debug("Error in checking support for parameter [" + parameter + "], message: " + ex.getMessage());
 			return false;
@@ -88,21 +85,22 @@ public abstract class AbstractWebArgumentResolverAdapter implements HandlerMetho
 
 	/**
 	 * Delegate to the {@link WebArgumentResolver} instance.
+	 *
 	 * @throws IllegalStateException if the resolved value is not assignable
-	 * to the method parameter.
+	 *                               to the method parameter.
 	 */
 	@Override
 	@Nullable
 	public Object resolveArgument(MethodParameter parameter, @Nullable ModelAndViewContainer mavContainer,
-			NativeWebRequest webRequest, @Nullable WebDataBinderFactory binderFactory) throws Exception {
+								  NativeWebRequest webRequest, @Nullable WebDataBinderFactory binderFactory) throws Exception {
 
 		Class<?> paramType = parameter.getParameterType();
 		Object result = this.adaptee.resolveArgument(parameter, webRequest);
 		if (result == WebArgumentResolver.UNRESOLVED || !ClassUtils.isAssignableValue(paramType, result)) {
 			throw new IllegalStateException(
 					"Standard argument type [" + paramType.getName() + "] in method " + parameter.getMethod() +
-					"resolved to incompatible value of type [" + (result != null ? result.getClass() : null) +
-					"]. Consider declaring the argument type in a less specific fashion.");
+							"resolved to incompatible value of type [" + (result != null ? result.getClass() : null) +
+							"]. Consider declaring the argument type in a less specific fashion.");
 		}
 		return result;
 	}

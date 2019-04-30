@@ -34,7 +34,7 @@ abstract class PathElement {
 
 	protected static final int CAPTURE_VARIABLE_WEIGHT = 1;
 
-	protected static final MultiValueMap<String,String> NO_PARAMETERS = new LinkedMultiValueMap<>();
+	protected static final MultiValueMap<String, String> NO_PARAMETERS = new LinkedMultiValueMap<>();
 
 	// Position in the pattern where this path element starts
 	protected final int pos;
@@ -53,7 +53,8 @@ abstract class PathElement {
 
 	/**
 	 * Create a new path element.
-	 * @param pos the position where this path element starts in the pattern data
+	 *
+	 * @param pos       the position where this path element starts in the pattern data
 	 * @param separator the separator in use in the path pattern
 	 */
 	PathElement(int pos, char separator) {
@@ -64,7 +65,8 @@ abstract class PathElement {
 
 	/**
 	 * Attempt to match this path element.
-	 * @param candidatePos the current position within the candidate path
+	 *
+	 * @param candidatePos    the current position within the candidate path
 	 * @param matchingContext encapsulates context for the match including the candidate
 	 * @return {@code true} if it matches, otherwise {@code false}
 	 */

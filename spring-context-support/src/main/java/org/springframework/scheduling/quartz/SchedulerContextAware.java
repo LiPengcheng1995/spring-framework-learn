@@ -17,7 +17,6 @@
 package org.springframework.scheduling.quartz;
 
 import org.quartz.SchedulerContext;
-
 import org.springframework.beans.factory.Aware;
 
 /**
@@ -30,14 +29,15 @@ import org.springframework.beans.factory.Aware;
  *
  * @author Juergen Hoeller
  * @author Chris Beams
- * @since 2.0
  * @see org.quartz.spi.JobFactory
  * @see SchedulerFactoryBean#setJobFactory
+ * @since 2.0
  */
 public interface SchedulerContextAware extends Aware {
 
 	/**
 	 * Set the SchedulerContext of the current Quartz Scheduler.
+	 *
 	 * @see org.quartz.Scheduler#getContext()
 	 */
 	void setSchedulerContext(SchedulerContext schedulerContext);
