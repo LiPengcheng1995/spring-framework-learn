@@ -16,23 +16,19 @@
 
 package org.springframework.web.socket.server.standard;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.websocket.Decoder;
-import javax.websocket.Encoder;
-import javax.websocket.Endpoint;
-import javax.websocket.Extension;
-import javax.websocket.HandshakeResponse;
-import javax.websocket.server.HandshakeRequest;
-import javax.websocket.server.ServerEndpointConfig;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.web.socket.handler.BeanCreatingHandlerProvider;
+
+import javax.websocket.*;
+import javax.websocket.server.HandshakeRequest;
+import javax.websocket.server.ServerEndpointConfig;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * An implementation of {@link javax.websocket.server.ServerEndpointConfig} for use in
@@ -50,8 +46,8 @@ import org.springframework.web.socket.handler.BeanCreatingHandlerProvider;
  *
  * @author Rossen Stoyanchev
  * @author Juergen Hoeller
- * @since 4.0
  * @see ServerEndpointExporter
+ * @since 4.0
  */
 public class ServerEndpointRegistration extends ServerEndpointConfig.Configurator
 		implements ServerEndpointConfig, BeanFactoryAware {
@@ -63,22 +59,18 @@ public class ServerEndpointRegistration extends ServerEndpointConfig.Configurato
 
 	@Nullable
 	private final BeanCreatingHandlerProvider<Endpoint> endpointProvider;
-
-	private List<String> subprotocols = new ArrayList<>(0);
-
-	private List<Extension> extensions = new ArrayList<>(0);
-
-	private List<Class<? extends Encoder>> encoders = new ArrayList<>(0);
-
-	private List<Class<? extends Decoder>> decoders = new ArrayList<>(0);
-
 	private final Map<String, Object> userProperties = new HashMap<>(4);
+	private List<String> subprotocols = new ArrayList<>(0);
+	private List<Extension> extensions = new ArrayList<>(0);
+	private List<Class<? extends Encoder>> encoders = new ArrayList<>(0);
+	private List<Class<? extends Decoder>> decoders = new ArrayList<>(0);
 
 
 	/**
 	 * Create a new {@link ServerEndpointRegistration} instance from an
 	 * {@code javax.websocket.Endpoint} instance.
-	 * @param path the endpoint path
+	 *
+	 * @param path     the endpoint path
 	 * @param endpoint the endpoint instance
 	 */
 	public ServerEndpointRegistration(String path, Endpoint endpoint) {
@@ -92,7 +84,8 @@ public class ServerEndpointRegistration extends ServerEndpointConfig.Configurato
 	/**
 	 * Create a new {@link ServerEndpointRegistration} instance from an
 	 * {@code javax.websocket.Endpoint} class.
-	 * @param path the endpoint path
+	 *
+	 * @param path          the endpoint path
 	 * @param endpointClass the endpoint class
 	 */
 	public ServerEndpointRegistration(String path, Class<? extends Endpoint> endpointClass) {
@@ -115,8 +108,7 @@ public class ServerEndpointRegistration extends ServerEndpointConfig.Configurato
 	public Class<? extends Endpoint> getEndpointClass() {
 		if (this.endpoint != null) {
 			return this.endpoint.getClass();
-		}
-		else {
+		} else {
 			Assert.state(this.endpointProvider != null, "No endpoint set");
 			return this.endpointProvider.getHandlerType();
 		}
@@ -125,15 +117,10 @@ public class ServerEndpointRegistration extends ServerEndpointConfig.Configurato
 	public Endpoint getEndpoint() {
 		if (this.endpoint != null) {
 			return this.endpoint;
-		}
-		else {
+		} else {
 			Assert.state(this.endpointProvider != null, "No endpoint set");
 			return this.endpointProvider.getHandler();
 		}
-	}
-
-	public void setSubprotocols(List<String> subprotocols) {
-		this.subprotocols = subprotocols;
 	}
 
 	@Override
@@ -141,8 +128,8 @@ public class ServerEndpointRegistration extends ServerEndpointConfig.Configurato
 		return this.subprotocols;
 	}
 
-	public void setExtensions(List<Extension> extensions) {
-		this.extensions = extensions;
+	public void setSubprotocols(List<String> subprotocols) {
+		this.subprotocols = subprotocols;
 	}
 
 	@Override
@@ -150,8 +137,8 @@ public class ServerEndpointRegistration extends ServerEndpointConfig.Configurato
 		return this.extensions;
 	}
 
-	public void setEncoders(List<Class<? extends Encoder>> encoders) {
-		this.encoders = encoders;
+	public void setExtensions(List<Extension> extensions) {
+		this.extensions = extensions;
 	}
 
 	@Override
@@ -159,8 +146,8 @@ public class ServerEndpointRegistration extends ServerEndpointConfig.Configurato
 		return this.encoders;
 	}
 
-	public void setDecoders(List<Class<? extends Decoder>> decoders) {
-		this.decoders = decoders;
+	public void setEncoders(List<Class<? extends Encoder>> encoders) {
+		this.encoders = encoders;
 	}
 
 	@Override
@@ -168,14 +155,18 @@ public class ServerEndpointRegistration extends ServerEndpointConfig.Configurato
 		return this.decoders;
 	}
 
-	public void setUserProperties(Map<String, Object> userProperties) {
-		this.userProperties.clear();
-		this.userProperties.putAll(userProperties);
+	public void setDecoders(List<Class<? extends Decoder>> decoders) {
+		this.decoders = decoders;
 	}
 
 	@Override
 	public Map<String, Object> getUserProperties() {
 		return this.userProperties;
+	}
+
+	public void setUserProperties(Map<String, Object> userProperties) {
+		this.userProperties.clear();
+		this.userProperties.putAll(userProperties);
 	}
 
 	@Override

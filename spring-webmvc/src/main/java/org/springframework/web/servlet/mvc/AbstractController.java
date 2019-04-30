@@ -16,15 +16,15 @@
 
 package org.springframework.web.servlet.mvc;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.WebContentGenerator;
 import org.springframework.web.util.WebUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * Convenient superclass for controller implementations, using the Template Method
@@ -108,15 +108,22 @@ public abstract class AbstractController extends WebContentGenerator implements 
 
 	/**
 	 * Create a new AbstractController.
+	 *
 	 * @param restrictDefaultSupportedMethods {@code true} if this
-	 * controller should support HTTP methods GET, HEAD and POST by default,
-	 * or {@code false} if it should be unrestricted
+	 *                                        controller should support HTTP methods GET, HEAD and POST by default,
+	 *                                        or {@code false} if it should be unrestricted
 	 * @since 4.3
 	 */
 	public AbstractController(boolean restrictDefaultSupportedMethods) {
 		super(restrictDefaultSupportedMethods);
 	}
 
+	/**
+	 * Return whether controller execution should be synchronized on the session.
+	 */
+	public final boolean isSynchronizeOnSession() {
+		return this.synchronizeOnSession;
+	}
 
 	/**
 	 * Set if controller execution should be synchronized on the session,
@@ -133,6 +140,7 @@ public abstract class AbstractController extends WebContentGenerator implements 
 	 * as well, since it will always be the same object reference for the
 	 * same active logical session. However, this is not guaranteed across
 	 * different servlet containers; the only 100% safe way is a session mutex.
+	 *
 	 * @see AbstractController#handleRequestInternal
 	 * @see org.springframework.web.util.HttpSessionMutexListener
 	 * @see org.springframework.web.util.WebUtils#getSessionMutex(javax.servlet.http.HttpSession)
@@ -140,14 +148,6 @@ public abstract class AbstractController extends WebContentGenerator implements 
 	public final void setSynchronizeOnSession(boolean synchronizeOnSession) {
 		this.synchronizeOnSession = synchronizeOnSession;
 	}
-
-	/**
-	 * Return whether controller execution should be synchronized on the session.
-	 */
-	public final boolean isSynchronizeOnSession() {
-		return this.synchronizeOnSession;
-	}
-
 
 	@Override
 	@Nullable
@@ -180,6 +180,7 @@ public abstract class AbstractController extends WebContentGenerator implements 
 	/**
 	 * Template method. Subclasses must implement this.
 	 * The contract is the same as for {@code handleRequest}.
+	 *
 	 * @see #handleRequest
 	 */
 	@Nullable

@@ -16,10 +16,10 @@
 
 package org.springframework.web.socket.sockjs.client;
 
-import java.net.URI;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.socket.TextMessage;
+
+import java.net.URI;
 
 /**
  * A SockJS {@link Transport} that uses HTTP requests to simulate a WebSocket
@@ -45,8 +45,9 @@ public interface XhrTransport extends Transport, InfoReceiver {
 	/**
 	 * Execute a request to send the message to the server.
 	 * <p>Note that as of 4.2 this method accepts a {@code headers} parameter.
+	 *
 	 * @param transportUrl the URL for sending messages.
-	 * @param message the message to send
+	 * @param message      the message to send
 	 */
 	void executeSendRequest(URI transportUrl, HttpHeaders headers, TextMessage message);
 

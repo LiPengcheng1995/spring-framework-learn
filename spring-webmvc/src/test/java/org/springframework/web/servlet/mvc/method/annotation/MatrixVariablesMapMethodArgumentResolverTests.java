@@ -16,14 +16,8 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.mock.web.test.MockHttpServletResponse;
@@ -35,9 +29,12 @@ import org.springframework.web.method.ResolvableMethod;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.HandlerMapping;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import static org.junit.Assert.*;
 import static org.springframework.web.method.MvcAnnotationPredicates.matrixAttribute;
 
 /**
@@ -47,16 +44,11 @@ import static org.springframework.web.method.MvcAnnotationPredicates.matrixAttri
  */
 public class MatrixVariablesMapMethodArgumentResolverTests {
 
-	private MatrixVariableMapMethodArgumentResolver resolver;
-
-	private ModelAndViewContainer mavContainer;
-
-	private ServletWebRequest webRequest;
-
-	private MockHttpServletRequest request;
-
 	private final ResolvableMethod testMethod = ResolvableMethod.on(this.getClass()).named("handle").build();
-
+	private MatrixVariableMapMethodArgumentResolver resolver;
+	private ModelAndViewContainer mavContainer;
+	private ServletWebRequest webRequest;
+	private MockHttpServletRequest request;
 
 	@Before
 	public void setup() throws Exception {
@@ -191,7 +183,7 @@ public class MatrixVariablesMapMethodArgumentResolverTests {
 			String stringArg,
 			@MatrixVariable Map<String, String> map,
 			@MatrixVariable MultiValueMap<String, String> multivalueMap,
-			@MatrixVariable(pathVar="cars") MultiValueMap<String, String> mapForPathVar,
+			@MatrixVariable(pathVar = "cars") MultiValueMap<String, String> mapForPathVar,
 			@MatrixVariable("name") Map<String, String> mapWithName) {
 	}
 

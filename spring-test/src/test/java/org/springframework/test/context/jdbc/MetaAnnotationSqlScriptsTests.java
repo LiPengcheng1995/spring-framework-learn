@@ -16,18 +16,17 @@
 
 package org.springframework.test.context.jdbc;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
 import org.junit.Test;
-
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
-import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.*;
-import static org.junit.Assert.*;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Integration tests that verify support for using {@link Sql @Sql} and
@@ -57,13 +56,13 @@ public class MetaAnnotationSqlScriptsTests extends AbstractTransactionalJUnit4Sp
 	}
 
 
-	@Sql({ "drop-schema.sql", "schema.sql", "data.sql" })
+	@Sql({"drop-schema.sql", "schema.sql", "data.sql"})
 	@Retention(RUNTIME)
 	@Target(METHOD)
 	static @interface MetaSql {
 	}
 
-	@SqlGroup({ @Sql("drop-schema.sql"), @Sql("schema.sql"), @Sql("data.sql") })
+	@SqlGroup({@Sql("drop-schema.sql"), @Sql("schema.sql"), @Sql("data.sql")})
 	@Retention(RUNTIME)
 	@Target(METHOD)
 	static @interface MetaSqlGroup {

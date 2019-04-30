@@ -16,16 +16,16 @@
 
 package org.springframework.messaging.handler.invocation;
 
+import org.springframework.core.ExceptionDepthComparator;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+import org.springframework.util.ConcurrentReferenceHashMap;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.core.ExceptionDepthComparator;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.ConcurrentReferenceHashMap;
 
 /**
  * Cache exception handling method mappings and provide options to look up a method
@@ -81,6 +81,7 @@ public abstract class AbstractExceptionHandlerMethodResolver {
 	/**
 	 * Find a {@link Method} to handle the given exception.
 	 * Use {@link ExceptionDepthComparator} if more than one match is found.
+	 *
 	 * @param exception the exception
 	 * @return a Method to handle the exception, or {@code null} if none found
 	 */
@@ -99,6 +100,7 @@ public abstract class AbstractExceptionHandlerMethodResolver {
 	/**
 	 * Find a {@link Method} to handle the given exception type. This can be
 	 * useful if an {@link Exception} instance is not available (e.g. for tools).
+	 *
 	 * @param exceptionType the exception type
 	 * @return a Method to handle the exception, or {@code null} if none found
 	 * @since 4.3.1
@@ -127,8 +129,7 @@ public abstract class AbstractExceptionHandlerMethodResolver {
 		if (!matches.isEmpty()) {
 			matches.sort(new ExceptionDepthComparator(exceptionType));
 			return this.mappedMethods.get(matches.get(0));
-		}
-		else {
+		} else {
 			return null;
 		}
 	}

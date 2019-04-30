@@ -15,12 +15,7 @@
  */
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.io.File;
-
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
+
+import java.io.File;
 
 import static org.junit.Assert.assertEquals;
 
@@ -75,8 +72,7 @@ public class ContextPathIntegrationTests {
 			url = "http://localhost:" + server.getPort() + "/webApp2/test";
 			actual = restTemplate.getForObject(url, String.class);
 			assertEquals("Tested in /webApp2", actual);
-		}
-		finally {
+		} finally {
 			server.stop();
 		}
 	}
@@ -105,12 +101,10 @@ public class ContextPathIntegrationTests {
 			String url = "http://localhost:" + server.getPort() + "/app/api/test";
 			actual = restTemplate.getForObject(url, String.class);
 			assertEquals("Tested in /app/api", actual);
-		}
-		finally {
+		} finally {
 			server.stop();
 		}
 	}
-
 
 
 	@EnableWebFlux

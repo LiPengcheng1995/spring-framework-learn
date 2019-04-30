@@ -16,8 +16,6 @@
 
 package org.springframework.web.socket.config.annotation;
 
-import java.util.Arrays;
-
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -29,6 +27,8 @@ import org.springframework.web.socket.server.HandshakeInterceptor;
 import org.springframework.web.socket.server.support.WebSocketHttpRequestHandler;
 import org.springframework.web.socket.sockjs.SockJsService;
 import org.springframework.web.socket.sockjs.support.SockJsHttpRequestHandler;
+
+import java.util.Arrays;
 
 /**
  * A helper class for configuring {@link WebSocketHandler} request handling
@@ -64,7 +64,7 @@ public class ServletWebSocketHandlerRegistration
 
 	@Override
 	protected void addSockJsServiceMapping(MultiValueMap<HttpRequestHandler, String> mappings,
-			SockJsService sockJsService, WebSocketHandler handler, String pathPattern) {
+										   SockJsService sockJsService, WebSocketHandler handler, String pathPattern) {
 
 		SockJsHttpRequestHandler httpHandler = new SockJsHttpRequestHandler(sockJsService, handler);
 		mappings.add(httpHandler, pathPattern);
@@ -72,8 +72,8 @@ public class ServletWebSocketHandlerRegistration
 
 	@Override
 	protected void addWebSocketHandlerMapping(MultiValueMap<HttpRequestHandler, String> mappings,
-			WebSocketHandler webSocketHandler, HandshakeHandler handshakeHandler,
-			HandshakeInterceptor[] interceptors, String path) {
+											  WebSocketHandler webSocketHandler, HandshakeHandler handshakeHandler,
+											  HandshakeInterceptor[] interceptors, String path) {
 
 		WebSocketHttpRequestHandler httpHandler =
 				new WebSocketHttpRequestHandler(webSocketHandler, handshakeHandler);

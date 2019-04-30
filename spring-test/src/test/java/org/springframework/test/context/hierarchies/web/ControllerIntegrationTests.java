@@ -16,11 +16,8 @@
 
 package org.springframework.test.context.hierarchies.web;
 
-import javax.servlet.ServletContext;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -33,6 +30,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.servlet.ServletContext;
+
 import static org.junit.Assert.*;
 
 /**
@@ -42,42 +41,21 @@ import static org.junit.Assert.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextHierarchy({
-	//
-	@ContextConfiguration(name = "root", classes = AppConfig.class),
-	@ContextConfiguration(name = "dispatcher", classes = WebConfig.class) //
+		//
+		@ContextConfiguration(name = "root", classes = AppConfig.class),
+		@ContextConfiguration(name = "dispatcher", classes = WebConfig.class) //
 })
 public class ControllerIntegrationTests {
 
-	@Configuration
-	static class AppConfig {
-
-		@Bean
-		public String foo() {
-			return "foo";
-		}
-	}
-
-	@Configuration
-	static class WebConfig {
-
-		@Bean
-		public String bar() {
-			return "bar";
-		}
-	}
-
-
-	// -------------------------------------------------------------------------
-
 	@Autowired
 	private WebApplicationContext wac;
-
 	@Autowired
 	private String foo;
 
+
+	// -------------------------------------------------------------------------
 	@Autowired
 	private String bar;
-
 
 	@Test
 	public void verifyRootWacSupport() {
@@ -98,6 +76,24 @@ public class ControllerIntegrationTests {
 
 		assertSame(root, rootServletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE));
 		assertSame(root, childServletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE));
+	}
+
+	@Configuration
+	static class AppConfig {
+
+		@Bean
+		public String foo() {
+			return "foo";
+		}
+	}
+
+	@Configuration
+	static class WebConfig {
+
+		@Bean
+		public String bar() {
+			return "bar";
+		}
 	}
 
 }

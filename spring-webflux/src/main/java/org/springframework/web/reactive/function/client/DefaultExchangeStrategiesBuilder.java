@@ -16,14 +16,14 @@
 
 package org.springframework.web.reactive.function.client;
 
+import org.springframework.http.codec.ClientCodecConfigurer;
+import org.springframework.http.codec.HttpMessageReader;
+import org.springframework.http.codec.HttpMessageWriter;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
-
-import org.springframework.http.codec.ClientCodecConfigurer;
-import org.springframework.http.codec.HttpMessageReader;
-import org.springframework.http.codec.HttpMessageWriter;
 
 /**
  * Default implementation of {@link ExchangeStrategies.Builder}.

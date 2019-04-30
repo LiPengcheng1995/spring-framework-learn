@@ -17,7 +17,6 @@
 package org.springframework.web.socket.sockjs.transport.handler;
 
 import org.junit.Test;
-
 import org.springframework.http.MediaType;
 import org.springframework.web.socket.AbstractHttpRequestTests;
 import org.springframework.web.socket.TextMessage;
@@ -106,8 +105,7 @@ public class HttpReceivingTransportHandlerTests extends AbstractHttpRequestTests
 			transportHandler.initialize(sockJsConfig);
 			transportHandler.handleRequest(this.request, this.response, wsHandler, session);
 			fail("Expected exception");
-		}
-		catch (SockJsMessageDeliveryException ex) {
+		} catch (SockJsMessageDeliveryException ex) {
 			assertNull(session.getCloseStatus());
 		}
 	}

@@ -16,19 +16,18 @@
 
 package org.springframework.web.reactive.result.view.freemarker;
 
-import java.io.IOException;
-import java.util.List;
-
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.lang.Nullable;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactory;
 import org.springframework.util.Assert;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Configures FreeMarker for web usage via the "configLocation" and/or
@@ -55,7 +54,7 @@ import org.springframework.util.Assert;
  * &lt;#import "/spring.ftl" as spring/&gt;
  * &lt;@spring.bind "person.age"/&gt;
  * age is ${spring.status.value}</pre>
- *
+ * <p>
  * Note: Spring's FreeMarker support requires FreeMarker 2.3 or higher.
  *
  * @author Rossen Stoyanchev
@@ -72,22 +71,11 @@ public class FreeMarkerConfigurer extends FreeMarkerConfigurationFactory
 		setDefaultEncoding("UTF-8");
 	}
 
-
-	/**
-	 * Set a pre-configured Configuration to use for the FreeMarker web config,
-	 * e.g. a shared one for web and email usage. If this is not set,
-	 * FreeMarkerConfigurationFactory's properties (inherited by this class)
-	 * have to be specified.
-	 */
-	public void setConfiguration(Configuration configuration) {
-		this.configuration = configuration;
-	}
-
-
 	/**
 	 * Initialize FreeMarkerConfigurationFactory's Configuration
 	 * if not overridden by a pre-configured FreeMarker Configuation.
 	 * <p>Sets up a ClassTemplateLoader to use for loading Spring macros.
+	 *
 	 * @see #createConfiguration
 	 * @see #setConfiguration
 	 */
@@ -108,7 +96,6 @@ public class FreeMarkerConfigurer extends FreeMarkerConfigurationFactory
 		logger.info("ClassTemplateLoader for Spring macros added to FreeMarker configuration");
 	}
 
-
 	/**
 	 * Return the Configuration object wrapped by this bean.
 	 */
@@ -116,6 +103,16 @@ public class FreeMarkerConfigurer extends FreeMarkerConfigurationFactory
 	public Configuration getConfiguration() {
 		Assert.state(this.configuration != null, "No Configuration available");
 		return this.configuration;
+	}
+
+	/**
+	 * Set a pre-configured Configuration to use for the FreeMarker web config,
+	 * e.g. a shared one for web and email usage. If this is not set,
+	 * FreeMarkerConfigurationFactory's properties (inherited by this class)
+	 * have to be specified.
+	 */
+	public void setConfiguration(Configuration configuration) {
+		this.configuration = configuration;
 	}
 
 }

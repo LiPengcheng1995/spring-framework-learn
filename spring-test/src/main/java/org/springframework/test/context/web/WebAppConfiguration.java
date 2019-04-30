@@ -16,12 +16,7 @@
 
 package org.springframework.test.context.web;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * {@code @WebAppConfiguration} is a class-level annotation that is used to
@@ -42,10 +37,10 @@ import java.lang.annotation.Target;
  * <em>meta-annotation</em> to create custom <em>composed annotations</em>.
  *
  * @author Sam Brannen
- * @since 3.2
  * @see org.springframework.web.context.WebApplicationContext
  * @see org.springframework.test.context.ContextConfiguration
  * @see ServletTestExecutionListener
+ * @since 3.2
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

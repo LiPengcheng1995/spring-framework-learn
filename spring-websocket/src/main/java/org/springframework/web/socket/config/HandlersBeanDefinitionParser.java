@@ -16,11 +16,6 @@
 
 package org.springframework.web.socket.config;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.w3c.dom.Element;
-
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -38,6 +33,10 @@ import org.springframework.web.socket.server.support.OriginHandshakeInterceptor;
 import org.springframework.web.socket.server.support.WebSocketHandlerMapping;
 import org.springframework.web.socket.server.support.WebSocketHttpRequestHandler;
 import org.springframework.web.socket.sockjs.support.SockJsHttpRequestHandler;
+import org.w3c.dom.Element;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Parses the configuration for the {@code <websocket:handlers/>} namespace element.
@@ -78,8 +77,7 @@ class HandlersBeanDefinitionParser implements BeanDefinitionParser {
 		HandlerMappingStrategy strategy;
 		if (sockJsService != null) {
 			strategy = new SockJsHandlerMappingStrategy(sockJsService);
-		}
-		else {
+		} else {
 			RuntimeBeanReference handler = WebSocketNamespaceUtils.registerHandshakeHandler(element, context, source);
 			Element interceptElem = DomUtils.getChildElementByTagName(element, "handshake-interceptors");
 			ManagedList<Object> interceptors = WebSocketNamespaceUtils.parseBeanSubElements(interceptElem, context);

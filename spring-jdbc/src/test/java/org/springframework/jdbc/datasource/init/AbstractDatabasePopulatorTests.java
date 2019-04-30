@@ -16,17 +16,18 @@
 
 package org.springframework.jdbc.datasource.init;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import org.junit.Test;
-
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Abstract base class for integration tests for {@link ResourceDatabasePopulator}
@@ -72,9 +73,9 @@ public abstract class AbstractDatabasePopulatorTests extends AbstractDatabaseIni
 		databasePopulator.addScript(resource("db-test-data-multiple.sql"));
 		DatabasePopulatorUtils.execute(databasePopulator, db);
 		assertThat(jdbcTemplate.queryForObject("select COUNT(NAME) from T_TEST where NAME='Keith'", Integer.class),
-			equalTo(1));
+				equalTo(1));
 		assertThat(jdbcTemplate.queryForObject("select COUNT(NAME) from T_TEST where NAME='Dave'", Integer.class),
-			equalTo(1));
+				equalTo(1));
 	}
 
 	@Test
@@ -84,9 +85,9 @@ public abstract class AbstractDatabasePopulatorTests extends AbstractDatabaseIni
 		databasePopulator.setSeparator("@@");
 		DatabasePopulatorUtils.execute(databasePopulator, db);
 		assertThat(jdbcTemplate.queryForObject("select COUNT(NAME) from T_TEST where NAME='Keith'", Integer.class),
-			equalTo(1));
+				equalTo(1));
 		assertThat(jdbcTemplate.queryForObject("select COUNT(NAME) from T_TEST where NAME='Dave'", Integer.class),
-			equalTo(1));
+				equalTo(1));
 	}
 
 	@Test
@@ -96,9 +97,9 @@ public abstract class AbstractDatabasePopulatorTests extends AbstractDatabaseIni
 		databasePopulator.setSeparator("/\n");
 		DatabasePopulatorUtils.execute(databasePopulator, db);
 		assertThat(jdbcTemplate.queryForObject("select COUNT(NAME) from T_TEST where NAME='Keith'", Integer.class),
-			equalTo(1));
+				equalTo(1));
 		assertThat(jdbcTemplate.queryForObject("select COUNT(NAME) from T_TEST where NAME='Dave'", Integer.class),
-			equalTo(1));
+				equalTo(1));
 	}
 
 	@Test
@@ -107,9 +108,9 @@ public abstract class AbstractDatabasePopulatorTests extends AbstractDatabaseIni
 		databasePopulator.addScript(resource("db-test-data-newline.sql"));
 		DatabasePopulatorUtils.execute(databasePopulator, db);
 		assertThat(jdbcTemplate.queryForObject("select COUNT(NAME) from T_TEST where NAME='Keith'", Integer.class),
-			equalTo(1));
+				equalTo(1));
 		assertThat(jdbcTemplate.queryForObject("select COUNT(NAME) from T_TEST where NAME='Dave'", Integer.class),
-			equalTo(1));
+				equalTo(1));
 	}
 
 	@Test
@@ -119,9 +120,9 @@ public abstract class AbstractDatabasePopulatorTests extends AbstractDatabaseIni
 		databasePopulator.setSeparator("\n\n");
 		DatabasePopulatorUtils.execute(databasePopulator, db);
 		assertThat(jdbcTemplate.queryForObject("select COUNT(NAME) from T_TEST where NAME='Keith'", Integer.class),
-			equalTo(1));
+				equalTo(1));
 		assertThat(jdbcTemplate.queryForObject("select COUNT(NAME) from T_TEST where NAME='Dave'", Integer.class),
-			equalTo(1));
+				equalTo(1));
 	}
 
 	@Test
@@ -154,7 +155,7 @@ public abstract class AbstractDatabasePopulatorTests extends AbstractDatabaseIni
 	@Test
 	public void constructorWithMultipleScriptResources() throws Exception {
 		final ResourceDatabasePopulator populator = new ResourceDatabasePopulator(usersSchema(),
-			resource("users-data-with-comments.sql"));
+				resource("users-data-with-comments.sql"));
 		DatabasePopulatorUtils.execute(populator, db);
 		assertUsersDatabaseCreated("Brannen", "Hoeller");
 	}
@@ -165,9 +166,9 @@ public abstract class AbstractDatabasePopulatorTests extends AbstractDatabaseIni
 		databasePopulator.addScript(resource("db-test-data-select.sql"));
 		DatabasePopulatorUtils.execute(databasePopulator, db);
 		assertThat(jdbcTemplate.queryForObject("select COUNT(NAME) from T_TEST where NAME='Keith'", Integer.class),
-			equalTo(1));
+				equalTo(1));
 		assertThat(jdbcTemplate.queryForObject("select COUNT(NAME) from T_TEST where NAME='Dave'", Integer.class),
-			equalTo(1));
+				equalTo(1));
 	}
 
 	/**

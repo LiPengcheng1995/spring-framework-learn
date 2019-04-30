@@ -53,6 +53,12 @@ public abstract class WebSocketMessageBrokerConfigurationSupport extends Abstrac
 	@Nullable
 	private WebSocketTransportRegistration transportRegistration;
 
+	@Bean
+	public static CustomScopeConfigurer webSocketScopeConfigurer() {
+		CustomScopeConfigurer configurer = new CustomScopeConfigurer();
+		configurer.addScope("websocket", new SimpSessionScope());
+		return configurer;
+	}
 
 	@Override
 	protected SimpAnnotationMethodMessageHandler createAnnotationMethodMessageHandler() {
@@ -102,13 +108,6 @@ public abstract class WebSocketMessageBrokerConfigurationSupport extends Abstrac
 	}
 
 	protected abstract void registerStompEndpoints(StompEndpointRegistry registry);
-
-	@Bean
-	public static CustomScopeConfigurer webSocketScopeConfigurer() {
-		CustomScopeConfigurer configurer = new CustomScopeConfigurer();
-		configurer.addScope("websocket", new SimpSessionScope());
-		return configurer;
-	}
 
 	@Bean
 	public WebSocketMessageBrokerStats webSocketMessageBrokerStats() {

@@ -16,12 +16,8 @@
 
 package org.springframework.test.context.web;
 
-import java.io.File;
-import javax.servlet.ServletContext;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -31,6 +27,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.ServletWebRequest;
+
+import javax.servlet.ServletContext;
+import java.io.File;
 
 import static org.junit.Assert.*;
 
@@ -91,7 +90,7 @@ public abstract class AbstractBasicWacTests implements ServletContextAware {
 		assertSame("ServletContext in the WAC and in the mock request", mockServletContext, request.getServletContext());
 
 		assertEquals("Getting real path for ServletContext resource.",
-			new File("src/main/webapp/index.jsp").getCanonicalPath(), mockServletContext.getRealPath("index.jsp"));
+				new File("src/main/webapp/index.jsp").getCanonicalPath(), mockServletContext.getRealPath("index.jsp"));
 
 	}
 

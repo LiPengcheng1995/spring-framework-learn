@@ -16,16 +16,10 @@
 
 package org.springframework.web.servlet.config.annotation;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
-
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -37,24 +31,15 @@ import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
-import org.springframework.web.servlet.resource.AppCacheManifestTransformer;
-import org.springframework.web.servlet.resource.CachingResourceResolver;
-import org.springframework.web.servlet.resource.CachingResourceTransformer;
-import org.springframework.web.servlet.resource.CssLinkResourceTransformer;
-import org.springframework.web.servlet.resource.PathResourceResolver;
-import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
-import org.springframework.web.servlet.resource.ResourceResolver;
-import org.springframework.web.servlet.resource.ResourceTransformer;
-import org.springframework.web.servlet.resource.VersionResourceResolver;
-import org.springframework.web.servlet.resource.WebJarsResourceResolver;
+import org.springframework.web.servlet.resource.*;
 import org.springframework.web.util.UrlPathHelper;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.*;
 
 /**
  * Unit tests for {@link ResourceHandlerRegistry}.
@@ -121,7 +106,7 @@ public class ResourceHandlerRegistryTests {
 
 	@Test
 	public void order() {
-		assertEquals(Integer.MAX_VALUE -1, registry.getHandlerMapping().getOrder());
+		assertEquals(Integer.MAX_VALUE - 1, registry.getHandlerMapping().getOrder());
 
 		registry.setOrder(0);
 		assertEquals(0, registry.getHandlerMapping().getOrder());
@@ -205,13 +190,13 @@ public class ResourceHandlerRegistryTests {
 
 		this.registration.setCachePeriod(3600)
 				.resourceChain(false)
-					.addResolver(cachingResolver)
-					.addResolver(versionResolver)
-					.addResolver(webjarsResolver)
-					.addResolver(pathResourceResolver)
-					.addTransformer(cachingTransformer)
-					.addTransformer(appCacheTransformer)
-					.addTransformer(cssLinkTransformer);
+				.addResolver(cachingResolver)
+				.addResolver(versionResolver)
+				.addResolver(webjarsResolver)
+				.addResolver(pathResourceResolver)
+				.addTransformer(cachingTransformer)
+				.addTransformer(appCacheTransformer)
+				.addTransformer(cssLinkTransformer);
 
 		ResourceHttpRequestHandler handler = getHandler("/resources/**");
 		List<ResourceResolver> resolvers = handler.getResourceResolvers();
@@ -239,7 +224,7 @@ public class ResourceHandlerRegistryTests {
 		assertNotNull(handler.getUrlPathHelper());
 
 		List<ResourceResolver> resolvers = handler.getResourceResolvers();
-		PathResourceResolver resolver = (PathResourceResolver) resolvers.get(resolvers.size()-1);
+		PathResourceResolver resolver = (PathResourceResolver) resolvers.get(resolvers.size() - 1);
 		Map<Resource, Charset> locationCharsets = resolver.getLocationCharsets();
 		assertEquals(1, locationCharsets.size());
 		assertEquals(StandardCharsets.ISO_8859_1, locationCharsets.values().iterator().next());

@@ -16,14 +16,8 @@
 
 package org.springframework.test.web.servlet.samples.standalone.resultmatchers;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -34,12 +28,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.WebRequest;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static org.springframework.http.HttpHeaders.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
 /**
  * Examples of expectations on response header values.
@@ -51,16 +51,10 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
 public class HeaderAssertionTests {
 
 	private static final String ERROR_MESSAGE = "Should have thrown an AssertionError";
-
-
-	private String now;
-
-	private String minuteAgo;
-
-	private MockMvc mockMvc;
-
 	private final long currentTime = System.currentTimeMillis();
-
+	private String now;
+	private String minuteAgo;
+	private MockMvc mockMvc;
 	private SimpleDateFormat dateFormat;
 
 
@@ -135,8 +129,7 @@ public class HeaderAssertionTests {
 					.andExpect(header().longValue("X-Custom-Header", 99L));
 
 			fail(ERROR_MESSAGE);
-		}
-		catch (AssertionError err) {
+		} catch (AssertionError err) {
 			if (ERROR_MESSAGE.equals(err.getMessage())) {
 				throw err;
 			}
@@ -188,8 +181,7 @@ public class HeaderAssertionTests {
 					.andExpect(matcher);
 
 			fail(ERROR_MESSAGE);
-		}
-		catch (AssertionError err) {
+		} catch (AssertionError err) {
 			if (ERROR_MESSAGE.equals(err.getMessage())) {
 				throw err;
 			}

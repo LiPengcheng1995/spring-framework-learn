@@ -17,7 +17,6 @@
 package org.springframework.test.context.configuration;
 
 import org.junit.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextLoader;
@@ -25,7 +24,8 @@ import org.springframework.test.context.junit4.PropertiesBasedSpringJUnit4ClassR
 import org.springframework.test.context.support.GenericPropertiesContextLoader;
 import org.springframework.tests.sample.beans.Pet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Integration tests which verify that the same custom {@link ContextLoader} can
@@ -34,9 +34,9 @@ import static org.junit.Assert.*;
  * &#064;ContextConfiguration}.
  *
  * @author Sam Brannen
- * @since 3.0
  * @see PropertiesBasedSpringJUnit4ClassRunnerAppCtxTests
  * @see ContextConfigurationWithPropertiesExtendingPropertiesAndInheritedLoaderTests
+ * @since 3.0
  */
 @ContextConfiguration(loader = GenericPropertiesContextLoader.class)
 public class ContextConfigurationWithPropertiesExtendingPropertiesTests extends

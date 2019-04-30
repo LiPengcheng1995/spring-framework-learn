@@ -16,10 +16,10 @@
 
 package org.springframework.web.servlet.tags;
 
+import org.springframework.lang.Nullable;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
-
-import org.springframework.lang.Nullable;
 
 /**
  * The {@code <param>} tag collects name-value parameters and passes them to a
@@ -52,12 +52,12 @@ import org.springframework.lang.Nullable;
  * </tr>
  * </tbody>
  * </table>
- * 
+ *
  * @author Scott Andrews
  * @author Nicholas Williams
- * @since 3.0
  * @see Param
  * @see UrlTag
+ * @since 3.0
  */
 @SuppressWarnings("serial")
 public class ParamTag extends BodyTagSupport {
@@ -92,8 +92,7 @@ public class ParamTag extends BodyTagSupport {
 		param.setName(this.name);
 		if (this.valueSet) {
 			param.setValue(this.value);
-		}
-		else if (getBodyContent() != null) {
+		} else if (getBodyContent() != null) {
 			// Get the value from the tag body
 			param.setValue(getBodyContent().getString().trim());
 		}

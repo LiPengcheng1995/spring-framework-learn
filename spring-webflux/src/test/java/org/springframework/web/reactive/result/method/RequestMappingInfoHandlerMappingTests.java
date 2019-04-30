@@ -16,22 +16,8 @@
 
 package org.springframework.web.reactive.result.method;
 
-import java.lang.reflect.Method;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Consumer;
-
 import org.junit.Before;
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.HttpHeaders;
@@ -51,26 +37,20 @@ import org.springframework.web.reactive.BindingContext;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.HandlerResult;
 import org.springframework.web.reactive.result.method.RequestMappingInfo.BuilderConfiguration;
-import org.springframework.web.server.MethodNotAllowedException;
-import org.springframework.web.server.NotAcceptableStatusException;
-import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.server.ServerWebInputException;
-import org.springframework.web.server.UnsupportedMediaTypeStatusException;
+import org.springframework.web.server.*;
 import org.springframework.web.util.pattern.PathPattern;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
+import java.lang.reflect.Method;
+import java.net.URI;
+import java.util.*;
+import java.util.function.Consumer;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
-import static org.springframework.mock.http.server.reactive.test.MockServerHttpRequest.get;
-import static org.springframework.mock.http.server.reactive.test.MockServerHttpRequest.method;
-import static org.springframework.mock.http.server.reactive.test.MockServerHttpRequest.post;
-import static org.springframework.mock.http.server.reactive.test.MockServerHttpRequest.put;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
-import static org.springframework.web.bind.annotation.RequestMethod.OPTIONS;
+import static org.junit.Assert.*;
+import static org.springframework.mock.http.server.reactive.test.MockServerHttpRequest.*;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static org.springframework.web.method.MvcAnnotationPredicates.getMapping;
 import static org.springframework.web.method.MvcAnnotationPredicates.requestMapping;
 import static org.springframework.web.method.ResolvableMethod.on;
@@ -80,6 +60,7 @@ import static org.springframework.web.reactive.result.method.RequestMappingInfo.
 
 /**
  * Unit tests for {@link RequestMappingInfoHandlerMapping}.
+ *
  * @author Rossen Stoyanchev
  */
 public class RequestMappingInfoHandlerMappingTests {
@@ -171,7 +152,7 @@ public class RequestMappingInfoHandlerMappingTests {
 
 		assertError(mono, UnsupportedMediaTypeStatusException.class,
 				ex -> assertEquals("Response status 415 with reason \"Invalid mime type \"bogus\": " +
-								"does not contain '/'\"", ex.getMessage()));
+						"does not contain '/'\"", ex.getMessage()));
 	}
 
 	@Test  // SPR-8462
@@ -426,7 +407,8 @@ public class RequestMappingInfoHandlerMappingTests {
 			return headers;
 		}
 
-		public void dummy() { }
+		public void dummy() {
+		}
 	}
 
 
@@ -465,8 +447,7 @@ public class RequestMappingInfoHandlerMappingTests {
 						.params(annot.params()).headers(annot.headers())
 						.consumes(annot.consumes()).produces(annot.produces())
 						.options(options).build();
-			}
-			else {
+			} else {
 				return null;
 			}
 		}

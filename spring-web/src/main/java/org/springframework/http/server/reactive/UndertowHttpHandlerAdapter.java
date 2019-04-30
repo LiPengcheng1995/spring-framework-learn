@@ -16,19 +16,18 @@
 
 package org.springframework.http.server.reactive;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 import io.undertow.server.HttpServerExchange;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
-
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.util.Assert;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 /**
  * Adapt {@link HttpHandler} to the Undertow {@link io.undertow.server.HttpHandler}.
@@ -53,24 +52,21 @@ public class UndertowHttpHandlerAdapter implements io.undertow.server.HttpHandle
 		this.httpHandler = httpHandler;
 	}
 
+	public DataBufferFactory getDataBufferFactory() {
+		return this.bufferFactory;
+	}
 
 	public void setDataBufferFactory(DataBufferFactory bufferFactory) {
 		Assert.notNull(bufferFactory, "DataBufferFactory must not be null");
 		this.bufferFactory = bufferFactory;
 	}
 
-	public DataBufferFactory getDataBufferFactory() {
-		return this.bufferFactory;
-	}
-
-
 	@Override
 	public void handleRequest(HttpServerExchange exchange) {
 		ServerHttpRequest request = null;
 		try {
 			request = new UndertowServerHttpRequest(exchange, getDataBufferFactory());
-		}
-		catch (URISyntaxException ex) {
+		} catch (URISyntaxException ex) {
 			if (logger.isWarnEnabled()) {
 				logger.warn("Invalid URL for incoming request: " + ex.getMessage());
 			}
@@ -113,12 +109,10 @@ public class UndertowHttpHandlerAdapter implements io.undertow.server.HttpHandle
 				try {
 					logger.debug("Closing connection");
 					this.exchange.getConnection().close();
-				}
-				catch (IOException ex2) {
+				} catch (IOException ex2) {
 					// ignore
 				}
-			}
-			else {
+			} else {
 				logger.debug("Setting response status code to 500");
 				this.exchange.setStatusCode(500);
 				this.exchange.endExchange();

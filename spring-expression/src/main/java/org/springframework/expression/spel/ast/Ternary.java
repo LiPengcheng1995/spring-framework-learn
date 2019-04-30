@@ -44,9 +44,10 @@ public class Ternary extends SpelNodeImpl {
 	/**
 	 * Evaluate the condition and if true evaluate the first alternative, otherwise
 	 * evaluate the second alternative.
+	 *
 	 * @param state the expression state
 	 * @throws EvaluationException if the condition does not evaluate correctly to
-	 * a boolean or there is a problem executing the chosen alternative
+	 *                             a boolean or there is a problem executing the chosen alternative
 	 */
 	@Override
 	public TypedValue getValueInternal(ExpressionState state) throws EvaluationException {
@@ -59,7 +60,7 @@ public class Ternary extends SpelNodeImpl {
 		computeExitTypeDescriptor();
 		return result;
 	}
-	
+
 	@Override
 	public String toStringAST() {
 		return getChild(0).toStringAST() + " ? " + getChild(1).toStringAST() + " : " + getChild(2).toStringAST();
@@ -72,8 +73,7 @@ public class Ternary extends SpelNodeImpl {
 			String rightDescriptor = this.children[2].exitTypeDescriptor;
 			if (ObjectUtils.nullSafeEquals(leftDescriptor, rightDescriptor)) {
 				this.exitTypeDescriptor = leftDescriptor;
-			}
-			else {
+			} else {
 				// Use the easiest to compute common super type
 				this.exitTypeDescriptor = "Ljava/lang/Object";
 			}
@@ -89,7 +89,7 @@ public class Ternary extends SpelNodeImpl {
 				CodeFlow.isBooleanCompatible(condition.exitTypeDescriptor) &&
 				left.exitTypeDescriptor != null && right.exitTypeDescriptor != null);
 	}
-	
+
 	@Override
 	public void generateCode(MethodVisitor mv, CodeFlow cf) {
 		// May reach here without it computed if all elements are literals

@@ -16,8 +16,6 @@
 
 package org.springframework.web.servlet.view;
 
-import java.util.Locale;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -32,6 +30,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.lang.Nullable;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 import org.springframework.web.servlet.View;
+
+import java.util.Locale;
 
 /**
  * A {@link org.springframework.web.servlet.ViewResolver} implementation that uses
@@ -50,15 +50,17 @@ import org.springframework.web.servlet.View;
  * a {@link UrlBasedViewResolver}.
  *
  * @author Juergen Hoeller
- * @since 18.06.2003
  * @see org.springframework.context.ApplicationContext#getResource
  * @see ResourceBundleViewResolver
  * @see UrlBasedViewResolver
+ * @since 18.06.2003
  */
 public class XmlViewResolver extends AbstractCachingViewResolver
 		implements Ordered, InitializingBean, DisposableBean {
 
-	/** Default if no other location is supplied */
+	/**
+	 * Default if no other location is supplied
+	 */
 	public static final String DEFAULT_LOCATION = "/WEB-INF/views.xml";
 
 
@@ -74,24 +76,26 @@ public class XmlViewResolver extends AbstractCachingViewResolver
 	/**
 	 * Set the location of the XML file that defines the view beans.
 	 * <p>The default is "/WEB-INF/views.xml".
+	 *
 	 * @param location the location of the XML file.
 	 */
 	public void setLocation(Resource location) {
 		this.location = location;
 	}
 
+	@Override
+	public int getOrder() {
+		return this.order;
+	}
+
 	/**
 	 * Specify the order value for this ViewResolver bean.
 	 * <p>The default value is {@code Ordered.LOWEST_PRECEDENCE}, meaning non-ordered.
+	 *
 	 * @see org.springframework.core.Ordered#getOrder()
 	 */
 	public void setOrder(int order) {
 		this.order = order;
-	}
-
-	@Override
-	public int getOrder() {
-		return this.order;
 	}
 
 	/**
@@ -120,8 +124,7 @@ public class XmlViewResolver extends AbstractCachingViewResolver
 		BeanFactory factory = initFactory();
 		try {
 			return factory.getBean(viewName, View.class);
-		}
-		catch (NoSuchBeanDefinitionException ex) {
+		} catch (NoSuchBeanDefinitionException ex) {
 			// Allow for ViewResolver chaining...
 			return null;
 		}
@@ -130,6 +133,7 @@ public class XmlViewResolver extends AbstractCachingViewResolver
 	/**
 	 * Initialize the view bean factory from the XML file.
 	 * Synchronized because of access by parallel threads.
+	 *
 	 * @throws BeansException in case of initialization errors
 	 */
 	protected synchronized BeanFactory initFactory() throws BeansException {

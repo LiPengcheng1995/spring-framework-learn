@@ -16,17 +16,8 @@
 
 package org.springframework.web.socket.config;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-
 import org.hamcrest.Matchers;
 import org.junit.Test;
-
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
@@ -36,13 +27,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHandler;
-import org.springframework.messaging.converter.ByteArrayMessageConverter;
-import org.springframework.messaging.converter.CompositeMessageConverter;
-import org.springframework.messaging.converter.ContentTypeResolver;
-import org.springframework.messaging.converter.DefaultContentTypeResolver;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
-import org.springframework.messaging.converter.MessageConverter;
-import org.springframework.messaging.converter.StringMessageConverter;
+import org.springframework.messaging.converter.*;
 import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolver;
 import org.springframework.messaging.handler.invocation.HandlerMethodReturnValueHandler;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -50,12 +35,7 @@ import org.springframework.messaging.simp.annotation.support.SimpAnnotationMetho
 import org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry;
 import org.springframework.messaging.simp.broker.SimpleBrokerMessageHandler;
 import org.springframework.messaging.simp.stomp.StompBrokerRelayMessageHandler;
-import org.springframework.messaging.simp.user.DefaultUserDestinationResolver;
-import org.springframework.messaging.simp.user.MultiServerUserRegistry;
-import org.springframework.messaging.simp.user.SimpUserRegistry;
-import org.springframework.messaging.simp.user.UserDestinationMessageHandler;
-import org.springframework.messaging.simp.user.UserDestinationResolver;
-import org.springframework.messaging.simp.user.UserRegistryMessageHandler;
+import org.springframework.messaging.simp.user.*;
 import org.springframework.messaging.support.AbstractSubscribableChannel;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.ImmutableMessageChannelInterceptor;
@@ -71,16 +51,8 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.handler.ExceptionWebSocketHandlerDecorator;
-import org.springframework.web.socket.handler.LoggingWebSocketHandlerDecorator;
-import org.springframework.web.socket.handler.TestWebSocketSession;
-import org.springframework.web.socket.handler.WebSocketHandlerDecorator;
-import org.springframework.web.socket.handler.WebSocketHandlerDecoratorFactory;
-import org.springframework.web.socket.messaging.DefaultSimpUserRegistry;
-import org.springframework.web.socket.messaging.StompSubProtocolErrorHandler;
-import org.springframework.web.socket.messaging.StompSubProtocolHandler;
-import org.springframework.web.socket.messaging.SubProtocolHandler;
-import org.springframework.web.socket.messaging.SubProtocolWebSocketHandler;
+import org.springframework.web.socket.handler.*;
+import org.springframework.web.socket.messaging.*;
 import org.springframework.web.socket.server.HandshakeHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 import org.springframework.web.socket.server.support.OriginHandshakeInterceptor;
@@ -90,7 +62,11 @@ import org.springframework.web.socket.sockjs.transport.TransportType;
 import org.springframework.web.socket.sockjs.transport.handler.DefaultSockJsService;
 import org.springframework.web.socket.sockjs.transport.handler.WebSocketTransportHandler;
 
-import static org.hamcrest.Matchers.*;
+import java.util.*;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.*;
 
 /**
@@ -206,10 +182,10 @@ public class MessageBrokerBeanDefinitionParserTests {
 		DefaultSubscriptionRegistry registry = (DefaultSubscriptionRegistry) brokerMessageHandler.getSubscriptionRegistry();
 		assertEquals("my-selector", registry.getSelectorHeaderName());
 		assertNotNull(brokerMessageHandler.getTaskScheduler());
-		assertArrayEquals(new long[] {15000, 15000}, brokerMessageHandler.getHeartbeatValue());
+		assertArrayEquals(new long[]{15000, 15000}, brokerMessageHandler.getHeartbeatValue());
 
 		List<Class<? extends MessageHandler>> subscriberTypes = Arrays.asList(SimpAnnotationMethodMessageHandler.class,
-						UserDestinationMessageHandler.class, SimpleBrokerMessageHandler.class);
+				UserDestinationMessageHandler.class, SimpleBrokerMessageHandler.class);
 		testChannel("clientInboundChannel", subscriberTypes, 2);
 		testExecutor("clientInboundChannel", Runtime.getRuntime().availableProcessors() * 2, Integer.MAX_VALUE, 60);
 
@@ -222,8 +198,7 @@ public class MessageBrokerBeanDefinitionParserTests {
 		try {
 			this.appContext.getBean("brokerChannelExecutor", ThreadPoolTaskExecutor.class);
 			fail("expected exception");
-		}
-		catch (NoSuchBeanDefinitionException ex) {
+		} catch (NoSuchBeanDefinitionException ex) {
 			// expected
 		}
 
@@ -274,7 +249,7 @@ public class MessageBrokerBeanDefinitionParserTests {
 		assertEquals("spring.io", messageBroker.getVirtualHost());
 		assertEquals(5000, messageBroker.getSystemHeartbeatReceiveInterval());
 		assertEquals(5000, messageBroker.getSystemHeartbeatSendInterval());
-		assertThat(messageBroker.getDestinationPrefixes(), Matchers.containsInAnyOrder("/topic","/queue"));
+		assertThat(messageBroker.getDestinationPrefixes(), Matchers.containsInAnyOrder("/topic", "/queue"));
 
 		List<Class<? extends MessageHandler>> subscriberTypes = Arrays.asList(SimpAnnotationMethodMessageHandler.class,
 				UserDestinationMessageHandler.class, StompBrokerRelayMessageHandler.class);
@@ -290,8 +265,7 @@ public class MessageBrokerBeanDefinitionParserTests {
 		try {
 			this.appContext.getBean("brokerChannelExecutor", ThreadPoolTaskExecutor.class);
 			fail("expected exception");
-		}
-		catch (NoSuchBeanDefinitionException ex) {
+		} catch (NoSuchBeanDefinitionException ex) {
 			// expected
 		}
 
@@ -443,17 +417,17 @@ public class MessageBrokerBeanDefinitionParserTests {
 
 
 	private void testChannel(
-			String channelName, List<Class<? extends  MessageHandler>> subscriberTypes, int interceptorCount) {
+			String channelName, List<Class<? extends MessageHandler>> subscriberTypes, int interceptorCount) {
 
 		AbstractSubscribableChannel channel = this.appContext.getBean(channelName, AbstractSubscribableChannel.class);
-		for (Class<? extends  MessageHandler> subscriberType : subscriberTypes) {
+		for (Class<? extends MessageHandler> subscriberType : subscriberTypes) {
 			MessageHandler subscriber = this.appContext.getBean(subscriberType);
 			assertNotNull("No subscription for " + subscriberType, subscriber);
 			assertTrue(channel.hasSubscription(subscriber));
 		}
 		List<ChannelInterceptor> interceptors = channel.getInterceptors();
 		assertEquals(interceptorCount, interceptors.size());
-		assertEquals(ImmutableMessageChannelInterceptor.class, interceptors.get(interceptors.size()-1).getClass());
+		assertEquals(ImmutableMessageChannelInterceptor.class, interceptors.get(interceptors.size() - 1).getClass());
 	}
 
 	private void testExecutor(String channelName, int corePoolSize, int maxPoolSize, int keepAliveSeconds) {

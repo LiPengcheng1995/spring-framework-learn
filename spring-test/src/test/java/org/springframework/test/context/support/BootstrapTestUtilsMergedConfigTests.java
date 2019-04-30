@@ -16,21 +16,20 @@
 
 package org.springframework.test.context.support;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.test.context.BootstrapTestUtils;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextLoader;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.web.WebDelegatingSmartContextLoader;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertEquals;
@@ -74,10 +73,10 @@ public class BootstrapTestUtilsMergedConfigTests extends AbstractContextConfigur
 		MergedContextConfiguration mergedConfig = buildMergedContextConfiguration(testClass);
 
 		assertMergedConfig(
-			mergedConfig,
-			testClass,
-			array("classpath:org/springframework/test/context/support/AbstractContextConfigurationUtilsTests$BareAnnotations-context.xml"),
-			EMPTY_CLASS_ARRAY, DelegatingSmartContextLoader.class);
+				mergedConfig,
+				testClass,
+				array("classpath:org/springframework/test/context/support/AbstractContextConfigurationUtilsTests$BareAnnotations-context.xml"),
+				EMPTY_CLASS_ARRAY, DelegatingSmartContextLoader.class);
 	}
 
 	@Test
@@ -86,7 +85,7 @@ public class BootstrapTestUtilsMergedConfigTests extends AbstractContextConfigur
 		MergedContextConfiguration mergedConfig = buildMergedContextConfiguration(testClass);
 
 		assertMergedConfig(mergedConfig, testClass, array("classpath:/foo.xml"), EMPTY_CLASS_ARRAY,
-			DelegatingSmartContextLoader.class);
+				DelegatingSmartContextLoader.class);
 	}
 
 	@Test
@@ -95,7 +94,7 @@ public class BootstrapTestUtilsMergedConfigTests extends AbstractContextConfigur
 		MergedContextConfiguration mergedConfig = buildMergedContextConfiguration(testClass);
 
 		assertMergedConfig(mergedConfig, testClass, array("classpath:/foo.xml"), EMPTY_CLASS_ARRAY,
-			DelegatingSmartContextLoader.class);
+				DelegatingSmartContextLoader.class);
 	}
 
 	@Test
@@ -108,7 +107,7 @@ public class BootstrapTestUtilsMergedConfigTests extends AbstractContextConfigur
 	private void buildMergedConfigWithMetaAnnotationAndClasses(Class<?> testClass) {
 		MergedContextConfiguration mergedConfig = buildMergedContextConfiguration(testClass);
 		assertMergedConfig(mergedConfig, testClass, EMPTY_STRING_ARRAY, array(FooConfig.class,
-			BarConfig.class), DelegatingSmartContextLoader.class);
+				BarConfig.class), DelegatingSmartContextLoader.class);
 	}
 
 	@Test
@@ -117,7 +116,7 @@ public class BootstrapTestUtilsMergedConfigTests extends AbstractContextConfigur
 		MergedContextConfiguration mergedConfig = buildMergedContextConfiguration(testClass);
 
 		assertMergedConfig(mergedConfig, testClass, EMPTY_STRING_ARRAY, array(FooConfig.class),
-			DelegatingSmartContextLoader.class);
+				DelegatingSmartContextLoader.class);
 	}
 
 	/**
@@ -137,9 +136,9 @@ public class BootstrapTestUtilsMergedConfigTests extends AbstractContextConfigur
 		assertNotEquals(webMergedConfig, standardMergedConfig);
 
 		assertMergedConfig(webMergedConfig, webTestClass, EMPTY_STRING_ARRAY, array(FooConfig.class),
-			WebDelegatingSmartContextLoader.class);
+				WebDelegatingSmartContextLoader.class);
 		assertMergedConfig(standardMergedConfig, standardTestClass, EMPTY_STRING_ARRAY,
-			array(FooConfig.class), DelegatingSmartContextLoader.class);
+				array(FooConfig.class), DelegatingSmartContextLoader.class);
 	}
 
 	@Test
@@ -149,7 +148,7 @@ public class BootstrapTestUtilsMergedConfigTests extends AbstractContextConfigur
 		MergedContextConfiguration mergedConfig = buildMergedContextConfiguration(testClass);
 
 		assertMergedConfig(mergedConfig, testClass, array("classpath:/foo.properties"), EMPTY_CLASS_ARRAY,
-			expectedContextLoaderClass);
+				expectedContextLoaderClass);
 	}
 
 	@Test
@@ -159,7 +158,7 @@ public class BootstrapTestUtilsMergedConfigTests extends AbstractContextConfigur
 		MergedContextConfiguration mergedConfig = buildMergedContextConfiguration(testClass);
 
 		assertMergedConfig(mergedConfig, testClass, EMPTY_STRING_ARRAY, array(FooConfig.class),
-			expectedContextLoaderClass);
+				expectedContextLoaderClass);
 	}
 
 	@Test
@@ -169,7 +168,7 @@ public class BootstrapTestUtilsMergedConfigTests extends AbstractContextConfigur
 		MergedContextConfiguration mergedConfig = buildMergedContextConfiguration(testClass);
 
 		assertMergedConfig(mergedConfig, testClass, expectedLocations, EMPTY_CLASS_ARRAY,
-			AnnotationConfigContextLoader.class);
+				AnnotationConfigContextLoader.class);
 	}
 
 	@Test
@@ -179,7 +178,7 @@ public class BootstrapTestUtilsMergedConfigTests extends AbstractContextConfigur
 		MergedContextConfiguration mergedConfig = buildMergedContextConfiguration(testClass);
 
 		assertMergedConfig(mergedConfig, testClass, EMPTY_STRING_ARRAY, expectedClasses,
-			AnnotationConfigContextLoader.class);
+				AnnotationConfigContextLoader.class);
 	}
 
 	@Test
@@ -189,7 +188,7 @@ public class BootstrapTestUtilsMergedConfigTests extends AbstractContextConfigur
 		MergedContextConfiguration mergedConfig = buildMergedContextConfiguration(testClass);
 
 		assertMergedConfig(mergedConfig, testClass, expectedLocations, EMPTY_CLASS_ARRAY,
-			AnnotationConfigContextLoader.class);
+				AnnotationConfigContextLoader.class);
 	}
 
 	@Test
@@ -199,7 +198,7 @@ public class BootstrapTestUtilsMergedConfigTests extends AbstractContextConfigur
 		MergedContextConfiguration mergedConfig = buildMergedContextConfiguration(testClass);
 
 		assertMergedConfig(mergedConfig, testClass, EMPTY_STRING_ARRAY, expectedClasses,
-			AnnotationConfigContextLoader.class);
+				AnnotationConfigContextLoader.class);
 	}
 
 
@@ -211,7 +210,7 @@ public class BootstrapTestUtilsMergedConfigTests extends AbstractContextConfigur
 		Class<?>[] classes() default {};
 	}
 
-	@SpringAppConfig(classes = { FooConfig.class, BarConfig.class })
+	@SpringAppConfig(classes = {FooConfig.class, BarConfig.class})
 	public static abstract class Dog {
 	}
 

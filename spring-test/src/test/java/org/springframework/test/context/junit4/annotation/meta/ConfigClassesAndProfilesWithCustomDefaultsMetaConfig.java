@@ -16,16 +16,16 @@
 
 package org.springframework.test.context.junit4.annotation.meta;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * Custom configuration annotation with meta-annotation attribute overrides for
@@ -40,6 +40,10 @@ import org.springframework.test.context.ContextConfiguration;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface ConfigClassesAndProfilesWithCustomDefaultsMetaConfig {
+
+	Class<?>[] classes() default {DevConfig.class, ProductionConfig.class};
+
+	String[] profiles() default "dev";
 
 	@Configuration
 	@Profile("dev")
@@ -60,10 +64,5 @@ public @interface ConfigClassesAndProfilesWithCustomDefaultsMetaConfig {
 			return "Production Foo";
 		}
 	}
-
-
-	Class<?>[] classes() default { DevConfig.class, ProductionConfig.class };
-
-	String[] profiles() default "dev";
 
 }

@@ -16,24 +16,11 @@
 
 package org.springframework.http.server.reactive;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
-import java.util.function.IntPredicate;
-import javax.net.ssl.SSLSession;
-
 import io.undertow.connector.ByteBufferPool;
 import io.undertow.connector.PooledByteBuffer;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.Cookie;
 import io.undertow.util.HeaderValues;
-import org.xnio.channels.StreamSourceChannel;
-import reactor.core.publisher.Flux;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
@@ -45,6 +32,18 @@ import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
+import org.xnio.channels.StreamSourceChannel;
+import reactor.core.publisher.Flux;
+
+import javax.net.ssl.SSLSession;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
+import java.util.function.IntPredicate;
 
 /**
  * Adapt {@link ServerHttpRequest} to the Undertow {@link HttpServerExchange}.
@@ -182,8 +181,7 @@ class UndertowServerHttpRequest extends AbstractServerHttpRequest {
 					DataBuffer dataBuffer = this.bufferFactory.wrap(byteBuffer);
 					release = false;
 					return new UndertowDataBuffer(dataBuffer, pooledByteBuffer);
-				}
-				else if (read == -1) {
+				} else if (read == -1) {
 					onAllDataRead();
 				}
 				return null;
@@ -221,8 +219,7 @@ class UndertowServerHttpRequest extends AbstractServerHttpRequest {
 			boolean result;
 			try {
 				result = DataBufferUtils.release(this.dataBuffer);
-			}
-			finally {
+			} finally {
 				this.pooledByteBuffer.close();
 			}
 			return result && this.pooledByteBuffer.isOpen();
@@ -300,7 +297,7 @@ class UndertowServerHttpRequest extends AbstractServerHttpRequest {
 
 		@Override
 		public DataBuffer read(byte[] destination, int offset,
-				int length) {
+							   int length) {
 			return this.dataBuffer.read(destination, offset, length);
 		}
 
@@ -316,7 +313,7 @@ class UndertowServerHttpRequest extends AbstractServerHttpRequest {
 
 		@Override
 		public DataBuffer write(byte[] source, int offset,
-				int length) {
+								int length) {
 			return this.dataBuffer.write(source, offset, length);
 		}
 

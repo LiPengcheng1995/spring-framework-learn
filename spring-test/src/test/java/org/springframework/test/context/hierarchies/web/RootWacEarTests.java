@@ -18,7 +18,6 @@ package org.springframework.test.context.hierarchies.web;
 
 import org.junit.Ignore;
 import org.junit.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -38,27 +37,15 @@ import static org.junit.Assert.*;
 @ContextHierarchy(@ContextConfiguration)
 public class RootWacEarTests extends EarTests {
 
-	@Configuration
-	static class RootWacConfig {
-
-		@Bean
-		public String root() {
-			return "root";
-		}
-	}
-
-
-	// -------------------------------------------------------------------------
-
 	@Autowired
 	private WebApplicationContext wac;
 
+
+	// -------------------------------------------------------------------------
 	@Autowired
 	private String ear;
-
 	@Autowired
 	private String root;
-
 
 	@Ignore("Superseded by verifyRootWacConfig()")
 	@Test
@@ -74,6 +61,15 @@ public class RootWacEarTests extends EarTests {
 		assertFalse(parent instanceof WebApplicationContext);
 		assertEquals("ear", ear);
 		assertEquals("root", root);
+	}
+
+	@Configuration
+	static class RootWacConfig {
+
+		@Bean
+		public String root() {
+			return "root";
+		}
 	}
 
 }

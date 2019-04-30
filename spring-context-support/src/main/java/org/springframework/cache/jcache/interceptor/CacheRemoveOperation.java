@@ -16,19 +16,19 @@
 
 package org.springframework.cache.jcache.interceptor;
 
-import javax.cache.annotation.CacheMethodDetails;
-import javax.cache.annotation.CacheRemove;
-
 import org.springframework.cache.interceptor.CacheResolver;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.util.ExceptionTypeFilter;
+
+import javax.cache.annotation.CacheMethodDetails;
+import javax.cache.annotation.CacheRemove;
 
 /**
  * The {@link JCacheOperation} implementation for a {@link CacheRemove} operation.
  *
  * @author Stephane Nicoll
- * @since 4.1
  * @see CacheRemove
+ * @since 4.1
  */
 class CacheRemoveOperation extends AbstractJCacheKeyOperation<CacheRemove> {
 
@@ -52,6 +52,7 @@ class CacheRemoveOperation extends AbstractJCacheKeyOperation<CacheRemove> {
 	/**
 	 * Specify if the cache entry should be remove before invoking the method. By default, the
 	 * cache entry is removed after the method invocation.
+	 *
 	 * @see javax.cache.annotation.CacheRemove#afterInvocation()
 	 */
 	public boolean isEarlyRemove() {

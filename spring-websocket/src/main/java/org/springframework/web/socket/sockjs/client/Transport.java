@@ -16,12 +16,12 @@
 
 package org.springframework.web.socket.sockjs.client;
 
-import java.util.List;
-
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.sockjs.transport.TransportType;
+
+import java.util.List;
 
 /**
  * A client-side implementation for a SockJS transport.
@@ -40,7 +40,8 @@ public interface Transport {
 
 	/**
 	 * Connect the transport.
-	 * @param request the transport request.
+	 *
+	 * @param request          the transport request.
 	 * @param webSocketHandler the application handler to delegate lifecycle events to.
 	 * @return a future to indicate success or failure to connect.
 	 */

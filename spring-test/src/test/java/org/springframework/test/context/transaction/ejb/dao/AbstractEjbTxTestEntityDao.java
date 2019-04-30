@@ -16,11 +16,11 @@
 
 package org.springframework.test.context.transaction.ejb.dao;
 
+import org.springframework.test.context.transaction.ejb.model.TestEntity;
+
 import javax.ejb.TransactionAttribute;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
-import org.springframework.test.context.transaction.ejb.model.TestEntity;
 
 /**
  * Abstract base class for EJB implementations of {@link TestEntityDao} which
@@ -29,9 +29,9 @@ import org.springframework.test.context.transaction.ejb.model.TestEntity;
  *
  * @author Sam Brannen
  * @author Xavier Detant
- * @since 4.0.1
  * @see RequiredEjbTxTestEntityDao
  * @see RequiresNewEjbTxTestEntityDao
+ * @since 4.0.1
  */
 public abstract class AbstractEjbTxTestEntityDao implements TestEntityDao {
 

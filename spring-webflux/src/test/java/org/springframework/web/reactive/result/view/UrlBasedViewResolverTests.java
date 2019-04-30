@@ -16,19 +16,18 @@
 
 package org.springframework.web.reactive.result.view;
 
-import java.time.Duration;
-import java.util.Locale;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
+import java.time.Duration;
+import java.util.Locale;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -105,7 +104,7 @@ public class UrlBasedViewResolverTests {
 
 		@Override
 		protected Mono<Void> renderInternal(Map<String, Object> attributes, MediaType contentType,
-				ServerWebExchange exchange) {
+											ServerWebExchange exchange) {
 
 			return Mono.empty();
 		}

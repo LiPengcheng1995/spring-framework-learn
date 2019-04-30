@@ -16,17 +16,7 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import javax.servlet.http.HttpServletResponse;
-
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AliasFor;
@@ -51,11 +41,17 @@ import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.method.support.HandlerMethodReturnValueHandlerComposite;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.view.RedirectView;
+import reactor.core.publisher.Flux;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import javax.servlet.http.HttpServletResponse;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * Test fixture with {@link ServletInvocableHandlerMethod}.
@@ -323,7 +319,7 @@ public class ServletInvocableHandlerMethodTests {
 	}
 
 	private ServletInvocableHandlerMethod getHandlerMethod(Object controller,
-			String methodName, Class<?>... argTypes) throws NoSuchMethodException {
+														   String methodName, Class<?>... argTypes) throws NoSuchMethodException {
 
 		Method method = controller.getClass().getDeclaredMethod(methodName, argTypes);
 		ServletInvocableHandlerMethod handlerMethod = new ServletInvocableHandlerMethod(controller, method);
@@ -369,7 +365,7 @@ public class ServletInvocableHandlerMethodTests {
 		public void notModified() {
 		}
 
-		public Object dynamicReturnValue(@RequestParam(required=false) String param) {
+		public Object dynamicReturnValue(@RequestParam(required = false) String param) {
 			return (param != null) ? "view" : new RedirectView("redirectView");
 		}
 	}
@@ -379,20 +375,25 @@ public class ServletInvocableHandlerMethodTests {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	private static class ResponseStatusHandler {
 
-		public void handle() { }
+		public void handle() {
+		}
 	}
 
 
 	private static class MethodLevelResponseBodyHandler {
 
 		@ResponseBody
-		public DeferredResult<String> handle() { return null; }
+		public DeferredResult<String> handle() {
+			return null;
+		}
 
 		// Unusual but legal return type
 		// Properly test generic type handling of Flux values collected to a List
 
 		@ResponseBody
-		public Flux<List<String>> handleFluxOfLists() { return null; }
+		public Flux<List<String>> handleFluxOfLists() {
+			return null;
+		}
 	}
 
 
@@ -400,14 +401,18 @@ public class ServletInvocableHandlerMethodTests {
 	@ResponseBody
 	private static class TypeLevelResponseBodyHandler {
 
-		public DeferredResult<String> handle() { return null; }
+		public DeferredResult<String> handle() {
+			return null;
+		}
 	}
 
 
 	private static class DeferredResultSubclassHandler {
 
 		@ResponseBody
-		public CustomDeferredResult handle() { return null; }
+		public CustomDeferredResult handle() {
+			return null;
+		}
 	}
 
 
@@ -418,11 +423,17 @@ public class ServletInvocableHandlerMethodTests {
 	@SuppressWarnings("unused")
 	private static class ResponseEntityHandler {
 
-		public DeferredResult<ResponseEntity<String>> handleDeferred() { return null; }
+		public DeferredResult<ResponseEntity<String>> handleDeferred() {
+			return null;
+		}
 
-		public ResponseEntity<Void> handleRawType() { return null; }
+		public ResponseEntity<Void> handleRawType() {
+			return null;
+		}
 
-		public ResponseEntity<Flux<Bar>> handleFlux() { return null; }
+		public ResponseEntity<Flux<Bar>> handleFlux() {
+			return null;
+		}
 	}
 
 
@@ -435,7 +446,7 @@ public class ServletInvocableHandlerMethodTests {
 
 		@Override
 		public void handleReturnValue(Object returnValue, MethodParameter returnType,
-				ModelAndViewContainer mavContainer, NativeWebRequest webRequest) throws Exception {
+									  ModelAndViewContainer mavContainer, NativeWebRequest webRequest) throws Exception {
 			throw new HttpMessageNotWritableException("oops, can't write");
 		}
 	}
@@ -444,9 +455,13 @@ public class ServletInvocableHandlerMethodTests {
 	@SuppressWarnings("unused")
 	private static class StreamingHandler {
 
-		public ResponseBodyEmitter handleEmitter() { return null; }
+		public ResponseBodyEmitter handleEmitter() {
+			return null;
+		}
 
-		public StreamingResponseBody handleStreamBody() { return null; }
+		public StreamingResponseBody handleStreamBody() {
+			return null;
+		}
 
 	}
 

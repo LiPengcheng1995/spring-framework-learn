@@ -16,16 +16,10 @@
 
 package org.springframework.web.reactive.result.condition;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
@@ -36,12 +30,13 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.pattern.PathPattern;
 import org.springframework.web.util.pattern.PatternParseException;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import static org.springframework.web.reactive.result.method.RequestMappingInfo.paths;
 
 /**
@@ -285,7 +280,7 @@ public class RequestMappingInfoTests {
 		MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.options("/foo")
 				.header("Origin", "https://domain.com")
 				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "POST")
-				);
+		);
 
 		RequestMappingInfo info = paths("/foo").methods(RequestMethod.POST).build();
 		RequestMappingInfo match = info.getMatchingCondition(exchange);

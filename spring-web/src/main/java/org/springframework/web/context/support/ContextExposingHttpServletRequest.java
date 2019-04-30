@@ -16,14 +16,14 @@
 
 package org.springframework.web.context.support;
 
-import java.util.HashSet;
-import java.util.Set;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.web.context.WebApplicationContext;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * HttpServletRequest decorator that makes all Spring beans in a
@@ -46,8 +46,9 @@ public class ContextExposingHttpServletRequest extends HttpServletRequestWrapper
 
 	/**
 	 * Create a new ContextExposingHttpServletRequest for the given request.
+	 *
 	 * @param originalRequest the original HttpServletRequest
-	 * @param context the WebApplicationContext that this request runs in
+	 * @param context         the WebApplicationContext that this request runs in
 	 */
 	public ContextExposingHttpServletRequest(HttpServletRequest originalRequest, WebApplicationContext context) {
 		this(originalRequest, context, null);
@@ -55,14 +56,15 @@ public class ContextExposingHttpServletRequest extends HttpServletRequestWrapper
 
 	/**
 	 * Create a new ContextExposingHttpServletRequest for the given request.
-	 * @param originalRequest the original HttpServletRequest
-	 * @param context the WebApplicationContext that this request runs in
+	 *
+	 * @param originalRequest         the original HttpServletRequest
+	 * @param context                 the WebApplicationContext that this request runs in
 	 * @param exposedContextBeanNames the names of beans in the context which
-	 * are supposed to be exposed (if this is non-null, only the beans in this
-	 * Set are eligible for exposure as attributes)
+	 *                                are supposed to be exposed (if this is non-null, only the beans in this
+	 *                                Set are eligible for exposure as attributes)
 	 */
 	public ContextExposingHttpServletRequest(HttpServletRequest originalRequest, WebApplicationContext context,
-			@Nullable Set<String> exposedContextBeanNames) {
+											 @Nullable Set<String> exposedContextBeanNames) {
 
 		super(originalRequest);
 		Assert.notNull(context, "WebApplicationContext must not be null");
@@ -86,8 +88,7 @@ public class ContextExposingHttpServletRequest extends HttpServletRequestWrapper
 				(this.exposedContextBeanNames == null || this.exposedContextBeanNames.contains(name)) &&
 				this.webApplicationContext.containsBean(name)) {
 			return this.webApplicationContext.getBean(name);
-		}
-		else {
+		} else {
 			return super.getAttribute(name);
 		}
 	}

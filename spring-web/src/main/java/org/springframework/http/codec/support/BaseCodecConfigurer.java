@@ -16,19 +16,14 @@
 
 package org.springframework.http.codec.support;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.codec.Decoder;
 import org.springframework.core.codec.Encoder;
-import org.springframework.http.codec.CodecConfigurer;
-import org.springframework.http.codec.DecoderHttpMessageReader;
-import org.springframework.http.codec.EncoderHttpMessageWriter;
-import org.springframework.http.codec.HttpMessageReader;
-import org.springframework.http.codec.HttpMessageWriter;
-import org.springframework.http.codec.multipart.MultipartHttpMessageWriter;
+import org.springframework.http.codec.*;
 import org.springframework.util.Assert;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Default implementation of {@link CodecConfigurer} that serves as a base for
@@ -90,9 +85,10 @@ class BaseCodecConfigurer implements CodecConfigurer {
 
 	/**
 	 * Internal method that returns the configured writers.
+	 *
 	 * @param forMultipart whether to returns writers for general use ("false"),
-	 * or for multipart requests only ("true"). Generally the two sets are the
-	 * same except for the multipart writer itself.
+	 *                     or for multipart requests only ("true"). Generally the two sets are the
+	 *                     same except for the multipart writer itself.
 	 */
 	protected List<HttpMessageWriter<?>> getWritersInternal(boolean forMultipart) {
 		List<HttpMessageWriter<?>> result = new ArrayList<>();

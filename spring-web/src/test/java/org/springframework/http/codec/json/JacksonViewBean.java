@@ -24,16 +24,10 @@ import com.fasterxml.jackson.annotation.JsonView;
 @JsonView(JacksonViewBean.MyJacksonView3.class)
 class JacksonViewBean {
 
-	interface MyJacksonView1 {}
-	interface MyJacksonView2 {}
-	interface MyJacksonView3 {}
-
 	@JsonView(MyJacksonView1.class)
 	private String withView1;
-
 	@JsonView(MyJacksonView2.class)
 	private String withView2;
-
 	private String withoutView;
 
 	public String getWithView1() {
@@ -58,5 +52,14 @@ class JacksonViewBean {
 
 	public void setWithoutView(String withoutView) {
 		this.withoutView = withoutView;
+	}
+
+	interface MyJacksonView1 {
+	}
+
+	interface MyJacksonView2 {
+	}
+
+	interface MyJacksonView3 {
 	}
 }

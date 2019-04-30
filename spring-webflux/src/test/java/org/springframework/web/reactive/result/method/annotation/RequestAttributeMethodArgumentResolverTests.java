@@ -16,15 +16,9 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.time.Duration;
-import java.util.Optional;
-
 import io.reactivex.Single;
 import org.junit.Before;
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapterRegistry;
@@ -36,13 +30,13 @@ import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.method.ResolvableMethod;
 import org.springframework.web.reactive.BindingContext;
 import org.springframework.web.server.ServerWebInputException;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import java.time.Duration;
+import java.util.Optional;
+
+import static org.junit.Assert.*;
 import static org.springframework.web.method.MvcAnnotationPredicates.requestAttribute;
 
 /**
@@ -52,13 +46,10 @@ import static org.springframework.web.method.MvcAnnotationPredicates.requestAttr
  */
 public class RequestAttributeMethodArgumentResolverTests {
 
-	private RequestAttributeMethodArgumentResolver resolver;
-
 	private final MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/"));
-
 	private final ResolvableMethod testMethod = ResolvableMethod.on(getClass())
 			.named("handleWithRequestAttribute").build();
-
+	private RequestAttributeMethodArgumentResolver resolver;
 
 	@Before
 	@SuppressWarnings("resource")
@@ -175,8 +166,8 @@ public class RequestAttributeMethodArgumentResolverTests {
 	private void handleWithRequestAttribute(
 			@RequestAttribute Foo foo,
 			@RequestAttribute("specialFoo") Foo namedFoo,
-			@RequestAttribute(name="foo", required = false) Foo notRequiredFoo,
-			@RequestAttribute(name="foo") Optional<Foo> optionalFoo,
+			@RequestAttribute(name = "foo", required = false) Foo notRequiredFoo,
+			@RequestAttribute(name = "foo") Optional<Foo> optionalFoo,
 			@RequestAttribute Mono<Foo> fooMono,
 			String notSupported) {
 	}

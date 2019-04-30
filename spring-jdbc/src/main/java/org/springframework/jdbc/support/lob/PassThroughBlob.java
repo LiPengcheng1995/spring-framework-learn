@@ -16,14 +16,14 @@
 
 package org.springframework.jdbc.support.lob;
 
+import org.springframework.lang.Nullable;
+import org.springframework.util.StreamUtils;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Blob;
 import java.sql.SQLException;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.StreamUtils;
 
 /**
  * Simple JDBC {@link Blob} adapter that exposes a given byte array or binary stream.
@@ -63,8 +63,7 @@ class PassThroughBlob implements Blob {
 	public InputStream getBinaryStream() throws SQLException {
 		if (this.content != null) {
 			return new ByteArrayInputStream(this.content);
-		}
-		else {
+		} else {
 			return (this.binaryStream != null ? this.binaryStream : StreamUtils.emptyInput());
 		}
 	}

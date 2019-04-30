@@ -16,16 +16,16 @@
 
 package org.springframework.web.servlet.config.annotation;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.handler.MappedInterceptor;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Assists with the creation of a {@link MappedInterceptor}.
@@ -66,6 +66,7 @@ public class InterceptorRegistration {
 
 	/**
 	 * List-based variant of {@link #addPathPatterns(String...)}.
+	 *
 	 * @since 5.0.3
 	 */
 	public InterceptorRegistration addPathPatterns(List<String> patterns) {
@@ -82,6 +83,7 @@ public class InterceptorRegistration {
 
 	/**
 	 * List-based variant of {@link #excludePathPatterns(String...)}.
+	 *
 	 * @since 5.0.3
 	 */
 	public InterceptorRegistration excludePathPatterns(List<String> patterns) {
@@ -102,15 +104,17 @@ public class InterceptorRegistration {
 
 	/**
 	 * Specify an order position to be used. Default is 0.
+	 *
 	 * @since 5.0
 	 */
-	public InterceptorRegistration order(int order){
+	public InterceptorRegistration order(int order) {
 		this.order = order;
 		return this;
 	}
 
 	/**
 	 * Return the order position to be used.
+	 *
 	 * @since 5.0
 	 */
 	protected int getOrder() {

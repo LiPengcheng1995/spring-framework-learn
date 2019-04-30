@@ -16,13 +16,8 @@
 
 package org.springframework.web.servlet.mvc.annotation;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.Locale;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.StaticMessageSource;
@@ -34,6 +29,10 @@ import org.springframework.tests.sample.beans.ITestBean;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.Locale;
 
 import static org.junit.Assert.*;
 
@@ -92,8 +91,7 @@ public class ResponseStatusExceptionResolverTests {
 			StatusCodeAndReasonMessageException ex = new StatusCodeAndReasonMessageException();
 			exceptionResolver.resolveException(request, response, null, ex);
 			assertEquals("Invalid status reason", "Gone reason message", response.getErrorMessage());
-		}
-		finally {
+		} finally {
 			LocaleContextHolder.resetLocaleContext();
 		}
 	}
@@ -137,6 +135,15 @@ public class ResponseStatusExceptionResolverTests {
 	}
 
 
+	@ResponseStatus
+	@Retention(RetentionPolicy.RUNTIME)
+	@SuppressWarnings("unused")
+	@interface ComposedResponseStatus {
+
+		@AliasFor(annotation = ResponseStatus.class, attribute = "code")
+		HttpStatus responseStatus() default HttpStatus.INTERNAL_SERVER_ERROR;
+	}
+
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@SuppressWarnings("serial")
 	private static class StatusCodeException extends Exception {
@@ -150,15 +157,6 @@ public class ResponseStatusExceptionResolverTests {
 	@ResponseStatus(code = HttpStatus.GONE, reason = "gone.reason")
 	@SuppressWarnings("serial")
 	private static class StatusCodeAndReasonMessageException extends Exception {
-	}
-
-	@ResponseStatus
-	@Retention(RetentionPolicy.RUNTIME)
-	@SuppressWarnings("unused")
-	@interface ComposedResponseStatus {
-
-		@AliasFor(annotation = ResponseStatus.class, attribute = "code")
-		HttpStatus responseStatus() default HttpStatus.INTERNAL_SERVER_ERROR;
 	}
 
 	@ComposedResponseStatus(responseStatus = HttpStatus.BAD_REQUEST)

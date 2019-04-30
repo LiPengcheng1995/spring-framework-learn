@@ -16,12 +16,11 @@
 
 package org.springframework.http.client.reactive;
 
-import java.net.URI;
-import java.util.function.Function;
-
+import org.springframework.http.HttpMethod;
 import reactor.core.publisher.Mono;
 
-import org.springframework.http.HttpMethod;
+import java.net.URI;
+import java.util.function.Function;
 
 /**
  * Abstraction over HTTP clients driving the underlying HTTP client to connect
@@ -38,15 +37,16 @@ public interface ClientHttpConnector {
 	 * {@code URI}, then apply the given {@code requestCallback} on the
 	 * {@link ClientHttpRequest} once the connection has been established.
 	 * <p>Return a publisher of the {@link ClientHttpResponse}.
-	 * @param method the HTTP request method
-	 * @param uri the HTTP request URI
+	 *
+	 * @param method          the HTTP request method
+	 * @param uri             the HTTP request URI
 	 * @param requestCallback a function that prepares and writes the request,
-	 * returning a publisher that signals when it's done interacting with the
-	 * request. Implementations should return a {@code Mono<Void>} by calling
-	 * {@link ClientHttpRequest#writeWith} or {@link ClientHttpRequest#setComplete}.
+	 *                        returning a publisher that signals when it's done interacting with the
+	 *                        request. Implementations should return a {@code Mono<Void>} by calling
+	 *                        {@link ClientHttpRequest#writeWith} or {@link ClientHttpRequest#setComplete}.
 	 * @return a publisher of the {@link ClientHttpResponse}
 	 */
 	Mono<ClientHttpResponse> connect(HttpMethod method, URI uri,
-			Function<? super ClientHttpRequest, Mono<Void>> requestCallback);
+									 Function<? super ClientHttpRequest, Mono<Void>> requestCallback);
 
 }

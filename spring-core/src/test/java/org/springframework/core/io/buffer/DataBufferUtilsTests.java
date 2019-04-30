@@ -16,15 +16,21 @@
 
 package org.springframework.core.io.buffer;
 
+import io.netty.buffer.ByteBuf;
+import org.junit.Test;
+import org.mockito.stubbing.Answer;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.buffer.support.DataBufferTestUtils;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousFileChannel;
-import java.nio.channels.CompletionHandler;
-import java.nio.channels.FileChannel;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
+import java.nio.channels.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,18 +39,8 @@ import java.nio.file.StandardOpenOption;
 import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
 
-import io.netty.buffer.ByteBuf;
-import org.junit.Test;
-import org.mockito.stubbing.Answer;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.buffer.support.DataBufferTestUtils;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -52,6 +48,13 @@ import static org.mockito.Mockito.*;
  * @author Arjen Poutsma
  */
 public class DataBufferUtilsTests extends AbstractDataBufferAllocatingTestCase {
+
+	private static void assertReleased(DataBuffer dataBuffer) {
+		if (dataBuffer instanceof NettyDataBuffer) {
+			ByteBuf byteBuf = ((NettyDataBuffer) dataBuffer).getNativeBuffer();
+			assertEquals(0, byteBuf.refCnt());
+		}
+	}
 
 	@Test
 	public void readByteChannel() throws Exception {
@@ -293,7 +296,6 @@ public class DataBufferUtilsTests extends AbstractDataBufferAllocatingTestCase {
 		channel.close();
 	}
 
-
 	@Test
 	public void writeAsynchronousFileChannelErrorInWrite() throws Exception {
 		DataBuffer foo = stringBuffer("foo");
@@ -357,8 +359,7 @@ public class DataBufferUtilsTests extends AbstractDataBufferAllocatingTestCase {
 								assertEquals(expected, result);
 								channel.close();
 
-							}
-							catch (IOException e) {
+							} catch (IOException e) {
 								fail(e.getMessage());
 							}
 						});
@@ -390,8 +391,7 @@ public class DataBufferUtilsTests extends AbstractDataBufferAllocatingTestCase {
 								channel.close();
 								latch.countDown();
 
-							}
-							catch (IOException e) {
+							} catch (IOException e) {
 								fail(e.getMessage());
 							}
 						});
@@ -470,13 +470,6 @@ public class DataBufferUtilsTests extends AbstractDataBufferAllocatingTestCase {
 		assertReleased(foo);
 		assertReleased(bar);
 		assertReleased(baz);
-	}
-	
-	private static void assertReleased(DataBuffer dataBuffer) {
-		if (dataBuffer instanceof NettyDataBuffer) {
-			ByteBuf byteBuf = ((NettyDataBuffer) dataBuffer).getNativeBuffer();
-			assertEquals(0, byteBuf.refCnt());
-		}
 	}
 
 	@Test

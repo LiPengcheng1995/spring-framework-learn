@@ -32,8 +32,8 @@ import org.springframework.util.Assert;
  * <p>Explicit local configuration attributes override global configuration attributes.
  *
  * @author Sam Brannen
- * @since 4.1
  * @see SqlConfig
+ * @since 4.1
  */
 class MergedSqlConfig {
 
@@ -83,8 +83,7 @@ class MergedSqlConfig {
 					}
 				}
 			}
-		}
-		else {
+		} else {
 			// Otherwise, use local attributes only.
 			attributes = AnnotationUtils.getAnnotationAttributes(localSqlConfig, false, false);
 		}
@@ -100,6 +99,24 @@ class MergedSqlConfig {
 		this.blockCommentEndDelimiter = getString(attributes, "blockCommentEndDelimiter",
 				ScriptUtils.DEFAULT_BLOCK_COMMENT_END_DELIMITER);
 		this.errorMode = getEnum(attributes, "errorMode", ErrorMode.DEFAULT, ErrorMode.FAIL_ON_ERROR);
+	}
+
+	private static <E extends Enum<?>> E getEnum(AnnotationAttributes attributes, String attributeName,
+												 E inheritedOrDefaultValue, E defaultValue) {
+
+		E value = attributes.getEnum(attributeName);
+		if (value == inheritedOrDefaultValue) {
+			value = defaultValue;
+		}
+		return value;
+	}
+
+	private static String getString(AnnotationAttributes attributes, String attributeName, String defaultValue) {
+		String value = attributes.getString(attributeName);
+		if ("".equals(value)) {
+			value = defaultValue;
+		}
+		return value;
 	}
 
 	/**
@@ -181,25 +198,6 @@ class MergedSqlConfig {
 				.append("blockCommentEndDelimiter", this.blockCommentEndDelimiter)
 				.append("errorMode", this.errorMode)
 				.toString();
-	}
-
-
-	private static <E extends Enum<?>> E getEnum(AnnotationAttributes attributes, String attributeName,
-			E inheritedOrDefaultValue, E defaultValue) {
-
-		E value = attributes.getEnum(attributeName);
-		if (value == inheritedOrDefaultValue) {
-			value = defaultValue;
-		}
-		return value;
-	}
-
-	private static String getString(AnnotationAttributes attributes, String attributeName, String defaultValue) {
-		String value = attributes.getString(attributeName);
-		if ("".equals(value)) {
-			value = defaultValue;
-		}
-		return value;
 	}
 
 }

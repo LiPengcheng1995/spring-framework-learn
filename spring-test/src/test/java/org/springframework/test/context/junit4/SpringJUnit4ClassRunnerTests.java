@@ -16,16 +16,15 @@
 
 package org.springframework.test.context.junit4;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 import org.junit.Test;
 import org.junit.runners.model.FrameworkMethod;
-
 import org.springframework.test.annotation.Timed;
 import org.springframework.test.context.TestContextManager;
 
-import static org.junit.Assert.*;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Unit tests for {@link SpringJUnit4ClassRunner}.
@@ -47,7 +46,7 @@ public class SpringJUnit4ClassRunnerTests {
 					@Override
 					public void prepareTestInstance(Object testInstance) {
 						throw new RuntimeException(
-							"This RuntimeException should be caught and wrapped in an Exception.");
+								"This RuntimeException should be caught and wrapped in an Exception.");
 					}
 				};
 			}
@@ -59,7 +58,7 @@ public class SpringJUnit4ClassRunnerTests {
 	public void getSpringTimeoutViaMetaAnnotation() throws Exception {
 		SpringJUnit4ClassRunner runner = new SpringJUnit4ClassRunner(getClass());
 		long timeout = runner.getSpringTimeout(new FrameworkMethod(getClass().getDeclaredMethod(
-			"springTimeoutWithMetaAnnotation")));
+				"springTimeoutWithMetaAnnotation")));
 		assertEquals(10, timeout);
 	}
 
@@ -67,7 +66,7 @@ public class SpringJUnit4ClassRunnerTests {
 	public void getSpringTimeoutViaMetaAnnotationWithOverride() throws Exception {
 		SpringJUnit4ClassRunner runner = new SpringJUnit4ClassRunner(getClass());
 		long timeout = runner.getSpringTimeout(new FrameworkMethod(getClass().getDeclaredMethod(
-			"springTimeoutWithMetaAnnotationAndOverride")));
+				"springTimeoutWithMetaAnnotationAndOverride")));
 		assertEquals(42, timeout);
 	}
 

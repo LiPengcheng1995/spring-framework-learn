@@ -18,7 +18,6 @@ package org.springframework.web.reactive.resource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.util.Assert;
 
 /**
@@ -57,11 +56,9 @@ public abstract class AbstractPrefixVersionStrategy implements VersionStrategy {
 	public String addVersion(String path, String version) {
 		if (path.startsWith(".")) {
 			return path;
-		}
-		else if (this.prefix.endsWith("/") || path.startsWith("/")) {
+		} else if (this.prefix.endsWith("/") || path.startsWith("/")) {
 			return this.prefix + path;
-		}
-		else {
+		} else {
 			return this.prefix + '/' + path;
 		}
 	}

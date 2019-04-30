@@ -16,21 +16,6 @@
 
 package org.springframework.web.reactive.socket.client;
 
-import java.net.URI;
-import java.util.List;
-import java.util.Map;
-import javax.websocket.ClientEndpointConfig;
-import javax.websocket.ClientEndpointConfig.Configurator;
-import javax.websocket.ContainerProvider;
-import javax.websocket.Endpoint;
-import javax.websocket.HandshakeResponse;
-import javax.websocket.Session;
-import javax.websocket.WebSocketContainer;
-
-import reactor.core.publisher.Mono;
-import reactor.core.publisher.MonoProcessor;
-import reactor.core.scheduler.Schedulers;
-
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.HttpHeaders;
@@ -38,14 +23,23 @@ import org.springframework.web.reactive.socket.HandshakeInfo;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.adapter.StandardWebSocketHandlerAdapter;
 import org.springframework.web.reactive.socket.adapter.StandardWebSocketSession;
+import reactor.core.publisher.Mono;
+import reactor.core.publisher.MonoProcessor;
+import reactor.core.scheduler.Schedulers;
+
+import javax.websocket.*;
+import javax.websocket.ClientEndpointConfig.Configurator;
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
 
 /**
  * {@link WebSocketClient} implementation for use with the Java WebSocket API.
  *
  * @author Violeta Georgieva
  * @author Rossen Stoyanchev
- * @since 5.0
  * @see <a href="https://www.jcp.org/en/jsr/detail?id=356">https://www.jcp.org/en/jsr/detail?id=356</a>
+ * @since 5.0
  */
 public class StandardWebSocketClient extends WebSocketClientSupport implements WebSocketClient {
 
@@ -65,6 +59,7 @@ public class StandardWebSocketClient extends WebSocketClientSupport implements W
 
 	/**
 	 * Constructor accepting an existing {@link WebSocketContainer} instance.
+	 *
 	 * @param webSocketContainer a web socket container
 	 */
 	public StandardWebSocketClient(WebSocketContainer webSocketContainer) {
@@ -105,7 +100,7 @@ public class StandardWebSocketClient extends WebSocketClientSupport implements W
 	}
 
 	private StandardWebSocketHandlerAdapter createEndpoint(URI url, WebSocketHandler handler,
-			MonoProcessor<Void> completion, DefaultConfigurator configurator) {
+														   MonoProcessor<Void> completion, DefaultConfigurator configurator) {
 
 		return new StandardWebSocketHandlerAdapter(handler, session -> {
 			HttpHeaders responseHeaders = configurator.getResponseHeaders();
@@ -115,7 +110,7 @@ public class StandardWebSocketClient extends WebSocketClientSupport implements W
 	}
 
 	protected StandardWebSocketSession createWebSocketSession(Session session, HandshakeInfo info,
-			MonoProcessor<Void> completion) {
+															  MonoProcessor<Void> completion) {
 
 		return new StandardWebSocketSession(session, info, this.bufferFactory, completion);
 	}

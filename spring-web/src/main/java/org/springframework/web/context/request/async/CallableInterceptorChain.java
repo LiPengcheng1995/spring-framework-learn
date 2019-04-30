@@ -16,14 +16,13 @@
 
 package org.springframework.web.context.request.async;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.web.context.request.NativeWebRequest;
+
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.springframework.web.context.request.NativeWebRequest;
 
 /**
  * Assists with the invocation of {@link CallableProcessingInterceptor}'s.
@@ -71,13 +70,11 @@ class CallableInterceptorChain {
 		for (int i = this.preProcessIndex; i >= 0; i--) {
 			try {
 				this.interceptors.get(i).postProcess(request, task, concurrentResult);
-			}
-			catch (Throwable t) {
+			} catch (Throwable t) {
 				// Save the first exception but invoke all interceptors
 				if (exceptionResult != null) {
 					logger.error("postProcess error", t);
-				}
-				else {
+				} else {
 					exceptionResult = t;
 				}
 			}
@@ -92,12 +89,10 @@ class CallableInterceptorChain {
 				Object result = interceptor.handleTimeout(request, task);
 				if (result == CallableProcessingInterceptor.RESPONSE_HANDLED) {
 					break;
-				}
-				else if (result != CallableProcessingInterceptor.RESULT_NONE) {
+				} else if (result != CallableProcessingInterceptor.RESULT_NONE) {
 					return result;
 				}
-			}
-			catch (Throwable t) {
+			} catch (Throwable t) {
 				return t;
 			}
 		}
@@ -109,8 +104,7 @@ class CallableInterceptorChain {
 		if (future != null) {
 			try {
 				future.cancel(true);
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				// Ignore
 			}
 		}
@@ -123,12 +117,10 @@ class CallableInterceptorChain {
 				Object result = interceptor.handleError(request, task, throwable);
 				if (result == CallableProcessingInterceptor.RESPONSE_HANDLED) {
 					break;
-				}
-				else if (result != CallableProcessingInterceptor.RESULT_NONE) {
+				} else if (result != CallableProcessingInterceptor.RESULT_NONE) {
 					return result;
 				}
-			}
-			catch (Throwable t) {
+			} catch (Throwable t) {
 				return t;
 			}
 		}
@@ -136,11 +128,10 @@ class CallableInterceptorChain {
 	}
 
 	public void triggerAfterCompletion(NativeWebRequest request, Callable<?> task) {
-		for (int i = this.interceptors.size()-1; i >= 0; i--) {
+		for (int i = this.interceptors.size() - 1; i >= 0; i--) {
 			try {
 				this.interceptors.get(i).afterCompletion(request, task);
-			}
-			catch (Throwable t) {
+			} catch (Throwable t) {
 				logger.error("afterCompletion error", t);
 			}
 		}

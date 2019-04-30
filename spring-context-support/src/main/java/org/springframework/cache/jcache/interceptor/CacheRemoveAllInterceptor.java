@@ -16,12 +16,12 @@
 
 package org.springframework.cache.jcache.interceptor;
 
-import javax.cache.annotation.CacheRemoveAll;
-
 import org.springframework.cache.Cache;
 import org.springframework.cache.interceptor.CacheErrorHandler;
 import org.springframework.cache.interceptor.CacheOperationInvocationContext;
 import org.springframework.cache.interceptor.CacheOperationInvoker;
+
+import javax.cache.annotation.CacheRemoveAll;
 
 /**
  * Intercept methods annotated with {@link CacheRemoveAll}.
@@ -54,8 +54,7 @@ class CacheRemoveAllInterceptor extends AbstractCacheInterceptor<CacheRemoveAllO
 				removeAll(context);
 			}
 			return result;
-		}
-		catch (CacheOperationInvoker.ThrowableWrapper ex) {
+		} catch (CacheOperationInvoker.ThrowableWrapper ex) {
 			Throwable original = ex.getOriginal();
 			if (!earlyRemove && operation.getExceptionTypeFilter().match(original.getClass())) {
 				removeAll(context);

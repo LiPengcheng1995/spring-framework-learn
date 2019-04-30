@@ -17,7 +17,6 @@
 package org.springframework.http.codec.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.util.MimeType;
 
@@ -27,8 +26,8 @@ import org.springframework.util.MimeType;
  *
  * @author Sebastien Deleuze
  * @author Rossen Stoyanchev
- * @since 5.0
  * @see Jackson2JsonEncoder
+ * @since 5.0
  */
 public class Jackson2JsonDecoder extends AbstractJackson2Decoder {
 

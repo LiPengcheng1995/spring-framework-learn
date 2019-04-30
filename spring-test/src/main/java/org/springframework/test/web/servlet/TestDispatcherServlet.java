@@ -16,14 +16,6 @@
 
 package org.springframework.test.web.servlet;
 
-import java.io.IOException;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.lang.Nullable;
 import org.springframework.mock.web.MockAsyncContext;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -38,6 +30,14 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.WebUtils;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * A sub-class of {@code DispatcherServlet} that saves the result in an
@@ -74,8 +74,7 @@ final class TestDispatcherServlet extends DispatcherServlet {
 			MockAsyncContext asyncContext;
 			if (request.getAsyncContext() instanceof MockAsyncContext) {
 				asyncContext = (MockAsyncContext) request.getAsyncContext();
-			}
-			else {
+			} else {
 				MockHttpServletRequest mockRequest = WebUtils.getNativeRequest(request, MockHttpServletRequest.class);
 				Assert.notNull(mockRequest, "Expected MockHttpServletRequest");
 				asyncContext = (MockAsyncContext) mockRequest.getAsyncContext();
@@ -137,7 +136,7 @@ final class TestDispatcherServlet extends DispatcherServlet {
 
 	@Override
 	protected ModelAndView processHandlerException(HttpServletRequest request, HttpServletResponse response,
-			@Nullable Object handler, Exception ex) throws Exception {
+												   @Nullable Object handler, Exception ex) throws Exception {
 
 		ModelAndView mav = super.processHandlerException(request, response, handler, ex);
 

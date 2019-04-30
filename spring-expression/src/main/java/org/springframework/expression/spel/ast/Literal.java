@@ -17,11 +17,7 @@
 package org.springframework.expression.spel.ast;
 
 import org.springframework.expression.TypedValue;
-import org.springframework.expression.spel.ExpressionState;
-import org.springframework.expression.spel.InternalParseException;
-import org.springframework.expression.spel.SpelEvaluationException;
-import org.springframework.expression.spel.SpelMessage;
-import org.springframework.expression.spel.SpelParseException;
+import org.springframework.expression.spel.*;
 import org.springframework.lang.Nullable;
 
 /**
@@ -41,6 +37,46 @@ public abstract class Literal extends SpelNodeImpl {
 		this.originalValue = originalValue;
 	}
 
+	/**
+	 * Process the string form of a number, using the specified base if supplied
+	 * and return an appropriate literal to hold it. Any suffix to indicate a
+	 * long will be taken into account (either 'l' or 'L' is supported).
+	 *
+	 * @param numberToken the token holding the number as its payload (eg. 1234 or 0xCAFE)
+	 * @param radix       the base of number
+	 * @return a subtype of Literal that can represent it
+	 */
+	public static Literal getIntLiteral(String numberToken, int pos, int radix) {
+		try {
+			int value = Integer.parseInt(numberToken, radix);
+			return new IntLiteral(numberToken, pos, value);
+		} catch (NumberFormatException ex) {
+			throw new InternalParseException(new SpelParseException(pos >> 16, ex, SpelMessage.NOT_AN_INTEGER, numberToken));
+		}
+	}
+
+	public static Literal getLongLiteral(String numberToken, int pos, int radix) {
+		try {
+			long value = Long.parseLong(numberToken, radix);
+			return new LongLiteral(numberToken, pos, value);
+		} catch (NumberFormatException ex) {
+			throw new InternalParseException(new SpelParseException(pos >> 16, ex, SpelMessage.NOT_A_LONG, numberToken));
+		}
+	}
+
+	public static Literal getRealLiteral(String numberToken, int pos, boolean isFloat) {
+		try {
+			if (isFloat) {
+				float value = Float.parseFloat(numberToken);
+				return new FloatLiteral(numberToken, pos, value);
+			} else {
+				double value = Double.parseDouble(numberToken);
+				return new RealLiteral(numberToken, pos, value);
+			}
+		} catch (NumberFormatException ex) {
+			throw new InternalParseException(new SpelParseException(pos >> 16, ex, SpelMessage.NOT_A_REAL, numberToken));
+		}
+	}
 
 	@Nullable
 	public final String getOriginalValue() {
@@ -62,52 +98,6 @@ public abstract class Literal extends SpelNodeImpl {
 		return toString();
 	}
 
-
 	public abstract TypedValue getLiteralValue();
-
-
-	/**
-	 * Process the string form of a number, using the specified base if supplied
-	 * and return an appropriate literal to hold it. Any suffix to indicate a
-	 * long will be taken into account (either 'l' or 'L' is supported).
-	 * @param numberToken the token holding the number as its payload (eg. 1234 or 0xCAFE)
-	 * @param radix the base of number
-	 * @return a subtype of Literal that can represent it
-	 */
-	public static Literal getIntLiteral(String numberToken, int pos, int radix) {
-		try {
-			int value = Integer.parseInt(numberToken, radix);
-			return new IntLiteral(numberToken, pos, value);
-		}
-		catch (NumberFormatException ex) {
-			throw new InternalParseException(new SpelParseException(pos>>16, ex, SpelMessage.NOT_AN_INTEGER, numberToken));
-		}
-	}
-
-	public static Literal getLongLiteral(String numberToken, int pos, int radix) {
-		try {
-			long value = Long.parseLong(numberToken, radix);
-			return new LongLiteral(numberToken, pos, value);
-		}
-		catch (NumberFormatException ex) {
-			throw new InternalParseException(new SpelParseException(pos>>16, ex, SpelMessage.NOT_A_LONG, numberToken));
-		}
-	}
-
-	public static Literal getRealLiteral(String numberToken, int pos, boolean isFloat) {
-		try {
-			if (isFloat) {
-				float value = Float.parseFloat(numberToken);
-				return new FloatLiteral(numberToken, pos, value);
-			}
-			else {
-				double value = Double.parseDouble(numberToken);
-				return new RealLiteral(numberToken, pos, value);
-			}
-		}
-		catch (NumberFormatException ex) {
-			throw new InternalParseException(new SpelParseException(pos>>16, ex, SpelMessage.NOT_A_REAL, numberToken));
-		}
-	}
 
 }

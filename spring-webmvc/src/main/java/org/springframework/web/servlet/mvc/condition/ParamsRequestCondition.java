@@ -16,16 +16,16 @@
 
 package org.springframework.web.servlet.mvc.condition;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.util.WebUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * A logical conjunction (' && ') request condition that matches a request against
@@ -42,8 +42,9 @@ public final class ParamsRequestCondition extends AbstractRequestCondition<Param
 
 	/**
 	 * Create a new instance from the given param expressions.
+	 *
 	 * @param params expressions with syntax defined in {@link RequestMapping#params()};
-	 * 	if 0, the condition will match to every request.
+	 *               if 0, the condition will match to every request.
 	 */
 	public ParamsRequestCondition(String... params) {
 		this(parseExpressions(params));

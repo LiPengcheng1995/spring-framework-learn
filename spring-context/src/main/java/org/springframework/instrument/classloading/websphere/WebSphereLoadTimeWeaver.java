@@ -16,13 +16,13 @@
 
 package org.springframework.instrument.classloading.websphere;
 
-import java.lang.instrument.ClassFileTransformer;
-
 import org.springframework.core.OverridingClassLoader;
 import org.springframework.instrument.classloading.LoadTimeWeaver;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+
+import java.lang.instrument.ClassFileTransformer;
 
 /**
  * {@link LoadTimeWeaver} implementation for WebSphere's instrumentable ClassLoader.
@@ -39,6 +39,7 @@ public class WebSphereLoadTimeWeaver implements LoadTimeWeaver {
 	/**
 	 * Create a new instance of the {@link WebSphereLoadTimeWeaver} class using
 	 * the default {@link ClassLoader class loader}.
+	 *
 	 * @see org.springframework.util.ClassUtils#getDefaultClassLoader()
 	 */
 	public WebSphereLoadTimeWeaver() {
@@ -48,6 +49,7 @@ public class WebSphereLoadTimeWeaver implements LoadTimeWeaver {
 	/**
 	 * Create a new instance of the {@link WebSphereLoadTimeWeaver} class using
 	 * the supplied {@link ClassLoader}.
+	 *
 	 * @param classLoader the {@code ClassLoader} to delegate to for weaving
 	 */
 	public WebSphereLoadTimeWeaver(@Nullable ClassLoader classLoader) {

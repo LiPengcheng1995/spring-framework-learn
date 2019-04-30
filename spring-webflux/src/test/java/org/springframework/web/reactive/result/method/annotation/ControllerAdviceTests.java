@@ -15,12 +15,7 @@
  */
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.lang.reflect.Method;
-import java.time.Duration;
-import java.util.Collections;
-
 import org.junit.Test;
-
 import org.springframework.beans.FatalBeanException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -34,21 +29,22 @@ import org.springframework.ui.Model;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.WebExchangeDataBinder;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.reactive.BindingContext;
 import org.springframework.web.reactive.HandlerResult;
+
+import java.lang.reflect.Method;
+import java.time.Duration;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
 /**
  * {@code @ControllerAdvice} related tests for {@link RequestMappingHandlerAdapter}.
+ *
  * @author Rossen Stoyanchev
  */
 public class ControllerAdviceTests {
@@ -133,7 +129,7 @@ public class ControllerAdviceTests {
 	}
 
 	private HandlerResult handle(RequestMappingHandlerAdapter adapter,
-			Object controller, String methodName) throws Exception {
+								 Object controller, String methodName) throws Exception {
 
 		Method method = controller.getClass().getMethod(methodName);
 		HandlerMethod handlerMethod = new HandlerMethod(controller, method);

@@ -16,14 +16,14 @@
 
 package org.springframework.test.web.client;
 
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Default implementation of {@code RequestExpectation} that simply delegates
@@ -45,6 +45,7 @@ public class DefaultRequestExpectation implements RequestExpectation {
 	/**
 	 * Create a new request expectation that should be called a number of times
 	 * as indicated by {@code RequestCount}.
+	 *
 	 * @param expectedCount the expected request expectedCount
 	 */
 	public DefaultRequestExpectation(ExpectedCount expectedCount, RequestMatcher requestMatcher) {

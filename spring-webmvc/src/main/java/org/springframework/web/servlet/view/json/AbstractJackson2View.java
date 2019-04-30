@@ -16,13 +16,6 @@
 
 package org.springframework.web.servlet.view.json;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -30,11 +23,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
-
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.view.AbstractView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Map;
 
 /**
  * Abstract base class for Jackson based and content type independent
@@ -51,16 +50,12 @@ import org.springframework.web.servlet.view.AbstractView;
  */
 public abstract class AbstractJackson2View extends AbstractView {
 
+	protected boolean updateContentLength = false;
 	private ObjectMapper objectMapper;
-
 	private JsonEncoding encoding = JsonEncoding.UTF8;
-
 	@Nullable
 	private Boolean prettyPrint;
-
 	private boolean disableCaching = true;
-
-	protected boolean updateContentLength = false;
 
 
 	protected AbstractJackson2View(ObjectMapper objectMapper, String contentType) {
@@ -68,6 +63,13 @@ public abstract class AbstractJackson2View extends AbstractView {
 		configurePrettyPrint();
 		setContentType(contentType);
 		setExposePathVariables(false);
+	}
+
+	/**
+	 * Return the {@code ObjectMapper} for this view.
+	 */
+	public final ObjectMapper getObjectMapper() {
+		return this.objectMapper;
 	}
 
 	/**
@@ -83,10 +85,10 @@ public abstract class AbstractJackson2View extends AbstractView {
 	}
 
 	/**
-	 * Return the {@code ObjectMapper} for this view.
+	 * Return the {@code JsonEncoding} for this view.
 	 */
-	public final ObjectMapper getObjectMapper() {
-		return this.objectMapper;
+	public final JsonEncoding getEncoding() {
+		return this.encoding;
 	}
 
 	/**
@@ -96,13 +98,6 @@ public abstract class AbstractJackson2View extends AbstractView {
 	public void setEncoding(JsonEncoding encoding) {
 		Assert.notNull(encoding, "'encoding' must not be null");
 		this.encoding = encoding;
-	}
-
-	/**
-	 * Return the {@code JsonEncoding} for this view.
-	 */
-	public final JsonEncoding getEncoding() {
-		return this.encoding;
 	}
 
 	/**
@@ -154,7 +149,7 @@ public abstract class AbstractJackson2View extends AbstractView {
 
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
+										   HttpServletResponse response) throws Exception {
 
 		ByteArrayOutputStream temporaryStream = null;
 		OutputStream stream;
@@ -162,8 +157,7 @@ public abstract class AbstractJackson2View extends AbstractView {
 		if (this.updateContentLength) {
 			temporaryStream = createTemporaryOutputStream();
 			stream = temporaryStream;
-		}
-		else {
+		} else {
 			stream = response.getOutputStream();
 		}
 
@@ -177,7 +171,8 @@ public abstract class AbstractJackson2View extends AbstractView {
 
 	/**
 	 * Filter and optionally wrap the model in {@link MappingJacksonValue} container.
-	 * @param model the model, as passed on to {@link #renderMergedOutputModel}
+	 *
+	 * @param model   the model, as passed on to {@link #renderMergedOutputModel}
 	 * @param request current HTTP request
 	 * @return the wrapped or unwrapped value to be rendered
 	 */
@@ -200,6 +195,7 @@ public abstract class AbstractJackson2View extends AbstractView {
 
 	/**
 	 * Write the actual JSON content to the stream.
+	 *
 	 * @param stream the output stream to use
 	 * @param object the value to be rendered, as returned from {@link #filterModel}
 	 * @throws IOException if writing failed
@@ -240,6 +236,7 @@ public abstract class AbstractJackson2View extends AbstractView {
 	/**
 	 * Filter out undesired attributes from the given model.
 	 * The return value can be either another {@link Map} or a single value object.
+	 *
 	 * @param model the model, as passed on to {@link #renderMergedOutputModel}
 	 * @return the value to be rendered
 	 */
@@ -247,16 +244,18 @@ public abstract class AbstractJackson2View extends AbstractView {
 
 	/**
 	 * Write a prefix before the main content.
+	 *
 	 * @param generator the generator to use for writing content.
-	 * @param object the object to write to the output message.
+	 * @param object    the object to write to the output message.
 	 */
 	protected void writePrefix(JsonGenerator generator, Object object) throws IOException {
 	}
 
 	/**
 	 * Write a suffix after the main content.
+	 *
 	 * @param generator the generator to use for writing content.
-	 * @param object the object to write to the output message.
+	 * @param object    the object to write to the output message.
 	 */
 	protected void writeSuffix(JsonGenerator generator, Object object) throws IOException {
 	}

@@ -16,8 +16,6 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.Conventions;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapter;
@@ -30,6 +28,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.reactive.BindingContext;
 import org.springframework.web.reactive.result.method.HandlerMethodArgumentResolverSupport;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
 
 /**
  * Resolve {@link Errors} or {@link BindingResult} method arguments.
@@ -58,11 +57,9 @@ public class ErrorsMethodArgumentResolver extends HandlerMethodArgumentResolverS
 		Object errors = getErrors(parameter, context);
 		if (Mono.class.isAssignableFrom(errors.getClass())) {
 			return ((Mono<?>) errors).cast(Object.class);
-		}
-		else if (Errors.class.isAssignableFrom(errors.getClass())) {
+		} else if (Errors.class.isAssignableFrom(errors.getClass())) {
 			return Mono.just(errors);
-		}
-		else {
+		} else {
 			throw new IllegalStateException("Unexpected Errors/BindingResult type: " + errors.getClass().getName());
 		}
 	}

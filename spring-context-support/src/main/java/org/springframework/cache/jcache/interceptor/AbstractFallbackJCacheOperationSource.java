@@ -16,17 +16,16 @@
 
 package org.springframework.cache.jcache.interceptor;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.aop.support.AopUtils;
+import org.springframework.core.MethodClassKey;
+import org.springframework.lang.Nullable;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.springframework.aop.support.AopUtils;
-import org.springframework.core.MethodClassKey;
-import org.springframework.lang.Nullable;
 
 /**
  * Abstract implementation of {@link JCacheOperationSource} that caches attributes
@@ -37,8 +36,8 @@ import org.springframework.lang.Nullable;
  *
  * @author Stephane Nicoll
  * @author Juergen Hoeller
- * @since 4.1
  * @see org.springframework.cache.interceptor.AbstractFallbackCacheOperationSource
+ * @since 4.1
  */
 public abstract class AbstractFallbackJCacheOperationSource implements JCacheOperationSource {
 
@@ -61,16 +60,14 @@ public abstract class AbstractFallbackJCacheOperationSource implements JCacheOpe
 
 		if (cached != null) {
 			return (cached != NULL_CACHING_ATTRIBUTE ? (JCacheOperation<?>) cached : null);
-		}
-		else {
+		} else {
 			JCacheOperation<?> operation = computeCacheOperation(method, targetClass);
 			if (operation != null) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Adding cacheable method '" + method.getName() + "' with operation: " + operation);
 				}
 				this.cache.put(cacheKey, operation);
-			}
-			else {
+			} else {
 				this.cache.put(cacheKey, NULL_CACHING_ATTRIBUTE);
 			}
 			return operation;
@@ -107,7 +104,8 @@ public abstract class AbstractFallbackJCacheOperationSource implements JCacheOpe
 	/**
 	 * Subclasses need to implement this to return the caching operation
 	 * for the given method, if any.
-	 * @param method the method to retrieve the operation for
+	 *
+	 * @param method     the method to retrieve the operation for
 	 * @param targetType the target class
 	 * @return the cache operation associated with this method
 	 * (or {@code null} if none)

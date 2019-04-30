@@ -16,9 +16,6 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.lang.reflect.Method;
-import java.util.List;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.lang.Nullable;
 import org.springframework.ui.ExtendedModelMap;
@@ -29,6 +26,9 @@ import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.annotation.ModelAndViewResolver;
+
+import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * This return value handler is intended to be ordered after all others as it
@@ -79,7 +79,7 @@ public class ModelAndViewResolverMethodReturnValueHandler implements HandlerMeth
 
 	@Override
 	public void handleReturnValue(@Nullable Object returnValue, MethodParameter returnType,
-			ModelAndViewContainer mavContainer, NativeWebRequest webRequest) throws Exception {
+								  ModelAndViewContainer mavContainer, NativeWebRequest webRequest) throws Exception {
 
 		if (this.mavResolvers != null) {
 			for (ModelAndViewResolver mavResolver : this.mavResolvers) {
@@ -102,8 +102,7 @@ public class ModelAndViewResolverMethodReturnValueHandler implements HandlerMeth
 		// No suitable ModelAndViewResolver...
 		if (this.modelAttributeProcessor.supportsReturnType(returnType)) {
 			this.modelAttributeProcessor.handleReturnValue(returnValue, returnType, mavContainer, webRequest);
-		}
-		else {
+		} else {
 			throw new UnsupportedOperationException("Unexpected return type: " +
 					returnType.getParameterType().getName() + " in method: " + returnType.getMethod());
 		}

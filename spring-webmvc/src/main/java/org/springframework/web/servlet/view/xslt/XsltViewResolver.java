@@ -16,13 +16,13 @@
 
 package org.springframework.web.servlet.view.xslt;
 
-import java.util.Properties;
-import javax.xml.transform.ErrorListener;
-import javax.xml.transform.URIResolver;
-
 import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.view.AbstractUrlBasedView;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
+
+import javax.xml.transform.ErrorListener;
+import javax.xml.transform.URIResolver;
+import java.util.Properties;
 
 /**
  * {@link org.springframework.web.servlet.ViewResolver} implementation that
@@ -89,6 +89,7 @@ public class XsltViewResolver extends UrlBasedViewResolver {
 	 * {@link org.springframework.util.xml.SimpleTransformErrorListener} is
 	 * used that simply logs warnings using the logger instance of the view class,
 	 * and rethrows errors to discontinue the XML transformation.
+	 *
 	 * @see org.springframework.util.xml.SimpleTransformErrorListener
 	 */
 	public void setErrorListener(ErrorListener errorListener) {
@@ -100,6 +101,7 @@ public class XsltViewResolver extends UrlBasedViewResolver {
 	 * outputting the result tree.
 	 * <p>Default is {@code true} (on); set this to {@code false} (off)
 	 * to not specify an "indent" key, leaving the choice up to the stylesheet.
+	 *
 	 * @see javax.xml.transform.OutputKeys#INDENT
 	 */
 	public void setIndent(boolean indent) {
@@ -110,6 +112,7 @@ public class XsltViewResolver extends UrlBasedViewResolver {
 	 * Set arbitrary transformer output properties to be applied to the stylesheet.
 	 * <p>Any values specified here will override defaults that this view sets
 	 * programmatically.
+	 *
 	 * @see javax.xml.transform.Transformer#setOutputProperty
 	 */
 	public void setOutputProperties(Properties outputProperties) {

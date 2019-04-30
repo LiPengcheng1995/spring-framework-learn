@@ -18,7 +18,6 @@ package org.springframework.test.context.junit4.spr9645;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
@@ -29,7 +28,7 @@ import org.springframework.tests.transaction.CallCountingTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Integration tests that verify the behavior requested in
@@ -45,20 +44,6 @@ public class LookUpTxMgrByTypeAndDefaultNameTests {
 
 	private static final CallCountingTransactionManager txManager1 = new CallCountingTransactionManager();
 	private static final CallCountingTransactionManager txManager2 = new CallCountingTransactionManager();
-
-	@Configuration
-	static class Config {
-
-		@Bean
-		public PlatformTransactionManager transactionManager() {
-			return txManager1;
-		}
-
-		@Bean
-		public PlatformTransactionManager txManager2() {
-			return txManager2;
-		}
-	}
 
 	@BeforeTransaction
 	public void beforeTransaction() {
@@ -80,6 +65,20 @@ public class LookUpTxMgrByTypeAndDefaultNameTests {
 		assertEquals(0, txManager1.inflight);
 		assertEquals(0, txManager1.commits);
 		assertEquals(1, txManager1.rollbacks);
+	}
+
+	@Configuration
+	static class Config {
+
+		@Bean
+		public PlatformTransactionManager transactionManager() {
+			return txManager1;
+		}
+
+		@Bean
+		public PlatformTransactionManager txManager2() {
+			return txManager2;
+		}
 	}
 
 }

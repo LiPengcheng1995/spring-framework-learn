@@ -16,19 +16,19 @@
 
 package org.springframework.cache.jcache.interceptor;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import javax.cache.annotation.CacheInvocationParameter;
-import javax.cache.annotation.CacheMethodDetails;
-
 import org.junit.Test;
-
 import org.springframework.cache.jcache.AbstractJCacheTests;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
-import static org.junit.Assert.*;
+import javax.cache.annotation.CacheInvocationParameter;
+import javax.cache.annotation.CacheMethodDetails;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Stephane Nicoll
@@ -37,8 +37,12 @@ public abstract class AbstractCacheOperationTests<O extends JCacheOperation<?>> 
 
 	protected final SampleObject sampleInstance = new SampleObject();
 
-	protected abstract O createSimpleOperation();
+	private static String getCacheName(Annotation annotation) {
+		Object cacheName = AnnotationUtils.getValue(annotation, "cacheName");
+		return cacheName != null ? cacheName.toString() : "test";
+	}
 
+	protected abstract O createSimpleOperation();
 
 	@Test
 	public void simple() {
@@ -53,24 +57,19 @@ public abstract class AbstractCacheOperationTests<O extends JCacheOperation<?>> 
 	}
 
 	protected void assertCacheInvocationParameter(CacheInvocationParameter actual, Class<?> targetType,
-			Object value, int position) {
+												  Object value, int position) {
 		assertEquals("wrong parameter type for " + actual, targetType, actual.getRawType());
 		assertEquals("wrong parameter value for " + actual, value, actual.getValue());
 		assertEquals("wrong parameter position for " + actual, position, actual.getParameterPosition());
 	}
 
 	protected <A extends Annotation> CacheMethodDetails<A> create(Class<A> annotationType,
-			Class<?> targetType, String methodName,
-			Class<?>... parameterTypes) {
+																  Class<?> targetType, String methodName,
+																  Class<?>... parameterTypes) {
 		Method method = ReflectionUtils.findMethod(targetType, methodName, parameterTypes);
 		Assert.notNull(method, "requested method '" + methodName + "'does not exist");
 		A cacheAnnotation = method.getAnnotation(annotationType);
 		return new DefaultCacheMethodDetails<>(method, cacheAnnotation, getCacheName(cacheAnnotation));
-	}
-
-	private static String getCacheName(Annotation annotation) {
-		Object cacheName = AnnotationUtils.getValue(annotation, "cacheName");
-		return cacheName != null ? cacheName.toString() : "test";
 	}
 
 }

@@ -23,7 +23,7 @@ import java.util.List;
  * @author Rob Harrop
  * @author Sam Brannen
  */
-@SuppressWarnings({ "rawtypes", "unchecked" })
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class Country {
 
 	public static final Country COUNTRY_AT = new Country("AT", "Austria");
@@ -43,21 +43,6 @@ public class Country {
 	public Country(String isoCode, String name) {
 		this.isoCode = isoCode;
 		this.name = name;
-	}
-
-
-	public String getIsoCode() {
-		return this.isoCode;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-
-	@Override
-	public String toString() {
-		return this.name + "(" + this.isoCode + ")";
 	}
 
 	public static Country getCountryWithIsoCode(final String isoCode) {
@@ -83,6 +68,19 @@ public class Country {
 		countries.add(COUNTRY_UK);
 		countries.add(COUNTRY_US);
 		return countries;
+	}
+
+	public String getIsoCode() {
+		return this.isoCode;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	@Override
+	public String toString() {
+		return this.name + "(" + this.isoCode + ")";
 	}
 
 }

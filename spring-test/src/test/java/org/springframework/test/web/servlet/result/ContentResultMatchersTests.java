@@ -18,7 +18,6 @@ package org.springframework.test.web.servlet.result;
 
 import org.hamcrest.Matchers;
 import org.junit.Test;
-
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.StubMvcResult;
 
@@ -26,6 +25,8 @@ import org.springframework.test.web.servlet.StubMvcResult;
  * @author Rossen Stoyanchev
  */
 public class ContentResultMatchersTests {
+
+	private static final String CONTENT = "{\"foo\":\"bar\",\"foo array\":[\"foo\",\"bar\"]}";
 
 	@Test
 	public void typeMatches() throws Exception {
@@ -99,8 +100,6 @@ public class ContentResultMatchersTests {
 	public void jsonStrictNoMatch() throws Exception {
 		new ContentResultMatchers().json("{\"foo\":\"bar\",   \"foo array\":[\"bar\",\"foo\"]}", true).match(getStubMvcResult());
 	}
-
-	private static final String CONTENT = "{\"foo\":\"bar\",\"foo array\":[\"foo\",\"bar\"]}";
 
 	private StubMvcResult getStubMvcResult() throws Exception {
 		MockHttpServletResponse response = new MockHttpServletResponse();

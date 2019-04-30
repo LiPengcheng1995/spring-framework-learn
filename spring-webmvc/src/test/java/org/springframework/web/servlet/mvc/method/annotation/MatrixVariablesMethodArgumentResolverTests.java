@@ -16,14 +16,8 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.mock.web.test.MockHttpServletResponse;
@@ -36,13 +30,17 @@ import org.springframework.web.method.ResolvableMethod;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.HandlerMapping;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.*;
 import static org.springframework.web.method.MvcAnnotationPredicates.matrixAttribute;
 
 /**
  * Test fixture with {@link MatrixVariableMethodArgumentResolver}.
+ *
  * @author Rossen Stoyanchev
  */
 public class MatrixVariablesMethodArgumentResolverTests {

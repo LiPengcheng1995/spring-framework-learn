@@ -16,14 +16,13 @@
 
 package org.springframework.jdbc.datasource.embedded;
 
-import java.sql.SQLException;
-import java.util.Properties;
-import javax.sql.DataSource;
-
 import org.apache.commons.logging.LogFactory;
 import org.apache.derby.jdbc.EmbeddedDriver;
-
 import org.springframework.lang.Nullable;
+
+import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  * {@link EmbeddedDatabaseConfigurer} for the Apache Derby database.
@@ -42,8 +41,12 @@ final class DerbyEmbeddedDatabaseConfigurer implements EmbeddedDatabaseConfigure
 	private static DerbyEmbeddedDatabaseConfigurer instance;
 
 
+	private DerbyEmbeddedDatabaseConfigurer() {
+	}
+
 	/**
 	 * Get the singleton {@link DerbyEmbeddedDatabaseConfigurer} instance.
+	 *
 	 * @return the configurer instance
 	 */
 	public static synchronized DerbyEmbeddedDatabaseConfigurer getInstance() {
@@ -54,10 +57,6 @@ final class DerbyEmbeddedDatabaseConfigurer implements EmbeddedDatabaseConfigure
 			instance = new DerbyEmbeddedDatabaseConfigurer();
 		}
 		return instance;
-	}
-
-
-	private DerbyEmbeddedDatabaseConfigurer() {
 	}
 
 	@Override
@@ -73,8 +72,7 @@ final class DerbyEmbeddedDatabaseConfigurer implements EmbeddedDatabaseConfigure
 		try {
 			new EmbeddedDriver().connect(
 					String.format(URL_TEMPLATE, databaseName, "drop=true"), new Properties());
-		}
-		catch (SQLException ex) {
+		} catch (SQLException ex) {
 			// Error code that indicates successful shutdown
 			if (!"08006".equals(ex.getSQLState())) {
 				LogFactory.getLog(getClass()).warn("Could not shut down embedded Derby database", ex);

@@ -16,17 +16,16 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-
 import com.fasterxml.jackson.annotation.JsonView;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonInputMessage;
 import org.springframework.util.Assert;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
 
 /**
  * A {@link RequestBodyAdvice} implementation that adds support for Jackson's
@@ -42,15 +41,15 @@ import org.springframework.util.Assert;
  * exactly one class argument. Consider the use of a composite interface.
  *
  * @author Sebastien Deleuze
- * @since 4.2
  * @see com.fasterxml.jackson.annotation.JsonView
  * @see com.fasterxml.jackson.databind.ObjectMapper#readerWithView(Class)
+ * @since 4.2
  */
 public class JsonViewRequestBodyAdvice extends RequestBodyAdviceAdapter {
 
 	@Override
 	public boolean supports(MethodParameter methodParameter, Type targetType,
-			Class<? extends HttpMessageConverter<?>> converterType) {
+							Class<? extends HttpMessageConverter<?>> converterType) {
 
 		return (AbstractJackson2HttpMessageConverter.class.isAssignableFrom(converterType) &&
 				methodParameter.getParameterAnnotation(JsonView.class) != null);
@@ -58,7 +57,7 @@ public class JsonViewRequestBodyAdvice extends RequestBodyAdviceAdapter {
 
 	@Override
 	public HttpInputMessage beforeBodyRead(HttpInputMessage inputMessage, MethodParameter methodParameter,
-			Type targetType, Class<? extends HttpMessageConverter<?>> selectedConverterType) throws IOException {
+										   Type targetType, Class<? extends HttpMessageConverter<?>> selectedConverterType) throws IOException {
 
 		JsonView ann = methodParameter.getParameterAnnotation(JsonView.class);
 		Assert.state(ann != null, "No JsonView annotation");

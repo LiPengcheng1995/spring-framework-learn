@@ -16,10 +16,10 @@
 
 package org.springframework.web.servlet.tags.form;
 
-import javax.servlet.jsp.JspException;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import javax.servlet.jsp.JspException;
 
 /**
  * Abstract base class to provide common methods for implementing databinding-aware
@@ -44,6 +44,13 @@ public abstract class AbstractSingleCheckedElementTag extends AbstractCheckedEle
 	@Nullable
 	private Object label;
 
+	/**
+	 * Get the value of the '{@code value}' attribute.
+	 */
+	@Nullable
+	protected Object getValue() {
+		return this.value;
+	}
 
 	/**
 	 * Set the value of the '{@code value}' attribute.
@@ -54,11 +61,11 @@ public abstract class AbstractSingleCheckedElementTag extends AbstractCheckedEle
 	}
 
 	/**
-	 * Get the value of the '{@code value}' attribute.
+	 * Get the value of the '{@code label}' attribute.
 	 */
 	@Nullable
-	protected Object getValue() {
-		return this.value;
+	protected Object getLabel() {
+		return this.label;
 	}
 
 	/**
@@ -68,15 +75,6 @@ public abstract class AbstractSingleCheckedElementTag extends AbstractCheckedEle
 	public void setLabel(Object label) {
 		this.label = label;
 	}
-
-	/**
-	 * Get the value of the '{@code label}' attribute.
-	 */
-	@Nullable
-	protected Object getLabel() {
-		return this.label;
-	}
-
 
 	/**
 	 * Renders the '{@code input(radio)}' element with the configured

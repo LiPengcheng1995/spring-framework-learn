@@ -16,27 +16,12 @@
 
 package org.springframework.http.converter.json;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.databind.DatabindContext;
-import com.fasterxml.jackson.databind.DeserializationConfig;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.KeyDeserializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationConfig;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
@@ -49,11 +34,15 @@ import com.fasterxml.jackson.databind.jsontype.impl.StdTypeResolverBuilder;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -122,7 +111,7 @@ public class SpringHandlerInstantiatorTests {
 		private Capitalizer capitalizer;
 
 		@Override
-		public User deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws  IOException {
+		public User deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
 			ObjectCodec oc = jsonParser.getCodec();
 			JsonNode node = oc.readTree(jsonParser);
 			return new User(this.capitalizer.capitalize(node.get("username").asText()));
@@ -137,7 +126,7 @@ public class SpringHandlerInstantiatorTests {
 
 		@Override
 		public void serialize(User user, JsonGenerator jsonGenerator,
-				SerializerProvider serializerProvider) throws IOException {
+							  SerializerProvider serializerProvider) throws IOException {
 
 			jsonGenerator.writeStartObject();
 			jsonGenerator.writeStringField("username", this.capitalizer.capitalize(user.getUsername()));
@@ -160,14 +149,13 @@ public class SpringHandlerInstantiatorTests {
 
 	public static class CustomTypeResolverBuilder extends StdTypeResolverBuilder {
 
+		public static boolean isAutowiredFiledInitialized = false;
 		@Autowired
 		private Capitalizer capitalizer;
 
-		public static boolean isAutowiredFiledInitialized = false;
-
 		@Override
 		public TypeSerializer buildTypeSerializer(SerializationConfig config, JavaType baseType,
-				Collection<NamedType> subtypes) {
+												  Collection<NamedType> subtypes) {
 
 			isAutowiredFiledInitialized = (this.capitalizer != null);
 			return super.buildTypeSerializer(config, baseType, subtypes);
@@ -175,7 +163,7 @@ public class SpringHandlerInstantiatorTests {
 
 		@Override
 		public TypeDeserializer buildTypeDeserializer(DeserializationConfig config,
-				JavaType baseType, Collection<NamedType> subtypes) {
+													  JavaType baseType, Collection<NamedType> subtypes) {
 
 			return super.buildTypeDeserializer(config, baseType, subtypes);
 		}
@@ -184,10 +172,9 @@ public class SpringHandlerInstantiatorTests {
 
 	public static class CustomTypeIdResolver implements TypeIdResolver {
 
+		public static boolean isAutowiredFiledInitialized = false;
 		@Autowired
 		private Capitalizer capitalizer;
-
-		public static boolean isAutowiredFiledInitialized = false;
 
 		public CustomTypeIdResolver() {
 		}
@@ -247,7 +234,9 @@ public class SpringHandlerInstantiatorTests {
 			this.username = username;
 		}
 
-		public String getUsername() { return this.username; }
+		public String getUsername() {
+			return this.username;
+		}
 	}
 
 

@@ -16,18 +16,10 @@
 
 package org.springframework.http.server.reactive;
 
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.net.URISyntaxException;
-import javax.net.ssl.SSLSession;
-
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.ssl.SslHandler;
-import reactor.core.publisher.Flux;
-import reactor.ipc.netty.http.server.HttpServerRequest;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.NettyDataBufferFactory;
 import org.springframework.http.HttpCookie;
@@ -36,6 +28,13 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import reactor.core.publisher.Flux;
+import reactor.ipc.netty.http.server.HttpServerRequest;
+
+import javax.net.ssl.SSLSession;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Adapt {@link ServerHttpRequest} to the Reactor {@link HttpServerRequest}.
@@ -72,24 +71,20 @@ class ReactorServerHttpRequest extends AbstractServerHttpRequest {
 			final int portIndex;
 			if (header.startsWith("[")) {
 				portIndex = header.indexOf(':', header.indexOf(']'));
-			}
-			else {
+			} else {
 				portIndex = header.indexOf(':');
 			}
 			if (portIndex != -1) {
 				try {
 					return new URI(scheme, null, header.substring(0, portIndex),
 							Integer.parseInt(header.substring(portIndex + 1)), null, null, null);
-				}
-				catch (NumberFormatException ex) {
+				} catch (NumberFormatException ex) {
 					throw new URISyntaxException(header, "Unable to parse port", portIndex);
 				}
-			}
-			else {
+			} else {
 				return new URI(scheme, header, null, null);
 			}
-		}
-		else {
+		} else {
 			InetSocketAddress localAddress = (InetSocketAddress) request.context().channel().localAddress();
 			return new URI(scheme, null, localAddress.getHostString(),
 					localAddress.getPort(), null, null, null);

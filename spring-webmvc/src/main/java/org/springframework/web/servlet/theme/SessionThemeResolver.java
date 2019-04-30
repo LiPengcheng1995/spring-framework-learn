@@ -16,12 +16,12 @@
 
 package org.springframework.web.servlet.theme;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.WebUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * {@link org.springframework.web.servlet.ThemeResolver} implementation that
@@ -34,8 +34,8 @@ import org.springframework.web.util.WebUtils;
  *
  * @author Jean-Pierre Pawlak
  * @author Juergen Hoeller
- * @since 17.06.2003
  * @see #setThemeName
+ * @since 17.06.2003
  */
 public class SessionThemeResolver extends AbstractThemeResolver {
 
@@ -44,6 +44,7 @@ public class SessionThemeResolver extends AbstractThemeResolver {
 	 * Only used internally by this implementation.
 	 * Use {@code RequestContext(Utils).getTheme()}
 	 * to retrieve the current theme in controllers or views.
+	 *
 	 * @see org.springframework.web.servlet.support.RequestContext#getTheme
 	 * @see org.springframework.web.servlet.support.RequestContextUtils#getTheme
 	 */

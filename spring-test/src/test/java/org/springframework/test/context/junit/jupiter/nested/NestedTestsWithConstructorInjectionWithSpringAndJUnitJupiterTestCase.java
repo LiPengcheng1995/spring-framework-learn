@@ -19,7 +19,6 @@ package org.springframework.test.context.junit.jupiter.nested;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +29,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.context.junit.jupiter.nested.NestedTestsWithConstructorInjectionWithSpringAndJUnitJupiterTestCase.TopLevelConfig;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Integration tests that verify support for {@code @Nested} test classes in conjunction
@@ -42,9 +41,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * Platform, simply run {@link SpringJUnitJupiterTestSuite} as a JUnit 4 test.
  *
  * @author Sam Brannen
- * @since 5.0.5
  * @see NestedTestsWithSpringAndJUnitJupiterTestCase
  * @see org.springframework.test.context.junit4.nested.NestedTestsWithSpringRulesTests
+ * @since 5.0.5
  */
 @SpringJUnitConfig(TopLevelConfig.class)
 class NestedTestsWithConstructorInjectionWithSpringAndJUnitJupiterTestCase {
@@ -58,6 +57,24 @@ class NestedTestsWithConstructorInjectionWithSpringAndJUnitJupiterTestCase {
 	@Test
 	void topLevelTest() {
 		assertEquals("foo", foo);
+	}
+
+	@Configuration
+	static class TopLevelConfig {
+
+		@Bean
+		String foo() {
+			return "foo";
+		}
+	}
+
+	@Configuration
+	static class NestedConfig {
+
+		@Bean
+		String bar() {
+			return "bar";
+		}
 	}
 
 	@Nested
@@ -95,6 +112,8 @@ class NestedTestsWithConstructorInjectionWithSpringAndJUnitJupiterTestCase {
 		}
 	}
 
+	// -------------------------------------------------------------------------
+
 	@Nested
 	@SpringJUnitConfig(NestedConfig.class)
 	class QualifiedConstructorParameter {
@@ -129,26 +148,6 @@ class NestedTestsWithConstructorInjectionWithSpringAndJUnitJupiterTestCase {
 			assertEquals("foo", foo);
 			assertEquals("bar", bar);
 			assertEquals(42, answer);
-		}
-	}
-
-	// -------------------------------------------------------------------------
-
-	@Configuration
-	static class TopLevelConfig {
-
-		@Bean
-		String foo() {
-			return "foo";
-		}
-	}
-
-	@Configuration
-	static class NestedConfig {
-
-		@Bean
-		String bar() {
-			return "bar";
 		}
 	}
 

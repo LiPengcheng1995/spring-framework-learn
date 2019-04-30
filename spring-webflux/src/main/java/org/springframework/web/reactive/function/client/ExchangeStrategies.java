@@ -16,12 +16,12 @@
 
 package org.springframework.web.reactive.function.client;
 
-import java.util.List;
-import java.util.function.Consumer;
-
 import org.springframework.http.codec.ClientCodecConfigurer;
 import org.springframework.http.codec.HttpMessageReader;
 import org.springframework.http.codec.HttpMessageWriter;
+
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Defines the strategies for invoking {@link ExchangeFunction}s. An instance of
@@ -36,22 +36,8 @@ import org.springframework.http.codec.HttpMessageWriter;
 public interface ExchangeStrategies {
 
 	/**
-	 * Return the {@link HttpMessageReader}s to be used for request body conversion.
-	 * @return the stream of message readers
-	 */
-	List<HttpMessageReader<?>> messageReaders();
-
-	/**
-	 * Return the {@link HttpMessageWriter}s to be used for response body conversion.
-	 * @return the stream of message writers
-	 */
-	List<HttpMessageWriter<?>> messageWriters();
-
-
-	// Static methods
-
-	/**
 	 * Return a new {@code ExchangeStrategies} with default initialization.
+	 *
 	 * @return the new {@code ExchangeStrategies}
 	 */
 	static ExchangeStrategies withDefaults() {
@@ -60,6 +46,7 @@ public interface ExchangeStrategies {
 
 	/**
 	 * Return a mutable builder for a {@code ExchangeStrategies} with default initialization.
+	 *
 	 * @return the builder
 	 */
 	static Builder builder() {
@@ -68,13 +55,31 @@ public interface ExchangeStrategies {
 		return builder;
 	}
 
+
+	// Static methods
+
 	/**
 	 * Return a mutable, empty builder for a {@code ExchangeStrategies}.
+	 *
 	 * @return the builder
 	 */
 	static Builder empty() {
 		return new DefaultExchangeStrategiesBuilder();
 	}
+
+	/**
+	 * Return the {@link HttpMessageReader}s to be used for request body conversion.
+	 *
+	 * @return the stream of message readers
+	 */
+	List<HttpMessageReader<?>> messageReaders();
+
+	/**
+	 * Return the {@link HttpMessageWriter}s to be used for response body conversion.
+	 *
+	 * @return the stream of message writers
+	 */
+	List<HttpMessageWriter<?>> messageWriters();
 
 
 	/**
@@ -84,6 +89,7 @@ public interface ExchangeStrategies {
 
 		/**
 		 * Customize the list of client-side HTTP message readers and writers.
+		 *
 		 * @param consumer the consumer to customize the codecs
 		 * @return this builder
 		 */
@@ -91,6 +97,7 @@ public interface ExchangeStrategies {
 
 		/**
 		 * Builds the {@link ExchangeStrategies}.
+		 *
 		 * @return the built strategies
 		 */
 		ExchangeStrategies build();

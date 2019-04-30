@@ -18,7 +18,6 @@ package org.springframework.messaging.simp.annotation.support;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
@@ -69,22 +68,13 @@ public class SubscriptionMethodReturnValueHandler implements HandlerMethodReturn
 
 	/**
 	 * Construct a new SubscriptionMethodReturnValueHandler.
+	 *
 	 * @param template a messaging template to send messages to,
-	 * most likely the "clientOutboundChannel" (must not be {@code null})
+	 *                 most likely the "clientOutboundChannel" (must not be {@code null})
 	 */
 	public SubscriptionMethodReturnValueHandler(MessageSendingOperations<String> template) {
 		Assert.notNull(template, "messagingTemplate must not be null");
 		this.messagingTemplate = template;
-	}
-
-
-	/**
-	 * Configure a {@link MessageHeaderInitializer} to apply to the headers of all
-	 * messages sent to the client outbound channel.
-	 * <p>By default this property is not set.
-	 */
-	public void setHeaderInitializer(@Nullable MessageHeaderInitializer headerInitializer) {
-		this.headerInitializer = headerInitializer;
 	}
 
 	/**
@@ -95,6 +85,14 @@ public class SubscriptionMethodReturnValueHandler implements HandlerMethodReturn
 		return this.headerInitializer;
 	}
 
+	/**
+	 * Configure a {@link MessageHeaderInitializer} to apply to the headers of all
+	 * messages sent to the client outbound channel.
+	 * <p>By default this property is not set.
+	 */
+	public void setHeaderInitializer(@Nullable MessageHeaderInitializer headerInitializer) {
+		this.headerInitializer = headerInitializer;
+	}
 
 	@Override
 	public boolean supportsReturnType(MethodParameter returnType) {

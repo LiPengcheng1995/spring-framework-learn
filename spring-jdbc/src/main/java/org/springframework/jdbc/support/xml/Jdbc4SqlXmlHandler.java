@@ -16,6 +16,14 @@
 
 package org.springframework.jdbc.support.xml;
 
+import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.lang.Nullable;
+import org.w3c.dom.Document;
+
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.dom.DOMSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -23,15 +31,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLXML;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
-
-import org.w3c.dom.Document;
-
-import org.springframework.dao.DataAccessResourceFailureException;
-import org.springframework.lang.Nullable;
 
 /**
  * Default implementation of the {@link SqlXmlHandler} interface.
@@ -41,10 +40,10 @@ import org.springframework.lang.Nullable;
  *
  * @author Thomas Risberg
  * @author Juergen Hoeller
- * @since 2.5.6
  * @see java.sql.SQLXML
  * @see java.sql.ResultSet#getSQLXML
  * @see java.sql.PreparedStatement#setSQLXML
+ * @since 2.5.6
  */
 public class Jdbc4SqlXmlHandler implements SqlXmlHandler {
 
@@ -187,8 +186,7 @@ public class Jdbc4SqlXmlHandler implements SqlXmlHandler {
 			this.xmlObject = ps.getConnection().createSQLXML();
 			try {
 				provideXml(this.xmlObject);
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				throw new DataAccessResourceFailureException("Failure encountered while providing XML", ex);
 			}
 			ps.setSQLXML(paramIndex, this.xmlObject);
@@ -199,8 +197,7 @@ public class Jdbc4SqlXmlHandler implements SqlXmlHandler {
 			if (this.xmlObject != null) {
 				try {
 					this.xmlObject.free();
-				}
-				catch (SQLException ex) {
+				} catch (SQLException ex) {
 					throw new DataAccessResourceFailureException("Could not free SQLXML object", ex);
 				}
 			}

@@ -17,13 +17,12 @@
 package org.springframework.context.annotation.configuration;
 
 import org.junit.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for SPR-10668.
@@ -41,13 +40,15 @@ public class Spr10668Tests {
 	}
 
 
+	public interface MyComponent {
+	}
+
 	@Configuration
 	public static class ParentConfig {
 
 		@Autowired(required = false)
 		MyComponent component;
 	}
-
 
 	@Configuration
 	public static class ChildConfig extends ParentConfig {
@@ -58,9 +59,7 @@ public class Spr10668Tests {
 		}
 	}
 
-
-	public interface MyComponent {}
-
-	public static class MyComponentImpl implements MyComponent {}
+	public static class MyComponentImpl implements MyComponent {
+	}
 
 }

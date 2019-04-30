@@ -16,11 +16,6 @@
 
 package org.springframework.web.reactive.function.server.support;
 
-import java.util.Collections;
-import java.util.List;
-
-import reactor.core.publisher.Mono;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.codec.HttpMessageReader;
@@ -32,6 +27,10 @@ import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.handler.AbstractHandlerMapping;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * {@code HandlerMapping} implementation that supports {@link RouterFunction}s.
@@ -62,6 +61,7 @@ public class RouterFunctionMapping extends AbstractHandlerMapping implements Ini
 	/**
 	 * Create a {@code RouterFunctionMapping} with the given {@link RouterFunction}.
 	 * <p>If this constructor is used, no application context detection will occur.
+	 *
 	 * @param routerFunction the router function to use for mapping
 	 */
 	public RouterFunctionMapping(RouterFunction<?> routerFunction) {
@@ -74,6 +74,7 @@ public class RouterFunctionMapping extends AbstractHandlerMapping implements Ini
 	 * <p><strong>Note:</strong> When router functions are detected from the
 	 * ApplicationContext, this method may return {@code null} if invoked
 	 * prior to {@link #afterPropertiesSet()}.
+	 *
 	 * @return the router function or {@code null}
 	 */
 	@Nullable
@@ -133,8 +134,7 @@ public class RouterFunctionMapping extends AbstractHandlerMapping implements Ini
 			ServerRequest request = ServerRequest.create(exchange, this.messageReaders);
 			exchange.getAttributes().put(RouterFunctions.REQUEST_ATTRIBUTE, request);
 			return this.routerFunction.route(request);
-		}
-		else {
+		} else {
 			return Mono.empty();
 		}
 	}

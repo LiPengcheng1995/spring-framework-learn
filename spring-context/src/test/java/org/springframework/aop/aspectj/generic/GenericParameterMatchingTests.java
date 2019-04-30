@@ -16,16 +16,15 @@
 
 package org.springframework.aop.aspectj.generic;
 
-import java.util.Collection;
-
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.junit.Test;
-
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import static org.junit.Assert.*;
+import java.util.Collection;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Tests that poitncut matching is correct with generic method parameter.
@@ -107,13 +106,16 @@ public class GenericParameterMatchingTests {
 		}
 
 		@Pointcut("execution(* org.springframework.aop.aspectj.generic.GenericParameterMatchingTests.GenericInterface.save(..))")
-		public void genericInterfaceGenericArgExecution() {}
+		public void genericInterfaceGenericArgExecution() {
+		}
 
 		@Pointcut("execution(* org.springframework.aop.aspectj.generic.GenericParameterMatchingTests.GenericInterface.saveAll(..))")
-		public void GenericInterfaceGenericCollectionArgExecution() {}
+		public void GenericInterfaceGenericCollectionArgExecution() {
+		}
 
 		@Pointcut("execution(* org.springframework.aop.aspectj.generic.GenericParameterMatchingTests.GenericInterface+.saveAll(..))")
-		public void genericInterfaceSubtypeGenericCollectionArgExecution() {}
+		public void genericInterfaceSubtypeGenericCollectionArgExecution() {
+		}
 
 		@Before("genericInterfaceGenericArgExecution()")
 		public void incrementGenericInterfaceGenericArgExecution() {

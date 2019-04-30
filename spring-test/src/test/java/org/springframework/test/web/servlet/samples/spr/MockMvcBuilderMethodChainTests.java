@@ -18,7 +18,6 @@ package org.springframework.test.web.servlet.samples.spr;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
@@ -49,7 +48,7 @@ public class MockMvcBuilderMethodChainTests {
 	public void chainMultiple() {
 		MockMvcBuilders
 				.webAppContextSetup(wac)
-				.addFilter(new CharacterEncodingFilter() )
+				.addFilter(new CharacterEncodingFilter())
 				.defaultRequest(get("/").contextPath("/mywebapp"))
 				.build();
 	}

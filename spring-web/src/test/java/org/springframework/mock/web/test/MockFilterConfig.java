@@ -16,14 +16,14 @@
 
 package org.springframework.mock.web.test;
 
+import org.springframework.util.Assert;
+
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
-
-import org.springframework.util.Assert;
 
 /**
  * Mock implementation of the {@link javax.servlet.FilterConfig} interface.
@@ -32,9 +32,9 @@ import org.springframework.util.Assert;
  * custom {@link javax.servlet.Filter} implementations.
  *
  * @author Juergen Hoeller
- * @since 1.0.2
  * @see MockFilterChain
  * @see PassThroughFilterChain
+ * @since 1.0.2
  */
 public class MockFilterConfig implements FilterConfig {
 
@@ -54,6 +54,7 @@ public class MockFilterConfig implements FilterConfig {
 
 	/**
 	 * Create a new MockFilterConfig with a default {@link MockServletContext}.
+	 *
 	 * @param filterName the name of the filter
 	 */
 	public MockFilterConfig(String filterName) {
@@ -62,6 +63,7 @@ public class MockFilterConfig implements FilterConfig {
 
 	/**
 	 * Create a new MockFilterConfig.
+	 *
 	 * @param servletContext the ServletContext that the servlet runs in
 	 */
 	public MockFilterConfig(ServletContext servletContext) {
@@ -70,8 +72,9 @@ public class MockFilterConfig implements FilterConfig {
 
 	/**
 	 * Create a new MockFilterConfig.
+	 *
 	 * @param servletContext the ServletContext that the servlet runs in
-	 * @param filterName the name of the filter
+	 * @param filterName     the name of the filter
 	 */
 	public MockFilterConfig(ServletContext servletContext, String filterName) {
 		this.servletContext = (servletContext != null ? servletContext : new MockServletContext());

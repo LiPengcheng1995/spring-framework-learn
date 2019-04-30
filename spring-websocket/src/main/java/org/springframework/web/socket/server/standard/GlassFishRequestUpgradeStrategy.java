@@ -16,20 +16,19 @@
 
 package org.springframework.web.socket.server.standard;
 
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.glassfish.tyrus.core.TyrusUpgradeResponse;
 import org.glassfish.tyrus.core.Utils;
 import org.glassfish.tyrus.servlet.TyrusHttpUpgradeHandler;
 import org.glassfish.tyrus.spi.WebSocketEngine.UpgradeInfo;
 import org.glassfish.tyrus.spi.Writer;
-
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.socket.server.HandshakeFailureException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
 
 /**
  * A WebSocket {@code RequestUpgradeStrategy} for Oracle's GlassFish 4.1 and higher.
@@ -49,8 +48,7 @@ public class GlassFishRequestUpgradeStrategy extends AbstractTyrusRequestUpgrade
 			Class<?> type = classLoader.loadClass("org.glassfish.tyrus.servlet.TyrusServletWriter");
 			constructor = type.getDeclaredConstructor(TyrusHttpUpgradeHandler.class);
 			ReflectionUtils.makeAccessible(constructor);
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new IllegalStateException("No compatible Tyrus version found", ex);
 		}
 	}
@@ -58,7 +56,7 @@ public class GlassFishRequestUpgradeStrategy extends AbstractTyrusRequestUpgrade
 
 	@Override
 	protected void handleSuccess(HttpServletRequest request, HttpServletResponse response,
-			UpgradeInfo upgradeInfo, TyrusUpgradeResponse upgradeResponse) throws IOException, ServletException {
+								 UpgradeInfo upgradeInfo, TyrusUpgradeResponse upgradeResponse) throws IOException, ServletException {
 
 		TyrusHttpUpgradeHandler handler = request.upgrade(TyrusHttpUpgradeHandler.class);
 		Writer servletWriter = newServletWriter(handler);
@@ -72,8 +70,7 @@ public class GlassFishRequestUpgradeStrategy extends AbstractTyrusRequestUpgrade
 	private Writer newServletWriter(TyrusHttpUpgradeHandler handler) {
 		try {
 			return (Writer) constructor.newInstance(handler);
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new HandshakeFailureException("Failed to instantiate TyrusServletWriter", ex);
 		}
 	}

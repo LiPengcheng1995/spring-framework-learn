@@ -16,23 +16,8 @@
 
 package org.springframework.web.reactive.resource;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Scanner;
-import java.util.function.Consumer;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import reactor.core.Exceptions;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.core.publisher.SynchronousSink;
-
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
@@ -42,6 +27,20 @@ import org.springframework.util.DigestUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.Exceptions;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.core.publisher.SynchronousSink;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Scanner;
+import java.util.function.Consumer;
 
 /**
  * A {@link ResourceTransformer} HTML5 AppCache manifests.
@@ -63,8 +62,8 @@ import org.springframework.web.server.ServerWebExchange;
  *
  * @author Rossen Stoyanchev
  * @author Brian Clozel
- * @since 5.0
  * @see <a href="https://html.spec.whatwg.org/multipage/browsers.html#offline">HTML5 offline applications spec</a>
+ * @since 5.0
  */
 public class AppCacheManifestTransformer extends ResourceTransformerSupport {
 
@@ -98,10 +97,18 @@ public class AppCacheManifestTransformer extends ResourceTransformerSupport {
 		this.fileExtension = fileExtension;
 	}
 
+	private static void writeToByteArrayOutputStream(ByteArrayOutputStream out, String toWrite) {
+		try {
+			byte[] bytes = toWrite.getBytes(DEFAULT_CHARSET);
+			out.write(bytes);
+		} catch (IOException ex) {
+			throw Exceptions.propagate(ex);
+		}
+	}
 
 	@Override
 	public Mono<Resource> transform(ServerWebExchange exchange, Resource inputResource,
-			ResourceTransformerChain chain) {
+									ResourceTransformerChain chain) {
 
 		return chain.transform(exchange, inputResource)
 				.flatMap(outputResource -> {
@@ -123,7 +130,7 @@ public class AppCacheManifestTransformer extends ResourceTransformerSupport {
 	}
 
 	private Mono<? extends Resource> transform(String content, Resource resource,
-			ResourceTransformerChain chain, ServerWebExchange exchange) {
+											   ResourceTransformerChain chain, ServerWebExchange exchange) {
 
 		if (!content.startsWith(MANIFEST_HEADER)) {
 			if (logger.isTraceEnabled()) {
@@ -144,24 +151,14 @@ public class AppCacheManifestTransformer extends ResourceTransformerSupport {
 					String hash = DigestUtils.md5DigestAsHex(out.toByteArray());
 					writeToByteArrayOutputStream(out, "\n" + "# Hash: " + hash);
 					if (logger.isTraceEnabled()) {
-						logger.trace("AppCache file: [" + resource.getFilename()+ "] hash: [" + hash + "]");
+						logger.trace("AppCache file: [" + resource.getFilename() + "] hash: [" + hash + "]");
 					}
 					return new TransformedResource(resource, out.toByteArray());
 				});
 	}
 
-	private static void writeToByteArrayOutputStream(ByteArrayOutputStream out, String toWrite) {
-		try {
-			byte[] bytes = toWrite.getBytes(DEFAULT_CHARSET);
-			out.write(bytes);
-		}
-		catch (IOException ex) {
-			throw Exceptions.propagate(ex);
-		}
-	}
-
 	private Mono<String> processLine(LineInfo info, ServerWebExchange exchange,
-			Resource resource, ResourceTransformerChain chain) {
+									 Resource resource, ResourceTransformerChain chain) {
 
 		if (!info.isLink()) {
 			return Mono.just(info.getLine());
@@ -197,8 +194,7 @@ public class AppCacheManifestTransformer extends ResourceTransformerSupport {
 				LineInfo current = new LineInfo(line, this.previous);
 				sink.next(current);
 				this.previous = current;
-			}
-			else {
+			} else {
 				sink.complete();
 			}
 		}
@@ -224,8 +220,7 @@ public class AppCacheManifestTransformer extends ResourceTransformerSupport {
 		private static boolean initCacheSectionFlag(String line, @Nullable LineInfo previousLine) {
 			if (MANIFEST_SECTION_HEADERS.contains(line.trim())) {
 				return line.trim().equals(CACHE_HEADER);
-			}
-			else if (previousLine != null) {
+			} else if (previousLine != null) {
 				return previousLine.isCacheSection();
 			}
 			throw new IllegalStateException(

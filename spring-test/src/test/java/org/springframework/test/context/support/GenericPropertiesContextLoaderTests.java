@@ -19,10 +19,9 @@ package org.springframework.test.context.support;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.test.context.MergedContextConfiguration;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.containsString;
 
 /**
  * Unit tests for {@link GenericPropertiesContextLoader}.
@@ -45,7 +44,7 @@ public class GenericPropertiesContextLoaderTests {
 
 		GenericPropertiesContextLoader loader = new GenericPropertiesContextLoader();
 		MergedContextConfiguration mergedConfig = new MergedContextConfiguration(getClass(), EMPTY_STRING_ARRAY,
-			new Class<?>[] { getClass() }, EMPTY_STRING_ARRAY, loader);
+				new Class<?>[]{getClass()}, EMPTY_STRING_ARRAY, loader);
 		loader.loadContext(mergedConfig);
 	}
 

@@ -16,18 +16,17 @@
 
 package org.springframework.web.servlet.resource;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
 import org.springframework.cache.Cache;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.web.test.MockHttpServletRequest;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -140,7 +139,7 @@ public class CachingResourceResolverTests {
 		this.cache.put(CachingResourceResolver.RESOLVED_RESOURCE_CACHE_KEY_PREFIX + "bar.css+encoding=gzip", gzResource);
 
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "bar.css");
-		assertSame(resource, this.chain.resolveResource(request,"bar.css", this.locations));
+		assertSame(resource, this.chain.resolveResource(request, "bar.css", this.locations));
 
 		request = new MockHttpServletRequest("GET", "bar.css");
 		request.addHeader("Accept-Encoding", "gzip");

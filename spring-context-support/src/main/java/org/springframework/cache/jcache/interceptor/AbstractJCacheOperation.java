@@ -16,41 +16,35 @@
 
 package org.springframework.cache.jcache.interceptor;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import javax.cache.annotation.CacheInvocationParameter;
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheMethodDetails;
-import javax.cache.annotation.CacheValue;
-
 import org.springframework.cache.interceptor.CacheResolver;
 import org.springframework.util.Assert;
 import org.springframework.util.ExceptionTypeFilter;
 
+import javax.cache.annotation.CacheInvocationParameter;
+import javax.cache.annotation.CacheKey;
+import javax.cache.annotation.CacheMethodDetails;
+import javax.cache.annotation.CacheValue;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.*;
+
 /**
  * A base {@link JCacheOperation} implementation.
  *
+ * @param <A> the annotation type
  * @author Stephane Nicoll
  * @since 4.1
- * @param <A> the annotation type
  */
 abstract class AbstractJCacheOperation<A extends Annotation> implements JCacheOperation<A> {
 
-	private final CacheMethodDetails<A> methodDetails;
-
-	private final CacheResolver cacheResolver;
-
 	protected final List<CacheParameterDetail> allParameterDetails;
+	private final CacheMethodDetails<A> methodDetails;
+	private final CacheResolver cacheResolver;
 
 
 	/**
 	 * Construct a new {@code AbstractJCacheOperation}.
+	 *
 	 * @param methodDetails the {@link CacheMethodDetails} related to the cached method
 	 * @param cacheResolver the cache resolver to resolve regular caches
 	 */
@@ -120,12 +114,14 @@ abstract class AbstractJCacheOperation<A extends Annotation> implements JCacheOp
 	/**
 	 * Return the {@link ExceptionTypeFilter} to use to filter exceptions thrown while
 	 * invoking the method.
+	 *
 	 * @see #createExceptionTypeFilter
 	 */
 	public abstract ExceptionTypeFilter getExceptionTypeFilter();
 
 	/**
 	 * Convenience method for subclasses to create a specific {@code ExceptionTypeFilter}.
+	 *
 	 * @see #getExceptionTypeFilter()
 	 */
 	protected ExceptionTypeFilter createExceptionTypeFilter(

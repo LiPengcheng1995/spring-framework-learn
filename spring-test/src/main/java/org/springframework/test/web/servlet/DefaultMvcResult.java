@@ -16,10 +16,6 @@
 
 package org.springframework.test.web.servlet;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.springframework.lang.Nullable;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -28,6 +24,10 @@ import org.springframework.web.servlet.FlashMap;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.RequestContextUtils;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A simple implementation of {@link MvcResult} with setters.
@@ -44,21 +44,15 @@ class DefaultMvcResult implements MvcResult {
 	private final MockHttpServletRequest mockRequest;
 
 	private final MockHttpServletResponse mockResponse;
-
+	private final AtomicReference<Object> asyncResult = new AtomicReference<>(RESULT_NONE);
 	@Nullable
 	private Object handler;
-
 	@Nullable
 	private HandlerInterceptor[] interceptors;
-
 	@Nullable
 	private ModelAndView modelAndView;
-
 	@Nullable
 	private Exception resolvedException;
-
-	private final AtomicReference<Object> asyncResult = new AtomicReference<>(RESULT_NONE);
-
 	@Nullable
 	private CountDownLatch asyncDispatchLatch;
 
@@ -82,18 +76,14 @@ class DefaultMvcResult implements MvcResult {
 		return this.mockResponse;
 	}
 
-	public void setHandler(@Nullable Object handler) {
-		this.handler = handler;
-	}
-
 	@Override
 	@Nullable
 	public Object getHandler() {
 		return this.handler;
 	}
 
-	public void setInterceptors(@Nullable HandlerInterceptor... interceptors) {
-		this.interceptors = interceptors;
+	public void setHandler(@Nullable Object handler) {
+		this.handler = handler;
 	}
 
 	@Override
@@ -102,8 +92,8 @@ class DefaultMvcResult implements MvcResult {
 		return this.interceptors;
 	}
 
-	public void setResolvedException(Exception resolvedException) {
-		this.resolvedException = resolvedException;
+	public void setInterceptors(@Nullable HandlerInterceptor... interceptors) {
+		this.interceptors = interceptors;
 	}
 
 	@Override
@@ -112,8 +102,8 @@ class DefaultMvcResult implements MvcResult {
 		return this.resolvedException;
 	}
 
-	public void setModelAndView(@Nullable ModelAndView mav) {
-		this.modelAndView = mav;
+	public void setResolvedException(Exception resolvedException) {
+		this.resolvedException = resolvedException;
 	}
 
 	@Override
@@ -122,18 +112,22 @@ class DefaultMvcResult implements MvcResult {
 		return this.modelAndView;
 	}
 
+	public void setModelAndView(@Nullable ModelAndView mav) {
+		this.modelAndView = mav;
+	}
+
 	@Override
 	public FlashMap getFlashMap() {
 		return RequestContextUtils.getOutputFlashMap(this.mockRequest);
 	}
 
-	public void setAsyncResult(Object asyncResult) {
-		this.asyncResult.set(asyncResult);
-	}
-
 	@Override
 	public Object getAsyncResult() {
 		return getAsyncResult(-1);
+	}
+
+	public void setAsyncResult(Object asyncResult) {
+		this.asyncResult.set(asyncResult);
 	}
 
 	@Override
@@ -159,8 +153,7 @@ class DefaultMvcResult implements MvcResult {
 				"The asyncDispatch CountDownLatch was not set by the TestDispatcherServlet.");
 		try {
 			return this.asyncDispatchLatch.await(timeout, TimeUnit.MILLISECONDS);
-		}
-		catch (InterruptedException ex) {
+		} catch (InterruptedException ex) {
 			return false;
 		}
 	}

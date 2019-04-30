@@ -16,15 +16,6 @@
 
 package org.springframework.core.convert.support;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.ConditionalGenericConverter;
@@ -32,6 +23,11 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ConcurrentReferenceHashMap;
 import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Generic converter that uses conventions to convert a source object to a
@@ -60,70 +56,14 @@ import org.springframework.util.ReflectionUtils;
  * @author Keith Donald
  * @author Juergen Hoeller
  * @author Sam Brannen
- * @since 3.0
  * @see FallbackObjectToStringConverter
+ * @since 3.0
  */
 final class ObjectToObjectConverter implements ConditionalGenericConverter {
 
 	// Cache for the latest to-method resolved on a given Class
 	private static final Map<Class<?>, Member> conversionMemberCache =
 			new ConcurrentReferenceHashMap<>(32);
-
-
-	@Override
-	public Set<ConvertiblePair> getConvertibleTypes() {
-		return Collections.singleton(new ConvertiblePair(Object.class, Object.class));
-	}
-
-	@Override
-	public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		return (sourceType.getType() != targetType.getType() &&
-				hasConversionMethodOrConstructor(targetType.getType(), sourceType.getType()));
-	}
-
-	@Override
-	@Nullable
-	public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		if (source == null) {
-			return null;
-		}
-		Class<?> sourceClass = sourceType.getType();
-		Class<?> targetClass = targetType.getType();
-		Member member = getValidatedMember(targetClass, sourceClass);
-
-		try {
-			if (member instanceof Method) {
-				Method method = (Method) member;
-				ReflectionUtils.makeAccessible(method);
-				if (!Modifier.isStatic(method.getModifiers())) {
-					return method.invoke(source);
-				}
-				else {
-					return method.invoke(null, source);
-				}
-			}
-			else if (member instanceof Constructor) {
-				Constructor<?> ctor = (Constructor<?>) member;
-				ReflectionUtils.makeAccessible(ctor);
-				return ctor.newInstance(source);
-			}
-		}
-		catch (InvocationTargetException ex) {
-			throw new ConversionFailedException(sourceType, targetType, source, ex.getTargetException());
-		}
-		catch (Throwable ex) {
-			throw new ConversionFailedException(sourceType, targetType, source, ex);
-		}
-
-		// If sourceClass is Number and targetClass is Integer, the following message should expand to:
-		// No toInteger() method exists on java.lang.Number, and no static valueOf/of/from(java.lang.Number)
-		// method or Integer(java.lang.Number) constructor exists on java.lang.Integer.
-		throw new IllegalStateException(String.format("No to%3$s() method exists on %1$s, " +
-				"and no static valueOf/of/from(%1$s) method or %3$s(%1$s) constructor exists on %2$s.",
-				sourceClass.getName(), targetClass.getName(), targetClass.getSimpleName()));
-	}
-
-
 
 	static boolean hasConversionMethodOrConstructor(Class<?> targetClass, Class<?> sourceClass) {
 		return (getValidatedMember(targetClass, sourceClass) != null);
@@ -157,12 +97,10 @@ final class ObjectToObjectConverter implements ConditionalGenericConverter {
 			return (!Modifier.isStatic(method.getModifiers()) ?
 					ClassUtils.isAssignable(method.getDeclaringClass(), sourceClass) :
 					method.getParameterTypes()[0] == sourceClass);
-		}
-		else if (member instanceof Constructor) {
+		} else if (member instanceof Constructor) {
 			Constructor<?> ctor = (Constructor<?>) member;
 			return (ctor.getParameterTypes()[0] == sourceClass);
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
@@ -199,6 +137,55 @@ final class ObjectToObjectConverter implements ConditionalGenericConverter {
 	@Nullable
 	private static Constructor<?> determineFactoryConstructor(Class<?> targetClass, Class<?> sourceClass) {
 		return ClassUtils.getConstructorIfAvailable(targetClass, sourceClass);
+	}
+
+	@Override
+	public Set<ConvertiblePair> getConvertibleTypes() {
+		return Collections.singleton(new ConvertiblePair(Object.class, Object.class));
+	}
+
+	@Override
+	public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		return (sourceType.getType() != targetType.getType() &&
+				hasConversionMethodOrConstructor(targetType.getType(), sourceType.getType()));
+	}
+
+	@Override
+	@Nullable
+	public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		if (source == null) {
+			return null;
+		}
+		Class<?> sourceClass = sourceType.getType();
+		Class<?> targetClass = targetType.getType();
+		Member member = getValidatedMember(targetClass, sourceClass);
+
+		try {
+			if (member instanceof Method) {
+				Method method = (Method) member;
+				ReflectionUtils.makeAccessible(method);
+				if (!Modifier.isStatic(method.getModifiers())) {
+					return method.invoke(source);
+				} else {
+					return method.invoke(null, source);
+				}
+			} else if (member instanceof Constructor) {
+				Constructor<?> ctor = (Constructor<?>) member;
+				ReflectionUtils.makeAccessible(ctor);
+				return ctor.newInstance(source);
+			}
+		} catch (InvocationTargetException ex) {
+			throw new ConversionFailedException(sourceType, targetType, source, ex.getTargetException());
+		} catch (Throwable ex) {
+			throw new ConversionFailedException(sourceType, targetType, source, ex);
+		}
+
+		// If sourceClass is Number and targetClass is Integer, the following message should expand to:
+		// No toInteger() method exists on java.lang.Number, and no static valueOf/of/from(java.lang.Number)
+		// method or Integer(java.lang.Number) constructor exists on java.lang.Integer.
+		throw new IllegalStateException(String.format("No to%3$s() method exists on %1$s, " +
+						"and no static valueOf/of/from(%1$s) method or %3$s(%1$s) constructor exists on %2$s.",
+				sourceClass.getName(), targetClass.getName(), targetClass.getSimpleName()));
 	}
 
 }

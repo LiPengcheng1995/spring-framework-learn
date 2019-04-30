@@ -16,14 +16,13 @@
 
 package org.springframework.http.codec.xml;
 
-import java.util.Collections;
-import javax.xml.stream.events.XMLEvent;
-
 import org.junit.Test;
+import org.springframework.core.io.buffer.AbstractDataBufferAllocatingTestCase;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
-import org.springframework.core.io.buffer.AbstractDataBufferAllocatingTestCase;
+import javax.xml.stream.events.XMLEvent;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -40,6 +39,21 @@ public class XmlEventDecoderTests extends AbstractDataBufferAllocatingTestCase {
 			"</pojo>";
 
 	private XmlEventDecoder decoder = new XmlEventDecoder();
+
+	private static void assertStartElement(XMLEvent event, String expectedLocalName) {
+		assertTrue(event.isStartElement());
+		assertEquals(expectedLocalName, event.asStartElement().getName().getLocalPart());
+	}
+
+	private static void assertEndElement(XMLEvent event, String expectedLocalName) {
+		assertTrue(event + " is no end element", event.isEndElement());
+		assertEquals(expectedLocalName, event.asEndElement().getName().getLocalPart());
+	}
+
+	private static void assertCharacters(XMLEvent event, String expectedData) {
+		assertTrue(event.isCharacters());
+		assertEquals(expectedData, event.asCharacters().getData());
+	}
 
 	@Test
 	public void toXMLEventsAalto() {
@@ -81,21 +95,6 @@ public class XmlEventDecoderTests extends AbstractDataBufferAllocatingTestCase {
 				.consumeNextWith(e -> assertTrue(e.isEndDocument()))
 				.expectComplete()
 				.verify();
-	}
-
-	private static void assertStartElement(XMLEvent event, String expectedLocalName) {
-		assertTrue(event.isStartElement());
-		assertEquals(expectedLocalName, event.asStartElement().getName().getLocalPart());
-	}
-
-	private static void assertEndElement(XMLEvent event, String expectedLocalName) {
-		assertTrue(event + " is no end element", event.isEndElement());
-		assertEquals(expectedLocalName, event.asEndElement().getName().getLocalPart());
-	}
-
-	private static void assertCharacters(XMLEvent event, String expectedData) {
-		assertTrue(event.isCharacters());
-		assertEquals(expectedData, event.asCharacters().getData());
 	}
 
 }

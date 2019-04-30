@@ -16,13 +16,10 @@
 
 package org.springframework.test.context.junit4.spr9051;
 
-import javax.sql.DataSource;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -34,8 +31,12 @@ import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.tests.sample.beans.Employee;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.Assert.*;
-import static org.springframework.test.transaction.TransactionTestUtils.*;
+import javax.sql.DataSource;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.springframework.test.transaction.TransactionTestUtils.assertInTransaction;
+import static org.springframework.test.transaction.TransactionTestUtils.inTransaction;
 
 /**
  * This set of tests (i.e., all concrete subclasses) investigates the claims made in
@@ -43,8 +44,8 @@ import static org.springframework.test.transaction.TransactionTestUtils.*;
  * with regard to transactional tests.
  *
  * @author Sam Brannen
- * @since 3.2
  * @see org.springframework.test.context.testng.AnnotationConfigTransactionalTestNGSpringContextTests
+ * @since 3.2
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
@@ -88,7 +89,7 @@ public abstract class AbstractTransactionalAnnotatedConfigClassTests {
 
 	protected void assertNumRowsInPersonTable(int expectedNumRows, String testState) {
 		assertEquals("the number of rows in the person table (" + testState + ").", expectedNumRows,
-			countRowsInTable("person"));
+				countRowsInTable("person"));
 	}
 
 	protected void assertAddPerson(final String name) {

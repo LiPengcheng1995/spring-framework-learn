@@ -16,13 +16,13 @@
 
 package org.springframework.web.servlet.tags;
 
+import org.springframework.beans.PropertyAccessor;
+import org.springframework.lang.Nullable;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
 import javax.servlet.jsp.tagext.TryCatchFinally;
-
-import org.springframework.beans.PropertyAccessor;
-import org.springframework.lang.Nullable;
 
 /**
  * <p>The {@code <nestedPath>} tag supports and assists with nested beans or
@@ -71,15 +71,25 @@ public class NestedPathTag extends TagSupport implements TryCatchFinally {
 	@Nullable
 	private String path;
 
-	/** Caching a previous nested path, so that it may be reset */
+	/**
+	 * Caching a previous nested path, so that it may be reset
+	 */
 	@Nullable
 	private String previousNestedPath;
 
+	/**
+	 * Return the path that this tag applies to.
+	 */
+	@Nullable
+	public String getPath() {
+		return this.path;
+	}
 
 	/**
 	 * Set the path that this tag should apply.
 	 * <p>E.g. "customer" to allow bind paths like "address.street"
 	 * rather than "customer.address.street".
+	 *
 	 * @see BindTag#setPath
 	 */
 	public void setPath(@Nullable String path) {
@@ -91,15 +101,6 @@ public class NestedPathTag extends TagSupport implements TryCatchFinally {
 		}
 		this.path = path;
 	}
-
-	/**
-	 * Return the path that this tag applies to.
-	 */
-	@Nullable
-	public String getPath() {
-		return this.path;
-	}
-
 
 	@Override
 	public int doStartTag() throws JspException {
@@ -122,8 +123,7 @@ public class NestedPathTag extends TagSupport implements TryCatchFinally {
 		if (this.previousNestedPath != null) {
 			// Expose previous nestedPath value.
 			pageContext.setAttribute(NESTED_PATH_VARIABLE_NAME, this.previousNestedPath, PageContext.REQUEST_SCOPE);
-		}
-		else {
+		} else {
 			// Remove exposed nestedPath value.
 			pageContext.removeAttribute(NESTED_PATH_VARIABLE_NAME, PageContext.REQUEST_SCOPE);
 		}

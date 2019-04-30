@@ -16,12 +16,6 @@
 
 package org.springframework.expression.spel.ast;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.expression.EvaluationException;
 import org.springframework.expression.TypedValue;
 import org.springframework.expression.spel.ExpressionState;
@@ -30,6 +24,12 @@ import org.springframework.expression.spel.SpelMessage;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Represents projection, where a given operation is performed on all elements in some
@@ -78,8 +78,7 @@ public class Projection extends SpelNodeImpl {
 					state.pushActiveContextObject(new TypedValue(entry));
 					state.enterScope();
 					result.add(this.children[0].getValueInternal(state).getValue());
-				}
-				finally {
+				} finally {
 					state.popActiveContextObject();
 					state.exitScope();
 				}
@@ -103,8 +102,7 @@ public class Projection extends SpelNodeImpl {
 						arrayElementType = determineCommonType(arrayElementType, value.getClass());
 					}
 					result.add(value);
-				}
-				finally {
+				} finally {
 					state.exitScope();
 					state.popActiveContextObject();
 				}
@@ -117,10 +115,10 @@ public class Projection extends SpelNodeImpl {
 				}
 				Object resultArray = Array.newInstance(arrayElementType, result.size());
 				System.arraycopy(result.toArray(), 0, resultArray, 0, result.size());
-				return new ValueRef.TypedValueHolderValueRef(new TypedValue(resultArray),this);
+				return new ValueRef.TypedValueHolderValueRef(new TypedValue(resultArray), this);
 			}
 
-			return new ValueRef.TypedValueHolderValueRef(new TypedValue(result),this);
+			return new ValueRef.TypedValueHolderValueRef(new TypedValue(result), this);
 		}
 
 		if (operand == null) {

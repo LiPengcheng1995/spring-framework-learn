@@ -30,30 +30,24 @@ import java.lang.reflect.Method;
  * For unrestricted resolution, choose {@link ReflectivePropertyAccessor} instead.
  *
  * @author Juergen Hoeller
- * @since 4.3.15
  * @see #forReadOnlyAccess()
  * @see #forReadWriteAccess()
  * @see SimpleEvaluationContext
  * @see StandardEvaluationContext
  * @see ReflectivePropertyAccessor
+ * @since 4.3.15
  */
 public class DataBindingPropertyAccessor extends ReflectivePropertyAccessor {
 
 	/**
 	 * Create a new property accessor for reading and possibly also writing.
+	 *
 	 * @param allowWrite whether to also allow for write operations
 	 * @see #canWrite
 	 */
 	private DataBindingPropertyAccessor(boolean allowWrite) {
 		super(allowWrite);
 	}
-
-	@Override
-	protected boolean isCandidateForProperty(Method method, Class<?> targetClass) {
-		Class<?> clazz = method.getDeclaringClass();
-		return (clazz != Object.class && clazz != Class.class && !ClassLoader.class.isAssignableFrom(targetClass));
-	}
-
 
 	/**
 	 * Create a new data-binding property accessor for read-only operations.
@@ -67,6 +61,12 @@ public class DataBindingPropertyAccessor extends ReflectivePropertyAccessor {
 	 */
 	public static DataBindingPropertyAccessor forReadWriteAccess() {
 		return new DataBindingPropertyAccessor(true);
+	}
+
+	@Override
+	protected boolean isCandidateForProperty(Method method, Class<?> targetClass) {
+		Class<?> clazz = method.getDeclaringClass();
+		return (clazz != Object.class && clazz != Class.class && !ClassLoader.class.isAssignableFrom(targetClass));
 	}
 
 }

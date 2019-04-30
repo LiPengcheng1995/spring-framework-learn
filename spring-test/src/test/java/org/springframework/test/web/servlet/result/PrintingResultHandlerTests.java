@@ -16,17 +16,8 @@
 
 package org.springframework.test.web.servlet.result;
 
-import java.net.URI;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpSession;
-
 import org.junit.Test;
 import org.mockito.Mockito;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -42,7 +33,16 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.FlashMap;
 import org.springframework.web.servlet.ModelAndView;
 
-import static org.junit.Assert.*;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpSession;
+import java.net.URI;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for {@link PrintingResultHandler}.
@@ -342,6 +342,8 @@ public class PrintingResultHandlerTests {
 				printedValues.get(heading).get(label));
 	}
 
+	public void handle() {
+	}
 
 	private static class TestPrintingResultHandler extends PrintingResultHandler {
 
@@ -373,10 +375,6 @@ public class PrintingResultHandlerTests {
 				this.printedValues.get(this.printedHeading).put(label, value);
 			}
 		}
-	}
-
-
-	public void handle() {
 	}
 
 }

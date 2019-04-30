@@ -16,7 +16,6 @@
 package org.springframework.test.web.servlet.samples.standalone;
 
 import org.junit.Test;
-
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.test.web.Person;
@@ -24,9 +23,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
 /**
  * Tests demonstrating the use of request parameters.
@@ -39,7 +38,7 @@ public class RequestParameterTests {
 	public void queryParameter() throws Exception {
 
 		standaloneSetup(new PersonController()).build()
-			.perform(get("/search?name=George").accept(MediaType.APPLICATION_JSON))
+				.perform(get("/search?name=George").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(content().contentType("application/json;charset=UTF-8"))
 				.andExpect(jsonPath("$.name").value("George"));
@@ -49,7 +48,7 @@ public class RequestParameterTests {
 	@Controller
 	private class PersonController {
 
-		@RequestMapping(value="/search")
+		@RequestMapping(value = "/search")
 		@ResponseBody
 		public Person get(@RequestParam String name) {
 			Person person = new Person(name);

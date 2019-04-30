@@ -16,19 +16,19 @@
 
 package org.springframework.web.context.support;
 
-import javax.servlet.ServletConfig;
-
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
+import javax.servlet.ServletConfig;
+
 /**
  * {@link PropertySource} that reads init parameters from a {@link ServletConfig} object.
  *
  * @author Chris Beams
- * @since 3.1
  * @see ServletContextPropertySource
+ * @since 3.1
  */
 public class ServletConfigPropertySource extends EnumerablePropertySource<ServletConfig> {
 

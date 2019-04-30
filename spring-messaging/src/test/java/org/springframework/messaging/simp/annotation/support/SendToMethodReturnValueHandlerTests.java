@@ -16,24 +16,10 @@
 
 package org.springframework.messaging.simp.annotation.support;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
-import java.security.Principal;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import javax.security.auth.Subject;
-
 import com.fasterxml.jackson.annotation.JsonView;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-
+import org.mockito.*;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.core.annotation.SynthesizingMethodParameter;
@@ -53,6 +39,15 @@ import org.springframework.messaging.simp.user.DestinationUserNameProvider;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.util.MimeType;
+
+import javax.security.auth.Subject;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.security.Principal;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.*;
@@ -77,9 +72,11 @@ public class SendToMethodReturnValueHandlerTests {
 
 	private SendToMethodReturnValueHandler jsonHandler;
 
-	@Mock private MessageChannel messageChannel;
+	@Mock
+	private MessageChannel messageChannel;
 
-	@Captor private ArgumentCaptor<Message<?>> messageCaptor;
+	@Captor
+	private ArgumentCaptor<Message<?>> messageCaptor;
 
 	private MethodParameter noAnnotationsReturnType;
 	private MethodParameter sendToReturnType;
@@ -320,7 +317,7 @@ public class SendToMethodReturnValueHandlerTests {
 
 
 	private void assertResponse(MethodParameter methodParameter, String sessionId,
-			int index, String destination) {
+								int index, String destination) {
 
 		SimpMessageHeaderAccessor accessor = getCapturedAccessor(index);
 		assertEquals(sessionId, accessor.getSessionId());
@@ -604,7 +601,7 @@ public class SendToMethodReturnValueHandlerTests {
 		return PAYLOAD;
 	}
 
-	@SendToUser(destinations = { "/dest1", "/dest2" }, broadcast = false)
+	@SendToUser(destinations = {"/dest1", "/dest2"}, broadcast = false)
 	@SuppressWarnings("unused")
 	String handleAndSendToUserSingleSession() {
 		return PAYLOAD;
@@ -618,27 +615,6 @@ public class SendToMethodReturnValueHandlerTests {
 		payload.setWithView2("with");
 		payload.setWithoutView("without");
 		return payload;
-	}
-
-
-	private static class TestUser implements Principal {
-
-		public String getName() {
-			return "joe";
-		}
-
-		public boolean implies(Subject subject) {
-			return false;
-		}
-	}
-
-
-	private static class UniqueUser extends TestUser implements DestinationUserNameProvider {
-
-		@Override
-		public String getDestinationUserName() {
-			return "Me myself and I";
-		}
 	}
 
 
@@ -660,7 +636,34 @@ public class SendToMethodReturnValueHandlerTests {
 	}
 
 
-	@MySendTo(dest = "/dest-default") @SuppressWarnings("unused")
+	private interface MyJacksonView1 {
+	}
+
+
+	private interface MyJacksonView2 {
+	}
+
+	private static class TestUser implements Principal {
+
+		public String getName() {
+			return "joe";
+		}
+
+		public boolean implies(Subject subject) {
+			return false;
+		}
+	}
+
+	private static class UniqueUser extends TestUser implements DestinationUserNameProvider {
+
+		@Override
+		public String getDestinationUserName() {
+			return "Me myself and I";
+		}
+	}
+
+	@MySendTo(dest = "/dest-default")
+	@SuppressWarnings("unused")
 	private static class SendToTestBean {
 
 		String handleNoAnnotation() {
@@ -678,8 +681,8 @@ public class SendToMethodReturnValueHandlerTests {
 		}
 	}
 
-
-	@MySendToUser(dest = "/dest-default") @SuppressWarnings("unused")
+	@MySendToUser(dest = "/dest-default")
+	@SuppressWarnings("unused")
 	private static class SendToUserTestBean {
 
 		String handleNoAnnotation() {
@@ -697,8 +700,8 @@ public class SendToMethodReturnValueHandlerTests {
 		}
 	}
 
-
-	@MySendToUser(dest = "/dest-default") @SuppressWarnings("unused")
+	@MySendToUser(dest = "/dest-default")
+	@SuppressWarnings("unused")
 	private static class SendToUserWithSendToOverrideTestBean {
 
 		@SendTo
@@ -711,12 +714,6 @@ public class SendToMethodReturnValueHandlerTests {
 			return PAYLOAD;
 		}
 	}
-
-
-	private interface MyJacksonView1 {}
-
-	private interface MyJacksonView2 {}
-
 
 	@SuppressWarnings("unused")
 	private static class JacksonViewBean {

@@ -16,14 +16,14 @@
 
 package org.springframework.jdbc.core.metadata;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.sql.Types;
-
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.lang.Nullable;
+
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.sql.Types;
 
 /**
  * Postgres-specific implementation for the {@link CallMetaDataProvider} interface.
@@ -68,8 +68,7 @@ public class PostgresCallMetaDataProvider extends GenericCallMetaDataProvider {
 	public SqlParameter createDefaultOutParameter(String parameterName, CallParameterMetaData meta) {
 		if (meta.getSqlType() == Types.OTHER && "refcursor".equals(meta.getTypeName())) {
 			return new SqlOutParameter(parameterName, getRefCursorSqlType(), new ColumnMapRowMapper());
-		}
-		else {
+		} else {
 			return super.createDefaultOutParameter(parameterName, meta);
 		}
 	}

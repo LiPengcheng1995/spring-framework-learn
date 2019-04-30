@@ -16,15 +16,7 @@
 
 package org.springframework.http.codec.multipart;
 
-import java.io.File;
-import java.time.Duration;
-import java.util.Map;
-
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -37,12 +29,19 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.mock.http.client.reactive.test.MockClientHttpRequest;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.util.MultiValueMap;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import static java.util.Collections.*;
+import java.io.File;
+import java.time.Duration;
+import java.util.Map;
+
+import static java.util.Collections.emptyMap;
 import static org.junit.Assert.*;
-import static org.springframework.core.ResolvableType.*;
-import static org.springframework.http.HttpHeaders.*;
-import static org.springframework.http.MediaType.*;
+import static org.springframework.core.ResolvableType.forClassWithGenerics;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
 
 /**
  * Unit tests for {@link SynchronossPartHttpMessageReader}.

@@ -16,17 +16,17 @@
 
 package org.springframework.jdbc.core.metadata;
 
-import java.sql.DatabaseMetaData;
-
 import org.springframework.lang.Nullable;
+
+import java.sql.DatabaseMetaData;
 
 /**
  * Holder of meta-data for a specific parameter that is used for call processing.
  *
  * @author Thomas Risberg
  * @author Juergen Hoeller
- * @since 2.5
  * @see GenericCallMetaDataProvider
+ * @since 2.5
  */
 public class CallParameterMetaData {
 
@@ -76,6 +76,7 @@ public class CallParameterMetaData {
 	 * Determine whether the declared parameter qualifies as a 'return' parameter
 	 * for our purposes: type {@link DatabaseMetaData#procedureColumnReturn} or
 	 * {@link DatabaseMetaData#procedureColumnResult}.
+	 *
 	 * @since 4.3.15
 	 */
 	public boolean isReturnParameter() {

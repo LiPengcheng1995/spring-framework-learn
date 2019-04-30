@@ -16,15 +16,15 @@
 
 package org.springframework.instrument.classloading.glassfish;
 
-import java.lang.instrument.ClassFileTransformer;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import org.springframework.core.OverridingClassLoader;
 import org.springframework.instrument.classloading.LoadTimeWeaver;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * {@link LoadTimeWeaver} implementation for GlassFish's
@@ -52,6 +52,7 @@ public class GlassFishLoadTimeWeaver implements LoadTimeWeaver {
 	/**
 	 * Create a new instance of the {@link GlassFishLoadTimeWeaver} class using
 	 * the default {@link ClassLoader class loader}.
+	 *
 	 * @see org.springframework.util.ClassUtils#getDefaultClassLoader()
 	 */
 	public GlassFishLoadTimeWeaver() {
@@ -61,6 +62,7 @@ public class GlassFishLoadTimeWeaver implements LoadTimeWeaver {
 	/**
 	 * Create a new instance of the {@link GlassFishLoadTimeWeaver} class using
 	 * the supplied {@link ClassLoader}.
+	 *
 	 * @param classLoader the {@code ClassLoader} to delegate to for weaving
 	 */
 	public GlassFishLoadTimeWeaver(@Nullable ClassLoader classLoader) {
@@ -71,8 +73,7 @@ public class GlassFishLoadTimeWeaver implements LoadTimeWeaver {
 			instrumentableLoaderClass = classLoader.loadClass(INSTRUMENTABLE_LOADER_CLASS_NAME);
 			this.addTransformerMethod = instrumentableLoaderClass.getMethod("addTransformer", ClassFileTransformer.class);
 			this.copyMethod = instrumentableLoaderClass.getMethod("copy");
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			throw new IllegalStateException(
 					"Could not initialize GlassFishLoadTimeWeaver because GlassFish API classes are not available", ex);
 		}
@@ -99,11 +100,9 @@ public class GlassFishLoadTimeWeaver implements LoadTimeWeaver {
 	public void addTransformer(ClassFileTransformer transformer) {
 		try {
 			this.addTransformerMethod.invoke(this.classLoader, transformer);
-		}
-		catch (InvocationTargetException ex) {
+		} catch (InvocationTargetException ex) {
 			throw new IllegalStateException("GlassFish addTransformer method threw exception", ex.getCause());
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			throw new IllegalStateException("Could not invoke GlassFish addTransformer method", ex);
 		}
 	}
@@ -117,11 +116,9 @@ public class GlassFishLoadTimeWeaver implements LoadTimeWeaver {
 	public ClassLoader getThrowawayClassLoader() {
 		try {
 			return new OverridingClassLoader(this.classLoader, (ClassLoader) this.copyMethod.invoke(this.classLoader));
-		}
-		catch (InvocationTargetException ex) {
+		} catch (InvocationTargetException ex) {
 			throw new IllegalStateException("GlassFish copy method threw exception", ex.getCause());
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			throw new IllegalStateException("Could not invoke GlassFish copy method", ex);
 		}
 	}

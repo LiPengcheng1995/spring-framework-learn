@@ -16,13 +16,7 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapter;
 import org.springframework.core.ReactiveAdapterRegistry;
@@ -37,6 +31,11 @@ import org.springframework.web.reactive.accept.RequestedContentTypeResolver;
 import org.springframework.web.reactive.result.HandlerResultHandlerSupport;
 import org.springframework.web.server.NotAcceptableStatusException;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Abstract base class for result handlers that handle return values by writing
@@ -54,24 +53,26 @@ public abstract class AbstractMessageWriterResultHandler extends HandlerResultHa
 	/**
 	 * Constructor with {@link HttpMessageWriter}s and a
 	 * {@code RequestedContentTypeResolver}.
-	 * @param messageWriters for serializing Objects to the response body stream
+	 *
+	 * @param messageWriters      for serializing Objects to the response body stream
 	 * @param contentTypeResolver for resolving the requested content type
 	 */
 	protected AbstractMessageWriterResultHandler(List<HttpMessageWriter<?>> messageWriters,
-			RequestedContentTypeResolver contentTypeResolver) {
+												 RequestedContentTypeResolver contentTypeResolver) {
 
 		this(messageWriters, contentTypeResolver, ReactiveAdapterRegistry.getSharedInstance());
 	}
 
 	/**
 	 * Constructor with an additional {@link ReactiveAdapterRegistry}.
-	 * @param messageWriters for serializing Objects to the response body stream
+	 *
+	 * @param messageWriters      for serializing Objects to the response body stream
 	 * @param contentTypeResolver for resolving the requested content type
-	 * @param adapterRegistry for adapting other reactive types (e.g. rx.Observable,
-	 * rx.Single, etc.) to Flux or Mono
+	 * @param adapterRegistry     for adapting other reactive types (e.g. rx.Observable,
+	 *                            rx.Single, etc.) to Flux or Mono
 	 */
 	protected AbstractMessageWriterResultHandler(List<HttpMessageWriter<?>> messageWriters,
-			RequestedContentTypeResolver contentTypeResolver, ReactiveAdapterRegistry adapterRegistry) {
+												 RequestedContentTypeResolver contentTypeResolver, ReactiveAdapterRegistry adapterRegistry) {
 
 		super(contentTypeResolver, adapterRegistry);
 		Assert.notEmpty(messageWriters, "At least one message writer is required");
@@ -89,9 +90,10 @@ public abstract class AbstractMessageWriterResultHandler extends HandlerResultHa
 
 	/**
 	 * Write a given body to the response with {@link HttpMessageWriter}.
-	 * @param body the object to write
+	 *
+	 * @param body          the object to write
 	 * @param bodyParameter the {@link MethodParameter} of the body to write
-	 * @param exchange the current exchange
+	 * @param exchange      the current exchange
 	 * @return indicates completion or error
 	 * @see #writeBody(Object, MethodParameter, MethodParameter, ServerWebExchange)
 	 */
@@ -101,18 +103,19 @@ public abstract class AbstractMessageWriterResultHandler extends HandlerResultHa
 
 	/**
 	 * Write a given body to the response with {@link HttpMessageWriter}.
-	 * @param body the object to write
+	 *
+	 * @param body          the object to write
 	 * @param bodyParameter the {@link MethodParameter} of the body to write
-	 * @param actualParam the actual return type of the method that returned the value;
-	 * could be different from {@code bodyParameter} when processing {@code HttpEntity}
-	 * for example
-	 * @param exchange the current exchange
+	 * @param actualParam   the actual return type of the method that returned the value;
+	 *                      could be different from {@code bodyParameter} when processing {@code HttpEntity}
+	 *                      for example
+	 * @param exchange      the current exchange
 	 * @return indicates completion or error
 	 * @since 5.0.2
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	protected Mono<Void> writeBody(@Nullable Object body, MethodParameter bodyParameter,
-			@Nullable MethodParameter actualParam, ServerWebExchange exchange) {
+								   @Nullable MethodParameter actualParam, ServerWebExchange exchange) {
 
 		ResolvableType bodyType = ResolvableType.forMethodParameter(bodyParameter);
 		ResolvableType actualType = (actualParam != null ? ResolvableType.forMethodParameter(actualParam) : bodyType);
@@ -125,8 +128,7 @@ public abstract class AbstractMessageWriterResultHandler extends HandlerResultHa
 			publisher = adapter.toPublisher(body);
 			ResolvableType genericType = bodyType.getGeneric();
 			elementType = getElementType(adapter, genericType);
-		}
-		else {
+		} else {
 			publisher = Mono.justOrEmpty(body);
 			elementType = ((bodyClass == null || bodyClass.equals(Object.class)) && body != null ?
 					ResolvableType.forInstance(body) : bodyType);
@@ -146,8 +148,7 @@ public abstract class AbstractMessageWriterResultHandler extends HandlerResultHa
 							bestMediaType, request, response, Collections.emptyMap());
 				}
 			}
-		}
-		else {
+		} else {
 			if (getMediaTypesFor(elementType).isEmpty()) {
 				return Mono.error(new IllegalStateException("No writer for : " + elementType));
 			}
@@ -159,11 +160,9 @@ public abstract class AbstractMessageWriterResultHandler extends HandlerResultHa
 	private ResolvableType getElementType(ReactiveAdapter adapter, ResolvableType genericType) {
 		if (adapter.isNoValue()) {
 			return ResolvableType.forClass(Void.class);
-		}
-		else if (genericType != ResolvableType.NONE) {
+		} else if (genericType != ResolvableType.NONE) {
 			return genericType;
-		}
-		else {
+		} else {
 			return ResolvableType.forClass(Object.class);
 		}
 	}

@@ -16,12 +16,7 @@
 
 package org.springframework.web.server.adapter;
 
-import java.nio.charset.StandardCharsets;
-
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,15 +30,26 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebExceptionHandler;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebHandler;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import static java.time.Duration.*;
+import java.nio.charset.StandardCharsets;
+
+import static java.time.Duration.ofMillis;
 import static org.junit.Assert.*;
 
 /**
  * Unit tests for {@link WebHttpHandlerBuilder}.
+ *
  * @author Rossen Stoyanchev
  */
 public class WebHttpHandlerBuilderTests {
+
+	private static Mono<Void> writeToResponse(ServerWebExchange exchange, String value) {
+		byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
+		DataBuffer buffer = new DefaultDataBufferFactory().wrap(bytes);
+		return exchange.getResponse().writeWith(Flux.just(buffer));
+	}
 
 	@Test  // SPR-15074
 	public void orderedWebFilterBeans() {
@@ -101,26 +107,20 @@ public class WebHttpHandlerBuilderTests {
 		assertSame(context, ((HttpWebHandlerAdapter) builder.clone().build()).getApplicationContext());
 	}
 
-
-	private static Mono<Void> writeToResponse(ServerWebExchange exchange, String value) {
-		byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
-		DataBuffer buffer = new DefaultDataBufferFactory().wrap(bytes);
-		return exchange.getResponse().writeWith(Flux.just(buffer));
-	}
-
-
 	@Configuration
 	@SuppressWarnings("unused")
 	static class OrderedWebFilterBeanConfig {
 
 		private static final String ATTRIBUTE = "attr";
 
-		@Bean @Order(2)
+		@Bean
+		@Order(2)
 		public WebFilter filterA() {
 			return createFilter("FilterA");
 		}
 
-		@Bean @Order(1)
+		@Bean
+		@Order(1)
 		public WebFilter filterB() {
 			return createFilter("FilterB");
 		}

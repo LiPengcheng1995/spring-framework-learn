@@ -18,7 +18,6 @@ package org.springframework.test.context.hierarchies.standard;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -35,9 +34,28 @@ import static org.junit.Assert.*;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextHierarchy({
-	@ContextConfiguration(classes = SingleTestClassWithTwoLevelContextHierarchyTests.ParentConfig.class),
-	@ContextConfiguration(classes = SingleTestClassWithTwoLevelContextHierarchyTests.ChildConfig.class) })
+		@ContextConfiguration(classes = SingleTestClassWithTwoLevelContextHierarchyTests.ParentConfig.class),
+		@ContextConfiguration(classes = SingleTestClassWithTwoLevelContextHierarchyTests.ChildConfig.class)})
 public class SingleTestClassWithTwoLevelContextHierarchyTests {
+
+	@Autowired
+	private String foo;
+	@Autowired
+	private String bar;
+	@Autowired
+	private String baz;
+	@Autowired
+	private ApplicationContext context;
+
+	@Test
+	public void loadContextHierarchy() {
+		assertNotNull("child ApplicationContext", context);
+		assertNotNull("parent ApplicationContext", context.getParent());
+		assertNull("grandparent ApplicationContext", context.getParent().getParent());
+		assertEquals("foo", foo);
+		assertEquals("bar", bar);
+		assertEquals("baz-child", baz);
+	}
 
 	@Configuration
 	public static class ParentConfig {
@@ -65,30 +83,6 @@ public class SingleTestClassWithTwoLevelContextHierarchyTests {
 		public String baz() {
 			return "baz-child";
 		}
-	}
-
-
-	@Autowired
-	private String foo;
-
-	@Autowired
-	private String bar;
-
-	@Autowired
-	private String baz;
-
-	@Autowired
-	private ApplicationContext context;
-
-
-	@Test
-	public void loadContextHierarchy() {
-		assertNotNull("child ApplicationContext", context);
-		assertNotNull("parent ApplicationContext", context.getParent());
-		assertNull("grandparent ApplicationContext", context.getParent().getParent());
-		assertEquals("foo", foo);
-		assertEquals("bar", bar);
-		assertEquals("baz-child", baz);
 	}
 
 }

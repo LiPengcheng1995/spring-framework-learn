@@ -16,17 +16,13 @@
 
 package org.springframework.messaging.handler.annotation.support;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.invocation.AbstractExceptionHandlerMethodResolver;
+
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  * A sub-class of {@link AbstractExceptionHandlerMethodResolver} that looks for
@@ -41,6 +37,7 @@ public class AnnotationExceptionHandlerMethodResolver extends AbstractExceptionH
 
 	/**
 	 * A constructor that finds {@link MessageExceptionHandler} methods in the given type.
+	 *
 	 * @param handlerType the type to introspect
 	 */
 	public AnnotationExceptionHandlerMethodResolver(Class<?> handlerType) {

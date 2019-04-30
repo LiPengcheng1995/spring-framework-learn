@@ -16,12 +16,6 @@
 
 package org.springframework.web.multipart.support;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.ServerHttpRequest;
@@ -30,6 +24,12 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.MultipartResolver;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 
 /**
  * {@link ServerHttpRequest} implementation that accesses one part of a multipart
@@ -52,10 +52,11 @@ public class RequestPartServletServerHttpRequest extends ServletServerHttpReques
 
 	/**
 	 * Create a new {@code RequestPartServletServerHttpRequest} instance.
-	 * @param request the current servlet request
+	 *
+	 * @param request  the current servlet request
 	 * @param partName the name of the part to adapt to the {@link ServerHttpRequest} contract
 	 * @throws MissingServletRequestPartException if the request part cannot be found
-	 * @throws MultipartException if MultipartHttpServletRequest cannot be initialized
+	 * @throws MultipartException                 if MultipartHttpServletRequest cannot be initialized
 	 */
 	public RequestPartServletServerHttpRequest(HttpServletRequest request, String partName)
 			throws MissingServletRequestPartException {
@@ -83,17 +84,14 @@ public class RequestPartServletServerHttpRequest extends ServletServerHttpReques
 		if (this.multipartRequest instanceof StandardMultipartHttpServletRequest) {
 			try {
 				return this.multipartRequest.getPart(this.partName).getInputStream();
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				throw new MultipartException("Could not parse multipart servlet request", ex);
 			}
-		}
-		else {
+		} else {
 			MultipartFile file = this.multipartRequest.getFile(this.partName);
 			if (file != null) {
 				return file.getInputStream();
-			}
-			else {
+			} else {
 				String paramValue = this.multipartRequest.getParameter(this.partName);
 				return new ByteArrayInputStream(paramValue.getBytes(determineCharset()));
 			}

@@ -16,11 +16,6 @@
 
 package org.springframework.web.socket.sockjs.client;
 
-import java.io.ByteArrayOutputStream;
-import java.net.URI;
-import java.nio.ByteBuffer;
-import java.util.Enumeration;
-
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -28,7 +23,6 @@ import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpMethod;
-
 import org.springframework.context.Lifecycle;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -44,6 +38,11 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.sockjs.SockJsException;
 import org.springframework.web.socket.sockjs.SockJsTransportFailureException;
 import org.springframework.web.socket.sockjs.frame.SockJsFrame;
+
+import java.io.ByteArrayOutputStream;
+import java.net.URI;
+import java.nio.ByteBuffer;
+import java.util.Enumeration;
 
 /**
  * An XHR transport based on Jetty's {@link org.eclipse.jetty.client.HttpClient}.
@@ -71,6 +70,27 @@ public class JettyXhrTransport extends AbstractXhrTransport implements Lifecycle
 		this.httpClient = httpClient;
 	}
 
+	private static void addHttpHeaders(Request request, HttpHeaders headers) {
+		headers.forEach((key, values) -> {
+			for (String value : values) {
+				request.header(key, value);
+			}
+		});
+	}
+
+	private static HttpHeaders toHttpHeaders(HttpFields httpFields) {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		Enumeration<String> names = httpFields.getFieldNames();
+		while (names.hasMoreElements()) {
+			String name = names.nextElement();
+			Enumeration<String> values = httpFields.getValues(name);
+			while (values.hasMoreElements()) {
+				String value = values.nextElement();
+				responseHeaders.add(name, value);
+			}
+		}
+		return responseHeaders;
+	}
 
 	public HttpClient getHttpClient() {
 		return this.httpClient;
@@ -82,8 +102,7 @@ public class JettyXhrTransport extends AbstractXhrTransport implements Lifecycle
 			if (!this.httpClient.isRunning()) {
 				this.httpClient.start();
 			}
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new SockJsException("Failed to start JettyXhrTransport", ex);
 		}
 	}
@@ -94,8 +113,7 @@ public class JettyXhrTransport extends AbstractXhrTransport implements Lifecycle
 			if (this.httpClient.isRunning()) {
 				this.httpClient.stop();
 			}
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new SockJsException("Failed to stop JettyXhrTransport", ex);
 		}
 	}
@@ -105,11 +123,10 @@ public class JettyXhrTransport extends AbstractXhrTransport implements Lifecycle
 		return this.httpClient.isRunning();
 	}
 
-
 	@Override
 	protected void connectInternal(TransportRequest transportRequest, WebSocketHandler handler,
-			URI url, HttpHeaders handshakeHeaders, XhrClientSockJsSession session,
-			SettableListenableFuture<WebSocketSession> connectFuture) {
+								   URI url, HttpHeaders handshakeHeaders, XhrClientSockJsSession session,
+								   SettableListenableFuture<WebSocketSession> connectFuture) {
 
 		HttpHeaders httpHeaders = transportRequest.getHttpRequestHeaders();
 		SockJsResponseListener listener = new SockJsResponseListener(url, httpHeaders, session, connectFuture);
@@ -136,7 +153,7 @@ public class JettyXhrTransport extends AbstractXhrTransport implements Lifecycle
 	}
 
 	protected ResponseEntity<String> executeRequest(URI url, HttpMethod method,
-			HttpHeaders headers, @Nullable String body) {
+													HttpHeaders headers, @Nullable String body) {
 
 		Request httpRequest = this.httpClient.newRequest(url).method(method);
 		addHttpHeaders(httpRequest, headers);
@@ -146,8 +163,7 @@ public class JettyXhrTransport extends AbstractXhrTransport implements Lifecycle
 		ContentResponse response;
 		try {
 			response = httpRequest.send();
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new SockJsTransportFailureException("Failed to execute request to " + url, ex);
 		}
 		HttpStatus status = HttpStatus.valueOf(response.getStatus());
@@ -156,30 +172,6 @@ public class JettyXhrTransport extends AbstractXhrTransport implements Lifecycle
 				new ResponseEntity<>(response.getContentAsString(), responseHeaders, status) :
 				new ResponseEntity<>(responseHeaders, status));
 	}
-
-
-	private static void addHttpHeaders(Request request, HttpHeaders headers) {
-		headers.forEach((key, values) -> {
-			for (String value : values) {
-				request.header(key, value);
-			}
-		});
-	}
-
-	private static HttpHeaders toHttpHeaders(HttpFields httpFields) {
-		HttpHeaders responseHeaders = new HttpHeaders();
-		Enumeration<String> names = httpFields.getFieldNames();
-		while (names.hasMoreElements()) {
-			String name = names.nextElement();
-			Enumeration<String> values = httpFields.getValues(name);
-			while (values.hasMoreElements()) {
-				String value = values.nextElement();
-				responseHeaders.add(name, value);
-			}
-		}
-		return responseHeaders;
-	}
-
 
 	/**
 	 * Jetty client {@link org.eclipse.jetty.client.api.Response.Listener Response
@@ -198,8 +190,8 @@ public class JettyXhrTransport extends AbstractXhrTransport implements Lifecycle
 
 		private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-		public SockJsResponseListener(URI url, HttpHeaders headers,	XhrClientSockJsSession sockJsSession,
-				SettableListenableFuture<WebSocketSession> connectFuture) {
+		public SockJsResponseListener(URI url, HttpHeaders headers, XhrClientSockJsSession sockJsSession,
+									  SettableListenableFuture<WebSocketSession> connectFuture) {
 
 			this.transportUrl = url;
 			this.receiveHeaders = headers;
@@ -239,8 +231,7 @@ public class JettyXhrTransport extends AbstractXhrTransport implements Lifecycle
 				int b = buffer.get();
 				if (b == '\n') {
 					handleFrame();
-				}
-				else {
+				} else {
 					this.outputStream.write(b);
 				}
 			}
@@ -276,8 +267,7 @@ public class JettyXhrTransport extends AbstractXhrTransport implements Lifecycle
 			}
 			if (this.sockJsSession.isDisconnected()) {
 				this.sockJsSession.afterTransportClosed(null);
-			}
-			else {
+			} else {
 				this.sockJsSession.handleTransportError(failure);
 				this.sockJsSession.afterTransportClosed(new CloseStatus(1006, failure.getMessage()));
 			}

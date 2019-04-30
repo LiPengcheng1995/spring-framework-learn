@@ -16,10 +16,6 @@
 
 package org.springframework.messaging.simp.annotation.support;
 
-import java.lang.annotation.Annotation;
-import java.security.Principal;
-import java.util.Map;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -43,6 +39,10 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.util.PropertyPlaceholderHelper.PlaceholderResolver;
 import org.springframework.util.StringUtils;
+
+import java.lang.annotation.Annotation;
+import java.security.Principal;
+import java.util.Map;
 
 /**
  * A {@link HandlerMethodReturnValueHandler} for sending to destinations specified in a
@@ -79,6 +79,14 @@ public class SendToMethodReturnValueHandler implements HandlerMethodReturnValueH
 		this.annotationRequired = annotationRequired;
 	}
 
+	/**
+	 * Return the configured default destination prefix.
+	 *
+	 * @see #setDefaultDestinationPrefix(String)
+	 */
+	public String getDefaultDestinationPrefix() {
+		return this.defaultDestinationPrefix;
+	}
 
 	/**
 	 * Configure a default prefix to add to message destinations in cases where a method
@@ -91,11 +99,12 @@ public class SendToMethodReturnValueHandler implements HandlerMethodReturnValueH
 	}
 
 	/**
-	 * Return the configured default destination prefix.
-	 * @see #setDefaultDestinationPrefix(String)
+	 * Return the configured default user destination prefix.
+	 *
+	 * @see #setDefaultUserDestinationPrefix(String)
 	 */
-	public String getDefaultDestinationPrefix() {
-		return this.defaultDestinationPrefix;
+	public String getDefaultUserDestinationPrefix() {
+		return this.defaultUserDestinationPrefix;
 	}
 
 	/**
@@ -109,11 +118,11 @@ public class SendToMethodReturnValueHandler implements HandlerMethodReturnValueH
 	}
 
 	/**
-	 * Return the configured default user destination prefix.
-	 * @see #setDefaultUserDestinationPrefix(String)
+	 * Return the configured header initializer.
 	 */
-	public String getDefaultUserDestinationPrefix() {
-		return this.defaultUserDestinationPrefix;
+	@Nullable
+	public MessageHeaderInitializer getHeaderInitializer() {
+		return this.headerInitializer;
 	}
 
 	/**
@@ -124,15 +133,6 @@ public class SendToMethodReturnValueHandler implements HandlerMethodReturnValueH
 	public void setHeaderInitializer(@Nullable MessageHeaderInitializer headerInitializer) {
 		this.headerInitializer = headerInitializer;
 	}
-
-	/**
-	 * Return the configured header initializer.
-	 */
-	@Nullable
-	public MessageHeaderInitializer getHeaderInitializer() {
-		return this.headerInitializer;
-	}
-
 
 	@Override
 	public boolean supportsReturnType(MethodParameter returnType) {
@@ -173,14 +173,12 @@ public class SendToMethodReturnValueHandler implements HandlerMethodReturnValueH
 				if (broadcast) {
 					this.messagingTemplate.convertAndSendToUser(
 							user, destination, returnValue, createHeaders(null, returnType));
-				}
-				else {
+				} else {
 					this.messagingTemplate.convertAndSendToUser(
 							user, destination, returnValue, createHeaders(sessionId, returnType));
 				}
 			}
-		}
-		else {
+		} else {
 			SendTo sendTo = (SendTo) annotation;  // possibly null
 			String[] destinations = getTargetDestinations(sendTo, message, this.defaultDestinationPrefix);
 			for (String destination : destinations) {
@@ -211,7 +209,7 @@ public class SendToMethodReturnValueHandler implements HandlerMethodReturnValueH
 			return anns[3];
 		}
 
-		for (int i=0; i < 4; i++) {
+		for (int i = 0; i < 4; i++) {
 			if (anns[i] != null) {
 				return anns[i];
 			}
@@ -252,7 +250,7 @@ public class SendToMethodReturnValueHandler implements HandlerMethodReturnValueH
 		}
 
 		return (destination.startsWith("/") ?
-				new String[] {defaultPrefix + destination} : new String[] {defaultPrefix + '/' + destination});
+				new String[]{defaultPrefix + destination} : new String[]{defaultPrefix + '/' + destination});
 	}
 
 	private MessageHeaders createHeaders(@Nullable String sessionId, MethodParameter returnType) {

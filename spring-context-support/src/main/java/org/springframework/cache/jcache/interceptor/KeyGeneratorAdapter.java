@@ -16,18 +16,18 @@
 
 package org.springframework.cache.jcache.interceptor;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import javax.cache.annotation.CacheInvocationParameter;
-import javax.cache.annotation.CacheKeyGenerator;
-import javax.cache.annotation.CacheKeyInvocationContext;
-
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+
+import javax.cache.annotation.CacheInvocationParameter;
+import javax.cache.annotation.CacheKeyGenerator;
+import javax.cache.annotation.CacheKeyInvocationContext;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Spring's {@link KeyGenerator} implementation that either delegates to a standard JSR-107
@@ -70,6 +70,20 @@ class KeyGeneratorAdapter implements KeyGenerator {
 		this.cacheKeyGenerator = target;
 	}
 
+	@SuppressWarnings("unchecked")
+	private static Object doGenerate(KeyGenerator keyGenerator, CacheKeyInvocationContext<?> context) {
+		List<Object> parameters = new ArrayList<>();
+		for (CacheInvocationParameter param : context.getKeyParameters()) {
+			Object value = param.getValue();
+			if (param.getParameterPosition() == context.getAllParameters().length - 1 &&
+					context.getMethod().isVarArgs()) {
+				parameters.addAll((List<Object>) CollectionUtils.arrayToList(value));
+			} else {
+				parameters.add(value);
+			}
+		}
+		return keyGenerator.generate(context.getTarget(), context.getMethod(), parameters.toArray());
+	}
 
 	/**
 	 * Return the target key generator to use in the form of either a {@link KeyGenerator}
@@ -93,29 +107,11 @@ class KeyGeneratorAdapter implements KeyGenerator {
 
 		if (this.cacheKeyGenerator != null) {
 			return this.cacheKeyGenerator.generateCacheKey(invocationContext);
-		}
-		else {
+		} else {
 			Assert.state(this.keyGenerator != null, "No key generator");
 			return doGenerate(this.keyGenerator, invocationContext);
 		}
 	}
-
-	@SuppressWarnings("unchecked")
-	private static Object doGenerate(KeyGenerator keyGenerator, CacheKeyInvocationContext<?> context) {
-		List<Object> parameters = new ArrayList<>();
-		for (CacheInvocationParameter param : context.getKeyParameters()) {
-			Object value = param.getValue();
-			if (param.getParameterPosition() == context.getAllParameters().length - 1 &&
-					context.getMethod().isVarArgs()) {
-				parameters.addAll((List<Object>) CollectionUtils.arrayToList(value));
-			}
-			else {
-				parameters.add(value);
-			}
-		}
-		return keyGenerator.generate(context.getTarget(), context.getMethod(), parameters.toArray());
-	}
-
 
 	@SuppressWarnings("unchecked")
 	private CacheKeyInvocationContext<?> createCacheKeyInvocationContext(

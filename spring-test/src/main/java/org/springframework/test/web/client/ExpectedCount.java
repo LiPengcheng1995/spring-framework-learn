@@ -56,22 +56,6 @@ public class ExpectedCount {
 		this.maxCount = maxCount;
 	}
 
-
-	/**
-	 * Return the {@code min} boundary of the expected count range.
-	 */
-	public int getMinCount() {
-		return this.minCount;
-	}
-
-	/**
-	 * Return the {@code max} boundary of the expected count range.
-	 */
-	public int getMaxCount() {
-		return this.maxCount;
-	}
-
-
 	/**
 	 * Exactly once.
 	 */
@@ -119,6 +103,7 @@ public class ExpectedCount {
 
 	/**
 	 * No calls expected at all, i.e. min=0 and max=0.
+	 *
 	 * @since 4.3.6
 	 */
 	public static ExpectedCount never() {
@@ -130,6 +115,20 @@ public class ExpectedCount {
 	 */
 	public static ExpectedCount between(int min, int max) {
 		return new ExpectedCount(min, max);
+	}
+
+	/**
+	 * Return the {@code min} boundary of the expected count range.
+	 */
+	public int getMinCount() {
+		return this.minCount;
+	}
+
+	/**
+	 * Return the {@code max} boundary of the expected count range.
+	 */
+	public int getMaxCount() {
+		return this.maxCount;
 	}
 
 }

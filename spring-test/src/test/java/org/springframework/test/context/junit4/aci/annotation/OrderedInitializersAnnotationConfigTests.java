@@ -18,7 +18,6 @@ package org.springframework.test.context.junit4.aci.annotation;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.annotation.Bean;
@@ -29,13 +28,10 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.junit4.aci.annotation.OrderedInitializersAnnotationConfigTests.ConfigOne;
-import org.springframework.test.context.junit4.aci.annotation.OrderedInitializersAnnotationConfigTests.ConfigTwo;
 import org.springframework.test.context.junit4.aci.annotation.OrderedInitializersAnnotationConfigTests.GlobalConfig;
-import org.springframework.test.context.junit4.aci.annotation.OrderedInitializersAnnotationConfigTests.OrderedOneInitializer;
-import org.springframework.test.context.junit4.aci.annotation.OrderedInitializersAnnotationConfigTests.OrderedTwoInitializer;
+import org.springframework.test.context.junit4.aci.annotation.OrderedInitializersAnnotationConfigTests.*;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Integration tests that verify that any {@link ApplicationContextInitializer
@@ -51,8 +47,8 @@ import static org.junit.Assert.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 // Note: the ordering of the config classes is intentionally: global, two, one.
 // Note: the ordering of the initializers is intentionally: two, one.
-@ContextConfiguration(classes = { GlobalConfig.class, ConfigTwo.class, ConfigOne.class }, initializers = {
-	OrderedTwoInitializer.class, OrderedOneInitializer.class })
+@ContextConfiguration(classes = {GlobalConfig.class, ConfigTwo.class, ConfigOne.class}, initializers = {
+		OrderedTwoInitializer.class, OrderedOneInitializer.class})
 public class OrderedInitializersAnnotationConfigTests {
 
 	private static final String PROFILE_GLOBAL = "global";

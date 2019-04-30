@@ -16,17 +16,8 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.lang.reflect.Method;
-import java.time.Instant;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapterRegistry;
@@ -40,12 +31,16 @@ import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.reactive.BindingContext;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.ServerWebInputException;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import java.lang.reflect.Method;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.Map;
+
+import static org.junit.Assert.*;
 
 /**
  * Unit tests for {@link RequestHeaderMethodArgumentResolver}.
@@ -102,8 +97,7 @@ public class RequestHeaderMethodArgumentResolverTests {
 		try {
 			this.resolver.supportsParameter(this.paramMono);
 			fail();
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertTrue("Unexpected error message:\n" + ex.getMessage(),
 					ex.getMessage().startsWith(
 							"RequestHeaderMethodArgumentResolver doesn't support reactive type wrapper"));
@@ -133,7 +127,7 @@ public class RequestHeaderMethodArgumentResolverTests {
 
 		Object result = mono.block();
 		assertTrue(result instanceof String[]);
-		assertArrayEquals(new String[] {"foo", "bar"}, (String[]) result);
+		assertArrayEquals(new String[]{"foo", "bar"}, (String[]) result);
 	}
 
 	@Test
@@ -158,8 +152,7 @@ public class RequestHeaderMethodArgumentResolverTests {
 			Object result = mono.block();
 			assertTrue(result instanceof String);
 			assertEquals("bar", result);
-		}
-		finally {
+		} finally {
 			System.clearProperty("systemProperty");
 		}
 	}
@@ -178,8 +171,7 @@ public class RequestHeaderMethodArgumentResolverTests {
 			Object result = mono.block();
 			assertTrue(result instanceof String);
 			assertEquals(expected, result);
-		}
-		finally {
+		} finally {
 			System.clearProperty("systemProperty");
 		}
 	}
@@ -198,8 +190,7 @@ public class RequestHeaderMethodArgumentResolverTests {
 			Object result = mono.block();
 			assertTrue(result instanceof String);
 			assertEquals(expected, result);
-		}
-		finally {
+		} finally {
 			System.clearProperty("systemProperty");
 		}
 	}
@@ -248,7 +239,7 @@ public class RequestHeaderMethodArgumentResolverTests {
 	public void params(
 			@RequestHeader(name = "name", defaultValue = "bar") String param1,
 			@RequestHeader("name") String[] param2,
-			@RequestHeader(name = "name", defaultValue="#{systemProperties.systemProperty}") String param3,
+			@RequestHeader(name = "name", defaultValue = "#{systemProperties.systemProperty}") String param3,
 			@RequestHeader("#{systemProperties.systemProperty}") String param4,
 			@RequestHeader("${systemProperty}") String param5,
 			@RequestHeader("name") Map<?, ?> unsupported,

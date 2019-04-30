@@ -16,21 +16,21 @@
 
 package org.springframework.jca.cci.core.support;
 
+import org.springframework.util.FileCopyUtils;
+
+import javax.resource.cci.Record;
+import javax.resource.cci.Streamable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import javax.resource.cci.Record;
-import javax.resource.cci.Streamable;
-
-import org.springframework.util.FileCopyUtils;
 
 /**
  * CCI Record implementation for a COMMAREA, holding a byte array.
  *
  * @author Thierry Templier
  * @author Juergen Hoeller
- * @since 1.2
  * @see org.springframework.jca.cci.object.MappingCommAreaOperation
+ * @since 1.2
  */
 @SuppressWarnings("serial")
 public class CommAreaRecord implements Record, Streamable {
@@ -44,6 +44,7 @@ public class CommAreaRecord implements Record, Streamable {
 
 	/**
 	 * Create a new CommAreaRecord.
+	 *
 	 * @see #read(java.io.InputStream)
 	 */
 	public CommAreaRecord() {
@@ -51,16 +52,11 @@ public class CommAreaRecord implements Record, Streamable {
 
 	/**
 	 * Create a new CommAreaRecord.
+	 *
 	 * @param bytes the bytes to fill the record with
 	 */
 	public CommAreaRecord(byte[] bytes) {
 		this.bytes = bytes;
-	}
-
-
-	@Override
-	public void setRecordName(String recordName) {
-		this.recordName = recordName;
 	}
 
 	@Override
@@ -69,8 +65,8 @@ public class CommAreaRecord implements Record, Streamable {
 	}
 
 	@Override
-	public void setRecordShortDescription(String recordShortDescription) {
-		this.recordShortDescription = recordShortDescription;
+	public void setRecordName(String recordName) {
+		this.recordName = recordName;
 	}
 
 	@Override
@@ -78,6 +74,10 @@ public class CommAreaRecord implements Record, Streamable {
 		return this.recordShortDescription;
 	}
 
+	@Override
+	public void setRecordShortDescription(String recordShortDescription) {
+		this.recordShortDescription = recordShortDescription;
+	}
 
 	@Override
 	public void read(InputStream in) throws IOException {

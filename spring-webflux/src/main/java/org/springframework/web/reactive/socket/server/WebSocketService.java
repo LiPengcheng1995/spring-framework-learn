@@ -16,10 +16,9 @@
 
 package org.springframework.web.reactive.socket.server;
 
-import reactor.core.publisher.Mono;
-
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
 
 /**
  * A service to delegate WebSocket-related HTTP requests to.
@@ -29,14 +28,15 @@ import org.springframework.web.server.ServerWebExchange;
  * requests defined in the SockJS protocol.
  *
  * @author Rossen Stoyanchev
- * @since 5.0
  * @see org.springframework.web.reactive.socket.server.support.HandshakeWebSocketService
+ * @since 5.0
  */
 public interface WebSocketService {
 
 	/**
 	 * Handle the HTTP request and use the given {@link WebSocketHandler}.
-	 * @param exchange the current exchange
+	 *
+	 * @param exchange         the current exchange
 	 * @param webSocketHandler handler for WebSocket session
 	 * @return a completion Mono for the WebSocket session handling
 	 */

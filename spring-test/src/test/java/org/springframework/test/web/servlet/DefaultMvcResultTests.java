@@ -16,11 +16,10 @@
 
 package org.springframework.test.web.servlet;
 
-import java.util.concurrent.CountDownLatch;
-
 import org.junit.Test;
-
 import org.springframework.mock.web.MockHttpServletRequest;
+
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Test fixture for {@link DefaultMvcResult}.

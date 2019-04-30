@@ -16,9 +16,9 @@
 
 package org.springframework.web.servlet.tags.form;
 
-import javax.servlet.jsp.JspException;
-
 import org.springframework.lang.Nullable;
+
+import javax.servlet.jsp.JspException;
 
 /**
  * Abstract base class to provide common methods for

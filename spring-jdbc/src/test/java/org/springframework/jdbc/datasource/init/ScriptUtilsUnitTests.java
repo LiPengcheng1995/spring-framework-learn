@@ -16,13 +16,12 @@
 
 package org.springframework.jdbc.datasource.init;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.EncodedResource;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.springframework.jdbc.datasource.init.ScriptUtils.*;
@@ -35,8 +34,8 @@ import static org.springframework.jdbc.datasource.init.ScriptUtils.*;
  * @author Phillip Webb
  * @author Chris Baldwin
  * @author Nicolas Debeissat
- * @since 4.0.3
  * @see ScriptUtilsIntegrationTests
+ * @since 4.0.3
  */
 public class ScriptUtilsUnitTests {
 
@@ -83,7 +82,7 @@ public class ScriptUtilsUnitTests {
 		splitSqlScript(script, DEFAULT_STATEMENT_SEPARATOR, statements);
 		assertEquals("wrong number of statements", 1, statements.size());
 		assertEquals("script should have been 'stripped' but not actually 'split'", script.replace('\n', ' '),
-			statements.get(0));
+				statements.get(0));
 	}
 
 	@Test  // SPR-13218

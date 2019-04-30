@@ -19,7 +19,6 @@ package org.springframework.test.web.servlet.samples.context;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
@@ -31,9 +30,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.mockito.BDDMockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
@@ -45,8 +44,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration("src/test/resources/META-INF/web-resources")
 @ContextHierarchy({
-	@ContextConfiguration("root-context.xml"),
-	@ContextConfiguration("servlet-context.xml")
+		@ContextConfiguration("root-context.xml"),
+		@ContextConfiguration("servlet-context.xml")
 })
 public class XmlConfigTests {
 
@@ -68,16 +67,16 @@ public class XmlConfigTests {
 	@Test
 	public void person() throws Exception {
 		this.mockMvc.perform(get("/person/5").accept(MediaType.APPLICATION_JSON))
-			.andDo(print())
-			.andExpect(status().isOk())
-			.andExpect(content().string("{\"name\":\"Joe\",\"someDouble\":0.0,\"someBoolean\":false}"));
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(content().string("{\"name\":\"Joe\",\"someDouble\":0.0,\"someBoolean\":false}"));
 	}
 
 	@Test
 	public void tilesDefinitions() throws Exception {
 		this.mockMvc.perform(get("/"))//
-		.andExpect(status().isOk())//
-		.andExpect(forwardedUrl("/WEB-INF/layouts/standardLayout.jsp"));
+				.andExpect(status().isOk())//
+				.andExpect(forwardedUrl("/WEB-INF/layouts/standardLayout.jsp"));
 	}
 
 }

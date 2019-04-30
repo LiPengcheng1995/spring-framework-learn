@@ -16,14 +16,13 @@
 
 package org.springframework.cache.jcache.interceptor;
 
-import java.io.Serializable;
-import java.lang.reflect.Method;
-
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-
 import org.springframework.cache.interceptor.CacheOperationInvoker;
 import org.springframework.lang.Nullable;
+
+import java.io.Serializable;
+import java.lang.reflect.Method;
 
 /**
  * AOP Alliance MethodInterceptor for declarative cache
@@ -36,8 +35,8 @@ import org.springframework.lang.Nullable;
  * <p>JCacheInterceptors are thread-safe.
  *
  * @author Stephane Nicoll
- * @since 4.1
  * @see org.springframework.cache.interceptor.CacheInterceptor
+ * @since 4.1
  */
 @SuppressWarnings("serial")
 public class JCacheInterceptor extends JCacheAspectSupport implements MethodInterceptor, Serializable {
@@ -50,16 +49,14 @@ public class JCacheInterceptor extends JCacheAspectSupport implements MethodInte
 		CacheOperationInvoker aopAllianceInvoker = () -> {
 			try {
 				return invocation.proceed();
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				throw new CacheOperationInvoker.ThrowableWrapper(ex);
 			}
 		};
 
 		try {
 			return execute(aopAllianceInvoker, invocation.getThis(), method, invocation.getArguments());
-		}
-		catch (CacheOperationInvoker.ThrowableWrapper th) {
+		} catch (CacheOperationInvoker.ThrowableWrapper th) {
 			throw th.getOriginal();
 		}
 	}

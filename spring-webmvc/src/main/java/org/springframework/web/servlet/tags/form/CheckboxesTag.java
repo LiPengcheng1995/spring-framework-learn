@@ -16,9 +16,9 @@
 
 package org.springframework.web.servlet.tags.form;
 
-import javax.servlet.jsp.JspException;
-
 import org.springframework.web.bind.WebDataBinder;
+
+import javax.servlet.jsp.JspException;
 
 /**
  * The {@code <checkboxes>} tag renders multiple HTML 'input' tags with type 'checkbox'.

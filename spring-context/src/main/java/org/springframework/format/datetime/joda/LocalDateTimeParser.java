@@ -16,13 +16,12 @@
 
 package org.springframework.format.datetime.joda;
 
-import java.text.ParseException;
-import java.util.Locale;
-
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
-
 import org.springframework.format.Parser;
+
+import java.text.ParseException;
+import java.util.Locale;
 
 /**
  * Parses Joda {@link org.joda.time.LocalDateTime} instances using a
@@ -38,6 +37,7 @@ public final class LocalDateTimeParser implements Parser<LocalDateTime> {
 
 	/**
 	 * Create a new DateTimeParser.
+	 *
 	 * @param formatter the Joda DateTimeFormatter instance
 	 */
 	public LocalDateTimeParser(DateTimeFormatter formatter) {

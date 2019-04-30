@@ -18,7 +18,6 @@ package org.springframework.test.context.junit4.spr9645;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
@@ -26,7 +25,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.tests.transaction.CallCountingTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Integration tests that verify the behavior requested in
@@ -41,6 +40,14 @@ public class LookUpNonexistentTxMgrTests {
 
 	private static final CallCountingTransactionManager txManager = new CallCountingTransactionManager();
 
+	@Test
+	public void nonTransactionalTest() {
+		assertEquals(0, txManager.begun);
+		assertEquals(0, txManager.inflight);
+		assertEquals(0, txManager.commits);
+		assertEquals(0, txManager.rollbacks);
+	}
+
 	@Configuration
 	static class Config {
 
@@ -48,13 +55,5 @@ public class LookUpNonexistentTxMgrTests {
 		public PlatformTransactionManager transactionManager() {
 			return txManager;
 		}
-	}
-
-	@Test
-	public void nonTransactionalTest() {
-		assertEquals(0, txManager.begun);
-		assertEquals(0, txManager.inflight);
-		assertEquals(0, txManager.commits);
-		assertEquals(0, txManager.rollbacks);
 	}
 }

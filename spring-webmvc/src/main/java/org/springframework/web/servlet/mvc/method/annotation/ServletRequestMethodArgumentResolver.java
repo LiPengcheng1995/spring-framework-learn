@@ -16,18 +16,6 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.security.Principal;
-import java.time.ZoneId;
-import java.util.Locale;
-import java.util.TimeZone;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.PushBuilder;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpMethod;
 import org.springframework.lang.Nullable;
@@ -39,6 +27,18 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.multipart.MultipartRequest;
 import org.springframework.web.servlet.support.RequestContextUtils;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.PushBuilder;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.security.Principal;
+import java.time.ZoneId;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Resolves request-related method argument values of the following types:
@@ -71,8 +71,7 @@ public class ServletRequestMethodArgumentResolver implements HandlerMethodArgume
 		try {
 			pushBuilder = ClassUtils.forName("javax.servlet.http.PushBuilder",
 					ServletRequestMethodArgumentResolver.class.getClassLoader());
-		}
-		catch (ClassNotFoundException ex) {
+		} catch (ClassNotFoundException ex) {
 			// Servlet 4.0 PushBuilder not found - not supported for injection
 			pushBuilder = null;
 		}
@@ -98,7 +97,7 @@ public class ServletRequestMethodArgumentResolver implements HandlerMethodArgume
 
 	@Override
 	public Object resolveArgument(MethodParameter parameter, @Nullable ModelAndViewContainer mavContainer,
-			NativeWebRequest webRequest, @Nullable WebDataBinderFactory binderFactory) throws Exception {
+								  NativeWebRequest webRequest, @Nullable WebDataBinderFactory binderFactory) throws Exception {
 
 		Class<?> paramType = parameter.getParameterType();
 
@@ -138,45 +137,37 @@ public class ServletRequestMethodArgumentResolver implements HandlerMethodArgume
 						"Current session is not of type [" + paramType.getName() + "]: " + session);
 			}
 			return session;
-		}
-		else if (pushBuilder != null && pushBuilder.isAssignableFrom(paramType)) {
+		} else if (pushBuilder != null && pushBuilder.isAssignableFrom(paramType)) {
 			return PushBuilderDelegate.resolvePushBuilder(request, paramType);
-		}
-		else if (InputStream.class.isAssignableFrom(paramType)) {
+		} else if (InputStream.class.isAssignableFrom(paramType)) {
 			InputStream inputStream = request.getInputStream();
 			if (inputStream != null && !paramType.isInstance(inputStream)) {
 				throw new IllegalStateException(
 						"Request input stream is not of type [" + paramType.getName() + "]: " + inputStream);
 			}
 			return inputStream;
-		}
-		else if (Reader.class.isAssignableFrom(paramType)) {
+		} else if (Reader.class.isAssignableFrom(paramType)) {
 			Reader reader = request.getReader();
 			if (reader != null && !paramType.isInstance(reader)) {
 				throw new IllegalStateException(
 						"Request body reader is not of type [" + paramType.getName() + "]: " + reader);
 			}
 			return reader;
-		}
-		else if (Principal.class.isAssignableFrom(paramType)) {
+		} else if (Principal.class.isAssignableFrom(paramType)) {
 			Principal userPrincipal = request.getUserPrincipal();
 			if (userPrincipal != null && !paramType.isInstance(userPrincipal)) {
 				throw new IllegalStateException(
 						"Current user principal is not of type [" + paramType.getName() + "]: " + userPrincipal);
 			}
 			return userPrincipal;
-		}
-		else if (HttpMethod.class == paramType) {
+		} else if (HttpMethod.class == paramType) {
 			return HttpMethod.resolve(request.getMethod());
-		}
-		else if (Locale.class == paramType) {
+		} else if (Locale.class == paramType) {
 			return RequestContextUtils.getLocale(request);
-		}
-		else if (TimeZone.class == paramType) {
+		} else if (TimeZone.class == paramType) {
 			TimeZone timeZone = RequestContextUtils.getTimeZone(request);
 			return (timeZone != null ? timeZone : TimeZone.getDefault());
-		}
-		else if (ZoneId.class == paramType) {
+		} else if (ZoneId.class == paramType) {
 			TimeZone timeZone = RequestContextUtils.getTimeZone(request);
 			return (timeZone != null ? timeZone.toZoneId() : ZoneId.systemDefault());
 		}

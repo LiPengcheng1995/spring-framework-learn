@@ -16,11 +16,6 @@
 
 package org.springframework.web.socket.config;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.w3c.dom.Element;
-
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.parsing.BeanComponentDefinition;
@@ -36,6 +31,10 @@ import org.springframework.web.socket.server.support.OriginHandshakeInterceptor;
 import org.springframework.web.socket.sockjs.transport.TransportHandlingSockJsService;
 import org.springframework.web.socket.sockjs.transport.handler.DefaultSockJsService;
 import org.springframework.web.socket.sockjs.transport.handler.WebSocketTransportHandler;
+import org.w3c.dom.Element;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Provides utility methods for parsing common WebSocket XML namespace elements.
@@ -53,8 +52,7 @@ abstract class WebSocketNamespaceUtils {
 		Element handlerElem = DomUtils.getChildElementByTagName(element, "handshake-handler");
 		if (handlerElem != null) {
 			handlerRef = new RuntimeBeanReference(handlerElem.getAttribute("ref"));
-		}
-		else {
+		} else {
 			RootBeanDefinition defaultHandlerDef = new RootBeanDefinition(DefaultHandshakeHandler.class);
 			defaultHandlerDef.setSource(source);
 			defaultHandlerDef.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
@@ -80,8 +78,7 @@ abstract class WebSocketNamespaceUtils {
 			String customTaskSchedulerName = sockJsElement.getAttribute("scheduler");
 			if (!customTaskSchedulerName.isEmpty()) {
 				scheduler = new RuntimeBeanReference(customTaskSchedulerName);
-			}
-			else {
+			} else {
 				scheduler = registerScheduler(schedulerName, context, source);
 			}
 			sockJsServiceDef.getConstructorArgumentValues().addIndexedArgumentValue(0, scheduler);
@@ -94,8 +91,7 @@ abstract class WebSocketNamespaceUtils {
 				}
 				ManagedList<?> transportHandlers = parseBeanSubElements(transportHandlersElement, context);
 				sockJsServiceDef.getConstructorArgumentValues().addIndexedArgumentValue(1, transportHandlers);
-			}
-			else if (handshakeHandler != null) {
+			} else if (handshakeHandler != null) {
 				RuntimeBeanReference handshakeHandlerRef = new RuntimeBeanReference(handshakeHandler.getAttribute("ref"));
 				RootBeanDefinition transportHandler = new RootBeanDefinition(WebSocketTransportHandler.class);
 				transportHandler.setSource(source);

@@ -16,17 +16,9 @@
 
 package org.springframework.web.servlet.resource;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import javax.servlet.http.HttpServletResponse;
-
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -41,6 +33,13 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.accept.ContentNegotiationManagerFactoryBean;
 import org.springframework.web.servlet.HandlerMapping;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -284,6 +283,7 @@ public class ResourceHttpRequestHandlerTests {
 			public String getMimeType(String filePath) {
 				return "foo/bar";
 			}
+
 			@Override
 			public String getVirtualServerName() {
 				return "";
@@ -672,11 +672,9 @@ public class ResourceHttpRequestHandlerTests {
 		public String getMimeType(String filePath) {
 			if (filePath.endsWith(".css")) {
 				return "text/css";
-			}
-			else if (filePath.endsWith(".js")) {
+			} else if (filePath.endsWith(".js")) {
 				return "text/javascript";
-			}
-			else {
+			} else {
 				return super.getMimeType(filePath);
 			}
 		}

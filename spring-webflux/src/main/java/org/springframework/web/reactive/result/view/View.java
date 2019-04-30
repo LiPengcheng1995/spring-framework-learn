@@ -16,16 +16,15 @@
 
 package org.springframework.web.reactive.result.view;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import reactor.core.publisher.Mono;
-
 import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.HandlerResult;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Contract to render {@link HandlerResult} to the HTTP response.
@@ -61,11 +60,12 @@ public interface View {
 	/**
 	 * Render the view based on the given {@link HandlerResult}. Implementations
 	 * can access and use the model or only a specific attribute in it.
-	 * @param model Map with name Strings as keys and corresponding model
-	 * objects as values (Map can also be {@code null} in case of empty model)
+	 *
+	 * @param model       Map with name Strings as keys and corresponding model
+	 *                    objects as values (Map can also be {@code null} in case of empty model)
 	 * @param contentType the content type selected to render with which should
-	 * match one of the {@link #getSupportedMediaTypes() supported media types}.
-	 * @param exchange the current exchange
+	 *                    match one of the {@link #getSupportedMediaTypes() supported media types}.
+	 * @param exchange    the current exchange
 	 * @return {@code Mono} to represent when and if rendering succeeds
 	 */
 	Mono<Void> render(@Nullable Map<String, ?> model, @Nullable MediaType contentType, ServerWebExchange exchange);

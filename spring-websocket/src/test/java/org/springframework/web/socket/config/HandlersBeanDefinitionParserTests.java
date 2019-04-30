@@ -16,15 +16,7 @@
 
 package org.springframework.web.socket.config;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
-
 import org.junit.Test;
-
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.server.ServerHttpRequest;
@@ -52,15 +44,14 @@ import org.springframework.web.socket.sockjs.support.SockJsHttpRequestHandler;
 import org.springframework.web.socket.sockjs.transport.TransportHandler;
 import org.springframework.web.socket.sockjs.transport.TransportHandlingSockJsService;
 import org.springframework.web.socket.sockjs.transport.TransportType;
-import org.springframework.web.socket.sockjs.transport.handler.DefaultSockJsService;
-import org.springframework.web.socket.sockjs.transport.handler.EventSourceTransportHandler;
-import org.springframework.web.socket.sockjs.transport.handler.HtmlFileTransportHandler;
-import org.springframework.web.socket.sockjs.transport.handler.JsonpPollingTransportHandler;
-import org.springframework.web.socket.sockjs.transport.handler.JsonpReceivingTransportHandler;
-import org.springframework.web.socket.sockjs.transport.handler.WebSocketTransportHandler;
-import org.springframework.web.socket.sockjs.transport.handler.XhrPollingTransportHandler;
-import org.springframework.web.socket.sockjs.transport.handler.XhrReceivingTransportHandler;
-import org.springframework.web.socket.sockjs.transport.handler.XhrStreamingTransportHandler;
+import org.springframework.web.socket.sockjs.transport.handler.*;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -76,6 +67,12 @@ public class HandlersBeanDefinitionParserTests {
 
 	private final GenericWebApplicationContext appContext = new GenericWebApplicationContext();
 
+	private static void unwrapAndCheckDecoratedHandlerType(WebSocketHandler handler, Class<?> handlerClass) {
+		if (handler instanceof WebSocketHandlerDecorator) {
+			handler = ((WebSocketHandlerDecorator) handler).getLastHandler();
+		}
+		assertTrue(handlerClass.isInstance(handler));
+	}
 
 	@Test
 	public void webSocketHandlers() {
@@ -99,8 +96,7 @@ public class HandlersBeanDefinitionParserTests {
 				assertTrue(handshakeHandler instanceof DefaultHandshakeHandler);
 				assertFalse(handler.getHandshakeInterceptors().isEmpty());
 				assertTrue(handler.getHandshakeInterceptors().get(0) instanceof OriginHandshakeInterceptor);
-			}
-			else {
+			} else {
 				assertThat(shm.getUrlMap().keySet(), contains("/test"));
 				WebSocketHttpRequestHandler handler = (WebSocketHttpRequestHandler) shm.getUrlMap().get("/test");
 				assertNotNull(handler);
@@ -232,19 +228,11 @@ public class HandlersBeanDefinitionParserTests {
 		assertTrue(transportService.getAllowedOrigins().contains("https://mydomain2.com"));
 	}
 
-
 	private void loadBeanDefinitions(String fileName) {
 		XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(this.appContext);
 		ClassPathResource resource = new ClassPathResource(fileName, HandlersBeanDefinitionParserTests.class);
 		reader.loadBeanDefinitions(resource);
 		this.appContext.refresh();
-	}
-
-	private static void unwrapAndCheckDecoratedHandlerType(WebSocketHandler handler, Class<?> handlerClass) {
-		if (handler instanceof WebSocketHandlerDecorator) {
-			handler = ((WebSocketHandlerDecorator) handler).getLastHandler();
-		}
-		assertTrue(handlerClass.isInstance(handler));
 	}
 }
 
@@ -282,7 +270,7 @@ class TestHandshakeHandler implements HandshakeHandler {
 
 	@Override
 	public boolean doHandshake(ServerHttpRequest request, ServerHttpResponse response,
-			WebSocketHandler wsHandler, Map<String, Object> attributes) {
+							   WebSocketHandler wsHandler, Map<String, Object> attributes) {
 
 		return false;
 	}
@@ -297,14 +285,14 @@ class FooTestInterceptor implements HandshakeInterceptor {
 
 	@Override
 	public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
-			WebSocketHandler wsHandler, Map<String, Object> attributes) {
+								   WebSocketHandler wsHandler, Map<String, Object> attributes) {
 
 		return false;
 	}
 
 	@Override
 	public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response,
-			WebSocketHandler wsHandler, Exception exception) {
+							   WebSocketHandler wsHandler, Exception exception) {
 	}
 }
 
@@ -313,7 +301,7 @@ class BarTestInterceptor extends FooTestInterceptor {
 }
 
 
-@SuppressWarnings({ "unchecked", "rawtypes" })
+@SuppressWarnings({"unchecked", "rawtypes"})
 class TestTaskScheduler implements TaskScheduler {
 
 	@Override

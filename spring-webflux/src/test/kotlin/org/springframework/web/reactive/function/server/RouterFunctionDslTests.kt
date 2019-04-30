@@ -18,8 +18,10 @@ package org.springframework.web.reactive.function.server
 
 import org.junit.Test
 import org.springframework.core.io.ClassPathResource
-import org.springframework.http.HttpHeaders.*
-import org.springframework.http.HttpMethod.*
+import org.springframework.http.HttpHeaders.ACCEPT
+import org.springframework.http.HttpHeaders.CONTENT_TYPE
+import org.springframework.http.HttpMethod.PATCH
+import org.springframework.http.HttpMethod.POST
 import org.springframework.http.MediaType.*
 import org.springframework.web.reactive.function.server.MockServerRequest.builder
 import org.springframework.web.reactive.function.server.ServerResponse.ok
@@ -118,7 +120,7 @@ class RouterFunctionDslTests {
 		(GET("/foo/") or GET("/foos/")) { req -> handle(req) }
 		"/api".nest {
 			POST("/foo/", ::handleFromClass)
-			PUT("/foo/", :: handleFromClass)
+			PUT("/foo/", ::handleFromClass)
 			"/foo/"  { handleFromClass(it) }
 		}
 		accept(APPLICATION_ATOM_XML, ::handle)
@@ -133,8 +135,7 @@ class RouterFunctionDslTests {
 		resources {
 			if (it.path() == "/response.txt") {
 				Mono.just(ClassPathResource("/org/springframework/web/reactive/function/response.txt"))
-			}
-			else {
+			} else {
 				Mono.empty()
 			}
 		}

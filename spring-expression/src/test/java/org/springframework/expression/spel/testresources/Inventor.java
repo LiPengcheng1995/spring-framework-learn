@@ -16,44 +16,39 @@
 
 package org.springframework.expression.spel.testresources;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.util.ObjectUtils;
+
+import java.util.*;
 
 ///CLOVER:OFF
 @SuppressWarnings("unused")
 public class Inventor {
-	private String name;
 	public String _name;
 	public String _name_;
 	public String publicName;
+	public String randomField;
+	public Map<String, String> testMap;
+	public ArrayContainer arrayContainer;
+	public boolean publicBoolean;
+	public List<Integer> listOfInteger = new ArrayList<>();
+	public List<Boolean> booleanList = new ArrayList<>();
+	public Map<String, Boolean> mapOfStringToBoolean = new LinkedHashMap<>();
+	public Map<Integer, String> mapOfNumbersUpToTen = new LinkedHashMap<>();
+	public List<Integer> listOfNumbersUpToTen = new ArrayList<>();
+	public List<Integer> listOneFive = new ArrayList<>();
+	public String[] stringArrayOfThreeItems = new String[]{"1", "2", "3"};
+	public int counter;
+	private String name;
 	private PlaceOfBirth placeOfBirth;
 	private Date birthdate;
 	private int sinNumber;
 	private String nationality;
 	private String[] inventions;
-	public String randomField;
-	public Map<String,String> testMap;
 	private boolean wonNobelPrize;
 	private PlaceOfBirth[] placesLived;
 	private List<PlaceOfBirth> placesLivedList = new ArrayList<>();
-	public ArrayContainer arrayContainer;
-	public boolean publicBoolean;
 	private boolean accessedThroughGetSet;
-	public List<Integer> listOfInteger = new ArrayList<>();
-	public List<Boolean> booleanList = new ArrayList<>();
-	public Map<String,Boolean> mapOfStringToBoolean = new LinkedHashMap<>();
-	public Map<Integer,String> mapOfNumbersUpToTen = new LinkedHashMap<>();
-	public List<Integer> listOfNumbersUpToTen = new ArrayList<>();
-	public List<Integer> listOneFive = new ArrayList<>();
-	public String[] stringArrayOfThreeItems = new String[]{"1","2","3"};
 	private String foo;
-	public int counter;
 
 	public Inventor(String name, Date birthdate, String nationality) {
 		this.name = name;
@@ -84,22 +79,20 @@ public class Inventor {
 		listOfNumbersUpToTen.add(8);
 		listOfNumbersUpToTen.add(9);
 		listOfNumbersUpToTen.add(10);
-		mapOfNumbersUpToTen.put(1,"one");
-		mapOfNumbersUpToTen.put(2,"two");
-		mapOfNumbersUpToTen.put(3,"three");
-		mapOfNumbersUpToTen.put(4,"four");
-		mapOfNumbersUpToTen.put(5,"five");
-		mapOfNumbersUpToTen.put(6,"six");
-		mapOfNumbersUpToTen.put(7,"seven");
-		mapOfNumbersUpToTen.put(8,"eight");
-		mapOfNumbersUpToTen.put(9,"nine");
-		mapOfNumbersUpToTen.put(10,"ten");
+		mapOfNumbersUpToTen.put(1, "one");
+		mapOfNumbersUpToTen.put(2, "two");
+		mapOfNumbersUpToTen.put(3, "three");
+		mapOfNumbersUpToTen.put(4, "four");
+		mapOfNumbersUpToTen.put(5, "five");
+		mapOfNumbersUpToTen.put(6, "six");
+		mapOfNumbersUpToTen.put(7, "seven");
+		mapOfNumbersUpToTen.put(8, "eight");
+		mapOfNumbersUpToTen.put(9, "nine");
+		mapOfNumbersUpToTen.put(10, "ten");
 	}
 
-	public void setPlaceOfBirth(PlaceOfBirth placeOfBirth2) {
-		placeOfBirth = placeOfBirth2;
-		this.placesLived = new PlaceOfBirth[] { placeOfBirth2 };
-		this.placesLivedList.add(placeOfBirth2);
+	public Inventor(String... strings) {
+
 	}
 
 	public String[] getInventions() {
@@ -114,22 +107,25 @@ public class Inventor {
 		return placeOfBirth;
 	}
 
+	public void setPlaceOfBirth(PlaceOfBirth placeOfBirth2) {
+		placeOfBirth = placeOfBirth2;
+		this.placesLived = new PlaceOfBirth[]{placeOfBirth2};
+		this.placesLivedList.add(placeOfBirth2);
+	}
+
 	public int throwException(int valueIn) throws Exception {
 		counter++;
-		if (valueIn==1) {
+		if (valueIn == 1) {
 			throw new IllegalArgumentException("IllegalArgumentException for 1");
 		}
-		if (valueIn==2) {
+		if (valueIn == 2) {
 			throw new RuntimeException("RuntimeException for 2");
 		}
-		if (valueIn==4) {
+		if (valueIn == 4) {
 			throw new TestException();
 		}
 		return valueIn;
 	}
-
-	@SuppressWarnings("serial")
-	static class TestException extends Exception {}
 
 	public String throwException(PlaceOfBirth pob) {
 		return pob.getCity();
@@ -202,10 +198,6 @@ public class Inventor {
 		return strings.length + i;
 	}
 
-	public Inventor(String... strings) {
-
-	}
-
 	public boolean getSomeProperty() {
 		return accessedThroughGetSet;
 	}
@@ -214,10 +206,23 @@ public class Inventor {
 		this.accessedThroughGetSet = b;
 	}
 
-	public Date getBirthdate() { return birthdate;}
+	public Date getBirthdate() {
+		return birthdate;
+	}
 
-	public String getFoo() { return foo; }
-	public void setFoo(String s) { foo = s; }
+	public String getFoo() {
+		return foo;
+	}
 
-	public String getNationality() { return nationality; }
+	public void setFoo(String s) {
+		foo = s;
+	}
+
+	public String getNationality() {
+		return nationality;
+	}
+
+	@SuppressWarnings("serial")
+	static class TestException extends Exception {
+	}
 }

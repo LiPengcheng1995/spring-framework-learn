@@ -26,8 +26,8 @@ import org.springframework.lang.Nullable;
  * been encoded or escaped.
  *
  * @author Scott Andrews
- * @since 3.0
  * @see ParamTag
+ * @since 3.0
  */
 public class Param {
 
@@ -36,14 +36,6 @@ public class Param {
 
 	@Nullable
 	private String value;
-
-
-	/**
-	 * Set the raw name of the parameter.
-	 */
-	public void setName(@Nullable String name) {
-		this.name = name;
-	}
 
 	/**
 	 * Return the raw parameter name.
@@ -54,10 +46,10 @@ public class Param {
 	}
 
 	/**
-	 * Set the raw value of the parameter.
+	 * Set the raw name of the parameter.
 	 */
-	public void setValue(@Nullable String value) {
-		this.value = value;
+	public void setName(@Nullable String name) {
+		this.name = name;
 	}
 
 	/**
@@ -68,6 +60,12 @@ public class Param {
 		return this.value;
 	}
 
+	/**
+	 * Set the raw value of the parameter.
+	 */
+	public void setValue(@Nullable String value) {
+		this.value = value;
+	}
 
 	@Override
 	public String toString() {

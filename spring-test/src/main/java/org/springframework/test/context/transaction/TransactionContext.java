@@ -16,11 +16,8 @@
 
 package org.springframework.test.context.transaction;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.lang.Nullable;
 import org.springframework.test.context.TestContext;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -29,14 +26,16 @@ import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.util.Assert;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Transaction context for a specific {@link TestContext}.
  *
  * @author Sam Brannen
  * @author Juergen Hoeller
- * @since 4.1
  * @see org.springframework.transaction.annotation.Transactional
  * @see org.springframework.test.context.transaction.TransactionalTestExecutionListener
+ * @since 4.1
  */
 class TransactionContext {
 
@@ -49,17 +48,14 @@ class TransactionContext {
 	private final PlatformTransactionManager transactionManager;
 
 	private final boolean defaultRollback;
-
+	private final AtomicInteger transactionsStarted = new AtomicInteger(0);
 	private boolean flaggedForRollback;
-
 	@Nullable
 	private TransactionStatus transactionStatus;
 
-	private final AtomicInteger transactionsStarted = new AtomicInteger(0);
-
 
 	TransactionContext(TestContext testContext, PlatformTransactionManager transactionManager,
-			TransactionDefinition transactionDefinition, boolean defaultRollback) {
+					   TransactionDefinition transactionDefinition, boolean defaultRollback) {
 
 		this.testContext = testContext;
 		this.transactionManager = transactionManager;
@@ -93,6 +89,7 @@ class TransactionContext {
 	 * Start a new transaction for the configured test context.
 	 * <p>Only call this method if {@link #endTransaction} has been called or if no
 	 * transaction has been previously started.
+	 *
 	 * @throws TransactionException if starting the transaction fails
 	 */
 	void startTransaction() {
@@ -126,12 +123,10 @@ class TransactionContext {
 		try {
 			if (this.flaggedForRollback) {
 				this.transactionManager.rollback(this.transactionStatus);
-			}
-			else {
+			} else {
 				this.transactionManager.commit(this.transactionStatus);
 			}
-		}
-		finally {
+		} finally {
 			this.transactionStatus = null;
 		}
 

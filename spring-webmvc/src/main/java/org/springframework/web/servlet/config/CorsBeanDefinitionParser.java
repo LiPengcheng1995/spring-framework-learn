@@ -16,13 +16,6 @@
 
 package org.springframework.web.servlet.config;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.w3c.dom.Element;
-
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
@@ -30,6 +23,12 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 import org.springframework.util.xml.DomUtils;
 import org.springframework.web.cors.CorsConfiguration;
+import org.w3c.dom.Element;
+
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * {@link org.springframework.beans.factory.xml.BeanDefinitionParser} that parses a
@@ -52,8 +51,7 @@ public class CorsBeanDefinitionParser implements BeanDefinitionParser {
 		if (mappings.isEmpty()) {
 			CorsConfiguration config = new CorsConfiguration().applyPermitDefaultValues();
 			corsConfigurations.put("/**", config);
-		}
-		else {
+		} else {
 			for (Element mapping : mappings) {
 				CorsConfiguration config = new CorsConfiguration();
 				if (mapping.hasAttribute("allowed-origins")) {

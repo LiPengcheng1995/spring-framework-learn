@@ -16,14 +16,10 @@
 
 package org.springframework.messaging.handler.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.messaging.converter.MessageConverter;
+
+import java.lang.annotation.*;
 
 /**
  * Annotation that binds a method parameter to the payload of a message. Can also
@@ -52,6 +48,7 @@ public @interface Payload {
 	 * handled contains a non-primitive Object as its payload or is in serialized form and
 	 * requires message conversion.
 	 * <p>When processing STOMP over WebSocket messages this attribute is not supported.
+	 *
 	 * @since 4.2
 	 */
 	@AliasFor("value")

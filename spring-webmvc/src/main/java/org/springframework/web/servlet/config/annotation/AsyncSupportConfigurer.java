@@ -16,11 +16,6 @@
 
 package org.springframework.web.servlet.config.annotation;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.Callable;
-
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.lang.Nullable;
@@ -28,6 +23,11 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.context.request.async.CallableProcessingInterceptor;
 import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.context.request.async.DeferredResultProcessingInterceptor;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  * Helps with configuring options for asynchronous request processing.
@@ -37,33 +37,12 @@ import org.springframework.web.context.request.async.DeferredResultProcessingInt
  */
 public class AsyncSupportConfigurer {
 
+	private final List<CallableProcessingInterceptor> callableInterceptors = new ArrayList<>();
+	private final List<DeferredResultProcessingInterceptor> deferredResultInterceptors = new ArrayList<>();
 	@Nullable
 	private AsyncTaskExecutor taskExecutor;
-
 	@Nullable
 	private Long timeout;
-
-	private final List<CallableProcessingInterceptor> callableInterceptors = new ArrayList<>();
-
-	private final List<DeferredResultProcessingInterceptor> deferredResultInterceptors = new ArrayList<>();
-
-
-	/**
-	 * The provided task executor is used to:
-	 * <ol>
-	 * <li>Handle {@link Callable} controller method return values.
-	 * <li>Perform blocking writes when streaming to the response
-	 * through a reactive (e.g. Reactor, RxJava) controller method return value.
-	 * </ol>
-	 * <p>By default only a {@link SimpleAsyncTaskExecutor} is used. However when
-	 * using the above two use cases, it's recommended to configure an executor
-	 * backed by a thread pool such as {@link ThreadPoolTaskExecutor}.
-	 * @param taskExecutor the task executor instance to use by default
-	 */
-	public AsyncSupportConfigurer setTaskExecutor(AsyncTaskExecutor taskExecutor) {
-		this.taskExecutor = taskExecutor;
-		return this;
-	}
 
 	/**
 	 * Specify the amount of time, in milliseconds, before asynchronous request
@@ -72,6 +51,7 @@ public class AsyncSupportConfigurer {
 	 * for further processing of the concurrently produced result.
 	 * <p>If this value is not set, the default timeout of the underlying
 	 * implementation is used, e.g. 10 seconds on Tomcat with Servlet 3.
+	 *
 	 * @param timeout the timeout value in milliseconds
 	 */
 	public AsyncSupportConfigurer setDefaultTimeout(long timeout) {
@@ -83,6 +63,7 @@ public class AsyncSupportConfigurer {
 	 * Configure lifecycle interceptors with callbacks around concurrent request
 	 * execution that starts when a controller returns a
 	 * {@link java.util.concurrent.Callable}.
+	 *
 	 * @param interceptors the interceptors to register
 	 */
 	public AsyncSupportConfigurer registerCallableInterceptors(CallableProcessingInterceptor... interceptors) {
@@ -93,6 +74,7 @@ public class AsyncSupportConfigurer {
 	/**
 	 * Configure lifecycle interceptors with callbacks around concurrent request
 	 * execution that starts when a controller returns a {@link DeferredResult}.
+	 *
 	 * @param interceptors the interceptors to register
 	 */
 	public AsyncSupportConfigurer registerDeferredResultInterceptors(
@@ -102,10 +84,27 @@ public class AsyncSupportConfigurer {
 		return this;
 	}
 
-
 	@Nullable
 	protected AsyncTaskExecutor getTaskExecutor() {
 		return this.taskExecutor;
+	}
+
+	/**
+	 * The provided task executor is used to:
+	 * <ol>
+	 * <li>Handle {@link Callable} controller method return values.
+	 * <li>Perform blocking writes when streaming to the response
+	 * through a reactive (e.g. Reactor, RxJava) controller method return value.
+	 * </ol>
+	 * <p>By default only a {@link SimpleAsyncTaskExecutor} is used. However when
+	 * using the above two use cases, it's recommended to configure an executor
+	 * backed by a thread pool such as {@link ThreadPoolTaskExecutor}.
+	 *
+	 * @param taskExecutor the task executor instance to use by default
+	 */
+	public AsyncSupportConfigurer setTaskExecutor(AsyncTaskExecutor taskExecutor) {
+		this.taskExecutor = taskExecutor;
+		return this;
 	}
 
 	@Nullable

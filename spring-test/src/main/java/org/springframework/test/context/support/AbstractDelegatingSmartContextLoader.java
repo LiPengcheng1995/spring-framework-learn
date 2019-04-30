@@ -18,14 +18,9 @@ package org.springframework.test.context.support;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.lang.Nullable;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.ContextConfigurationAttributes;
-import org.springframework.test.context.ContextLoader;
-import org.springframework.test.context.MergedContextConfiguration;
-import org.springframework.test.context.SmartContextLoader;
+import org.springframework.test.context.*;
 import org.springframework.util.Assert;
 
 /**
@@ -65,13 +60,36 @@ import org.springframework.util.Assert;
  *
  * @author Sam Brannen
  * @author Phillip Webb
- * @since 3.2
  * @see SmartContextLoader
+ * @since 3.2
  */
 public abstract class AbstractDelegatingSmartContextLoader implements SmartContextLoader {
 
 	private static final Log logger = LogFactory.getLog(AbstractDelegatingSmartContextLoader.class);
 
+	private static void delegateProcessing(SmartContextLoader loader, ContextConfigurationAttributes configAttributes) {
+		if (logger.isDebugEnabled()) {
+			logger.debug(String.format("Delegating to %s to process context configuration %s.",
+					name(loader), configAttributes));
+		}
+		loader.processContextConfiguration(configAttributes);
+	}
+
+	private static ApplicationContext delegateLoading(SmartContextLoader loader, MergedContextConfiguration mergedConfig)
+			throws Exception {
+
+		if (logger.isDebugEnabled()) {
+			logger.debug(String.format("Delegating to %s to load context from %s.", name(loader), mergedConfig));
+		}
+		return loader.loadContext(mergedConfig);
+	}
+
+
+	// ContextLoader
+
+	private static String name(SmartContextLoader loader) {
+		return loader.getClass().getSimpleName();
+	}
 
 	/**
 	 * Get the delegate {@code SmartContextLoader} that supports XML configuration
@@ -79,18 +97,19 @@ public abstract class AbstractDelegatingSmartContextLoader implements SmartConte
 	 */
 	protected abstract SmartContextLoader getXmlLoader();
 
+
+	// SmartContextLoader
+
 	/**
 	 * Get the delegate {@code SmartContextLoader} that supports annotated classes.
 	 */
 	protected abstract SmartContextLoader getAnnotationConfigLoader();
 
-
-	// ContextLoader
-
 	/**
 	 * {@code AbstractDelegatingSmartContextLoader} does not support the
 	 * {@link ContextLoader#processLocations(Class, String...)} method. Call
 	 * {@link #processContextConfiguration(ContextConfigurationAttributes)} instead.
+	 *
 	 * @throws UnsupportedOperationException in this implementation
 	 */
 	@Override
@@ -104,6 +123,7 @@ public abstract class AbstractDelegatingSmartContextLoader implements SmartConte
 	 * {@code AbstractDelegatingSmartContextLoader} does not support the
 	 * {@link ContextLoader#loadContext(String...) } method. Call
 	 * {@link #loadContext(MergedContextConfiguration)} instead.
+	 *
 	 * @throws UnsupportedOperationException in this implementation
 	 */
 	@Override
@@ -112,9 +132,6 @@ public abstract class AbstractDelegatingSmartContextLoader implements SmartConte
 				"DelegatingSmartContextLoaders do not support the ContextLoader SPI. " +
 						"Call loadContext(MergedContextConfiguration) instead.");
 	}
-
-
-	// SmartContextLoader
 
 	/**
 	 * Delegates to candidate {@code SmartContextLoaders} to process the supplied
@@ -137,15 +154,16 @@ public abstract class AbstractDelegatingSmartContextLoader implements SmartConte
 	 * If the annotation-based loader detects default configuration
 	 * classes, an {@code info} message will be logged.</li>
 	 * </ul>
+	 *
 	 * @param configAttributes the context configuration attributes to process
 	 * @throws IllegalArgumentException if the supplied configuration attributes are
-	 * {@code null}, or if the supplied configuration attributes include both
-	 * resource locations and annotated classes
-	 * @throws IllegalStateException if the XML-based loader detects default
-	 * configuration classes; if the annotation-based loader detects default
-	 * resource locations; if neither candidate loader detects defaults for the supplied
-	 * context configuration; or if both candidate loaders detect defaults for the
-	 * supplied context configuration
+	 *                                  {@code null}, or if the supplied configuration attributes include both
+	 *                                  resource locations and annotated classes
+	 * @throws IllegalStateException    if the XML-based loader detects default
+	 *                                  configuration classes; if the annotation-based loader detects default
+	 *                                  resource locations; if neither candidate loader detects defaults for the supplied
+	 *                                  context configuration; or if both candidate loaders detect defaults for the
+	 *                                  supplied context configuration
 	 */
 	@Override
 	public void processContextConfiguration(final ContextConfigurationAttributes configAttributes) {
@@ -159,11 +177,9 @@ public abstract class AbstractDelegatingSmartContextLoader implements SmartConte
 		// appropriate loader process the configuration.
 		if (configAttributes.hasLocations()) {
 			delegateProcessing(getXmlLoader(), configAttributes);
-		}
-		else if (configAttributes.hasClasses()) {
+		} else if (configAttributes.hasClasses()) {
 			delegateProcessing(getAnnotationConfigLoader(), configAttributes);
-		}
-		else {
+		} else {
 			// Else attempt to detect defaults...
 
 			// Let the XML loader process the configuration.
@@ -198,7 +214,7 @@ public abstract class AbstractDelegatingSmartContextLoader implements SmartConte
 			if (configAttributes.hasLocations() && configAttributes.hasClasses()) {
 				String msg = String.format(
 						"Configuration error: both default locations AND default configuration classes " +
-						"were detected for context configuration %s; configure one or the other, but not both.",
+								"were detected for context configuration %s; configure one or the other, but not both.",
 						configAttributes);
 				logger.error(msg);
 				throw new IllegalStateException(msg);
@@ -221,10 +237,11 @@ public abstract class AbstractDelegatingSmartContextLoader implements SmartConte
 	 * are not empty and the resource locations are empty,
 	 * the annotation-based loader will load the {@code ApplicationContext}.</li>
 	 * </ul>
+	 *
 	 * @param mergedConfig the merged context configuration to use to load the application context
 	 * @throws IllegalArgumentException if the supplied merged configuration is {@code null}
-	 * @throws IllegalStateException if neither candidate loader is capable of loading an
-	 * {@code ApplicationContext} from the supplied merged context configuration
+	 * @throws IllegalStateException    if neither candidate loader is capable of loading an
+	 *                                  {@code ApplicationContext} from the supplied merged context configuration
 	 */
 	@Override
 	public ApplicationContext loadContext(MergedContextConfiguration mergedConfig) throws Exception {
@@ -232,7 +249,7 @@ public abstract class AbstractDelegatingSmartContextLoader implements SmartConte
 
 		Assert.state(!(mergedConfig.hasLocations() && mergedConfig.hasClasses()), () -> String.format(
 				"Neither %s nor %s supports loading an ApplicationContext from %s: " +
-				"declare either 'locations' or 'classes' but not both.", name(getXmlLoader()),
+						"declare either 'locations' or 'classes' but not both.", name(getXmlLoader()),
 				name(getAnnotationConfigLoader()), mergedConfig));
 
 		SmartContextLoader[] candidates = {getXmlLoader(), getAnnotationConfigLoader()};
@@ -257,35 +274,12 @@ public abstract class AbstractDelegatingSmartContextLoader implements SmartConte
 				name(getXmlLoader()), name(getAnnotationConfigLoader()), mergedConfig));
 	}
 
-
-	private static void delegateProcessing(SmartContextLoader loader, ContextConfigurationAttributes configAttributes) {
-		if (logger.isDebugEnabled()) {
-			logger.debug(String.format("Delegating to %s to process context configuration %s.",
-					name(loader), configAttributes));
-		}
-		loader.processContextConfiguration(configAttributes);
-	}
-
-	private static ApplicationContext delegateLoading(SmartContextLoader loader, MergedContextConfiguration mergedConfig)
-			throws Exception {
-
-		if (logger.isDebugEnabled()) {
-			logger.debug(String.format("Delegating to %s to load context from %s.", name(loader), mergedConfig));
-		}
-		return loader.loadContext(mergedConfig);
-	}
-
 	private boolean supports(SmartContextLoader loader, MergedContextConfiguration mergedConfig) {
 		if (loader == getAnnotationConfigLoader()) {
 			return (mergedConfig.hasClasses() && !mergedConfig.hasLocations());
-		}
-		else {
+		} else {
 			return (mergedConfig.hasLocations() && !mergedConfig.hasClasses());
 		}
-	}
-
-	private static String name(SmartContextLoader loader) {
-		return loader.getClass().getSimpleName();
 	}
 
 }

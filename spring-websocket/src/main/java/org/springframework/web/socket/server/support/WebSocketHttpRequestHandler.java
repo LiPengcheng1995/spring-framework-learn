@@ -16,19 +16,8 @@
 
 package org.springframework.web.socket.server.support;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.context.Lifecycle;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -44,6 +33,16 @@ import org.springframework.web.socket.handler.LoggingWebSocketHandlerDecorator;
 import org.springframework.web.socket.server.HandshakeFailureException;
 import org.springframework.web.socket.server.HandshakeHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A {@link HttpRequestHandler} for processing WebSocket handshake requests.
@@ -96,6 +95,13 @@ public class WebSocketHttpRequestHandler implements HttpRequestHandler, Lifecycl
 	}
 
 	/**
+	 * Return the configured WebSocket handshake request interceptors.
+	 */
+	public List<HandshakeInterceptor> getHandshakeInterceptors() {
+		return this.interceptors;
+	}
+
+	/**
 	 * Configure one or more WebSocket handshake request interceptors.
 	 */
 	public void setHandshakeInterceptors(@Nullable List<HandshakeInterceptor> interceptors) {
@@ -103,13 +109,6 @@ public class WebSocketHttpRequestHandler implements HttpRequestHandler, Lifecycl
 		if (interceptors != null) {
 			this.interceptors.addAll(interceptors);
 		}
-	}
-
-	/**
-	 * Return the configured WebSocket handshake request interceptors.
-	 */
-	public List<HandshakeInterceptor> getHandshakeInterceptors() {
-		return this.interceptors;
 	}
 
 	@Override
@@ -167,14 +166,11 @@ public class WebSocketHttpRequestHandler implements HttpRequestHandler, Lifecycl
 			this.handshakeHandler.doHandshake(request, response, this.wsHandler, attributes);
 			chain.applyAfterHandshake(request, response, null);
 			response.close();
-		}
-		catch (HandshakeFailureException ex) {
+		} catch (HandshakeFailureException ex) {
 			failure = ex;
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			failure = new HandshakeFailureException("Uncaught failure for request " + request.getURI(), ex);
-		}
-		finally {
+		} finally {
 			if (failure != null) {
 				chain.applyAfterHandshake(request, response, failure);
 				throw failure;

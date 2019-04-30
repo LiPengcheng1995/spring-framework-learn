@@ -19,9 +19,7 @@ package org.springframework.test.context.jdbc;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.mockito.BDDMockito;
-
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationConfigurationException;
@@ -29,8 +27,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.jdbc.SqlConfig.TransactionMode;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.either;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.*;
 
 /**
@@ -41,18 +41,15 @@ import static org.mockito.BDDMockito.*;
  */
 public class SqlScriptsTestExecutionListenerTests {
 
-	private final SqlScriptsTestExecutionListener listener = new SqlScriptsTestExecutionListener();
-
-	private final TestContext testContext = mock(TestContext.class);
-
 	@Rule
 	public final ExpectedException exception = ExpectedException.none();
-
+	private final SqlScriptsTestExecutionListener listener = new SqlScriptsTestExecutionListener();
+	private final TestContext testContext = mock(TestContext.class);
 
 	@Test
 	public void missingValueAndScriptsAndStatementsAtClassLevel() throws Exception {
 		Class<?> clazz = MissingValueAndScriptsAndStatementsAtClassLevel.class;
-		BDDMockito.<Class<?>> given(testContext.getTestClass()).willReturn(clazz);
+		BDDMockito.<Class<?>>given(testContext.getTestClass()).willReturn(clazz);
 		given(testContext.getTestMethod()).willReturn(clazz.getDeclaredMethod("foo"));
 
 		assertExceptionContains(clazz.getSimpleName() + ".sql");
@@ -61,7 +58,7 @@ public class SqlScriptsTestExecutionListenerTests {
 	@Test
 	public void missingValueAndScriptsAndStatementsAtMethodLevel() throws Exception {
 		Class<?> clazz = MissingValueAndScriptsAndStatementsAtMethodLevel.class;
-		BDDMockito.<Class<?>> given(testContext.getTestClass()).willReturn(clazz);
+		BDDMockito.<Class<?>>given(testContext.getTestClass()).willReturn(clazz);
 		given(testContext.getTestMethod()).willReturn(clazz.getDeclaredMethod("foo"));
 
 		assertExceptionContains(clazz.getSimpleName() + ".foo" + ".sql");
@@ -70,7 +67,7 @@ public class SqlScriptsTestExecutionListenerTests {
 	@Test
 	public void valueAndScriptsDeclared() throws Exception {
 		Class<?> clazz = ValueAndScriptsDeclared.class;
-		BDDMockito.<Class<?>> given(testContext.getTestClass()).willReturn(clazz);
+		BDDMockito.<Class<?>>given(testContext.getTestClass()).willReturn(clazz);
 		given(testContext.getTestMethod()).willReturn(clazz.getDeclaredMethod("foo"));
 
 		exception.expect(AnnotationConfigurationException.class);
@@ -90,7 +87,7 @@ public class SqlScriptsTestExecutionListenerTests {
 		given(ctx.getAutowireCapableBeanFactory()).willReturn(mock(AutowireCapableBeanFactory.class));
 
 		Class<?> clazz = IsolatedWithoutTxMgr.class;
-		BDDMockito.<Class<?>> given(testContext.getTestClass()).willReturn(clazz);
+		BDDMockito.<Class<?>>given(testContext.getTestClass()).willReturn(clazz);
 		given(testContext.getTestMethod()).willReturn(clazz.getDeclaredMethod("foo"));
 		given(testContext.getApplicationContext()).willReturn(ctx);
 
@@ -104,7 +101,7 @@ public class SqlScriptsTestExecutionListenerTests {
 		given(ctx.getAutowireCapableBeanFactory()).willReturn(mock(AutowireCapableBeanFactory.class));
 
 		Class<?> clazz = MissingDataSourceAndTxMgr.class;
-		BDDMockito.<Class<?>> given(testContext.getTestClass()).willReturn(clazz);
+		BDDMockito.<Class<?>>given(testContext.getTestClass()).willReturn(clazz);
 		given(testContext.getTestMethod()).willReturn(clazz.getDeclaredMethod("foo"));
 		given(testContext.getApplicationContext()).willReturn(ctx);
 
@@ -115,8 +112,7 @@ public class SqlScriptsTestExecutionListenerTests {
 		try {
 			listener.beforeTestMethod(testContext);
 			fail("Should have thrown an IllegalStateException.");
-		}
-		catch (IllegalStateException e) {
+		} catch (IllegalStateException e) {
 			// System.err.println(e.getMessage());
 			assertTrue("Exception message should contain: " + msg, e.getMessage().contains(msg));
 		}

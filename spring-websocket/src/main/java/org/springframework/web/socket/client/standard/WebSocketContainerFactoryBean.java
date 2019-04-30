@@ -16,10 +16,10 @@
 
 package org.springframework.web.socket.client.standard;
 
+import org.springframework.beans.factory.FactoryBean;
+
 import javax.websocket.ContainerProvider;
 import javax.websocket.WebSocketContainer;
-
-import org.springframework.beans.factory.FactoryBean;
 
 /**
  * A FactoryBean for creating and configuring a {@link javax.websocket.WebSocketContainer}
@@ -33,37 +33,36 @@ public class WebSocketContainerFactoryBean implements FactoryBean<WebSocketConta
 
 	private final WebSocketContainer webSocketContainer = ContainerProvider.getWebSocketContainer();
 
-
-	public void setAsyncSendTimeout(long timeoutInMillis) {
-		this.webSocketContainer.setAsyncSendTimeout(timeoutInMillis);
-	}
-
 	public long getAsyncSendTimeout() {
 		return this.webSocketContainer.getDefaultAsyncSendTimeout();
 	}
 
-	public void setMaxSessionIdleTimeout(long timeoutInMillis) {
-		this.webSocketContainer.setDefaultMaxSessionIdleTimeout(timeoutInMillis);
+	public void setAsyncSendTimeout(long timeoutInMillis) {
+		this.webSocketContainer.setAsyncSendTimeout(timeoutInMillis);
 	}
 
 	public long getMaxSessionIdleTimeout() {
 		return this.webSocketContainer.getDefaultMaxSessionIdleTimeout();
 	}
 
-	public void setMaxTextMessageBufferSize(int bufferSize) {
-		this.webSocketContainer.setDefaultMaxTextMessageBufferSize(bufferSize);
+	public void setMaxSessionIdleTimeout(long timeoutInMillis) {
+		this.webSocketContainer.setDefaultMaxSessionIdleTimeout(timeoutInMillis);
 	}
 
 	public int getMaxTextMessageBufferSize() {
 		return this.webSocketContainer.getDefaultMaxTextMessageBufferSize();
 	}
 
-	public void setMaxBinaryMessageBufferSize(int bufferSize) {
-		this.webSocketContainer.setDefaultMaxBinaryMessageBufferSize(bufferSize);
+	public void setMaxTextMessageBufferSize(int bufferSize) {
+		this.webSocketContainer.setDefaultMaxTextMessageBufferSize(bufferSize);
 	}
 
 	public int getMaxBinaryMessageBufferSize() {
 		return this.webSocketContainer.getDefaultMaxBinaryMessageBufferSize();
+	}
+
+	public void setMaxBinaryMessageBufferSize(int bufferSize) {
+		this.webSocketContainer.setDefaultMaxBinaryMessageBufferSize(bufferSize);
 	}
 
 	@Override

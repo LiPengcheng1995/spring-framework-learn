@@ -16,14 +16,9 @@
 
 package org.springframework.jmx.export.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.core.annotation.AliasFor;
+
+import java.lang.annotation.*;
 
 /**
  * Class-level annotation that indicates to register instances of a class
@@ -37,8 +32,8 @@ import org.springframework.core.annotation.AliasFor;
  * @author Rob Harrop
  * @author Juergen Hoeller
  * @author Sam Brannen
- * @since 1.2
  * @see org.springframework.jmx.export.metadata.ManagedResource
+ * @since 1.2
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

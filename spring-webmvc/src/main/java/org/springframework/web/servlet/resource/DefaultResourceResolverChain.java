@@ -16,13 +16,13 @@
 
 package org.springframework.web.servlet.resource;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.core.io.Resource;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A default implementation of {@link ResourceResolverChain} for invoking a list
@@ -59,8 +59,7 @@ class DefaultResourceResolverChain implements ResourceResolverChain {
 
 		try {
 			return resolver.resolveResource(request, requestPath, locations, this);
-		}
-		finally {
+		} finally {
 			this.index--;
 		}
 	}
@@ -75,8 +74,7 @@ class DefaultResourceResolverChain implements ResourceResolverChain {
 
 		try {
 			return resolver.resolveUrlPath(resourcePath, locations, this);
-		}
-		finally {
+		} finally {
 			this.index--;
 		}
 	}

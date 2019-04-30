@@ -16,12 +16,6 @@
 
 package org.springframework.web.socket.server.support;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Map;
-import javax.servlet.http.HttpSession;
-
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -29,6 +23,12 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.server.HandshakeInterceptor;
+
+import javax.servlet.http.HttpSession;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Map;
 
 /**
  * An interceptor to copy information from the HTTP session to the "handshake
@@ -61,6 +61,7 @@ public class HttpSessionHandshakeInterceptor implements HandshakeInterceptor {
 	/**
 	 * Default constructor for copying all HTTP session attributes and the HTTP
 	 * session id.
+	 *
 	 * @see #setCopyAllAttributes
 	 * @see #setCopyHttpSessionId
 	 */
@@ -72,6 +73,7 @@ public class HttpSessionHandshakeInterceptor implements HandshakeInterceptor {
 	/**
 	 * Constructor for copying specific HTTP session attributes and the HTTP
 	 * session id.
+	 *
 	 * @param attributeNames session attributes to copy
 	 * @see #setCopyAllAttributes
 	 * @see #setCopyHttpSessionId
@@ -90,17 +92,6 @@ public class HttpSessionHandshakeInterceptor implements HandshakeInterceptor {
 	}
 
 	/**
-	 * Whether to copy all attributes from the HTTP session. If set to "true",
-	 * any explicitly configured attribute names are ignored.
-	 * <p>By default this is set to either "true" or "false" depending on which
-	 * constructor was used (default or with attribute names respectively).
-	 * @param copyAllAttributes whether to copy all attributes
-	 */
-	public void setCopyAllAttributes(boolean copyAllAttributes) {
-		this.copyAllAttributes = copyAllAttributes;
-	}
-
-	/**
 	 * Whether to copy all HTTP session attributes.
 	 */
 	public boolean isCopyAllAttributes() {
@@ -108,13 +99,15 @@ public class HttpSessionHandshakeInterceptor implements HandshakeInterceptor {
 	}
 
 	/**
-	 * Whether the HTTP session id should be copied to the handshake attributes
-	 * under the key {@link #HTTP_SESSION_ID_ATTR_NAME}.
-	 * <p>By default this is "true".
-	 * @param copyHttpSessionId whether to copy the HTTP session id.
+	 * Whether to copy all attributes from the HTTP session. If set to "true",
+	 * any explicitly configured attribute names are ignored.
+	 * <p>By default this is set to either "true" or "false" depending on which
+	 * constructor was used (default or with attribute names respectively).
+	 *
+	 * @param copyAllAttributes whether to copy all attributes
 	 */
-	public void setCopyHttpSessionId(boolean copyHttpSessionId) {
-		this.copyHttpSessionId = copyHttpSessionId;
+	public void setCopyAllAttributes(boolean copyAllAttributes) {
+		this.copyAllAttributes = copyAllAttributes;
 	}
 
 	/**
@@ -125,12 +118,14 @@ public class HttpSessionHandshakeInterceptor implements HandshakeInterceptor {
 	}
 
 	/**
-	 * Whether to allow the HTTP session to be created while accessing it.
-	 * <p>By default set to {@code false}.
-	 * @see javax.servlet.http.HttpServletRequest#getSession(boolean)
+	 * Whether the HTTP session id should be copied to the handshake attributes
+	 * under the key {@link #HTTP_SESSION_ID_ATTR_NAME}.
+	 * <p>By default this is "true".
+	 *
+	 * @param copyHttpSessionId whether to copy the HTTP session id.
 	 */
-	public void setCreateSession(boolean createSession) {
-		this.createSession = createSession;
+	public void setCopyHttpSessionId(boolean copyHttpSessionId) {
+		this.copyHttpSessionId = copyHttpSessionId;
 	}
 
 	/**
@@ -140,10 +135,19 @@ public class HttpSessionHandshakeInterceptor implements HandshakeInterceptor {
 		return this.createSession;
 	}
 
+	/**
+	 * Whether to allow the HTTP session to be created while accessing it.
+	 * <p>By default set to {@code false}.
+	 *
+	 * @see javax.servlet.http.HttpServletRequest#getSession(boolean)
+	 */
+	public void setCreateSession(boolean createSession) {
+		this.createSession = createSession;
+	}
 
 	@Override
 	public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
-			WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
+								   WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
 
 		HttpSession session = getSession(request);
 		if (session != null) {
@@ -172,7 +176,7 @@ public class HttpSessionHandshakeInterceptor implements HandshakeInterceptor {
 
 	@Override
 	public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response,
-			WebSocketHandler wsHandler, @Nullable Exception ex) {
+							   WebSocketHandler wsHandler, @Nullable Exception ex) {
 	}
 
 }

@@ -16,14 +16,14 @@
 
 package org.springframework.web.servlet.tags.form;
 
-import javax.servlet.jsp.JspException;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.util.TagUtils;
+
+import javax.servlet.jsp.JspException;
 
 /**
  * The {@code <options>} tag renders a list of HTML 'option' tags.
@@ -216,6 +216,15 @@ public class OptionsTag extends AbstractHtmlElementTag {
 
 	private boolean disabled;
 
+	/**
+	 * Get the {@link java.util.Collection}, {@link java.util.Map} or array
+	 * of objects used to generate the inner '{@code option}' tags.
+	 * <p>Typically a runtime expression.
+	 */
+	@Nullable
+	protected Object getItems() {
+		return this.items;
+	}
 
 	/**
 	 * Set the {@link java.util.Collection}, {@link java.util.Map} or array
@@ -229,13 +238,12 @@ public class OptionsTag extends AbstractHtmlElementTag {
 	}
 
 	/**
-	 * Get the {@link java.util.Collection}, {@link java.util.Map} or array
-	 * of objects used to generate the inner '{@code option}' tags.
-	 * <p>Typically a runtime expression.
+	 * Return the name of the property mapped to the '{@code value}'
+	 * attribute of the '{@code option}' tag.
 	 */
 	@Nullable
-	protected Object getItems() {
-		return this.items;
+	protected String getItemValue() {
+		return this.itemValue;
 	}
 
 	/**
@@ -250,12 +258,12 @@ public class OptionsTag extends AbstractHtmlElementTag {
 	}
 
 	/**
-	 * Return the name of the property mapped to the '{@code value}'
-	 * attribute of the '{@code option}' tag.
+	 * Get the name of the property mapped to the label (inner text) of the
+	 * '{@code option}' tag.
 	 */
 	@Nullable
-	protected String getItemValue() {
-		return this.itemValue;
+	protected String getItemLabel() {
+		return this.itemLabel;
 	}
 
 	/**
@@ -268,12 +276,10 @@ public class OptionsTag extends AbstractHtmlElementTag {
 	}
 
 	/**
-	 * Get the name of the property mapped to the label (inner text) of the
-	 * '{@code option}' tag.
+	 * Get the value of the '{@code disabled}' attribute.
 	 */
-	@Nullable
-	protected String getItemLabel() {
-		return this.itemLabel;
+	protected boolean isDisabled() {
+		return this.disabled;
 	}
 
 	/**
@@ -283,14 +289,6 @@ public class OptionsTag extends AbstractHtmlElementTag {
 		this.disabled = disabled;
 	}
 
-	/**
-	 * Get the value of the '{@code disabled}' attribute.
-	 */
-	protected boolean isDisabled() {
-		return this.disabled;
-	}
-
-
 	@Override
 	protected int writeTagContent(TagWriter tagWriter) throws JspException {
 		SelectTag selectTag = getSelectTag();
@@ -298,8 +296,7 @@ public class OptionsTag extends AbstractHtmlElementTag {
 		Object itemsObject = null;
 		if (items != null) {
 			itemsObject = (items instanceof String ? evaluate("items", items) : items);
-		}
-		else {
+		} else {
 			Class<?> selectTagBoundType = selectTag.getBindStatus().getValueType();
 			if (selectTagBoundType != null && selectTagBoundType.isEnum()) {
 				itemsObject = selectTagBoundType.getEnumConstants();
@@ -353,7 +350,7 @@ public class OptionsTag extends AbstractHtmlElementTag {
 		private final String selectName;
 
 		public OptionsWriter(@Nullable String selectName, Object optionSource,
-				@Nullable String valueProperty, @Nullable String labelProperty) {
+							 @Nullable String valueProperty, @Nullable String labelProperty) {
 
 			super(optionSource, getBindStatus(), valueProperty, labelProperty, isHtmlEscape());
 			this.selectName = selectName;

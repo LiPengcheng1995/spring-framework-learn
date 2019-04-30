@@ -16,27 +16,18 @@
 
 package org.springframework.jdbc.core.simple;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.sql.DataSource;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.jdbc.core.CallableStatementCreator;
-import org.springframework.jdbc.core.CallableStatementCreatorFactory;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.SqlParameter;
+import org.springframework.jdbc.core.*;
 import org.springframework.jdbc.core.metadata.CallMetaDataContext;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import javax.sql.DataSource;
+import java.util.*;
 
 /**
  * Abstract class to provide base functionality for easy stored procedure calls
@@ -50,19 +41,29 @@ import org.springframework.util.StringUtils;
  */
 public abstract class AbstractJdbcCall {
 
-	/** Logger available to subclasses */
+	/**
+	 * Logger available to subclasses
+	 */
 	protected final Log logger = LogFactory.getLog(getClass());
 
-	/** Lower-level class used to execute SQL */
+	/**
+	 * Lower-level class used to execute SQL
+	 */
 	private final JdbcTemplate jdbcTemplate;
 
-	/** Context used to retrieve and manage database meta-data */
+	/**
+	 * Context used to retrieve and manage database meta-data
+	 */
 	private final CallMetaDataContext callMetaDataContext = new CallMetaDataContext();
 
-	/** List of SqlParameter objects */
+	/**
+	 * List of SqlParameter objects
+	 */
 	private final List<SqlParameter> declaredParameters = new ArrayList<>();
 
-	/** List of RefCursor/ResultSet RowMapper objects */
+	/**
+	 * List of RefCursor/ResultSet RowMapper objects
+	 */
 	private final Map<String, RowMapper<?>> declaredRowMappers = new LinkedHashMap<>();
 
 	/**
@@ -71,7 +72,9 @@ public abstract class AbstractJdbcCall {
 	 */
 	private volatile boolean compiled = false;
 
-	/** The generated string used for call statement */
+	/**
+	 * The generated string used for call statement
+	 */
 	@Nullable
 	private String callString;
 
@@ -85,6 +88,7 @@ public abstract class AbstractJdbcCall {
 
 	/**
 	 * Constructor to be used when initializing using a {@link DataSource}.
+	 *
 	 * @param dataSource the DataSource to be used
 	 */
 	protected AbstractJdbcCall(DataSource dataSource) {
@@ -93,6 +97,7 @@ public abstract class AbstractJdbcCall {
 
 	/**
 	 * Constructor to be used when initializing using a {@link JdbcTemplate}.
+	 *
 	 * @param jdbcTemplate the JdbcTemplate to use
 	 */
 	protected AbstractJdbcCall(JdbcTemplate jdbcTemplate) {
@@ -109,13 +114,6 @@ public abstract class AbstractJdbcCall {
 	}
 
 	/**
-	 * Set the name of the stored procedure.
-	 */
-	public void setProcedureName(@Nullable String procedureName) {
-		this.callMetaDataContext.setProcedureName(procedureName);
-	}
-
-	/**
 	 * Get the name of the stored procedure.
 	 */
 	@Nullable
@@ -124,10 +122,10 @@ public abstract class AbstractJdbcCall {
 	}
 
 	/**
-	 * Set the names of in parameters to be used.
+	 * Set the name of the stored procedure.
 	 */
-	public void setInParameterNames(Set<String> inParameterNames) {
-		this.callMetaDataContext.setLimitedInParameterNames(inParameterNames);
+	public void setProcedureName(@Nullable String procedureName) {
+		this.callMetaDataContext.setProcedureName(procedureName);
 	}
 
 	/**
@@ -138,10 +136,10 @@ public abstract class AbstractJdbcCall {
 	}
 
 	/**
-	 * Set the catalog name to use.
+	 * Set the names of in parameters to be used.
 	 */
-	public void setCatalogName(@Nullable String catalogName) {
-		this.callMetaDataContext.setCatalogName(catalogName);
+	public void setInParameterNames(Set<String> inParameterNames) {
+		this.callMetaDataContext.setLimitedInParameterNames(inParameterNames);
 	}
 
 	/**
@@ -153,10 +151,10 @@ public abstract class AbstractJdbcCall {
 	}
 
 	/**
-	 * Set the schema name to use.
+	 * Set the catalog name to use.
 	 */
-	public void setSchemaName(@Nullable String schemaName) {
-		this.callMetaDataContext.setSchemaName(schemaName);
+	public void setCatalogName(@Nullable String catalogName) {
+		this.callMetaDataContext.setCatalogName(catalogName);
 	}
 
 	/**
@@ -168,6 +166,20 @@ public abstract class AbstractJdbcCall {
 	}
 
 	/**
+	 * Set the schema name to use.
+	 */
+	public void setSchemaName(@Nullable String schemaName) {
+		this.callMetaDataContext.setSchemaName(schemaName);
+	}
+
+	/**
+	 * Is this call a function call?
+	 */
+	public boolean isFunction() {
+		return this.callMetaDataContext.isFunction();
+	}
+
+	/**
 	 * Specify whether this call is a function call.
 	 * The default is {@code false}.
 	 */
@@ -176,10 +188,10 @@ public abstract class AbstractJdbcCall {
 	}
 
 	/**
-	 * Is this call a function call?
+	 * Does the call require a return value?
 	 */
-	public boolean isFunction() {
-		return this.callMetaDataContext.isFunction();
+	public boolean isReturnValueRequired() {
+		return this.callMetaDataContext.isReturnValueRequired();
 	}
 
 	/**
@@ -191,27 +203,22 @@ public abstract class AbstractJdbcCall {
 	}
 
 	/**
-	 * Does the call require a return value?
+	 * Should parameters be bound by name?
+	 *
+	 * @since 4.2
 	 */
-	public boolean isReturnValueRequired() {
-		return this.callMetaDataContext.isReturnValueRequired();
+	public boolean isNamedBinding() {
+		return this.callMetaDataContext.isNamedBinding();
 	}
 
 	/**
 	 * Specify whether parameters should be bound by name.
 	 * The default is {@code false}.
+	 *
 	 * @since 4.2
 	 */
 	public void setNamedBinding(boolean namedBinding) {
 		this.callMetaDataContext.setNamedBinding(namedBinding);
-	}
-
-	/**
-	 * Should parameters be bound by name?
-	 * @since 4.2
-	 */
-	public boolean isNamedBinding() {
-		return this.callMetaDataContext.isNamedBinding();
 	}
 
 	/**
@@ -245,6 +252,7 @@ public abstract class AbstractJdbcCall {
 	 * be used to provide input values. This is different from the {@code StoredProcedure}
 	 * class which - for backwards compatibility reasons - allows input values to be provided
 	 * for parameters declared as {@code SqlOutParameter}.
+	 *
 	 * @param parameter the {@link SqlParameter} to add
 	 */
 	public void addDeclaredParameter(SqlParameter parameter) {
@@ -261,8 +269,9 @@ public abstract class AbstractJdbcCall {
 
 	/**
 	 * Add a {@link org.springframework.jdbc.core.RowMapper} for the specified parameter or column.
+	 *
 	 * @param parameterName name of parameter or column
-	 * @param rowMapper the RowMapper implementation to use
+	 * @param rowMapper     the RowMapper implementation to use
 	 */
 	public void addDeclaredRowMapper(String parameterName, RowMapper<?> rowMapper) {
 		this.declaredRowMappers.put(parameterName, rowMapper);
@@ -280,8 +289,9 @@ public abstract class AbstractJdbcCall {
 	 * Compile this JdbcCall using provided parameters and meta-data plus other settings.
 	 * <p>This finalizes the configuration for this object and subsequent attempts to compile are
 	 * ignored. This will be implicitly called the first time an un-compiled call is executed.
+	 *
 	 * @throws org.springframework.dao.InvalidDataAccessApiUsageException if the object hasn't
-	 * been correctly initialized, for example if no DataSource has been provided
+	 *                                                                    been correctly initialized, for example if no DataSource has been provided
 	 */
 	public final synchronized void compile() throws InvalidDataAccessApiUsageException {
 		if (!isCompiled()) {
@@ -290,8 +300,7 @@ public abstract class AbstractJdbcCall {
 			}
 			try {
 				this.jdbcTemplate.afterPropertiesSet();
-			}
-			catch (IllegalArgumentException ex) {
+			} catch (IllegalArgumentException ex) {
 				throw new InvalidDataAccessApiUsageException(ex.getMessage());
 			}
 			compileInternal();
@@ -339,6 +348,7 @@ public abstract class AbstractJdbcCall {
 
 	/**
 	 * Is this operation "compiled"?
+	 *
 	 * @return whether this operation is compiled and ready to use
 	 */
 	public boolean isCompiled() {
@@ -364,6 +374,7 @@ public abstract class AbstractJdbcCall {
 
 	/**
 	 * Delegate method that executes the call using the passed-in {@link SqlParameterSource}.
+	 *
 	 * @param parameterSource parameter names and values to be used in call
 	 * @return Map of out parameters
 	 */
@@ -375,8 +386,9 @@ public abstract class AbstractJdbcCall {
 
 	/**
 	 * Delegate method that executes the call using the passed-in array of parameters.
+	 *
 	 * @param args array of parameter values. The order of values must match the order
-	 * declared for the stored procedure.
+	 *             declared for the stored procedure.
 	 * @return Map of out parameters
 	 */
 	protected Map<String, Object> doExecute(Object... args) {
@@ -387,6 +399,7 @@ public abstract class AbstractJdbcCall {
 
 	/**
 	 * Delegate method that executes the call using the passed-in Map of parameters.
+	 *
 	 * @param args Map of parameter name and values
 	 * @return Map of out parameters
 	 */
@@ -405,7 +418,7 @@ public abstract class AbstractJdbcCall {
 			logger.debug("The following parameters are used for call " + getCallString() + " with " + args);
 			int i = 1;
 			for (SqlParameter param : getCallParameters()) {
-				logger.debug(i + ": " +  param.getName() + ", SQL type "+ param.getSqlType() + ", type name " +
+				logger.debug(i + ": " + param.getName() + ", SQL type " + param.getSqlType() + ", type name " +
 						param.getTypeName() + ", parameter class [" + param.getClass().getName() + "]");
 				i++;
 			}
@@ -434,6 +447,7 @@ public abstract class AbstractJdbcCall {
 	/**
 	 * Match the provided in parameter values with registered parameters and
 	 * parameters defined via meta-data processing.
+	 *
 	 * @param parameterSource the parameter vakues provided as a {@link SqlParameterSource}
 	 * @return Map with parameter names and values
 	 */
@@ -444,6 +458,7 @@ public abstract class AbstractJdbcCall {
 	/**
 	 * Match the provided in parameter values with registered parameters and
 	 * parameters defined via meta-data processing.
+	 *
 	 * @param args the parameter values provided as an array
 	 * @return Map with parameter names and values
 	 */
@@ -454,6 +469,7 @@ public abstract class AbstractJdbcCall {
 	/**
 	 * Match the provided in parameter values with registered parameters and
 	 * parameters defined via meta-data processing.
+	 *
 	 * @param args the parameter values provided in a Map
 	 * @return Map with parameter names and values
 	 */

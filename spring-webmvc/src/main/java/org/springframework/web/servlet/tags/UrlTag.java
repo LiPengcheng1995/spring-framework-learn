@@ -16,19 +16,6 @@
 
 package org.springframework.web.servlet.tags;
 
-import java.io.IOException;
-import java.nio.charset.UnsupportedCharsetException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.PageContext;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -36,6 +23,15 @@ import org.springframework.web.servlet.support.RequestDataValueProcessor;
 import org.springframework.web.util.JavaScriptUtils;
 import org.springframework.web.util.TagUtils;
 import org.springframework.web.util.UriUtils;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.PageContext;
+import java.io.IOException;
+import java.nio.charset.UnsupportedCharsetException;
+import java.util.*;
 
 /**
  * The {@code <url>} tag creates URLs. Modeled after the JSTL {@code c:url} tag with
@@ -131,8 +127,8 @@ import org.springframework.web.util.UriUtils;
  * </table>
  *
  * @author Scott Andrews
- * @since 3.0
  * @see ParamTag
+ * @since 3.0
  */
 @SuppressWarnings("serial")
 public class UrlTag extends HtmlEscapingAwareTag implements ParamAware {
@@ -172,12 +168,10 @@ public class UrlTag extends HtmlEscapingAwareTag implements ParamAware {
 		if (value.contains(URL_TYPE_ABSOLUTE)) {
 			this.type = UrlType.ABSOLUTE;
 			this.value = value;
-		}
-		else if (value.startsWith("/")) {
+		} else if (value.startsWith("/")) {
 			this.type = UrlType.CONTEXT_RELATIVE;
 			this.value = value;
-		}
-		else {
+		} else {
 			this.type = UrlType.RELATIVE;
 			this.value = value;
 		}
@@ -190,8 +184,7 @@ public class UrlTag extends HtmlEscapingAwareTag implements ParamAware {
 	public void setContext(String context) {
 		if (context.startsWith("/")) {
 			this.context = context;
-		}
-		else {
+		} else {
 			this.context = "/" + context;
 		}
 	}
@@ -247,12 +240,10 @@ public class UrlTag extends HtmlEscapingAwareTag implements ParamAware {
 			// print the url to the writer
 			try {
 				this.pageContext.getOut().print(url);
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				throw new JspException(ex);
 			}
-		}
-		else {
+		} else {
 			// store the url as a variable
 			this.pageContext.setAttribute(this.var, url, this.scope);
 		}
@@ -262,6 +253,7 @@ public class UrlTag extends HtmlEscapingAwareTag implements ParamAware {
 
 	/**
 	 * Build the URL for the tag from the tag attributes and parameters.
+	 *
 	 * @return the URL value as a String
 	 */
 	String createUrl() throws JspException {
@@ -274,12 +266,10 @@ public class UrlTag extends HtmlEscapingAwareTag implements ParamAware {
 			// add application context to url
 			if (this.context == null) {
 				url.append(request.getContextPath());
-			}
-			else {
+			} else {
 				if (this.context.endsWith("/")) {
 					url.append(this.context.substring(0, this.context.length() - 1));
-				}
-				else {
+				} else {
 					url.append(this.context);
 				}
 			}
@@ -308,11 +298,12 @@ public class UrlTag extends HtmlEscapingAwareTag implements ParamAware {
 	 * Build the query string from available parameters that have not already
 	 * been applied as template params.
 	 * <p>The names and values of parameters are URL encoded.
-	 * @param params the parameters to build the query string from
-	 * @param usedParams set of parameter names that have been applied as
-	 * template params
+	 *
+	 * @param params                      the parameters to build the query string from
+	 * @param usedParams                  set of parameter names that have been applied as
+	 *                                    template params
 	 * @param includeQueryStringDelimiter true if the query string should start
-	 * with a '?' instead of '&'
+	 *                                    with a '?' instead of '&'
 	 * @return the query string
 	 */
 	protected String createQueryString(List<Param> params, Set<String> usedParams, boolean includeQueryStringDelimiter)
@@ -324,8 +315,7 @@ public class UrlTag extends HtmlEscapingAwareTag implements ParamAware {
 			if (!usedParams.contains(param.getName()) && StringUtils.hasLength(param.getName())) {
 				if (includeQueryStringDelimiter && qs.length() == 0) {
 					qs.append("?");
-				}
-				else {
+				} else {
 					qs.append("&");
 				}
 				try {
@@ -334,8 +324,7 @@ public class UrlTag extends HtmlEscapingAwareTag implements ParamAware {
 						qs.append("=");
 						qs.append(UriUtils.encodeQueryParam(param.getValue(), encoding));
 					}
-				}
-				catch (UnsupportedCharsetException ex) {
+				} catch (UnsupportedCharsetException ex) {
 					throw new JspException(ex);
 				}
 			}
@@ -347,8 +336,9 @@ public class UrlTag extends HtmlEscapingAwareTag implements ParamAware {
 	 * Replace template markers in the URL matching available parameters. The
 	 * name of matched parameters are added to the used parameters set.
 	 * <p>Parameter values are URL encoded.
-	 * @param uri the URL with template parameters to replace
-	 * @param params parameters used to replace template markers
+	 *
+	 * @param uri        the URL with template parameters to replace
+	 * @param params     parameters used to replace template markers
 	 * @param usedParams set of template parameter names that have been replaced
 	 * @return the URL with template parameters replaced
 	 */
@@ -364,12 +354,10 @@ public class UrlTag extends HtmlEscapingAwareTag implements ParamAware {
 				try {
 					uri = uri.replace(template,
 							(value != null ? UriUtils.encodePath(value, encoding) : ""));
-				}
-				catch (UnsupportedCharsetException ex) {
+				} catch (UnsupportedCharsetException ex) {
 					throw new JspException(ex);
 				}
-			}
-			else {
+			} else {
 				template = URL_TEMPLATE_DELIMITER_PREFIX + '/' + param.getName() + URL_TEMPLATE_DELIMITER_SUFFIX;
 				if (uri.contains(template)) {
 					usedParams.add(param.getName());
@@ -377,8 +365,7 @@ public class UrlTag extends HtmlEscapingAwareTag implements ParamAware {
 					try {
 						uri = uri.replace(template,
 								(value != null ? UriUtils.encodePathSegment(value, encoding) : ""));
-					}
-					catch (UnsupportedCharsetException ex) {
+					} catch (UnsupportedCharsetException ex) {
 						throw new JspException(ex);
 					}
 				}

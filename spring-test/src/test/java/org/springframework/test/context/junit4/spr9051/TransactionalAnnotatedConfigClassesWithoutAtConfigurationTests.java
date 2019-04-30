@@ -16,10 +16,7 @@
 
 package org.springframework.test.context.junit4.spr9051;
 
-import javax.sql.DataSource;
-
 import org.junit.Before;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -31,7 +28,10 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.tests.sample.beans.Employee;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import static org.junit.Assert.*;
+import javax.sql.DataSource;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 
 /**
  * Concrete implementation of {@link AbstractTransactionalAnnotatedConfigClassTests}
@@ -40,13 +40,44 @@ import static org.junit.Assert.*;
  * for details).
  *
  * @author Sam Brannen
- * @since 3.2
  * @see Bean
  * @see TransactionalAnnotatedConfigClassWithAtConfigurationTests
+ * @since 3.2
  */
 @ContextConfiguration(classes = TransactionalAnnotatedConfigClassesWithoutAtConfigurationTests.AnnotatedFactoryBeans.class)
 public class TransactionalAnnotatedConfigClassesWithoutAtConfigurationTests extends
 		AbstractTransactionalAnnotatedConfigClassTests {
+
+	@Before
+	public void compareDataSources() throws Exception {
+		// NOTE: the two DataSource instances are NOT the same!
+		assertNotSame(dataSourceFromTxManager, dataSourceViaInjection);
+	}
+
+	/**
+	 * Overrides {@code afterTransaction()} in order to assert a different result.
+	 *
+	 * <p>See in-line comments for details.
+	 *
+	 * @see AbstractTransactionalAnnotatedConfigClassTests#afterTransaction()
+	 * @see AbstractTransactionalAnnotatedConfigClassTests#modifyTestDataWithinTransaction()
+	 */
+	@AfterTransaction
+	@Override
+	public void afterTransaction() {
+		assertEquals("Deleting yoda", 1, deletePerson(YODA));
+
+		// NOTE: We would actually expect that there are now ZERO entries in the
+		// person table, since the transaction is rolled back by the framework;
+		// however, since our JdbcTemplate and the transaction manager used by
+		// the Spring TestContext Framework use two different DataSource
+		// instances, our insert statements were executed in transactions that
+		// are not controlled by the test framework. Consequently, there was no
+		// rollback for the two insert statements in
+		// modifyTestDataWithinTransaction().
+		//
+		assertNumRowsInPersonTable(2, "after a transactional test method");
+	}
 
 	/**
 	 * This is intentionally <b>not</b> annotated with {@code @Configuration}.
@@ -84,8 +115,8 @@ public class TransactionalAnnotatedConfigClassesWithoutAtConfigurationTests exte
 		 * application context</li>
 		 * <li>and again when the {@link DataSource} is injected into the test
 		 * instance in {@link AbstractTransactionalAnnotatedConfigClassTests#setDataSource(DataSource)}.</li>
-		 *</ol>
-		 *
+		 * </ol>
+		 * <p>
 		 * Consequently, the {@link JdbcTemplate} used by this test instance and
 		 * the {@link PlatformTransactionManager} used by the Spring TestContext
 		 * Framework will operate on two different {@code DataSource} instances,
@@ -94,44 +125,12 @@ public class TransactionalAnnotatedConfigClassesWithoutAtConfigurationTests exte
 		@Bean
 		public DataSource dataSource() {
 			return new EmbeddedDatabaseBuilder()//
-			.addScript("classpath:/org/springframework/test/jdbc/schema.sql")//
-			// Ensure that this in-memory database is only used by this class:
-			.setName(getClass().getName())//
-			.build();
+					.addScript("classpath:/org/springframework/test/jdbc/schema.sql")//
+					// Ensure that this in-memory database is only used by this class:
+					.setName(getClass().getName())//
+					.build();
 		}
 
-	}
-
-
-	@Before
-	public void compareDataSources() throws Exception {
-		// NOTE: the two DataSource instances are NOT the same!
-		assertNotSame(dataSourceFromTxManager, dataSourceViaInjection);
-	}
-
-	/**
-	 * Overrides {@code afterTransaction()} in order to assert a different result.
-	 *
-	 * <p>See in-line comments for details.
-	 *
-	 * @see AbstractTransactionalAnnotatedConfigClassTests#afterTransaction()
-	 * @see AbstractTransactionalAnnotatedConfigClassTests#modifyTestDataWithinTransaction()
-	 */
-	@AfterTransaction
-	@Override
-	public void afterTransaction() {
-		assertEquals("Deleting yoda", 1, deletePerson(YODA));
-
-		// NOTE: We would actually expect that there are now ZERO entries in the
-		// person table, since the transaction is rolled back by the framework;
-		// however, since our JdbcTemplate and the transaction manager used by
-		// the Spring TestContext Framework use two different DataSource
-		// instances, our insert statements were executed in transactions that
-		// are not controlled by the test framework. Consequently, there was no
-		// rollback for the two insert statements in
-		// modifyTestDataWithinTransaction().
-		//
-		assertNumRowsInPersonTable(2, "after a transactional test method");
 	}
 
 }

@@ -1,13 +1,8 @@
 package org.springframework.cache.jcache.interceptor;
 
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CachePut;
-import javax.cache.annotation.CacheRemove;
-import javax.cache.annotation.CacheRemoveAll;
-import javax.cache.annotation.CacheResult;
-import javax.cache.annotation.CacheValue;
-
 import org.springframework.beans.factory.annotation.Value;
+
+import javax.cache.annotation.*;
 
 /**
  * @author Stephane Nicoll
@@ -42,7 +37,7 @@ class SampleObject {
 
 	@CacheResult
 	public SampleObject multiKeysGet(@CacheKey Long id, Boolean notUsed,
-			@CacheKey String domain) {
+									 @CacheKey String domain) {
 		return null;
 	}
 
@@ -54,7 +49,7 @@ class SampleObject {
 
 	@CachePut(cacheName = "simpleCache")
 	public void multiCacheValues(Long id, @CacheValue SampleObject instance,
-			@CacheValue SampleObject anotherInstance) {
+								 @CacheValue SampleObject anotherInstance) {
 	}
 
 	// Parameter annotation

@@ -16,9 +16,9 @@
 
 package org.springframework.http.server.reactive;
 
-import java.security.cert.X509Certificate;
-
 import org.springframework.lang.Nullable;
+
+import java.security.cert.X509Certificate;
 
 /**
  * A holder for SSL session information.

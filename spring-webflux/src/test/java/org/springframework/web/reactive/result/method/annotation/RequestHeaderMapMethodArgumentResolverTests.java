@@ -16,14 +16,8 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.core.annotation.SynthesizingMethodParameter;
@@ -34,11 +28,13 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.RequestHeader;
+import reactor.core.publisher.Mono;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.Map;
+
+import static org.junit.Assert.*;
 
 /**
  * Unit tests for {@link RequestHeaderMapMethodArgumentResolver}.
@@ -79,8 +75,7 @@ public class RequestHeaderMapMethodArgumentResolverTests {
 		try {
 			this.resolver.supportsParameter(this.paramAlsoUnsupported);
 			fail();
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertTrue("Unexpected error message:\n" + ex.getMessage(),
 					ex.getMessage().startsWith(
 							"RequestHeaderMapMethodArgumentResolver doesn't support reactive type wrapper"));
@@ -146,7 +141,7 @@ public class RequestHeaderMapMethodArgumentResolverTests {
 			@RequestHeader Map<?, ?> param1,
 			@RequestHeader MultiValueMap<?, ?> param2,
 			@RequestHeader HttpHeaders param3,
-			Map<?,?> unsupported,
+			Map<?, ?> unsupported,
 			@RequestHeader Mono<Map<?, ?>> alsoUnsupported) {
 	}
 

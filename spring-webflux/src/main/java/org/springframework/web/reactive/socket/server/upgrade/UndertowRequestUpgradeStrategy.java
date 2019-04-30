@@ -16,12 +16,6 @@
 
 package org.springframework.web.reactive.socket.server.upgrade;
 
-import java.net.URI;
-import java.security.Principal;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 import io.undertow.server.HttpServerExchange;
 import io.undertow.websockets.WebSocketConnectionCallback;
 import io.undertow.websockets.WebSocketProtocolHandshakeHandler;
@@ -29,8 +23,6 @@ import io.undertow.websockets.core.WebSocketChannel;
 import io.undertow.websockets.core.protocol.Handshake;
 import io.undertow.websockets.core.protocol.version13.Hybi13Handshake;
 import io.undertow.websockets.spi.WebSocketHttpExchange;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.AbstractServerHttpRequest;
@@ -43,10 +35,17 @@ import org.springframework.web.reactive.socket.adapter.UndertowWebSocketHandlerA
 import org.springframework.web.reactive.socket.adapter.UndertowWebSocketSession;
 import org.springframework.web.reactive.socket.server.RequestUpgradeStrategy;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+import java.net.URI;
+import java.security.Principal;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
-* A {@link RequestUpgradeStrategy} for use with Undertow.
-  * 
+ * A {@link RequestUpgradeStrategy} for use with Undertow.
+ *
  * @author Violeta Georgieva
  * @since 5.0
  */
@@ -71,8 +70,7 @@ public class UndertowRequestUpgradeStrategy implements RequestUpgradeStrategy {
 		try {
 			DefaultCallback callback = new DefaultCallback(info, handler, bufferFactory);
 			new WebSocketProtocolHandshakeHandler(handshakes, callback).handleRequest(httpExchange);
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			return Mono.error(ex);
 		}
 

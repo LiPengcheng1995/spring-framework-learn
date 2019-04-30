@@ -16,14 +16,13 @@
 
 package org.springframework.jmx.export.annotation;
 
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-
 import org.junit.Test;
-
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jmx.support.ObjectNameManager;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
 import static org.junit.Assert.*;
 
@@ -43,8 +42,7 @@ public class AnnotationLazyInitMBeanTests {
 			assertNotNull(server.getObjectInstance(oname));
 			String name = (String) server.getAttribute(oname, "Name");
 			assertEquals("Invalid name returned", "TEST", name);
-		}
-		finally {
+		} finally {
 			ctx.close();
 		}
 	}
@@ -76,8 +74,7 @@ public class AnnotationLazyInitMBeanTests {
 			assertNotNull(server.getObjectInstance(oname));
 			name = (String) server.getAttribute(oname, "Name");
 			assertEquals("Invalid name returned", "Juergen Hoeller", name);
-		}
-		finally {
+		} finally {
 			System.clearProperty("domain");
 			ctx.close();
 		}
@@ -93,8 +90,7 @@ public class AnnotationLazyInitMBeanTests {
 			assertNotNull(server.getObjectInstance(oname));
 			String name = (String) server.getAttribute(oname, "Name");
 			assertNull(name);
-		}
-		finally {
+		} finally {
 			ctx.close();
 		}
 	}

@@ -15,11 +15,8 @@
  */
 package org.springframework.web.reactive.config;
 
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.core.Ordered;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
@@ -31,6 +28,8 @@ import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.reactive.result.view.script.ScriptTemplateConfigurer;
 import org.springframework.web.reactive.result.view.script.ScriptTemplateViewResolver;
+
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -99,7 +98,7 @@ public class ViewResolverRegistryTests {
 		List<ViewResolver> viewResolvers = this.registry.getViewResolvers();
 		assertEquals(1, viewResolvers.size());
 		assertEquals(ScriptTemplateViewResolver.class, viewResolvers.get(0).getClass());
-		DirectFieldAccessor accessor =  new DirectFieldAccessor(viewResolvers.get(0));
+		DirectFieldAccessor accessor = new DirectFieldAccessor(viewResolvers.get(0));
 		assertEquals("/", accessor.getPropertyValue("prefix"));
 		assertEquals(".html", accessor.getPropertyValue("suffix"));
 	}

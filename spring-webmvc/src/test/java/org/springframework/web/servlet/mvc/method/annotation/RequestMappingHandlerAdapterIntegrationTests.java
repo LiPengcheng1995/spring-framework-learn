@@ -16,29 +16,10 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.awt.Color;
-import java.lang.reflect.Method;
-import java.net.URI;
-import java.security.Principal;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.core.MethodParameter;
@@ -58,19 +39,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.SessionAttribute;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.bind.support.WebArgumentResolver;
@@ -84,6 +53,19 @@ import org.springframework.web.method.support.InvocableHandlerMethod;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import java.awt.*;
+import java.lang.reflect.Method;
+import java.net.URI;
+import java.security.Principal;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -142,7 +124,7 @@ public class RequestMappingHandlerAdapterIntegrationTests {
 
 	@Test
 	public void handle() throws Exception {
-		Class<?>[] parameterTypes = new Class<?>[] {int.class, String.class, String.class, String.class, Map.class,
+		Class<?>[] parameterTypes = new Class<?>[]{int.class, String.class, String.class, String.class, Map.class,
 				Date.class, Map.class, String.class, String.class, TestBean.class, Errors.class, TestBean.class,
 				Color.class, HttpServletRequest.class, HttpServletResponse.class, TestBean.class, TestBean.class,
 				User.class, OtherUser.class, Model.class, UriComponentsBuilder.class};
@@ -223,7 +205,7 @@ public class RequestMappingHandlerAdapterIntegrationTests {
 
 	@Test
 	public void handleRequestBody() throws Exception {
-		Class<?>[] parameterTypes = new Class<?>[] {byte[].class};
+		Class<?>[] parameterTypes = new Class<?>[]{byte[].class};
 
 		request.setMethod("POST");
 		request.addHeader("Content-Type", "text/plain; charset=utf-8");
@@ -240,7 +222,7 @@ public class RequestMappingHandlerAdapterIntegrationTests {
 
 	@Test
 	public void handleAndValidateRequestBody() throws Exception {
-		Class<?>[] parameterTypes = new Class<?>[] {TestBean.class, Errors.class};
+		Class<?>[] parameterTypes = new Class<?>[]{TestBean.class, Errors.class};
 
 		request.addHeader("Content-Type", "text/plain; charset=utf-8");
 		request.setContent("Hello Server".getBytes("UTF-8"));
@@ -256,7 +238,7 @@ public class RequestMappingHandlerAdapterIntegrationTests {
 
 	@Test
 	public void handleHttpEntity() throws Exception {
-		Class<?>[] parameterTypes = new Class<?>[] {HttpEntity.class};
+		Class<?>[] parameterTypes = new Class<?>[]{HttpEntity.class};
 
 		request.addHeader("Content-Type", "text/plain; charset=utf-8");
 		request.setContent("Hello Server".getBytes("UTF-8"));
@@ -276,7 +258,7 @@ public class RequestMappingHandlerAdapterIntegrationTests {
 	// SPR-13867
 	@Test
 	public void handleHttpEntityWithCacheControl() throws Exception {
-		Class<?>[] parameterTypes = new Class<?>[] {HttpEntity.class};
+		Class<?>[] parameterTypes = new Class<?>[]{HttpEntity.class};
 		request.addHeader("Content-Type", "text/plain; charset=utf-8");
 		request.setContent("Hello Server".getBytes("UTF-8"));
 
@@ -418,7 +400,7 @@ public class RequestMappingHandlerAdapterIntegrationTests {
 		}
 
 		public void handleAndValidateRequestPart(@RequestPart @Valid String requestPart,
-				Errors errors, Model model) throws Exception {
+												 Errors errors, Model model) throws Exception {
 
 			model.addAttribute("error count", errors.getErrorCount());
 		}

@@ -17,7 +17,6 @@
 package org.springframework.context.annotation.spr8808;
 
 import org.junit.Test;
-
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -45,6 +44,7 @@ public class Spr8808Tests {
 }
 
 @Configuration
-@ComponentScan(basePackageClasses=Spr8808Tests.class) // scan *this* package
+@ComponentScan(basePackageClasses = Spr8808Tests.class)
+		// scan *this* package
 class Config {
 }

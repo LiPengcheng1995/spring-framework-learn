@@ -16,26 +16,12 @@
 
 package org.springframework.http.codec.xml;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.XMLEvent;
-import javax.xml.stream.util.XMLEventAllocator;
-
 import com.fasterxml.aalto.AsyncByteBufferFeeder;
 import com.fasterxml.aalto.AsyncXMLInputFactory;
 import com.fasterxml.aalto.AsyncXMLStreamReader;
 import com.fasterxml.aalto.evt.EventAllocatorImpl;
 import com.fasterxml.aalto.stax.InputFactoryImpl;
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.codec.AbstractDecoder;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -45,6 +31,19 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.xml.StaxUtils;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.XMLEvent;
+import javax.xml.stream.util.XMLEventAllocator;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Decodes a {@link DataBuffer} stream into a stream of {@link XMLEvent XMLEvents}.
@@ -57,7 +56,7 @@ import org.springframework.util.xml.StaxUtils;
  *     &lt;child&gt;bar&lt;/child&gt;
  * &lt;/root&gt;
  * </pre>
- *
+ * <p>
  * this decoder will produce a {@link Flux} with the following events:
  *
  * <ol>
@@ -96,15 +95,14 @@ public class XmlEventDecoder extends AbstractDecoder<XMLEvent> {
 	@Override
 	@SuppressWarnings({"rawtypes", "unchecked"})  // on JDK 9 where XMLEventReader is Iterator<Object>
 	public Flux<XMLEvent> decode(Publisher<DataBuffer> inputStream, ResolvableType elementType,
-			@Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
+								 @Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
 
 		Flux<DataBuffer> flux = Flux.from(inputStream);
 		if (this.useAalto) {
 			AaltoDataBufferToXmlEvent aaltoMapper = new AaltoDataBufferToXmlEvent();
 			return flux.flatMap(aaltoMapper)
 					.doFinally(signalType -> aaltoMapper.endOfInput());
-		}
-		else {
+		} else {
 			Mono<DataBuffer> singleBuffer = DataBufferUtils.join(flux);
 			return singleBuffer.
 					flatMapMany(dataBuffer -> {
@@ -113,8 +111,7 @@ public class XmlEventDecoder extends AbstractDecoder<XMLEvent> {
 							Iterator eventReader = inputFactory.createXMLEventReader(is);
 							return Flux.fromIterable((Iterable<XMLEvent>) () -> eventReader)
 									.doFinally(t -> DataBufferUtils.release(dataBuffer));
-						}
-						catch (XMLStreamException ex) {
+						} catch (XMLStreamException ex) {
 							return Mono.error(ex);
 						}
 					});
@@ -143,8 +140,7 @@ public class XmlEventDecoder extends AbstractDecoder<XMLEvent> {
 					if (this.streamReader.next() == AsyncXMLStreamReader.EVENT_INCOMPLETE) {
 						// no more events with what currently has been fed to the reader
 						break;
-					}
-					else {
+					} else {
 						XMLEvent event = this.eventAllocator.allocate(this.streamReader);
 						events.add(event);
 						if (event.isEndDocument()) {
@@ -153,11 +149,9 @@ public class XmlEventDecoder extends AbstractDecoder<XMLEvent> {
 					}
 				}
 				return Flux.fromIterable(events);
-			}
-			catch (XMLStreamException ex) {
+			} catch (XMLStreamException ex) {
 				return Mono.error(ex);
-			}
-			finally {
+			} finally {
 				DataBufferUtils.release(dataBuffer);
 			}
 		}

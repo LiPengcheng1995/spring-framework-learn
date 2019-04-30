@@ -16,19 +16,18 @@
 
 package org.springframework.web.socket.adapter.standard;
 
-import java.net.URI;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.WebSocketHandler;
+
 import javax.websocket.CloseReason;
 import javax.websocket.CloseReason.CloseCodes;
 import javax.websocket.MessageHandler;
 import javax.websocket.Session;
+import java.net.URI;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.WebSocketHandler;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.*;
 
 /**

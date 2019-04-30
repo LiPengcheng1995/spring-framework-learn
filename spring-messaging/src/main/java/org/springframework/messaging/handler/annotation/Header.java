@@ -16,13 +16,9 @@
 
 package org.springframework.messaging.handler.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.core.annotation.AliasFor;
+
+import java.lang.annotation.*;
 
 /**
  * Annotation which indicates that a method parameter should be bound to a message header.
@@ -44,6 +40,7 @@ public @interface Header {
 
 	/**
 	 * The name of the request header to bind to.
+	 *
 	 * @since 4.2
 	 */
 	@AliasFor("value")
@@ -54,6 +51,7 @@ public @interface Header {
 	 * <p>Default is {@code true}, leading to an exception if the header is
 	 * missing. Switch this to {@code false} if you prefer a {@code null}
 	 * value in case of a header missing.
+	 *
 	 * @see #defaultValue
 	 */
 	boolean required() default true;

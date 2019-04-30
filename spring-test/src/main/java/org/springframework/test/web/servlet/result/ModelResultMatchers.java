@@ -17,7 +17,6 @@
 package org.springframework.test.web.servlet.result;
 
 import org.hamcrest.Matcher;
-
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.ui.ModelMap;
@@ -26,7 +25,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.web.servlet.ModelAndView;
 
-import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.springframework.test.util.AssertionErrors.*;
 
 /**
@@ -81,17 +80,17 @@ public class ModelResultMatchers {
 		};
 	}
 
-    /**
-     * Assert the given model attributes do not exist
-     */
-    public ResultMatcher attributeDoesNotExist(final String... names) {
-        return result -> {
+	/**
+	 * Assert the given model attributes do not exist
+	 */
+	public ResultMatcher attributeDoesNotExist(final String... names) {
+		return result -> {
 			ModelAndView mav = getModelAndView(result);
 			for (String name : names) {
 				assertTrue("Model attribute '" + name + "' exists", mav.getModel().get(name) == null);
 			}
 		};
-    }
+	}
 
 	/**
 	 * Assert the given model attribute(s) have errors.
@@ -149,6 +148,7 @@ public class ModelResultMatchers {
 
 	/**
 	 * Assert a field error code for a model attribute using exact String match.
+	 *
 	 * @since 4.1
 	 */
 	public ResultMatcher attributeHasFieldErrorCode(final String name, final String fieldName, final String error) {
@@ -167,10 +167,11 @@ public class ModelResultMatchers {
 
 	/**
 	 * Assert a field error code for a model attribute using a {@link org.hamcrest.Matcher}.
+	 *
 	 * @since 4.1
 	 */
 	public <T> ResultMatcher attributeHasFieldErrorCode(final String name, final String fieldName,
-			final Matcher<? super String> matcher) {
+														final Matcher<? super String> matcher) {
 
 		return mvcResult -> {
 			ModelAndView mav = getModelAndView(mvcResult);

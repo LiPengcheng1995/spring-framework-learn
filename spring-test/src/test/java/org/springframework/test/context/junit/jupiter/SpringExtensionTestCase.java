@@ -16,14 +16,10 @@
 
 package org.springframework.test.context.junit.jupiter;
 
-import java.util.List;
-import java.util.Optional;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.extension.ExtendWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +32,9 @@ import org.springframework.test.context.junit.jupiter.comics.Cat;
 import org.springframework.test.context.junit.jupiter.comics.Dog;
 import org.springframework.test.context.junit.jupiter.comics.Person;
 
+import java.util.List;
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -46,9 +45,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * Platform, simply run {@link SpringJUnitJupiterTestSuite} as a JUnit 4 test.
  *
  * @author Sam Brannen
- * @since 5.0
  * @see SpringExtension
  * @see ComposedSpringExtensionTestCase
+ * @since 5.0
  */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestConfig.class)
@@ -186,7 +185,7 @@ class SpringExtensionTestCase {
 
 	@Test
 	void junitAndSpringMethodInjectionCombined(@Autowired Cat kittyCat, TestInfo testInfo, ApplicationContext context,
-			TestReporter testReporter) {
+											   TestReporter testReporter) {
 
 		assertNotNull(testInfo, "TestInfo should have been injected by JUnit");
 		assertNotNull(testReporter, "TestReporter should have been injected by JUnit");

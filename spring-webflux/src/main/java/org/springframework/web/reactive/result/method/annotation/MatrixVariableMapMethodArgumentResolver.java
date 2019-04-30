@@ -16,19 +16,11 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.util.StringUtils;
+import org.springframework.util.*;
 import org.springframework.web.bind.annotation.MatrixVariable;
 import org.springframework.web.bind.annotation.ValueConstants;
 import org.springframework.web.reactive.BindingContext;
@@ -36,6 +28,10 @@ import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.result.method.HandlerMethodArgumentResolverSupport;
 import org.springframework.web.reactive.result.method.SyncHandlerMethodArgumentResolver;
 import org.springframework.web.server.ServerWebExchange;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Resolves arguments of type {@link Map} annotated with {@link MatrixVariable @MatrixVariable}
@@ -47,8 +43,8 @@ import org.springframework.web.server.ServerWebExchange;
  * with a Map value, and is resolved by {@link MatrixVariableMethodArgumentResolver} instead.
  *
  * @author Rossen Stoyanchev
- * @since 5.0.1
  * @see MatrixVariableMethodArgumentResolver
+ * @since 5.0.1
  */
 public class MatrixVariableMapMethodArgumentResolver extends HandlerMethodArgumentResolverSupport
 		implements SyncHandlerMethodArgumentResolver {
@@ -67,7 +63,7 @@ public class MatrixVariableMapMethodArgumentResolver extends HandlerMethodArgume
 	@Nullable
 	@Override
 	public Object resolveArgumentValue(MethodParameter parameter, BindingContext bindingContext,
-			ServerWebExchange exchange) {
+									   ServerWebExchange exchange) {
 
 		Map<String, MultiValueMap<String, String>> matrixVariables =
 				exchange.getAttribute(HandlerMapping.MATRIX_VARIABLES_ATTRIBUTE);
@@ -87,8 +83,7 @@ public class MatrixVariableMapMethodArgumentResolver extends HandlerMethodArgume
 				return Collections.emptyMap();
 			}
 			map.putAll(mapForPathVariable);
-		}
-		else {
+		} else {
 			for (MultiValueMap<String, String> vars : matrixVariables.values()) {
 				vars.forEach((name, values) -> {
 					for (String value : values) {

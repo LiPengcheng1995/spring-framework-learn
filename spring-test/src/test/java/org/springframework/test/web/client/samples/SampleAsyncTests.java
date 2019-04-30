@@ -17,7 +17,6 @@
 package org.springframework.test.web.client.samples;
 
 import org.junit.Test;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
@@ -27,10 +26,11 @@ import org.springframework.test.web.Person;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.util.concurrent.ListenableFuture;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.client.ExpectedCount.manyTimes;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 /**
  * Examples to demonstrate writing client-side REST tests with Spring MVC Test.
@@ -55,7 +55,7 @@ public class SampleAsyncTests {
 		String responseBody = "{\"name\" : \"Ludwig van Beethoven\", \"someDouble\" : \"1.6035\"}";
 
 		this.mockServer.expect(requestTo("/composers/42")).andExpect(method(HttpMethod.GET))
-			.andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
+				.andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
 		@SuppressWarnings("unused")
 		ListenableFuture<ResponseEntity<Person>> ludwig =
@@ -98,7 +98,7 @@ public class SampleAsyncTests {
 		Resource responseBody = new ClassPathResource("ludwig.json", this.getClass());
 
 		this.mockServer.expect(requestTo("/composers/42")).andExpect(method(HttpMethod.GET))
-			.andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
+				.andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
 		@SuppressWarnings("unused")
 		ListenableFuture<ResponseEntity<Person>> ludwig =
@@ -114,16 +114,16 @@ public class SampleAsyncTests {
 	public void verify() {
 
 		this.mockServer.expect(requestTo("/number")).andExpect(method(HttpMethod.GET))
-			.andRespond(withSuccess("1", MediaType.TEXT_PLAIN));
+				.andRespond(withSuccess("1", MediaType.TEXT_PLAIN));
 
 		this.mockServer.expect(requestTo("/number")).andExpect(method(HttpMethod.GET))
-			.andRespond(withSuccess("2", MediaType.TEXT_PLAIN));
+				.andRespond(withSuccess("2", MediaType.TEXT_PLAIN));
 
 		this.mockServer.expect(requestTo("/number")).andExpect(method(HttpMethod.GET))
-			.andRespond(withSuccess("4", MediaType.TEXT_PLAIN));
+				.andRespond(withSuccess("4", MediaType.TEXT_PLAIN));
 
 		this.mockServer.expect(requestTo("/number")).andExpect(method(HttpMethod.GET))
-			.andRespond(withSuccess("8", MediaType.TEXT_PLAIN));
+				.andRespond(withSuccess("8", MediaType.TEXT_PLAIN));
 
 		@SuppressWarnings("unused")
 		ListenableFuture<ResponseEntity<String>> result = this.restTemplate.getForEntity("/number", String.class);
@@ -134,8 +134,7 @@ public class SampleAsyncTests {
 
 		try {
 			this.mockServer.verify();
-		}
-		catch (AssertionError error) {
+		} catch (AssertionError error) {
 			assertTrue(error.getMessage(), error.getMessage().contains("2 unsatisfied expectation(s)"));
 		}
 	}

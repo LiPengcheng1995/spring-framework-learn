@@ -16,11 +16,10 @@
 
 package org.springframework.web.reactive.function.server;
 
-import java.util.function.Function;
-
+import org.springframework.core.io.Resource;
 import reactor.core.publisher.Mono;
 
-import org.springframework.core.io.Resource;
+import java.util.function.Function;
 
 /**
  * Implementation of {@link RouterFunctions.Visitor} that creates a formatted string representation
@@ -77,7 +76,7 @@ class ToStringVisitor implements RouterFunctions.Visitor {
 	}
 
 	private void indent() {
-		for (int i=0; i < this.indent; i++) {
+		for (int i = 0; i < this.indent; i++) {
 			this.builder.append(' ');
 		}
 	}

@@ -16,19 +16,6 @@
 
 package org.springframework.web.servlet.resource;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -37,6 +24,14 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.ServletContextResource;
 import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.UrlPathHelper;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 /**
  * A simple {@code ResourceResolver} that tries to find a resource under the given
@@ -52,14 +47,16 @@ import org.springframework.web.util.UrlPathHelper;
  */
 public class PathResourceResolver extends AbstractResourceResolver {
 
+	private final Map<Resource, Charset> locationCharsets = new HashMap<>(4);
 	@Nullable
 	private Resource[] allowedLocations;
-
-	private final Map<Resource, Charset> locationCharsets = new HashMap<>(4);
-
 	@Nullable
 	private UrlPathHelper urlPathHelper;
 
+	@Nullable
+	public Resource[] getAllowedLocations() {
+		return this.allowedLocations;
+	}
 
 	/**
 	 * By default when a Resource is found, the path of the resolved resource is
@@ -74,17 +71,22 @@ public class PathResourceResolver extends AbstractResourceResolver {
 	 * relative to which it was found, this list may be checked as well.
 	 * <p>By default {@link ResourceHttpRequestHandler} initializes this property
 	 * to match its list of locations.
+	 *
 	 * @param locations the list of allowed locations
-	 * @since 4.1.2
 	 * @see ResourceHttpRequestHandler#initAllowedLocations()
+	 * @since 4.1.2
 	 */
 	public void setAllowedLocations(@Nullable Resource... locations) {
 		this.allowedLocations = locations;
 	}
 
-	@Nullable
-	public Resource[] getAllowedLocations() {
-		return this.allowedLocations;
+	/**
+	 * Return charsets associated with static resource locations.
+	 *
+	 * @since 4.3.13
+	 */
+	public Map<Resource, Charset> getLocationCharsets() {
+		return Collections.unmodifiableMap(this.locationCharsets);
 	}
 
 	/**
@@ -94,6 +96,7 @@ public class PathResourceResolver extends AbstractResourceResolver {
 	 * <p><strong>Note:</strong> the charset is used only if the
 	 * {@link #setUrlPathHelper urlPathHelper} property is also configured and
 	 * its {@code urlDecode} property is set to true.
+	 *
 	 * @since 4.3.13
 	 */
 	public void setLocationCharsets(Map<Resource, Charset> locationCharsets) {
@@ -102,25 +105,8 @@ public class PathResourceResolver extends AbstractResourceResolver {
 	}
 
 	/**
-	 * Return charsets associated with static resource locations.
-	 * @since 4.3.13
-	 */
-	public Map<Resource, Charset> getLocationCharsets() {
-		return Collections.unmodifiableMap(this.locationCharsets);
-	}
-
-	/**
-	 * Provide a reference to the {@link UrlPathHelper} used to map requests to
-	 * static resources. This helps to derive information about the lookup path
-	 * such as whether it is decoded or not.
-	 * @since 4.3.13
-	 */
-	public void setUrlPathHelper(@Nullable UrlPathHelper urlPathHelper) {
-		this.urlPathHelper = urlPathHelper;
-	}
-
-	/**
 	 * The configured {@link UrlPathHelper}.
+	 *
 	 * @since 4.3.13
 	 */
 	@Nullable
@@ -128,17 +114,27 @@ public class PathResourceResolver extends AbstractResourceResolver {
 		return this.urlPathHelper;
 	}
 
+	/**
+	 * Provide a reference to the {@link UrlPathHelper} used to map requests to
+	 * static resources. This helps to derive information about the lookup path
+	 * such as whether it is decoded or not.
+	 *
+	 * @since 4.3.13
+	 */
+	public void setUrlPathHelper(@Nullable UrlPathHelper urlPathHelper) {
+		this.urlPathHelper = urlPathHelper;
+	}
 
 	@Override
 	protected Resource resolveResourceInternal(@Nullable HttpServletRequest request, String requestPath,
-			List<? extends Resource> locations, ResourceResolverChain chain) {
+											   List<? extends Resource> locations, ResourceResolverChain chain) {
 
 		return getResource(requestPath, request, locations);
 	}
 
 	@Override
 	protected String resolveUrlPathInternal(String resourcePath, List<? extends Resource> locations,
-			ResourceResolverChain chain) {
+											ResourceResolverChain chain) {
 
 		return (StringUtils.hasText(resourcePath) &&
 				getResource(resourcePath, null, locations) != null ? resourcePath : null);
@@ -146,7 +142,7 @@ public class PathResourceResolver extends AbstractResourceResolver {
 
 	@Nullable
 	private Resource getResource(String resourcePath, @Nullable HttpServletRequest request,
-			List<? extends Resource> locations) {
+								 List<? extends Resource> locations) {
 
 		for (Resource location : locations) {
 			try {
@@ -160,12 +156,10 @@ public class PathResourceResolver extends AbstractResourceResolver {
 						logger.trace("Found match: " + resource);
 					}
 					return resource;
-				}
-				else if (logger.isTraceEnabled()) {
+				} else if (logger.isTraceEnabled()) {
 					logger.trace("No match for location: " + location);
 				}
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				logger.trace("Failure checking for relative resource - trying next location", ex);
 			}
 		}
@@ -176,8 +170,9 @@ public class PathResourceResolver extends AbstractResourceResolver {
 	 * Find the resource under the given location.
 	 * <p>The default implementation checks if there is a readable
 	 * {@code Resource} for the given path relative to the location.
+	 *
 	 * @param resourcePath the path to the resource
-	 * @param location the location to check
+	 * @param location     the location to check
 	 * @return the resource, or {@code null} if none found
 	 */
 	@Nullable
@@ -186,11 +181,10 @@ public class PathResourceResolver extends AbstractResourceResolver {
 		if (resource.exists() && resource.isReadable()) {
 			if (checkResource(resource, location)) {
 				return resource;
-			}
-			else if (logger.isTraceEnabled()) {
+			} else if (logger.isTraceEnabled()) {
 				Resource[] allowedLocations = getAllowedLocations();
 				logger.trace("Resource path \"" + resourcePath + "\" was successfully resolved " +
-						"but resource \"" +	resource.getURL() + "\" is neither under the " +
+						"but resource \"" + resource.getURL() + "\" is neither under the " +
 						"current location \"" + location.getURL() + "\" nor under any of the " +
 						"allowed locations " + (allowedLocations != null ? Arrays.asList(allowedLocations) : "[]"));
 			}
@@ -203,6 +197,7 @@ public class PathResourceResolver extends AbstractResourceResolver {
 	 * resources exists and is readable. The default implementation also verifies
 	 * the resource is either under the location relative to which it was found or
 	 * is under one of the {@link #setAllowedLocations allowed locations}.
+	 *
 	 * @param resource the resource to check
 	 * @param location the location relative to which the resource was found
 	 * @return "true" if resource is in a valid location, "false" otherwise.
@@ -234,16 +229,13 @@ public class PathResourceResolver extends AbstractResourceResolver {
 		if (resource instanceof UrlResource) {
 			resourcePath = resource.getURL().toExternalForm();
 			locationPath = StringUtils.cleanPath(location.getURL().toString());
-		}
-		else if (resource instanceof ClassPathResource) {
+		} else if (resource instanceof ClassPathResource) {
 			resourcePath = ((ClassPathResource) resource).getPath();
 			locationPath = StringUtils.cleanPath(((ClassPathResource) location).getPath());
-		}
-		else if (resource instanceof ServletContextResource) {
+		} else if (resource instanceof ServletContextResource) {
 			resourcePath = ((ServletContextResource) resource).getPath();
 			locationPath = StringUtils.cleanPath(((ServletContextResource) location).getPath());
-		}
-		else {
+		} else {
 			resourcePath = resource.getURL().getPath();
 			locationPath = StringUtils.cleanPath(location.getURL().getPath());
 		}
@@ -269,8 +261,7 @@ public class PathResourceResolver extends AbstractResourceResolver {
 				sb.setLength(sb.length() - 1);
 			}
 			return sb.toString();
-		}
-		else {
+		} else {
 			return path;
 		}
 	}
@@ -290,8 +281,7 @@ public class PathResourceResolver extends AbstractResourceResolver {
 					}
 					return true;
 				}
-			}
-			catch (UnsupportedEncodingException ex) {
+			} catch (UnsupportedEncodingException ex) {
 				// Should never happen...
 			}
 		}

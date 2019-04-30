@@ -18,7 +18,6 @@ package org.springframework.test.context.junit4.spr9604;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
@@ -30,7 +29,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.TransactionManagementConfigurer;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Integration tests that verify the behavior requested in
@@ -46,27 +45,6 @@ public class LookUpTxMgrViaTransactionManagementConfigurerTests {
 
 	private static final CallCountingTransactionManager txManager1 = new CallCountingTransactionManager();
 	private static final CallCountingTransactionManager txManager2 = new CallCountingTransactionManager();
-
-
-	@Configuration
-	static class Config implements TransactionManagementConfigurer {
-
-		@Override
-		public PlatformTransactionManager annotationDrivenTransactionManager() {
-			return txManager1();
-		}
-
-		@Bean
-		public PlatformTransactionManager txManager1() {
-			return txManager1;
-		}
-
-		@Bean
-		public PlatformTransactionManager txManager2() {
-			return txManager2;
-		}
-	}
-
 
 	@BeforeTransaction
 	public void beforeTransaction() {
@@ -98,6 +76,25 @@ public class LookUpTxMgrViaTransactionManagementConfigurerTests {
 		assertEquals(0, txManager2.inflight);
 		assertEquals(0, txManager2.commits);
 		assertEquals(0, txManager2.rollbacks);
+	}
+
+	@Configuration
+	static class Config implements TransactionManagementConfigurer {
+
+		@Override
+		public PlatformTransactionManager annotationDrivenTransactionManager() {
+			return txManager1();
+		}
+
+		@Bean
+		public PlatformTransactionManager txManager1() {
+			return txManager1;
+		}
+
+		@Bean
+		public PlatformTransactionManager txManager2() {
+			return txManager2;
+		}
 	}
 
 }

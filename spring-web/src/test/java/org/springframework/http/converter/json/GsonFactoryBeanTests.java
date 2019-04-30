@@ -16,14 +16,14 @@
 
 package org.springframework.http.converter.json;
 
+import com.google.gson.Gson;
+import org.junit.Test;
+
 import java.util.Calendar;
 import java.util.Date;
 
-import com.google.gson.Gson;
-
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * {@link GsonFactoryBean} tests.
@@ -141,7 +141,7 @@ public class GsonFactoryBeanTests {
 		this.factory.afterPropertiesSet();
 		Gson gson = this.factory.getObject();
 		ByteArrayBean bean = new ByteArrayBean();
-		bean.setBytes(new byte[] {0x1, 0x2});
+		bean.setBytes(new byte[]{0x1, 0x2});
 		String result = gson.toJson(bean);
 		assertEquals("{\"bytes\":\"AQI\\u003d\"}", result);
 	}
@@ -153,7 +153,7 @@ public class GsonFactoryBeanTests {
 		this.factory.afterPropertiesSet();
 		Gson gson = this.factory.getObject();
 		ByteArrayBean bean = new ByteArrayBean();
-		bean.setBytes(new byte[] {0x1, 0x2});
+		bean.setBytes(new byte[]{0x1, 0x2});
 		String result = gson.toJson(bean);
 		assertEquals("{\"bytes\":\"AQI=\"}", result);
 	}
@@ -164,7 +164,7 @@ public class GsonFactoryBeanTests {
 		this.factory.afterPropertiesSet();
 		Gson gson = this.factory.getObject();
 		ByteArrayBean bean = new ByteArrayBean();
-		bean.setBytes(new byte[] {0x1, 0x2});
+		bean.setBytes(new byte[]{0x1, 0x2});
 		String result = gson.toJson(bean);
 		assertEquals("{\"bytes\":[1,2]}", result);
 	}

@@ -16,15 +16,9 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.util.Collections;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.FatalBeanException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -49,6 +43,11 @@ import org.springframework.web.servlet.FlashMap;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.util.NestedServletException;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.util.Collections;
 
 import static org.junit.Assert.*;
 
@@ -340,30 +339,6 @@ public class ExceptionHandlerExceptionResolverTests {
 	}
 
 
-	@Controller
-	static class ModelAndViewController {
-
-		public void handle() {}
-
-		@ExceptionHandler
-		public ModelAndView handle(Exception ex) throws IOException {
-			return new ModelAndView("errorView", "detail", ex.getMessage());
-		}
-	}
-
-
-	@Controller
-	static class ResponseWriterController {
-
-		public void handle() {}
-
-		@ExceptionHandler
-		public void handleException(Exception ex, Writer writer) throws IOException {
-			writer.write(ClassUtils.getShortName(ex.getClass()));
-		}
-	}
-
-
 	interface ResponseBodyInterface {
 
 		void handle();
@@ -373,11 +348,35 @@ public class ExceptionHandlerExceptionResolverTests {
 		String handleException(IllegalArgumentException ex);
 	}
 
+	@Controller
+	static class ModelAndViewController {
+
+		public void handle() {
+		}
+
+		@ExceptionHandler
+		public ModelAndView handle(Exception ex) throws IOException {
+			return new ModelAndView("errorView", "detail", ex.getMessage());
+		}
+	}
+
+	@Controller
+	static class ResponseWriterController {
+
+		public void handle() {
+		}
+
+		@ExceptionHandler
+		public void handleException(Exception ex, Writer writer) throws IOException {
+			writer.write(ClassUtils.getShortName(ex.getClass()));
+		}
+	}
 
 	@Controller
 	static class ResponseBodyController extends WebApplicationObjectSupport implements ResponseBodyInterface {
 
-		public void handle() {}
+		public void handle() {
+		}
 
 		@ExceptionHandler
 		@ResponseBody
@@ -390,7 +389,8 @@ public class ExceptionHandlerExceptionResolverTests {
 	@Controller
 	static class IoExceptionController {
 
-		public void handle() {}
+		public void handle() {
+		}
 
 		@ExceptionHandler(value = IOException.class)
 		public void handleException() {
@@ -401,7 +401,8 @@ public class ExceptionHandlerExceptionResolverTests {
 	@Controller
 	static class ModelArgumentController {
 
-		public void handle() {}
+		public void handle() {
+		}
 
 		@ExceptionHandler
 		public void handleException(Exception ex, Model model) {
@@ -412,7 +413,8 @@ public class ExceptionHandlerExceptionResolverTests {
 	@Controller
 	static class RedirectAttributesController {
 
-		public void handle() {}
+		public void handle() {
+		}
 
 		@ExceptionHandler
 		public String handleException(Exception ex, RedirectAttributes redirectAttributes) {

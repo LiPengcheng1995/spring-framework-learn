@@ -53,6 +53,7 @@ public abstract class AbstractAnnotationConfigDispatcherHandlerInitializer
 	/**
 	 * Specify {@code @Configuration} and/or {@code @Component} classes for
 	 * the {@linkplain #createApplicationContext() application context}.
+	 *
 	 * @return the configuration for the application context
 	 */
 	protected abstract Class<?>[] getConfigClasses();

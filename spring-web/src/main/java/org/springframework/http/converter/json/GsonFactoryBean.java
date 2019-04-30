@@ -16,14 +16,13 @@
 
 package org.springframework.http.converter.json;
 
-import java.text.SimpleDateFormat;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.lang.Nullable;
+
+import java.text.SimpleDateFormat;
 
 /**
  * A {@link FactoryBean} for creating a Google Gson 2.x {@link Gson} instance.
@@ -56,6 +55,7 @@ public class GsonFactoryBean implements FactoryBean<Gson>, InitializingBean {
 	 * registered via {@link GsonBuilder#registerTypeHierarchyAdapter(Class, Object)}
 	 * which serializes a {@code byte[]} property to and from a Base64-encoded String
 	 * instead of a JSON array.
+	 *
 	 * @see GsonBuilderUtils#gsonBuilderWithBase64EncodedByteArrays()
 	 */
 	public void setBase64EncodeByteArrays(boolean base64EncodeByteArrays) {

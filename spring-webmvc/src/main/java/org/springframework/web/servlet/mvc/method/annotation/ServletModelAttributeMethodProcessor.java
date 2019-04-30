@@ -16,10 +16,6 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.util.Collections;
-import java.util.Map;
-import javax.servlet.ServletRequest;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
@@ -35,6 +31,10 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.method.annotation.ModelAttributeMethodProcessor;
 import org.springframework.web.servlet.HandlerMapping;
+
+import javax.servlet.ServletRequest;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * A Servlet-specific {@link ModelAttributeMethodProcessor} that applies data
@@ -52,9 +52,10 @@ public class ServletModelAttributeMethodProcessor extends ModelAttributeMethodPr
 
 	/**
 	 * Class constructor.
+	 *
 	 * @param annotationNotRequired if "true", non-simple method arguments and
-	 * return values are considered model attributes with or without a
-	 * {@code @ModelAttribute} annotation
+	 *                              return values are considered model attributes with or without a
+	 *                              {@code @ModelAttribute} annotation
 	 */
 	public ServletModelAttributeMethodProcessor(boolean annotationNotRequired) {
 		super(annotationNotRequired);
@@ -66,11 +67,12 @@ public class ServletModelAttributeMethodProcessor extends ModelAttributeMethodPr
 	 * request parameter if the name matches to the model attribute name and
 	 * if there is an appropriate type conversion strategy. If none of these
 	 * are true delegate back to the base class.
+	 *
 	 * @see #createAttributeFromRequestValue
 	 */
 	@Override
 	protected final Object createAttribute(String attributeName, MethodParameter parameter,
-			WebDataBinderFactory binderFactory, NativeWebRequest request) throws Exception {
+										   WebDataBinderFactory binderFactory, NativeWebRequest request) throws Exception {
 
 		String value = getRequestValueForAttribute(attributeName, request);
 		if (value != null) {
@@ -89,8 +91,9 @@ public class ServletModelAttributeMethodProcessor extends ModelAttributeMethodPr
 	 * model attribute through type conversion from String to the target type.
 	 * <p>The default implementation looks for the attribute name to match
 	 * a URI variable first and then a request parameter.
+	 *
 	 * @param attributeName the model attribute name
-	 * @param request the current request
+	 * @param request       the current request
 	 * @return the request value to try to convert, or {@code null} if none
 	 */
 	@Nullable
@@ -119,17 +122,18 @@ public class ServletModelAttributeMethodProcessor extends ModelAttributeMethodPr
 	 * variable, request parameter) using type conversion.
 	 * <p>The default implementation converts only if there a registered
 	 * {@link Converter} that can perform the conversion.
-	 * @param sourceValue the source value to create the model attribute from
+	 *
+	 * @param sourceValue   the source value to create the model attribute from
 	 * @param attributeName the name of the attribute (never {@code null})
-	 * @param parameter the method parameter
+	 * @param parameter     the method parameter
 	 * @param binderFactory for creating WebDataBinder instance
-	 * @param request the current request
+	 * @param request       the current request
 	 * @return the created model attribute, or {@code null} if no suitable
 	 * conversion found
 	 */
 	@Nullable
 	protected Object createAttributeFromRequestValue(String sourceValue, String attributeName,
-			MethodParameter parameter, WebDataBinderFactory binderFactory, NativeWebRequest request)
+													 MethodParameter parameter, WebDataBinderFactory binderFactory, NativeWebRequest request)
 			throws Exception {
 
 		DataBinder binder = binderFactory.createBinder(request, null, attributeName);
@@ -147,6 +151,7 @@ public class ServletModelAttributeMethodProcessor extends ModelAttributeMethodPr
 	/**
 	 * This implementation downcasts {@link WebDataBinder} to
 	 * {@link ServletRequestDataBinder} before binding.
+	 *
 	 * @see ServletRequestDataBinderFactory
 	 */
 	@Override

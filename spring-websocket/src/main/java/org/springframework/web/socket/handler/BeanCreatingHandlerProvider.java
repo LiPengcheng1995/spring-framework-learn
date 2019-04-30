@@ -66,8 +66,7 @@ public class BeanCreatingHandlerProvider<T> implements BeanFactoryAware {
 	public T getHandler() {
 		if (this.beanFactory != null) {
 			return this.beanFactory.createBean(this.handlerType);
-		}
-		else {
+		} else {
 			return BeanUtils.instantiateClass(this.handlerType);
 		}
 	}

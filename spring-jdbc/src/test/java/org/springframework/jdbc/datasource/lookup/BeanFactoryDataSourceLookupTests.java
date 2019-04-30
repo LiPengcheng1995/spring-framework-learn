@@ -16,15 +16,15 @@
 
 package org.springframework.jdbc.datasource.lookup;
 
-import javax.sql.DataSource;
-
 import org.junit.Test;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanNotOfRequiredTypeException;
 
+import javax.sql.DataSource;
+
 import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
 
 /**
  * @author Rick Evans
@@ -60,11 +60,10 @@ public class BeanFactoryDataSourceLookupTests {
 						DataSource.class, String.class));
 
 		try {
-				BeanFactoryDataSourceLookup lookup = new BeanFactoryDataSourceLookup(beanFactory);
-				lookup.getDataSource(DATASOURCE_BEAN_NAME);
-				fail("should have thrown DataSourceLookupFailureException");
-		}
-		catch (DataSourceLookupFailureException ex) { /* expected */ }
+			BeanFactoryDataSourceLookup lookup = new BeanFactoryDataSourceLookup(beanFactory);
+			lookup.getDataSource(DATASOURCE_BEAN_NAME);
+			fail("should have thrown DataSourceLookupFailureException");
+		} catch (DataSourceLookupFailureException ex) { /* expected */ }
 	}
 
 	@Test(expected = IllegalStateException.class)

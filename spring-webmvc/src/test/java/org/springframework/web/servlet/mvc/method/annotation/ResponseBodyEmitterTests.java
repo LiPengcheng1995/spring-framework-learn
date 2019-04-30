@@ -16,17 +16,17 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.io.IOException;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import org.springframework.http.MediaType;
 
-import static org.junit.Assert.*;
+import java.io.IOException;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 /**
@@ -148,8 +148,7 @@ public class ResponseBodyEmitterTests {
 		try {
 			this.emitter.send("foo", MediaType.TEXT_PLAIN);
 			fail("Expected exception");
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			// expected
 		}
 		verify(this.handler).send("foo", MediaType.TEXT_PLAIN);
@@ -157,7 +156,7 @@ public class ResponseBodyEmitterTests {
 	}
 
 	@Test
-	public void onTimeoutBeforeHandlerInitialized() throws Exception  {
+	public void onTimeoutBeforeHandlerInitialized() throws Exception {
 		Runnable runnable = mock(Runnable.class);
 		this.emitter.onTimeout(runnable);
 		this.emitter.initialize(this.handler);
@@ -172,7 +171,7 @@ public class ResponseBodyEmitterTests {
 	}
 
 	@Test
-	public void onTimeoutAfterHandlerInitialized() throws Exception  {
+	public void onTimeoutAfterHandlerInitialized() throws Exception {
 		this.emitter.initialize(this.handler);
 
 		ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
@@ -188,7 +187,7 @@ public class ResponseBodyEmitterTests {
 	}
 
 	@Test
-	public void onCompletionBeforeHandlerInitialized() throws Exception  {
+	public void onCompletionBeforeHandlerInitialized() throws Exception {
 		Runnable runnable = mock(Runnable.class);
 		this.emitter.onCompletion(runnable);
 		this.emitter.initialize(this.handler);
@@ -203,7 +202,7 @@ public class ResponseBodyEmitterTests {
 	}
 
 	@Test
-	public void onCompletionAfterHandlerInitialized() throws Exception  {
+	public void onCompletionAfterHandlerInitialized() throws Exception {
 		this.emitter.initialize(this.handler);
 
 		ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);

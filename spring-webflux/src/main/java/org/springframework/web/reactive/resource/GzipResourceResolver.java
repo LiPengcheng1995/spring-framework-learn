@@ -16,20 +16,19 @@
 
 package org.springframework.web.reactive.resource;
 
+import org.springframework.core.io.AbstractResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.lang.Nullable;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
-
-import reactor.core.publisher.Mono;
-
-import org.springframework.core.io.AbstractResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.lang.Nullable;
-import org.springframework.web.server.ServerWebExchange;
 
 /**
  * A {@code ResourceResolver} that delegates to the chain to locate a resource
@@ -45,7 +44,7 @@ public class GzipResourceResolver extends AbstractResourceResolver {
 
 	@Override
 	protected Mono<Resource> resolveResourceInternal(@Nullable ServerWebExchange exchange,
-			String requestPath, List<? extends Resource> locations, ResourceResolverChain chain) {
+													 String requestPath, List<? extends Resource> locations, ResourceResolverChain chain) {
 
 		return chain.resolveResource(exchange, requestPath, locations)
 				.map(resource -> {
@@ -55,8 +54,7 @@ public class GzipResourceResolver extends AbstractResourceResolver {
 							if (gzipped.exists()) {
 								resource = gzipped;
 							}
-						}
-						catch (IOException ex) {
+						} catch (IOException ex) {
 							logger.trace("No gzip resource for [" + resource.getFilename() + "]", ex);
 						}
 					}
@@ -71,7 +69,7 @@ public class GzipResourceResolver extends AbstractResourceResolver {
 
 	@Override
 	protected Mono<String> resolveUrlPathInternal(String resourceUrlPath,
-			List<? extends Resource> locations, ResourceResolverChain chain) {
+												  List<? extends Resource> locations, ResourceResolverChain chain) {
 
 		return chain.resolveUrlPath(resourceUrlPath, locations);
 	}

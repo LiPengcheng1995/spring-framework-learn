@@ -16,9 +16,9 @@
 
 package org.springframework.web.socket.sockjs.transport;
 
-import java.util.Map;
-
 import org.springframework.web.socket.WebSocketHandler;
+
+import java.util.Map;
 
 /**
  * A factory for creating a SockJS session. {@link TransportHandler}s typically also serve
@@ -31,8 +31,9 @@ public interface SockJsSessionFactory {
 
 	/**
 	 * Create a new SockJS session.
-	 * @param sessionId the ID of the session
-	 * @param handler the underlying {@link WebSocketHandler}
+	 *
+	 * @param sessionId  the ID of the session
+	 * @param handler    the underlying {@link WebSocketHandler}
 	 * @param attributes handshake request specific attributes
 	 * @return a new session, never {@code null}
 	 */

@@ -16,34 +16,42 @@
 
 package org.springframework.http.server.reactive;
 
-import java.net.URI;
-
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.server.reactive.bootstrap.ReactorHttpServer;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
+import reactor.core.publisher.Mono;
 
-import static org.junit.Assert.*;
-import static org.junit.Assume.*;
+import java.net.URI;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeFalse;
 
 /**
  * @author Arjen Poutsma
  */
 public class ErrorHandlerIntegrationTests extends AbstractHttpHandlerIntegrationTests {
 
-	private final ErrorHandler handler = new ErrorHandler();
+	private static final ResponseErrorHandler NO_OP_ERROR_HANDLER = new ResponseErrorHandler() {
 
+		@Override
+		public boolean hasError(ClientHttpResponse response) {
+			return false;
+		}
+
+		@Override
+		public void handleError(ClientHttpResponse response) {
+		}
+	};
+	private final ErrorHandler handler = new ErrorHandler();
 
 	@Override
 	protected HttpHandler createHttpHandler() {
 		return handler;
 	}
-
 
 	@Test
 	public void responseBodyError() throws Exception {
@@ -85,7 +93,6 @@ public class ErrorHandlerIntegrationTests extends AbstractHttpHandlerIntegration
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 	}
 
-
 	private static class ErrorHandler implements HttpHandler {
 
 		@Override
@@ -94,27 +101,12 @@ public class ErrorHandlerIntegrationTests extends AbstractHttpHandlerIntegration
 			String path = request.getURI().getPath();
 			if (path.endsWith("response-body-error")) {
 				return response.writeWith(Mono.error(error));
-			}
-			else if (path.endsWith("handling-error")) {
+			} else if (path.endsWith("handling-error")) {
 				return Mono.error(error);
-			}
-			else {
+			} else {
 				return Mono.empty();
 			}
 		}
 	}
-
-
-	private static final ResponseErrorHandler NO_OP_ERROR_HANDLER = new ResponseErrorHandler() {
-
-		@Override
-		public boolean hasError(ClientHttpResponse response) {
-			return false;
-		}
-
-		@Override
-		public void handleError(ClientHttpResponse response) {
-		}
-	};
 
 }

@@ -64,9 +64,17 @@ public class StubMvcResult implements MvcResult {
 		return request;
 	}
 
+	public void setRequest(MockHttpServletRequest request) {
+		this.request = request;
+	}
+
 	@Override
 	public Object getHandler() {
 		return handler;
+	}
+
+	public void setHandler(Object handler) {
+		this.handler = handler;
 	}
 
 	@Override
@@ -74,9 +82,17 @@ public class StubMvcResult implements MvcResult {
 		return interceptors;
 	}
 
+	public void setInterceptors(HandlerInterceptor[] interceptors) {
+		this.interceptors = interceptors;
+	}
+
 	@Override
 	public Exception getResolvedException() {
 		return resolvedException;
+	}
+
+	public void setResolvedException(Exception resolvedException) {
+		this.resolvedException = resolvedException;
 	}
 
 	@Override
@@ -89,9 +105,17 @@ public class StubMvcResult implements MvcResult {
 		return flashMap;
 	}
 
+	public void setFlashMap(FlashMap flashMap) {
+		this.flashMap = flashMap;
+	}
+
 	@Override
 	public MockHttpServletResponse getResponse() {
 		return response;
+	}
+
+	public void setResponse(MockHttpServletResponse response) {
+		this.response = response;
 	}
 
 	public ModelAndView getMav() {
@@ -100,30 +124,6 @@ public class StubMvcResult implements MvcResult {
 
 	public void setMav(ModelAndView mav) {
 		this.mav = mav;
-	}
-
-	public void setRequest(MockHttpServletRequest request) {
-		this.request = request;
-	}
-
-	public void setHandler(Object handler) {
-		this.handler = handler;
-	}
-
-	public void setInterceptors(HandlerInterceptor[] interceptors) {
-		this.interceptors = interceptors;
-	}
-
-	public void setResolvedException(Exception resolvedException) {
-		this.resolvedException = resolvedException;
-	}
-
-	public void setFlashMap(FlashMap flashMap) {
-		this.flashMap = flashMap;
-	}
-
-	public void setResponse(MockHttpServletResponse response) {
-		this.response = response;
 	}
 
 	@Override

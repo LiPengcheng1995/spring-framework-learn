@@ -16,25 +16,20 @@
 
 package org.springframework.web.reactive.function.client.support;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.OptionalLong;
-
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.client.reactive.ClientHttpResponse;
 import org.springframework.util.Assert;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyExtractor;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.OptionalLong;
 
 /**
  * Implementation of the {@link ClientResponse} interface that can be subclassed
@@ -52,6 +47,7 @@ public class ClientResponseWrapper implements ClientResponse {
 
 	/**
 	 * Create a new {@code ClientResponseWrapper} that wraps the given response.
+	 *
 	 * @param delegate the response to wrap
 	 */
 	public ClientResponseWrapper(ClientResponse delegate) {
@@ -134,9 +130,9 @@ public class ClientResponseWrapper implements ClientResponse {
 
 	/**
 	 * Implementation of the {@code Headers} interface that can be subclassed
-	  * to adapt the headers in a
-	  * {@link org.springframework.web.reactive.function.client.ExchangeFilterFunction exchange filter function}.
-	  * All methods default to calling through to the wrapped request.
+	 * to adapt the headers in a
+	 * {@link org.springframework.web.reactive.function.client.ExchangeFilterFunction exchange filter function}.
+	 * All methods default to calling through to the wrapped request.
 	 */
 	public static class HeadersWrapper implements ClientResponse.Headers {
 
@@ -145,6 +141,7 @@ public class ClientResponseWrapper implements ClientResponse {
 
 		/**
 		 * Create a new {@code HeadersWrapper} that wraps the given request.
+		 *
 		 * @param headers the headers to wrap
 		 */
 		public HeadersWrapper(Headers headers) {

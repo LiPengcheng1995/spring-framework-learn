@@ -16,10 +16,6 @@
 
 package org.springframework.messaging.handler.annotation.support;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.InitializingBean;
@@ -32,6 +28,10 @@ import org.springframework.messaging.handler.invocation.HandlerMethodArgumentRes
 import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolverComposite;
 import org.springframework.messaging.handler.invocation.InvocableHandlerMethod;
 import org.springframework.validation.Validator;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The default {@link MessageHandlerMethodFactory} implementation creating an
@@ -50,31 +50,27 @@ import org.springframework.validation.Validator;
  *
  * @author Stephane Nicoll
  * @author Juergen Hoeller
- * @since 4.1
  * @see #setConversionService
  * @see #setValidator
  * @see #setCustomArgumentResolvers
+ * @since 4.1
  */
 public class DefaultMessageHandlerMethodFactory
 		implements MessageHandlerMethodFactory, BeanFactoryAware, InitializingBean {
 
-	private ConversionService conversionService = new DefaultFormattingConversionService();
-
-	private MessageConverter messageConverter;
-
-	private Validator validator;
-
-	private List<HandlerMethodArgumentResolver> customArgumentResolvers;
-
 	private final HandlerMethodArgumentResolverComposite argumentResolvers =
 			new HandlerMethodArgumentResolverComposite();
-
+	private ConversionService conversionService = new DefaultFormattingConversionService();
+	private MessageConverter messageConverter;
+	private Validator validator;
+	private List<HandlerMethodArgumentResolver> customArgumentResolvers;
 	private BeanFactory beanFactory;
 
 
 	/**
 	 * Set the {@link ConversionService} to use to convert the original
 	 * message payload or headers.
+	 *
 	 * @see HeaderMethodArgumentResolver
 	 * @see GenericMessageConverter
 	 */
@@ -85,6 +81,7 @@ public class DefaultMessageHandlerMethodFactory
 	/**
 	 * Set the {@link MessageConverter} to use. By default a {@link GenericMessageConverter}
 	 * is used.
+	 *
 	 * @see GenericMessageConverter
 	 */
 	public void setMessageConverter(MessageConverter messageConverter) {
@@ -93,6 +90,7 @@ public class DefaultMessageHandlerMethodFactory
 
 	/**
 	 * Set the Validator instance used for validating @Payload arguments
+	 *
 	 * @see org.springframework.validation.annotation.Validated
 	 * @see org.springframework.messaging.handler.annotation.support.PayloadArgumentResolver
 	 */
@@ -103,6 +101,7 @@ public class DefaultMessageHandlerMethodFactory
 	/**
 	 * Set the list of custom {@code HandlerMethodArgumentResolver}s that will be used
 	 * after resolvers for supported argument type.
+	 *
 	 * @param customArgumentResolvers the list of resolvers (never {@code null})
 	 */
 	public void setCustomArgumentResolvers(List<HandlerMethodArgumentResolver> customArgumentResolvers) {

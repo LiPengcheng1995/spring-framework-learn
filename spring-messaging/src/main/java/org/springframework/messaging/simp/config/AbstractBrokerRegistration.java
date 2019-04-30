@@ -16,16 +16,16 @@
 
 package org.springframework.messaging.simp.config;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.messaging.simp.broker.AbstractBrokerMessageHandler;
 import org.springframework.util.Assert;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Base class for message broker registration classes.
@@ -43,7 +43,7 @@ public abstract class AbstractBrokerRegistration {
 
 
 	public AbstractBrokerRegistration(SubscribableChannel clientInboundChannel,
-			MessageChannel clientOutboundChannel, @Nullable String[] destinationPrefixes) {
+									  MessageChannel clientOutboundChannel, @Nullable String[] destinationPrefixes) {
 
 		Assert.notNull(clientOutboundChannel, "'clientInboundChannel' must not be null");
 		Assert.notNull(clientOutboundChannel, "'clientOutboundChannel' must not be null");

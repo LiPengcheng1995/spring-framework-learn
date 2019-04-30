@@ -16,16 +16,8 @@
 
 package org.springframework.web.reactive.socket.adapter;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-
 import io.undertow.websockets.WebSocketConnectionCallback;
-import io.undertow.websockets.core.AbstractReceiveListener;
-import io.undertow.websockets.core.BufferedBinaryMessage;
-import io.undertow.websockets.core.BufferedTextMessage;
-import io.undertow.websockets.core.CloseMessage;
-import io.undertow.websockets.core.WebSocketChannel;
-
+import io.undertow.websockets.core.*;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.util.Assert;
 import org.springframework.web.reactive.socket.CloseStatus;
@@ -33,10 +25,13 @@ import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.WebSocketMessage.Type;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+
 /**
  * Undertow {@link WebSocketConnectionCallback} implementation that adapts and
  * delegates to a Spring {@link WebSocketHandler}.
- * 
+ *
  * @author Violeta Georgieva
  * @author Rossen Stoyanchev
  * @since 5.0
@@ -85,16 +80,13 @@ public class UndertowWebSocketHandlerAdapter extends AbstractReceiveListener {
 		if (Type.TEXT.equals(type)) {
 			byte[] bytes = ((String) message).getBytes(StandardCharsets.UTF_8);
 			return new WebSocketMessage(Type.TEXT, session.bufferFactory().wrap(bytes));
-		}
-		else if (Type.BINARY.equals(type)) {
+		} else if (Type.BINARY.equals(type)) {
 			DataBuffer buffer = session.bufferFactory().allocateBuffer().write((ByteBuffer[]) message);
 			return new WebSocketMessage(Type.BINARY, buffer);
-		}
-		else if (Type.PONG.equals(type)) {
+		} else if (Type.PONG.equals(type)) {
 			DataBuffer buffer = session.bufferFactory().allocateBuffer().write((ByteBuffer[]) message);
 			return new WebSocketMessage(Type.PONG, buffer);
-		}
-		else {
+		} else {
 			throw new IllegalArgumentException("Unexpected message type: " + message);
 		}
 	}

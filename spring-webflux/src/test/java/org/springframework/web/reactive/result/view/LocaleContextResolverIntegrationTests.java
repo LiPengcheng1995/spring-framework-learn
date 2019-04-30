@@ -16,15 +16,7 @@
 
 package org.springframework.web.reactive.result.view;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
@@ -42,8 +34,15 @@ import org.springframework.web.reactive.result.method.annotation.AbstractRequest
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.i18n.FixedLocaleContextResolver;
 import org.springframework.web.server.i18n.LocaleContextResolver;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import static org.junit.Assert.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Sebastien Deleuze
@@ -107,7 +106,7 @@ public class LocaleContextResolverIntegrationTests extends AbstractRequestMappin
 
 			@Override
 			public Mono<Void> render(@Nullable Map<String, ?> model, @Nullable MediaType contentType,
-					ServerWebExchange exchange) {
+									 ServerWebExchange exchange) {
 				exchange.getResponse().getHeaders().setContentLanguage(locale);
 				return Mono.empty();
 			}

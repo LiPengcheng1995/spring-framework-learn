@@ -16,16 +16,12 @@
 
 package org.springframework.test.context.junit4.spr4868;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,7 +30,10 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-import static org.junit.Assert.*;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Integration tests that investigate the applicability of JSR-250 lifecycle
@@ -63,26 +62,13 @@ import static org.junit.Assert.*;
  * @since 3.2
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class })
+@TestExecutionListeners({DependencyInjectionTestExecutionListener.class})
 @ContextConfiguration
 public class Jsr250LifecycleTests {
 
 	private final Log logger = LogFactory.getLog(Jsr250LifecycleTests.class);
-
-
-	@Configuration
-	static class Config {
-
-		@Bean
-		public LifecycleBean lifecycleBean() {
-			return new LifecycleBean();
-		}
-	}
-
-
 	@Autowired
 	private LifecycleBean lifecycleBean;
-
 
 	@PostConstruct
 	public void beforeAllTests() {
@@ -114,6 +100,15 @@ public class Jsr250LifecycleTests {
 	public void test2() {
 		logger.info("test2()");
 		assertNotNull(lifecycleBean);
+	}
+
+	@Configuration
+	static class Config {
+
+		@Bean
+		public LifecycleBean lifecycleBean() {
+			return new LifecycleBean();
+		}
 	}
 
 }

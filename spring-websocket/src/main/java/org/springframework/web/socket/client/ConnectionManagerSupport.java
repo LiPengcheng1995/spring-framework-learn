@@ -16,13 +16,12 @@
 
 package org.springframework.web.socket.client;
 
-import java.net.URI;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.context.SmartLifecycle;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
 
 /**
  * A base class for WebSocket connection managers. Provides a declarative style of
@@ -39,14 +38,10 @@ public abstract class ConnectionManagerSupport implements SmartLifecycle {
 	protected final Log logger = LogFactory.getLog(getClass());
 
 	private final URI uri;
-
-	private boolean autoStartup = false;
-
-	private int phase = Integer.MAX_VALUE;
-
-	private volatile boolean running = false;
-
 	private final Object lifecycleMonitor = new Object();
+	private boolean autoStartup = false;
+	private int phase = Integer.MAX_VALUE;
+	private volatile boolean running = false;
 
 
 	public ConnectionManagerSupport(String uriTemplate, Object... uriVariables) {
@@ -60,6 +55,16 @@ public abstract class ConnectionManagerSupport implements SmartLifecycle {
 	}
 
 	/**
+	 * Return the value for the 'autoStartup' property. If "true", this endpoint
+	 * connection manager will connect to the remote endpoint upon a
+	 * ContextRefreshedEvent.
+	 */
+	@Override
+	public boolean isAutoStartup() {
+		return this.autoStartup;
+	}
+
+	/**
 	 * Set whether to auto-connect to the remote endpoint after this connection manager
 	 * has been initialized and the Spring context has been refreshed.
 	 * <p>Default is "false".
@@ -69,13 +74,12 @@ public abstract class ConnectionManagerSupport implements SmartLifecycle {
 	}
 
 	/**
-	 * Return the value for the 'autoStartup' property. If "true", this endpoint
-	 * connection manager will connect to the remote endpoint upon a
-	 * ContextRefreshedEvent.
+	 * Return the phase in which this endpoint connection factory will be auto-connected
+	 * and stopped.
 	 */
 	@Override
-	public boolean isAutoStartup() {
-		return this.autoStartup;
+	public int getPhase() {
+		return this.phase;
 	}
 
 	/**
@@ -88,16 +92,6 @@ public abstract class ConnectionManagerSupport implements SmartLifecycle {
 	public void setPhase(int phase) {
 		this.phase = phase;
 	}
-
-	/**
-	 * Return the phase in which this endpoint connection factory will be auto-connected
-	 * and stopped.
-	 */
-	@Override
-	public int getPhase() {
-		return this.phase;
-	}
-
 
 	/**
 	 * Start the WebSocket connection. If already connected, the method has no impact.
@@ -130,11 +124,9 @@ public abstract class ConnectionManagerSupport implements SmartLifecycle {
 				}
 				try {
 					stopInternal();
-				}
-				catch (Throwable ex) {
+				} catch (Throwable ex) {
 					logger.error("Failed to stop WebSocket connection", ex);
-				}
-				finally {
+				} finally {
 					this.running = false;
 				}
 			}

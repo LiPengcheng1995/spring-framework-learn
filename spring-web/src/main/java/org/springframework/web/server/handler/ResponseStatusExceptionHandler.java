@@ -18,14 +18,13 @@ package org.springframework.web.server.handler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import reactor.core.publisher.Mono;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.lang.Nullable;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebExceptionHandler;
+import reactor.core.publisher.Mono;
 
 /**
  * Handle {@link ResponseStatusException} by setting the response status.
@@ -45,11 +44,9 @@ public class ResponseStatusExceptionHandler implements WebExceptionHandler {
 		if (status != null && exchange.getResponse().setStatusCode(status)) {
 			if (status.is5xxServerError()) {
 				logger.error(buildMessage(exchange.getRequest(), ex));
-			}
-			else if (status == HttpStatus.BAD_REQUEST) {
+			} else if (status == HttpStatus.BAD_REQUEST) {
 				logger.warn(buildMessage(exchange.getRequest(), ex));
-			}
-			else {
+			} else {
 				logger.trace(buildMessage(exchange.getRequest(), ex));
 			}
 			return exchange.getResponse().setComplete();
@@ -75,6 +72,7 @@ public class ResponseStatusExceptionHandler implements WebExceptionHandler {
 
 	/**
 	 * Determine the HTTP status implied by the given exception.
+	 *
 	 * @param ex the exception to introspect
 	 * @return the associated HTTP status, if any
 	 * @since 5.0.5

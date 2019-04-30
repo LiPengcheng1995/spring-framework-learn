@@ -23,9 +23,9 @@ import org.springframework.lang.Nullable;
  * Only valid when used on a JavaBean getter or setter.
  *
  * @author Rob Harrop
- * @since 1.2
  * @see org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler
  * @see org.springframework.jmx.export.MBeanExporter
+ * @since 1.2
  */
 public class ManagedAttribute extends AbstractJmxAttribute {
 
@@ -40,14 +40,6 @@ public class ManagedAttribute extends AbstractJmxAttribute {
 
 	private int persistPeriod = -1;
 
-
-	/**
-	 * Set the default value of this attribute.
-	 */
-	public void setDefaultValue(@Nullable Object defaultValue) {
-		this.defaultValue = defaultValue;
-	}
-
 	/**
 	 * Return the default value of this attribute.
 	 */
@@ -56,8 +48,11 @@ public class ManagedAttribute extends AbstractJmxAttribute {
 		return this.defaultValue;
 	}
 
-	public void setPersistPolicy(@Nullable String persistPolicy) {
-		this.persistPolicy = persistPolicy;
+	/**
+	 * Set the default value of this attribute.
+	 */
+	public void setDefaultValue(@Nullable Object defaultValue) {
+		this.defaultValue = defaultValue;
 	}
 
 	@Nullable
@@ -65,12 +60,16 @@ public class ManagedAttribute extends AbstractJmxAttribute {
 		return this.persistPolicy;
 	}
 
-	public void setPersistPeriod(int persistPeriod) {
-		this.persistPeriod = persistPeriod;
+	public void setPersistPolicy(@Nullable String persistPolicy) {
+		this.persistPolicy = persistPolicy;
 	}
 
 	public int getPersistPeriod() {
 		return this.persistPeriod;
+	}
+
+	public void setPersistPeriod(int persistPeriod) {
+		this.persistPeriod = persistPeriod;
 	}
 
 }

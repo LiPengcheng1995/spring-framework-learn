@@ -16,9 +16,6 @@
 
 package org.springframework.web.context.support;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -32,6 +29,9 @@ import org.springframework.util.Assert;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.ServletConfigAware;
 import org.springframework.web.context.ServletContextAware;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 
 /**
  * Static {@link org.springframework.web.context.WebApplicationContext}
@@ -75,6 +75,11 @@ public class StaticWebApplicationContext extends StaticApplicationContext
 		setDisplayName("Root WebApplicationContext");
 	}
 
+	@Override
+	@Nullable
+	public ServletContext getServletContext() {
+		return this.servletContext;
+	}
 
 	/**
 	 * Set the ServletContext that this WebApplicationContext runs in.
@@ -86,8 +91,8 @@ public class StaticWebApplicationContext extends StaticApplicationContext
 
 	@Override
 	@Nullable
-	public ServletContext getServletContext() {
-		return this.servletContext;
+	public ServletConfig getServletConfig() {
+		return this.servletConfig;
 	}
 
 	@Override
@@ -100,8 +105,8 @@ public class StaticWebApplicationContext extends StaticApplicationContext
 
 	@Override
 	@Nullable
-	public ServletConfig getServletConfig() {
-		return this.servletConfig;
+	public String getNamespace() {
+		return this.namespace;
 	}
 
 	@Override
@@ -112,27 +117,13 @@ public class StaticWebApplicationContext extends StaticApplicationContext
 		}
 	}
 
-	@Override
-	@Nullable
-	public String getNamespace() {
-		return this.namespace;
-	}
-
 	/**
 	 * The {@link StaticWebApplicationContext} class does not support this method.
+	 *
 	 * @throws UnsupportedOperationException <b>always</b>
 	 */
 	@Override
 	public void setConfigLocation(String configLocation) {
-		throw new UnsupportedOperationException("StaticWebApplicationContext does not support config locations");
-	}
-
-	/**
-	 * The {@link StaticWebApplicationContext} class does not support this method.
-	 * @throws UnsupportedOperationException <b>always</b>
-	 */
-	@Override
-	public void setConfigLocations(String... configLocations) {
 		throw new UnsupportedOperationException("StaticWebApplicationContext does not support config locations");
 	}
 
@@ -141,6 +132,15 @@ public class StaticWebApplicationContext extends StaticApplicationContext
 		return null;
 	}
 
+	/**
+	 * The {@link StaticWebApplicationContext} class does not support this method.
+	 *
+	 * @throws UnsupportedOperationException <b>always</b>
+	 */
+	@Override
+	public void setConfigLocations(String... configLocations) {
+		throw new UnsupportedOperationException("StaticWebApplicationContext does not support config locations");
+	}
 
 	/**
 	 * Register request/session scopes, a {@link ServletContextAwareProcessor}, etc.
@@ -157,6 +157,7 @@ public class StaticWebApplicationContext extends StaticApplicationContext
 
 	/**
 	 * This implementation supports file paths beneath the root of the ServletContext.
+	 *
 	 * @see ServletContextResource
 	 */
 	@Override
@@ -167,6 +168,7 @@ public class StaticWebApplicationContext extends StaticApplicationContext
 
 	/**
 	 * This implementation supports pattern matching in unexpanded WARs too.
+	 *
 	 * @see ServletContextResourcePatternResolver
 	 */
 	@Override

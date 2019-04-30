@@ -16,17 +16,10 @@
 
 package org.springframework.test.web.servlet.samples.spr;
 
-import java.io.IOException;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -50,9 +43,13 @@ import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import java.io.IOException;
+
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -103,6 +100,35 @@ public class RequestContextHolderTests {
 
 	private MockMvc mockMvc;
 
+	private static void assertRequestAttributes() {
+		assertRequestAttributes(true);
+	}
+
+	private static void assertRequestAttributes(boolean withinMockMvc) {
+		RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+		assertThat(requestAttributes, instanceOf(ServletRequestAttributes.class));
+		assertRequestAttributes(((ServletRequestAttributes) requestAttributes).getRequest(), withinMockMvc);
+	}
+
+	private static void assertRequestAttributes(ServletRequest request) {
+		assertRequestAttributes(request, true);
+	}
+
+	private static void assertRequestAttributes(ServletRequest request, boolean withinMockMvc) {
+		if (withinMockMvc) {
+			assertThat(request.getAttribute(FROM_TCF_MOCK), is(nullValue()));
+			assertThat(request.getAttribute(FROM_MVC_TEST_DEFAULT), is(FROM_MVC_TEST_DEFAULT));
+			assertThat(request.getAttribute(FROM_MVC_TEST_MOCK), is(FROM_MVC_TEST_MOCK));
+			assertThat(request.getAttribute(FROM_REQUEST_FILTER), is(FROM_REQUEST_FILTER));
+			assertThat(request.getAttribute(FROM_REQUEST_ATTRIBUTES_FILTER), is(FROM_REQUEST_ATTRIBUTES_FILTER));
+		} else {
+			assertThat(request.getAttribute(FROM_TCF_MOCK), is(FROM_TCF_MOCK));
+			assertThat(request.getAttribute(FROM_MVC_TEST_DEFAULT), is(nullValue()));
+			assertThat(request.getAttribute(FROM_MVC_TEST_MOCK), is(nullValue()));
+			assertThat(request.getAttribute(FROM_REQUEST_FILTER), is(nullValue()));
+			assertThat(request.getAttribute(FROM_REQUEST_ATTRIBUTES_FILTER), is(nullValue()));
+		}
+	}
 
 	@Before
 	public void setup() {
@@ -119,6 +145,9 @@ public class RequestContextHolderTests {
 	public void singletonController() throws Exception {
 		this.mockMvc.perform(get("/singletonController").requestAttr(FROM_MVC_TEST_MOCK, FROM_MVC_TEST_MOCK));
 	}
+
+
+	// -------------------------------------------------------------------
 
 	@Test
 	public void requestScopedController() throws Exception {
@@ -142,9 +171,6 @@ public class RequestContextHolderTests {
 	public void verifyRestoredRequestAttributes() {
 		assertRequestAttributes(false);
 	}
-
-
-	// -------------------------------------------------------------------
 
 	@Configuration
 	@EnableWebMvc
@@ -293,38 +319,6 @@ public class RequestContextHolderTests {
 		public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 			RequestContextHolder.getRequestAttributes().setAttribute(FROM_REQUEST_ATTRIBUTES_FILTER, FROM_REQUEST_ATTRIBUTES_FILTER, RequestAttributes.SCOPE_REQUEST);
 			chain.doFilter(request, response);
-		}
-	}
-
-
-	private static void assertRequestAttributes() {
-		assertRequestAttributes(true);
-	}
-
-	private static void assertRequestAttributes(boolean withinMockMvc) {
-		RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-		assertThat(requestAttributes, instanceOf(ServletRequestAttributes.class));
-		assertRequestAttributes(((ServletRequestAttributes) requestAttributes).getRequest(), withinMockMvc);
-	}
-
-	private static void assertRequestAttributes(ServletRequest request) {
-		assertRequestAttributes(request, true);
-	}
-
-	private static void assertRequestAttributes(ServletRequest request, boolean withinMockMvc) {
-		if (withinMockMvc) {
-			assertThat(request.getAttribute(FROM_TCF_MOCK), is(nullValue()));
-			assertThat(request.getAttribute(FROM_MVC_TEST_DEFAULT), is(FROM_MVC_TEST_DEFAULT));
-			assertThat(request.getAttribute(FROM_MVC_TEST_MOCK), is(FROM_MVC_TEST_MOCK));
-			assertThat(request.getAttribute(FROM_REQUEST_FILTER), is(FROM_REQUEST_FILTER));
-			assertThat(request.getAttribute(FROM_REQUEST_ATTRIBUTES_FILTER), is(FROM_REQUEST_ATTRIBUTES_FILTER));
-		}
-		else {
-			assertThat(request.getAttribute(FROM_TCF_MOCK), is(FROM_TCF_MOCK));
-			assertThat(request.getAttribute(FROM_MVC_TEST_DEFAULT), is(nullValue()));
-			assertThat(request.getAttribute(FROM_MVC_TEST_MOCK), is(nullValue()));
-			assertThat(request.getAttribute(FROM_REQUEST_FILTER), is(nullValue()));
-			assertThat(request.getAttribute(FROM_REQUEST_ATTRIBUTES_FILTER), is(nullValue()));
 		}
 	}
 

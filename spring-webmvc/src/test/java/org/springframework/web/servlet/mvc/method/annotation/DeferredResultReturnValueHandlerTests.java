@@ -16,11 +16,8 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.util.concurrent.CompletableFuture;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.mock.web.test.MockHttpServletResponse;
@@ -34,8 +31,10 @@ import org.springframework.web.context.request.async.StandardServletAsyncWebRequ
 import org.springframework.web.context.request.async.WebAsyncUtils;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import java.util.concurrent.CompletableFuture;
+
 import static org.junit.Assert.*;
-import static org.springframework.web.method.ResolvableMethod.*;
+import static org.springframework.web.method.ResolvableMethod.on;
 
 /**
  * Unit tests for {@link DeferredResultMethodReturnValueHandler}.
@@ -122,7 +121,7 @@ public class DeferredResultReturnValueHandlerTests {
 
 
 	private void testHandle(Object returnValue, Class<?> asyncType,
-			Runnable setResultTask, Object expectedValue) throws Exception {
+							Runnable setResultTask, Object expectedValue) throws Exception {
 
 		ModelAndViewContainer mavContainer = new ModelAndViewContainer();
 		MethodParameter returnType = on(TestController.class).resolveReturnType(asyncType, String.class);
@@ -141,13 +140,21 @@ public class DeferredResultReturnValueHandlerTests {
 	@SuppressWarnings("unused")
 	static class TestController {
 
-		String handleString() { return null; }
+		String handleString() {
+			return null;
+		}
 
-		DeferredResult<String> handleDeferredResult() { return null; }
+		DeferredResult<String> handleDeferredResult() {
+			return null;
+		}
 
-		ListenableFuture<String> handleListenableFuture() { return null; }
+		ListenableFuture<String> handleListenableFuture() {
+			return null;
+		}
 
-		CompletableFuture<String> handleCompletableFuture() { return null; }
+		CompletableFuture<String> handleCompletableFuture() {
+			return null;
+		}
 	}
 
 }

@@ -16,13 +16,6 @@
 
 package org.springframework.jmx.export.annotation;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Collection;
-import java.util.Set;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.annotation.AnnotationBeanUtils;
 import org.springframework.beans.factory.BeanFactory;
@@ -35,6 +28,13 @@ import org.springframework.jmx.export.metadata.JmxAttributeSource;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringValueResolver;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Collection;
+import java.util.Set;
+
 /**
  * Implementation of the {@code JmxAttributeSource} interface that
  * reads annotations and exposes the corresponding attributes.
@@ -43,16 +43,35 @@ import org.springframework.util.StringValueResolver;
  * @author Juergen Hoeller
  * @author Jennifer Hickey
  * @author Stephane Nicoll
- * @since 1.2
  * @see ManagedResource
  * @see ManagedAttribute
  * @see ManagedOperation
+ * @since 1.2
  */
 public class AnnotationJmxAttributeSource implements JmxAttributeSource, BeanFactoryAware {
 
 	@Nullable
 	private StringValueResolver embeddedValueResolver;
 
+	@SuppressWarnings("unchecked")
+	private static <T> T[] copyPropertiesToBeanArray(Collection<? extends Annotation> anns, Class<T> beanClass) {
+		T[] beans = (T[]) Array.newInstance(beanClass, anns.size());
+		int i = 0;
+		for (Annotation ann : anns) {
+			beans[i++] = copyPropertiesToBean(ann, beanClass);
+		}
+		return beans;
+	}
+
+	@Nullable
+	private static <T> T copyPropertiesToBean(@Nullable Annotation ann, Class<T> beanClass) {
+		if (ann == null) {
+			return null;
+		}
+		T bean = BeanUtils.instantiateClass(beanClass);
+		AnnotationBeanUtils.copyPropertiesToBean(ann, bean);
+		return bean;
+	}
 
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) {
@@ -60,7 +79,6 @@ public class AnnotationJmxAttributeSource implements JmxAttributeSource, BeanFac
 			this.embeddedValueResolver = new EmbeddedValueResolver((ConfigurableBeanFactory) beanFactory);
 		}
 	}
-
 
 	@Override
 	@Nullable
@@ -124,27 +142,6 @@ public class AnnotationJmxAttributeSource implements JmxAttributeSource, BeanFac
 		Set<ManagedNotification> anns = AnnotationUtils.getRepeatableAnnotations(
 				clazz, ManagedNotification.class, ManagedNotifications.class);
 		return copyPropertiesToBeanArray(anns, org.springframework.jmx.export.metadata.ManagedNotification.class);
-	}
-
-
-	@SuppressWarnings("unchecked")
-	private static <T> T[] copyPropertiesToBeanArray(Collection<? extends Annotation> anns, Class<T> beanClass) {
-		T[] beans = (T[]) Array.newInstance(beanClass, anns.size());
-		int i = 0;
-		for (Annotation ann : anns) {
-			beans[i++] = copyPropertiesToBean(ann, beanClass);
-		}
-		return beans;
-	}
-
-	@Nullable
-	private static <T> T copyPropertiesToBean(@Nullable Annotation ann, Class<T> beanClass) {
-		if (ann == null) {
-			return null;
-		}
-		T bean = BeanUtils.instantiateClass(beanClass);
-		AnnotationBeanUtils.copyPropertiesToBean(ann, bean);
-		return bean;
 	}
 
 }

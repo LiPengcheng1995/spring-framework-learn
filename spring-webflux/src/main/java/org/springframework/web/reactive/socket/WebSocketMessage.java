@@ -15,13 +15,13 @@
  */
 package org.springframework.web.reactive.socket;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Representation of a WebSocket message.
@@ -79,6 +79,7 @@ public class WebSocketMessage {
 	 * A shortcut for decoding the raw content of the message to text with the
 	 * given character encoding. This is useful for text WebSocket messages, or
 	 * otherwise when the payload is expected to contain text.
+	 *
 	 * @param charset the character encoding
 	 * @since 5.0.5
 	 */
@@ -95,6 +96,7 @@ public class WebSocketMessage {
 	 * DataBuffer payload = message.getPayload();
 	 * DataBufferUtils.retain(payload);
 	 * </pre>
+	 *
 	 * @see DataBufferUtils#retain(DataBuffer)
 	 */
 	public WebSocketMessage retain() {
@@ -109,6 +111,7 @@ public class WebSocketMessage {
 	 * DataBuffer payload = message.getPayload();
 	 * DataBufferUtils.release(payload);
 	 * </pre>
+	 *
 	 * @see DataBufferUtils#release(DataBuffer)
 	 */
 	public void release() {
@@ -138,6 +141,6 @@ public class WebSocketMessage {
 	/**
 	 * WebSocket message types.
 	 */
-	public enum Type { TEXT, BINARY, PING, PONG }
+	public enum Type {TEXT, BINARY, PING, PONG}
 
 }

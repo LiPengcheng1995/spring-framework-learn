@@ -17,7 +17,6 @@
 package org.springframework.web.servlet.mvc.method.annotation;
 
 import com.fasterxml.jackson.annotation.JsonView;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -40,9 +39,9 @@ import org.springframework.util.Assert;
  * exactly one class argument. Consider the use of a composite interface.
  *
  * @author Rossen Stoyanchev
- * @since 4.1
  * @see com.fasterxml.jackson.annotation.JsonView
  * @see com.fasterxml.jackson.databind.ObjectMapper#writerWithView(Class)
+ * @since 4.1
  */
 public class JsonViewResponseBodyAdvice extends AbstractMappingJacksonResponseBodyAdvice {
 
@@ -53,7 +52,7 @@ public class JsonViewResponseBodyAdvice extends AbstractMappingJacksonResponseBo
 
 	@Override
 	protected void beforeBodyWriteInternal(MappingJacksonValue bodyContainer, MediaType contentType,
-			MethodParameter returnType, ServerHttpRequest request, ServerHttpResponse response) {
+										   MethodParameter returnType, ServerHttpRequest request, ServerHttpResponse response) {
 
 		JsonView ann = returnType.getMethodAnnotation(JsonView.class);
 		Assert.state(ann != null, "No JsonView annotation");

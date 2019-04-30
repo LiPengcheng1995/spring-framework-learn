@@ -16,15 +16,15 @@
 
 package org.springframework.web.socket.server.standard;
 
-import javax.servlet.ServletContext;
-import javax.websocket.WebSocketContainer;
-import javax.websocket.server.ServerContainer;
-
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.web.context.ServletContextAware;
+
+import javax.servlet.ServletContext;
+import javax.websocket.WebSocketContainer;
+import javax.websocket.server.ServerContainer;
 
 /**
  * A {@link FactoryBean} for configuring {@link javax.websocket.server.ServerContainer}.
@@ -65,18 +65,13 @@ public class ServletServerContainerFactoryBean
 	@Nullable
 	private ServerContainer serverContainer;
 
-
-	public void setAsyncSendTimeout(Long timeoutInMillis) {
-		this.asyncSendTimeout = timeoutInMillis;
-	}
-
 	@Nullable
 	public Long getAsyncSendTimeout() {
 		return this.asyncSendTimeout;
 	}
 
-	public void setMaxSessionIdleTimeout(Long timeoutInMillis) {
-		this.maxSessionIdleTimeout = timeoutInMillis;
+	public void setAsyncSendTimeout(Long timeoutInMillis) {
+		this.asyncSendTimeout = timeoutInMillis;
 	}
 
 	@Nullable
@@ -84,8 +79,8 @@ public class ServletServerContainerFactoryBean
 		return this.maxSessionIdleTimeout;
 	}
 
-	public void setMaxTextMessageBufferSize(Integer bufferSize) {
-		this.maxTextMessageBufferSize = bufferSize;
+	public void setMaxSessionIdleTimeout(Long timeoutInMillis) {
+		this.maxSessionIdleTimeout = timeoutInMillis;
 	}
 
 	@Nullable
@@ -93,13 +88,17 @@ public class ServletServerContainerFactoryBean
 		return this.maxTextMessageBufferSize;
 	}
 
-	public void setMaxBinaryMessageBufferSize(Integer bufferSize) {
-		this.maxBinaryMessageBufferSize = bufferSize;
+	public void setMaxTextMessageBufferSize(Integer bufferSize) {
+		this.maxTextMessageBufferSize = bufferSize;
 	}
 
 	@Nullable
 	public Integer getMaxBinaryMessageBufferSize() {
 		return this.maxBinaryMessageBufferSize;
+	}
+
+	public void setMaxBinaryMessageBufferSize(Integer bufferSize) {
+		this.maxBinaryMessageBufferSize = bufferSize;
 	}
 
 	@Override

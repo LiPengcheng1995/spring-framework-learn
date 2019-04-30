@@ -16,20 +16,19 @@
 
 package org.springframework.http.server.reactive;
 
-import java.net.URISyntaxException;
-import java.util.function.BiFunction;
-
 import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.core.io.buffer.NettyDataBufferFactory;
+import org.springframework.http.HttpMethod;
+import org.springframework.util.Assert;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.http.server.HttpServerRequest;
 import reactor.ipc.netty.http.server.HttpServerResponse;
 
-import org.springframework.core.io.buffer.NettyDataBufferFactory;
-import org.springframework.http.HttpMethod;
-import org.springframework.util.Assert;
+import java.net.URISyntaxException;
+import java.util.function.BiFunction;
 
 /**
  * Adapt {@link HttpHandler} to the Reactor Netty channel handling function.
@@ -63,8 +62,7 @@ public class ReactorHttpHandlerAdapter implements BiFunction<HttpServerRequest, 
 		try {
 			adaptedRequest = new ReactorServerHttpRequest(request, BUFFER_FACTORY);
 			adaptedResponse = new ReactorServerHttpResponse(response, BUFFER_FACTORY);
-		}
-		catch (URISyntaxException ex) {
+		} catch (URISyntaxException ex) {
 			if (logger.isWarnEnabled()) {
 				logger.warn("Invalid URL for incoming request: " + ex.getMessage());
 			}

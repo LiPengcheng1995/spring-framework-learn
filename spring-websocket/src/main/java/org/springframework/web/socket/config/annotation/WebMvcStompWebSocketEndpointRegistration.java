@@ -16,17 +16,9 @@
 
 package org.springframework.web.socket.config.annotation;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.util.Assert;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
+import org.springframework.util.*;
 import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeHandler;
@@ -36,6 +28,10 @@ import org.springframework.web.socket.server.support.WebSocketHttpRequestHandler
 import org.springframework.web.socket.sockjs.SockJsService;
 import org.springframework.web.socket.sockjs.support.SockJsHttpRequestHandler;
 import org.springframework.web.socket.sockjs.transport.handler.WebSocketTransportHandler;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * An abstract base class for configuring STOMP over WebSocket/SockJS endpoints.
@@ -50,14 +46,10 @@ public class WebMvcStompWebSocketEndpointRegistration implements StompWebSocketE
 	private final WebSocketHandler webSocketHandler;
 
 	private final TaskScheduler sockJsTaskScheduler;
-
+	private final List<HandshakeInterceptor> interceptors = new ArrayList<>();
+	private final List<String> allowedOrigins = new ArrayList<>();
 	@Nullable
 	private HandshakeHandler handshakeHandler;
-
-	private final List<HandshakeInterceptor> interceptors = new ArrayList<>();
-
-	private final List<String> allowedOrigins = new ArrayList<>();
-
 	@Nullable
 	private SockJsServiceRegistration registration;
 
@@ -131,14 +123,12 @@ public class WebMvcStompWebSocketEndpointRegistration implements StompWebSocketE
 				SockJsHttpRequestHandler handler = new SockJsHttpRequestHandler(sockJsService, this.webSocketHandler);
 				mappings.add(handler, pattern);
 			}
-		}
-		else {
+		} else {
 			for (String path : this.paths) {
 				WebSocketHttpRequestHandler handler;
 				if (this.handshakeHandler != null) {
 					handler = new WebSocketHttpRequestHandler(this.webSocketHandler, this.handshakeHandler);
-				}
-				else {
+				} else {
 					handler = new WebSocketHttpRequestHandler(this.webSocketHandler);
 				}
 				HandshakeInterceptor[] interceptors = getInterceptors();

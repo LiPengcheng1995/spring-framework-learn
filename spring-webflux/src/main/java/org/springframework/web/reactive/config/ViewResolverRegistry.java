@@ -16,10 +16,6 @@
 
 package org.springframework.web.reactive.config;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.context.ApplicationContext;
@@ -34,6 +30,10 @@ import org.springframework.web.reactive.result.view.freemarker.FreeMarkerConfigu
 import org.springframework.web.reactive.result.view.freemarker.FreeMarkerViewResolver;
 import org.springframework.web.reactive.result.view.script.ScriptTemplateConfigurer;
 import org.springframework.web.reactive.result.view.script.ScriptTemplateViewResolver;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Assist with the configuration of a chain of {@link ViewResolver}'s supporting
@@ -90,6 +90,7 @@ public class ViewResolverRegistry {
 	 * Register a script template view resolver with an empty default view name prefix and suffix.
 	 * <p><strong>Note</strong> that you must also configure script templating by
 	 * adding a {@link ScriptTemplateConfigurer} bean.
+	 *
 	 * @since 5.0.4
 	 */
 	public UrlBasedViewResolverRegistration scriptTemplate() {

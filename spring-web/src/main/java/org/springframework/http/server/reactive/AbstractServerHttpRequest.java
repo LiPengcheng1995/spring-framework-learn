@@ -16,15 +16,8 @@
 
 package org.springframework.http.server.reactive;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URLDecoder;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.RequestPath;
@@ -33,6 +26,12 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLDecoder;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Common base class for {@link ServerHttpRequest} implementations.
@@ -65,9 +64,10 @@ public abstract class AbstractServerHttpRequest implements ServerHttpRequest {
 
 	/**
 	 * Constructor with the URI and headers for the request.
-	 * @param uri the URI for the request
+	 *
+	 * @param uri         the URI for the request
 	 * @param contextPath the context path for the request
-	 * @param headers the headers for the request
+	 * @param headers     the headers for the request
 	 */
 	public AbstractServerHttpRequest(URI uri, @Nullable String contextPath, HttpHeaders headers) {
 		this.uri = uri;
@@ -126,8 +126,7 @@ public abstract class AbstractServerHttpRequest implements ServerHttpRequest {
 	private String decodeQueryParam(String value) {
 		try {
 			return URLDecoder.decode(value, "UTF-8");
-		}
-		catch (UnsupportedEncodingException ex) {
+		} catch (UnsupportedEncodingException ex) {
 			if (logger.isWarnEnabled()) {
 				logger.warn("Could not decode query param [" + value + "] as 'UTF-8'. " +
 						"Falling back on default encoding; exception message: " + ex.getMessage());
@@ -166,6 +165,7 @@ public abstract class AbstractServerHttpRequest implements ServerHttpRequest {
 
 	/**
 	 * Obtain SSL session information from the underlying "native" request.
+	 *
 	 * @return the session information, or {@code null} if none available
 	 * @since 5.0.2
 	 */

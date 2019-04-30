@@ -15,12 +15,8 @@
  */
 package org.springframework.test.web.reactive.server.samples;
 
-import java.security.Principal;
-
 import org.junit.Before;
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-
 import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.lang.Nullable;
 import org.springframework.test.web.reactive.server.MockServerConfigurer;
@@ -33,15 +29,22 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
+import reactor.core.publisher.Mono;
+
+import java.security.Principal;
 
 /**
  * Samples tests that demonstrate applying ServerWebExchange initialization.
+ *
  * @author Rossen Stoyanchev
  */
 public class ExchangeMutatorTests {
 
 	private WebTestClient webTestClient;
 
+	private static IdentityConfigurer identity(String userName) {
+		return new IdentityConfigurer(userName);
+	}
 
 	@Before
 	public void setUp() throws Exception {
@@ -69,12 +72,6 @@ public class ExchangeMutatorTests {
 				.expectStatus().isOk()
 				.expectBody(String.class).isEqualTo("Hello Giovanni!");
 	}
-
-
-	private static IdentityConfigurer identity(String userName) {
-		return new IdentityConfigurer(userName);
-	}
-
 
 	@RestController
 	static class TestController {
@@ -115,8 +112,8 @@ public class ExchangeMutatorTests {
 
 		@Override
 		public void afterConfigurerAdded(WebTestClient.Builder builder,
-				@Nullable WebHttpHandlerBuilder httpHandlerBuilder,
-				@Nullable ClientHttpConnector connector) {
+										 @Nullable WebHttpHandlerBuilder httpHandlerBuilder,
+										 @Nullable ClientHttpConnector connector) {
 
 			Assert.notNull(httpHandlerBuilder, "Not a mock server");
 			httpHandlerBuilder.filters(filters -> {

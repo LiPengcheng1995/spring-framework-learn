@@ -16,17 +16,8 @@
 
 package org.springframework.cache.jcache.interceptor;
 
-import java.lang.reflect.Method;
-import java.util.Comparator;
-import javax.cache.annotation.CacheDefaults;
-import javax.cache.annotation.CacheKeyGenerator;
-import javax.cache.annotation.CacheRemove;
-import javax.cache.annotation.CacheRemoveAll;
-import javax.cache.annotation.CacheResult;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.cache.interceptor.CacheResolver;
 import org.springframework.cache.interceptor.KeyGenerator;
@@ -37,8 +28,13 @@ import org.springframework.cache.jcache.support.TestableCacheResolverFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
+import javax.cache.annotation.*;
+import java.lang.reflect.Method;
+import java.util.Comparator;
+
 import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
 
 /**
  * @author Stephane Nicoll
@@ -206,12 +202,11 @@ public class AnnotationCacheOperationSourceTests extends AbstractJCacheTests {
 	}
 
 	private void assertJCacheResolver(CacheResolver actual,
-			Class<? extends javax.cache.annotation.CacheResolver> expectedTargetType) {
+									  Class<? extends javax.cache.annotation.CacheResolver> expectedTargetType) {
 
 		if (expectedTargetType == null) {
 			assertNull(actual);
-		}
-		else {
+		} else {
 			assertEquals("Wrong cache resolver implementation", CacheResolverAdapter.class, actual.getClass());
 			CacheResolverAdapter adapter = (CacheResolverAdapter) actual;
 			assertEquals("Wrong target JCache implementation", expectedTargetType, adapter.getTarget().getClass());
@@ -219,7 +214,7 @@ public class AnnotationCacheOperationSourceTests extends AbstractJCacheTests {
 	}
 
 	private void assertCacheKeyGenerator(KeyGenerator actual,
-			Class<? extends CacheKeyGenerator> expectedTargetType) {
+										 Class<? extends CacheKeyGenerator> expectedTargetType) {
 		assertEquals("Wrong cache resolver implementation", KeyGeneratorAdapter.class, actual.getClass());
 		KeyGeneratorAdapter adapter = (KeyGeneratorAdapter) actual;
 		assertEquals("Wrong target CacheKeyGenerator implementation", expectedTargetType, adapter.getTarget().getClass());

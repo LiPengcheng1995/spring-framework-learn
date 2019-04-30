@@ -16,24 +16,13 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.List;
-import javax.servlet.ServletException;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.core.MethodParameter;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -60,6 +49,12 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver;
+
+import javax.servlet.ServletException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -197,9 +192,9 @@ public class ResponseEntityExceptionHandlerTests {
 	@Test
 	public void noHandlerFoundException() {
 		ServletServerHttpRequest req = new ServletServerHttpRequest(
-				new MockHttpServletRequest("GET","/resource"));
+				new MockHttpServletRequest("GET", "/resource"));
 		Exception ex = new NoHandlerFoundException(req.getMethod().toString(),
-				req.getServletRequest().getRequestURI(),req.getHeaders());
+				req.getServletRequest().getRequestURI(), req.getHeaders());
 		testException(ex);
 	}
 
@@ -267,8 +262,7 @@ public class ResponseEntityExceptionHandlerTests {
 		servlet.init(new MockServletConfig());
 		try {
 			servlet.service(this.servletRequest, this.servletResponse);
-		}
-		catch (ServletException ex) {
+		} catch (ServletException ex) {
 			assertTrue(ex.getCause() instanceof IllegalStateException);
 			assertTrue(ex.getCause().getCause() instanceof ServletRequestBindingException);
 		}
@@ -289,12 +283,14 @@ public class ResponseEntityExceptionHandlerTests {
 			assertEquals(this.servletResponse.getStatus(), responseEntity.getStatusCode().value());
 
 			return responseEntity;
-		}
-		catch (Exception ex2) {
+		} catch (Exception ex2) {
 			throw new IllegalStateException("handleException threw exception", ex2);
 		}
 	}
 
+	@SuppressWarnings("unused")
+	void handle(String arg) {
+	}
 
 	@Controller
 	private static class ExceptionThrowingController {
@@ -305,7 +301,6 @@ public class ResponseEntityExceptionHandlerTests {
 		}
 	}
 
-
 	@Controller
 	private static class NestedExceptionThrowingController {
 
@@ -314,7 +309,6 @@ public class ResponseEntityExceptionHandlerTests {
 			throw new IllegalStateException(new ServletRequestBindingException("message"));
 		}
 	}
-
 
 	@ControllerAdvice
 	private static class ApplicationExceptionHandler extends ResponseEntityExceptionHandler {
@@ -326,11 +320,6 @@ public class ResponseEntityExceptionHandlerTests {
 			headers.set("someHeader", "someHeaderValue");
 			return handleExceptionInternal(ex, "error content", headers, status, request);
 		}
-	}
-
-
-	@SuppressWarnings("unused")
-	void handle(String arg) {
 	}
 
 }

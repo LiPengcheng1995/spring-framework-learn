@@ -55,6 +55,14 @@ public class MethodArgumentNotValidException extends MethodArgumentResolutionExc
 		this.bindingResult = bindingResult;
 	}
 
+	private static String getValidationErrorMessage(BindingResult bindingResult) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(bindingResult.getErrorCount()).append(" error(s): ");
+		for (ObjectError error : bindingResult.getAllErrors()) {
+			sb.append("[").append(error).append("] ");
+		}
+		return sb.toString();
+	}
 
 	/**
 	 * Return the BindingResult if the failure is validation-related,
@@ -63,16 +71,6 @@ public class MethodArgumentNotValidException extends MethodArgumentResolutionExc
 	@Nullable
 	public final BindingResult getBindingResult() {
 		return this.bindingResult;
-	}
-
-
-	private static String getValidationErrorMessage(BindingResult bindingResult) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(bindingResult.getErrorCount()).append(" error(s): ");
-		for (ObjectError error : bindingResult.getAllErrors()) {
-			sb.append("[").append(error).append("] ");
-		}
-		return sb.toString();
 	}
 
 }

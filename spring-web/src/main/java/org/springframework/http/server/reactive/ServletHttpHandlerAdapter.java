@@ -16,34 +16,24 @@
 
 package org.springframework.http.server.reactive;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.Collection;
-import java.util.concurrent.atomic.AtomicBoolean;
-import javax.servlet.AsyncContext;
-import javax.servlet.AsyncEvent;
-import javax.servlet.AsyncListener;
-import javax.servlet.DispatcherType;
-import javax.servlet.Servlet;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
-
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Collection;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Adapt {@link HttpHandler} to an {@link HttpServlet} using Servlet Async
@@ -51,8 +41,8 @@ import org.springframework.util.Assert;
  *
  * @author Arjen Poutsma
  * @author Rossen Stoyanchev
- * @since 5.0
  * @see org.springframework.web.server.adapter.AbstractReactiveWebInitializer
+ * @since 5.0
  */
 @SuppressWarnings("serial")
 public class ServletHttpHandlerAdapter implements Servlet {
@@ -79,6 +69,27 @@ public class ServletHttpHandlerAdapter implements Servlet {
 		this.httpHandler = httpHandler;
 	}
 
+	/**
+	 * We cannot combine ERROR_LISTENER and HandlerResultSubscriber due to:
+	 * https://issues.jboss.org/browse/WFLY-8515
+	 */
+	private static void runIfAsyncNotComplete(AsyncContext asyncContext, AtomicBoolean isCompleted, Runnable task) {
+		try {
+			if (asyncContext.getRequest().isAsyncStarted() && isCompleted.compareAndSet(false, true)) {
+				task.run();
+			}
+		} catch (IllegalStateException ex) {
+			// Ignore: AsyncContext recycled and should not be used
+			// e.g. TIMEOUT_LISTENER (above) may have completed the AsyncContext
+		}
+	}
+
+	/**
+	 * Return the configured input buffer size.
+	 */
+	public int getBufferSize() {
+		return this.bufferSize;
+	}
 
 	/**
 	 * Set the size of the input buffer used for reading in bytes.
@@ -90,15 +101,9 @@ public class ServletHttpHandlerAdapter implements Servlet {
 	}
 
 	/**
-	 * Return the configured input buffer size.
-	 */
-	public int getBufferSize() {
-		return this.bufferSize;
-	}
-
-	/**
 	 * Return the Servlet path under which the Servlet is deployed by checking
 	 * the Servlet registration from {@link #init(ServletConfig)}.
+	 *
 	 * @return the path, or an empty string if the Servlet is deployed without
 	 * a prefix (i.e. "/" or "/*"), or {@code null} if this method is invoked
 	 * before the {@link #init(ServletConfig)} Servlet container callback.
@@ -108,17 +113,17 @@ public class ServletHttpHandlerAdapter implements Servlet {
 		return this.servletPath;
 	}
 
-	public void setDataBufferFactory(DataBufferFactory dataBufferFactory) {
-		Assert.notNull(dataBufferFactory, "DataBufferFactory must not be null");
-		this.dataBufferFactory = dataBufferFactory;
-	}
-
 	public DataBufferFactory getDataBufferFactory() {
 		return this.dataBufferFactory;
 	}
 
 
 	// Servlet methods...
+
+	public void setDataBufferFactory(DataBufferFactory dataBufferFactory) {
+		Assert.notNull(dataBufferFactory, "DataBufferFactory must not be null");
+		this.dataBufferFactory = dataBufferFactory;
+	}
 
 	@Override
 	public void init(ServletConfig config) {
@@ -153,7 +158,6 @@ public class ServletHttpHandlerAdapter implements Servlet {
 				"Actual mappings: " + mappings + " for Servlet '" + name + "'");
 	}
 
-
 	@Override
 	public void service(ServletRequest request, ServletResponse response) throws ServletException, IOException {
 
@@ -169,8 +173,7 @@ public class ServletHttpHandlerAdapter implements Servlet {
 		ServerHttpRequest httpRequest;
 		try {
 			httpRequest = createRequest(((HttpServletRequest) request), asyncContext);
-		}
-		catch (URISyntaxException ex) {
+		} catch (URISyntaxException ex) {
 			if (logger.isWarnEnabled()) {
 				logger.warn("Invalid URL for incoming request: " + ex.getMessage());
 			}
@@ -218,24 +221,6 @@ public class ServletHttpHandlerAdapter implements Servlet {
 	@Override
 	public void destroy() {
 	}
-
-
-	/**
-	 * We cannot combine ERROR_LISTENER and HandlerResultSubscriber due to:
-	 * https://issues.jboss.org/browse/WFLY-8515
-	 */
-	private static void runIfAsyncNotComplete(AsyncContext asyncContext, AtomicBoolean isCompleted, Runnable task) {
-		try {
-			if (asyncContext.getRequest().isAsyncStarted() && isCompleted.compareAndSet(false, true)) {
-				task.run();
-			}
-		}
-		catch (IllegalStateException ex) {
-			// Ignore: AsyncContext recycled and should not be used
-			// e.g. TIMEOUT_LISTENER (above) may have completed the AsyncContext
-		}
-	}
-
 
 	private static class HandlerResultAsyncListener implements AsyncListener {
 
@@ -300,14 +285,12 @@ public class ServletHttpHandlerAdapter implements Servlet {
 					logger.debug("Dispatching into container to raise error");
 					this.asyncContext.getRequest().setAttribute(WRITE_ERROR_ATTRIBUTE_NAME, ex);
 					this.asyncContext.dispatch();
-				}
-				else {
+				} else {
 					try {
 						logger.debug("Setting response status code to 500");
 						this.asyncContext.getResponse().resetBuffer();
 						((HttpServletResponse) this.asyncContext.getResponse()).setStatus(500);
-					}
-					finally {
+					} finally {
 						this.asyncContext.complete();
 					}
 				}

@@ -16,28 +16,23 @@
 
 package org.springframework.web.socket.sockjs.client;
 
-import java.net.URI;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.context.Lifecycle;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.util.concurrent.SettableListenableFuture;
-import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketHandler;
-import org.springframework.web.socket.WebSocketHttpHeaders;
-import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.*;
 import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.web.socket.sockjs.transport.TransportType;
+
+import java.net.URI;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A SockJS {@link Transport} that uses a
@@ -91,6 +86,7 @@ public class WebSocketTransport implements Transport, Lifecycle {
 					public void onSuccess(@Nullable WebSocketSession webSocketSession) {
 						// WebSocket session ready, SockJS Session not yet
 					}
+
 					@Override
 					public void onFailure(Throwable ex) {
 						future.setException(ex);
@@ -105,8 +101,7 @@ public class WebSocketTransport implements Transport, Lifecycle {
 		if (!isRunning()) {
 			if (this.webSocketClient instanceof Lifecycle) {
 				((Lifecycle) this.webSocketClient).start();
-			}
-			else {
+			} else {
 				this.running = true;
 			}
 		}
@@ -117,8 +112,7 @@ public class WebSocketTransport implements Transport, Lifecycle {
 		if (isRunning()) {
 			if (this.webSocketClient instanceof Lifecycle) {
 				((Lifecycle) this.webSocketClient).stop();
-			}
-			else {
+			} else {
 				this.running = false;
 			}
 		}
@@ -128,8 +122,7 @@ public class WebSocketTransport implements Transport, Lifecycle {
 	public boolean isRunning() {
 		if (this.webSocketClient instanceof Lifecycle) {
 			return ((Lifecycle) this.webSocketClient).isRunning();
-		}
-		else {
+		} else {
 			return this.running;
 		}
 	}

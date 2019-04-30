@@ -16,26 +16,6 @@
 
 package org.springframework.http.converter.xml;
 
-import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.UnmarshalException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
@@ -47,6 +27,21 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.xml.StaxUtils;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.UnmarshalException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.*;
 
 /**
  * An {@code HttpMessageConverter} that can read XML collections using JAXB2.
@@ -153,26 +148,21 @@ public class Jaxb2CollectionHttpMessageConverter<T extends Collection>
 			while (event != XMLStreamReader.END_DOCUMENT) {
 				if (elementClass.isAnnotationPresent(XmlRootElement.class)) {
 					result.add(unmarshaller.unmarshal(streamReader));
-				}
-				else if (elementClass.isAnnotationPresent(XmlType.class)) {
+				} else if (elementClass.isAnnotationPresent(XmlType.class)) {
 					result.add(unmarshaller.unmarshal(streamReader, elementClass).getValue());
-				}
-				else {
+				} else {
 					// should not happen, since we check in canRead(Type)
 					throw new HttpMessageNotReadableException("Cannot unmarshal to [" + elementClass + "]");
 				}
 				event = moveToNextElement(streamReader);
 			}
 			return result;
-		}
-		catch (XMLStreamException ex) {
+		} catch (XMLStreamException ex) {
 			throw new HttpMessageNotReadableException("Failed to read XML stream: " + ex.getMessage(), ex);
-		}
-		catch (UnmarshalException ex) {
+		} catch (UnmarshalException ex) {
 			throw new HttpMessageNotReadableException(
 					"Could not unmarshal to [" + elementClass + "]: " + ex.getMessage(), ex);
-		}
-		catch (JAXBException ex) {
+		} catch (JAXBException ex) {
 			throw new HttpMessageConversionException("Invalid JAXB setup: " + ex.getMessage(), ex);
 		}
 	}
@@ -180,6 +170,7 @@ public class Jaxb2CollectionHttpMessageConverter<T extends Collection>
 	/**
 	 * Create a Collection of the given type, with the given initial capacity
 	 * (if supported by the Collection type).
+	 *
 	 * @param collectionClass the type of Collection to instantiate
 	 * @return the created Collection instance
 	 */
@@ -188,19 +179,15 @@ public class Jaxb2CollectionHttpMessageConverter<T extends Collection>
 		if (!collectionClass.isInterface()) {
 			try {
 				return (T) ReflectionUtils.accessibleConstructor(collectionClass).newInstance();
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				throw new IllegalArgumentException(
 						"Could not instantiate collection class: " + collectionClass.getName(), ex);
 			}
-		}
-		else if (List.class == collectionClass) {
+		} else if (List.class == collectionClass) {
 			return (T) new ArrayList();
-		}
-		else if (SortedSet.class == collectionClass) {
+		} else if (SortedSet.class == collectionClass) {
 			return (T) new TreeSet();
-		}
-		else {
+		} else {
 			return (T) new LinkedHashSet();
 		}
 	}
@@ -246,6 +233,7 @@ public class Jaxb2CollectionHttpMessageConverter<T extends Collection>
 	 * objects.
 	 * <p>Can be overridden in subclasses, adding further initialization of the factory.
 	 * The resulting factory is cached, so this method will only be called once.
+	 *
 	 * @see StaxUtils#createDefensiveInputFactory()
 	 */
 	protected XMLInputFactory createXmlInputFactory() {

@@ -15,9 +15,13 @@
  */
 package org.springframework.web.reactive.socket.adapter;
 
-import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import org.reactivestreams.Publisher;
+import org.springframework.core.io.buffer.NettyDataBufferFactory;
+import org.springframework.web.reactive.socket.CloseStatus;
+import org.springframework.web.reactive.socket.HandshakeInfo;
+import org.springframework.web.reactive.socket.WebSocketMessage;
+import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.NettyInbound;
@@ -25,12 +29,6 @@ import reactor.ipc.netty.NettyOutbound;
 import reactor.ipc.netty.NettyPipeline;
 import reactor.ipc.netty.http.websocket.WebsocketInbound;
 import reactor.ipc.netty.http.websocket.WebsocketOutbound;
-
-import org.springframework.core.io.buffer.NettyDataBufferFactory;
-import org.springframework.web.reactive.socket.CloseStatus;
-import org.springframework.web.reactive.socket.HandshakeInfo;
-import org.springframework.web.reactive.socket.WebSocketMessage;
-import org.springframework.web.reactive.socket.WebSocketSession;
 
 
 /**
@@ -45,7 +43,7 @@ public class ReactorNettyWebSocketSession
 
 
 	public ReactorNettyWebSocketSession(WebsocketInbound inbound, WebsocketOutbound outbound,
-			HandshakeInfo info, NettyDataBufferFactory bufferFactory) {
+										HandshakeInfo info, NettyDataBufferFactory bufferFactory) {
 
 		super(new WebSocketConnection(inbound, outbound), info, bufferFactory);
 	}

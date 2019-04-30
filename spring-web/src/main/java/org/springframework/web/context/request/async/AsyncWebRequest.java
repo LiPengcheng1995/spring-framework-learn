@@ -16,10 +16,10 @@
 
 package org.springframework.web.context.request.async;
 
-import java.util.function.Consumer;
-
 import org.springframework.lang.Nullable;
 import org.springframework.web.context.request.NativeWebRequest;
+
+import java.util.function.Consumer;
 
 /**
  * Extends {@link NativeWebRequest} with methods for asynchronous request processing.
@@ -33,8 +33,9 @@ public interface AsyncWebRequest extends NativeWebRequest {
 	 * Set the time required for concurrent handling to complete.
 	 * This property should not be set when concurrent handling is in progress,
 	 * i.e. when {@link #isAsyncStarted()} is {@code true}.
+	 *
 	 * @param timeout amount of time in milliseconds; {@code null} means no
-	 * 	timeout, i.e. rely on the default timeout of the container.
+	 *                timeout, i.e. rely on the default timeout of the container.
 	 */
 	void setTimeout(@Nullable Long timeout);
 
@@ -46,6 +47,7 @@ public interface AsyncWebRequest extends NativeWebRequest {
 	/**
 	 * Add a handler to invoke when an error occurred while concurrent
 	 * handling of a request.
+	 *
 	 * @since 5.0
 	 */
 	void addErrorHandler(Consumer<Throwable> exceptionHandler);
@@ -59,6 +61,7 @@ public interface AsyncWebRequest extends NativeWebRequest {
 	 * Mark the start of asynchronous request processing so that when the main
 	 * processing thread exits, the response remains open for further processing
 	 * in another thread.
+	 *
 	 * @throws IllegalStateException if async processing has completed or is not supported
 	 */
 	void startAsync();

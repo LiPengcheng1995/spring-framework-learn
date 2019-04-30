@@ -18,16 +18,11 @@ package org.springframework.web.reactive.result.method.annotation;
 
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,13 +32,9 @@ import org.springframework.web.reactive.config.CorsRegistry;
 import org.springframework.web.reactive.config.WebFluxConfigurationSupport;
 
 import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
- *
  * Integration tests with {@code @RequestMapping} handler methods and global
  * CORS configuration.
  *
@@ -91,8 +82,7 @@ public class GlobalCorsConfigIntegrationTests extends AbstractRequestMappingInte
 		try {
 			performGet("/cors-restricted", this.headers, String.class);
 			fail();
-		}
-		catch (HttpClientErrorException e) {
+		} catch (HttpClientErrorException e) {
 			assertEquals(HttpStatus.FORBIDDEN, e.getStatusCode());
 		}
 	}
@@ -129,8 +119,7 @@ public class GlobalCorsConfigIntegrationTests extends AbstractRequestMappingInte
 			this.headers.add(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET");
 			performOptions("/cors-restricted", this.headers, String.class);
 			fail();
-		}
-		catch (HttpClientErrorException e) {
+		} catch (HttpClientErrorException e) {
 			assertEquals(HttpStatus.FORBIDDEN, e.getStatusCode());
 		}
 	}
@@ -141,8 +130,7 @@ public class GlobalCorsConfigIntegrationTests extends AbstractRequestMappingInte
 			this.headers.add(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET");
 			performOptions("/welcome", this.headers, String.class);
 			fail();
-		}
-		catch (HttpClientErrorException e) {
+		} catch (HttpClientErrorException e) {
 			assertEquals(HttpStatus.FORBIDDEN, e.getStatusCode());
 		}
 	}
@@ -186,7 +174,8 @@ public class GlobalCorsConfigIntegrationTests extends AbstractRequestMappingInte
 		}
 	}
 
-	@RestController @SuppressWarnings("unused")
+	@RestController
+	@SuppressWarnings("unused")
 	static class TestController {
 
 		@GetMapping("/welcome")

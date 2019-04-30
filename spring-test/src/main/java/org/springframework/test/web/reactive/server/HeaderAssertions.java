@@ -16,14 +16,14 @@
 
 package org.springframework.test.web.reactive.server;
 
-import java.util.Arrays;
-import java.util.regex.Pattern;
-
 import org.springframework.http.CacheControl;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
+
+import java.util.Arrays;
+import java.util.regex.Pattern;
 
 import static org.springframework.test.util.AssertionErrors.*;
 
@@ -33,8 +33,8 @@ import static org.springframework.test.util.AssertionErrors.*;
  * @author Rossen Stoyanchev
  * @author Brian Clozel
  * @author Sam Brannen
- * @since 5.0
  * @see WebTestClient.ResponseSpec#expectHeader()
+ * @since 5.0
  */
 public class HeaderAssertions {
 
@@ -59,7 +59,8 @@ public class HeaderAssertions {
 	/**
 	 * Expect a header with the given name whose first value matches the
 	 * provided regex pattern.
-	 * @param name the header name
+	 *
+	 * @param name    the header name
 	 * @param pattern String pattern to pass to {@link Pattern#compile(String)}
 	 */
 	public WebTestClient.ResponseSpec valueMatches(String name, String pattern) {
@@ -75,6 +76,7 @@ public class HeaderAssertions {
 
 	/**
 	 * Expect that the header with the given name is present.
+	 *
 	 * @since 5.0.3
 	 */
 	public WebTestClient.ResponseSpec exists(String name) {

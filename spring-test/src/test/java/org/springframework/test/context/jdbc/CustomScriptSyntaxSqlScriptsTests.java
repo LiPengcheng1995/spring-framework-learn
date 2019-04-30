@@ -17,12 +17,11 @@
 package org.springframework.test.context.jdbc;
 
 import org.junit.Test;
-
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Integration tests that verify support for custom SQL script syntax
@@ -38,7 +37,7 @@ public class CustomScriptSyntaxSqlScriptsTests extends AbstractTransactionalJUni
 	@Test
 	@Sql("schema.sql")
 	@Sql(scripts = "data-add-users-with-custom-script-syntax.sql",//
-	config = @SqlConfig(commentPrefix = "`", blockCommentStartDelimiter = "#$", blockCommentEndDelimiter = "$#", separator = "@@"))
+			config = @SqlConfig(commentPrefix = "`", blockCommentStartDelimiter = "#$", blockCommentEndDelimiter = "$#", separator = "@@"))
 	public void methodLevelScripts() {
 		assertNumUsers(3);
 	}

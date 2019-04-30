@@ -16,11 +16,11 @@
 
 package org.springframework.test.web.servlet.setup;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.lang.Nullable;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.web.context.WebApplicationContext;
+
+import javax.servlet.http.HttpSession;
 
 /**
  * {@link MockMvcConfigurer} that stores and re-uses the HTTP session across
@@ -47,6 +47,9 @@ public class SharedHttpSessionConfigurer implements MockMvcConfigurer {
 	@Nullable
 	private HttpSession session;
 
+	public static SharedHttpSessionConfigurer sharedHttpSession() {
+		return new SharedHttpSessionConfigurer();
+	}
 
 	@Override
 	public void afterConfigurerAdded(ConfigurableMockMvcBuilder<?> builder) {
@@ -55,7 +58,7 @@ public class SharedHttpSessionConfigurer implements MockMvcConfigurer {
 
 	@Override
 	public RequestPostProcessor beforeMockMvcCreated(ConfigurableMockMvcBuilder<?> builder,
-			WebApplicationContext context) {
+													 WebApplicationContext context) {
 
 		return request -> {
 			if (this.session != null) {
@@ -63,10 +66,6 @@ public class SharedHttpSessionConfigurer implements MockMvcConfigurer {
 			}
 			return request;
 		};
-	}
-
-	public static SharedHttpSessionConfigurer sharedHttpSession() {
-		return new SharedHttpSessionConfigurer();
 	}
 
 }

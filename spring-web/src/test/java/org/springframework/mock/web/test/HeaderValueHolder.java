@@ -16,15 +16,10 @@
 
 package org.springframework.mock.web.test;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+
+import java.util.*;
 
 /**
  * Internal helper class that serves as value holder for request headers.
@@ -37,12 +32,22 @@ class HeaderValueHolder {
 
 	private final List<Object> values = new LinkedList<>();
 
-
-	public void setValue(Object value) {
-		this.values.clear();
-		if (value != null) {
-			this.values.add(value);
+	/**
+	 * Find a HeaderValueHolder by name, ignoring casing.
+	 *
+	 * @param headers the Map of header names to HeaderValueHolders
+	 * @param name    the name of the desired header
+	 * @return the corresponding HeaderValueHolder,
+	 * or {@code null} if none found
+	 */
+	public static HeaderValueHolder getByName(Map<String, HeaderValueHolder> headers, String name) {
+		Assert.notNull(name, "Header name must not be null");
+		for (String headerName : headers.keySet()) {
+			if (headerName.equalsIgnoreCase(name)) {
+				return headers.get(headerName);
+			}
 		}
+		return null;
 	}
 
 	public void addValue(Object value) {
@@ -73,6 +78,13 @@ class HeaderValueHolder {
 		return (!this.values.isEmpty() ? this.values.get(0) : null);
 	}
 
+	public void setValue(Object value) {
+		this.values.clear();
+		if (value != null) {
+			this.values.add(value);
+		}
+	}
+
 	public String getStringValue() {
 		return (!this.values.isEmpty() ? String.valueOf(this.values.get(0)) : null);
 	}
@@ -80,24 +92,6 @@ class HeaderValueHolder {
 	@Override
 	public String toString() {
 		return this.values.toString();
-	}
-
-
-	/**
-	 * Find a HeaderValueHolder by name, ignoring casing.
-	 * @param headers the Map of header names to HeaderValueHolders
-	 * @param name the name of the desired header
-	 * @return the corresponding HeaderValueHolder,
-	 * or {@code null} if none found
-	 */
-	public static HeaderValueHolder getByName(Map<String, HeaderValueHolder> headers, String name) {
-		Assert.notNull(name, "Header name must not be null");
-		for (String headerName : headers.keySet()) {
-			if (headerName.equalsIgnoreCase(name)) {
-				return headers.get(headerName);
-			}
-		}
-		return null;
 	}
 
 }

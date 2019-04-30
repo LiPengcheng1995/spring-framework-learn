@@ -16,13 +16,13 @@
 
 package org.springframework.jmx.export.annotation;
 
-import javax.management.MXBean;
-
 import org.junit.Test;
-
 import org.springframework.jmx.support.JmxUtils;
 
-import static org.junit.Assert.*;
+import javax.management.MXBean;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Juergen Hoeller
@@ -45,17 +45,17 @@ public class JmxUtilsAnnotationTests {
 		String getName();
 	}
 
+	@MXBean(true)
+	public interface FooIfc {
+		String getName();
+	}
+
 	public static class FooNotX implements FooNotMXBean {
 
 		@Override
 		public String getName() {
 			return "Rob Harrop";
 		}
-	}
-
-	@MXBean(true)
-	public interface FooIfc {
-		String getName();
 	}
 
 	public static class FooX implements FooIfc {

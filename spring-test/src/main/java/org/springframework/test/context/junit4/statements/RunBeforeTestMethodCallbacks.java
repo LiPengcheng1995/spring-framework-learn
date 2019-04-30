@@ -16,11 +16,10 @@
 
 package org.springframework.test.context.junit4.statements;
 
-import java.lang.reflect.Method;
-
 import org.junit.runners.model.Statement;
-
 import org.springframework.test.context.TestContextManager;
+
+import java.lang.reflect.Method;
 
 /**
  * {@code RunBeforeTestMethodCallbacks} is a custom JUnit {@link Statement} which allows
@@ -29,9 +28,9 @@ import org.springframework.test.context.TestContextManager;
  * beforeTestMethod()} on the supplied {@link TestContextManager}.
  *
  * @author Sam Brannen
- * @since 3.0
  * @see #evaluate()
  * @see RunAfterTestMethodCallbacks
+ * @since 3.0
  */
 public class RunBeforeTestMethodCallbacks extends Statement {
 
@@ -46,15 +45,16 @@ public class RunBeforeTestMethodCallbacks extends Statement {
 
 	/**
 	 * Construct a new {@code RunBeforeTestMethodCallbacks} statement.
-	 * @param next the next {@code Statement} in the execution chain
-	 * @param testInstance the current test instance (never {@code null})
-	 * @param testMethod the test method which is about to be executed on the
-	 * test instance
+	 *
+	 * @param next               the next {@code Statement} in the execution chain
+	 * @param testInstance       the current test instance (never {@code null})
+	 * @param testMethod         the test method which is about to be executed on the
+	 *                           test instance
 	 * @param testContextManager the TestContextManager upon which to call
-	 * {@code beforeTestMethod()}
+	 *                           {@code beforeTestMethod()}
 	 */
 	public RunBeforeTestMethodCallbacks(Statement next, Object testInstance, Method testMethod,
-			TestContextManager testContextManager) {
+										TestContextManager testContextManager) {
 
 		this.next = next;
 		this.testInstance = testInstance;

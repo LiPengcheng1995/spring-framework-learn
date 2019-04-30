@@ -16,13 +16,8 @@
 
 package org.springframework.test.context.junit4;
 
-import javax.annotation.Resource;
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +31,10 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.GenericXmlContextLoader;
 import org.springframework.tests.sample.beans.Employee;
 import org.springframework.tests.sample.beans.Pet;
+
+import javax.annotation.Resource;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import static org.junit.Assert.*;
 
@@ -67,10 +66,10 @@ import static org.junit.Assert.*;
  * {@value #DEFAULT_CONTEXT_RESOURCE_PATH}.
  *
  * @author Sam Brannen
- * @since 2.5
  * @see AbsolutePathSpringJUnit4ClassRunnerAppCtxTests
  * @see RelativePathSpringJUnit4ClassRunnerAppCtxTests
  * @see InheritedConfigSpringJUnit4ClassRunnerAppCtxTests
+ * @since 2.5
  */
 @RunWith(SpringRunner.class)
 @ContextConfiguration
@@ -83,42 +82,28 @@ public class SpringJUnit4ClassRunnerAppCtxTests implements ApplicationContextAwa
 	 */
 	public static final String DEFAULT_CONTEXT_RESOURCE_PATH =
 			"/org/springframework/test/context/junit4/SpringJUnit4ClassRunnerAppCtxTests-context.xml";
-
-
-	private Employee employee;
-
-	@Autowired
-	private Pet autowiredPet;
-
-	@Inject
-	private Pet injectedPet;
-
 	@Autowired(required = false)
 	protected Long nonrequiredLong;
-
 	@Resource
 	protected String foo;
-
 	protected String bar;
-
-	@Value("enigma")
-	private String literalFieldValue;
-
-	@Value("#{2 == (1+1)}")
-	private Boolean spelFieldValue;
-
-	private String literalParameterValue;
-
-	private Boolean spelParameterValue;
-
 	@Autowired
 	@Qualifier("quux")
 	protected String quux;
-
 	@Inject
 	@Named("quux")
 	protected String namedQuux;
-
+	private Employee employee;
+	@Autowired
+	private Pet autowiredPet;
+	@Inject
+	private Pet injectedPet;
+	@Value("enigma")
+	private String literalFieldValue;
+	@Value("#{2 == (1+1)}")
+	private Boolean spelFieldValue;
+	private String literalParameterValue;
+	private Boolean spelParameterValue;
 	private String beanName;
 
 	private ApplicationContext applicationContext;

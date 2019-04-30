@@ -16,14 +16,10 @@
 
 package org.springframework.web.socket.sockjs.transport;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.lang.Nullable;
+
+import java.util.*;
 
 /**
  * SockJS transport types.
@@ -65,18 +61,9 @@ public enum TransportType {
 		TRANSPORT_TYPES = Collections.unmodifiableMap(transportTypes);
 	}
 
-	@Nullable
-	public static TransportType fromValue(String value) {
-		return TRANSPORT_TYPES.get(value);
-	}
-
-
 	private final String value;
-
 	private final HttpMethod httpMethod;
-
 	private final List<String> headerHints;
-
 
 	TransportType(String value, HttpMethod httpMethod, String... headerHints) {
 		this.value = value;
@@ -84,6 +71,10 @@ public enum TransportType {
 		this.headerHints = Arrays.asList(headerHints);
 	}
 
+	@Nullable
+	public static TransportType fromValue(String value) {
+		return TRANSPORT_TYPES.get(value);
+	}
 
 	public String value() {
 		return this.value;

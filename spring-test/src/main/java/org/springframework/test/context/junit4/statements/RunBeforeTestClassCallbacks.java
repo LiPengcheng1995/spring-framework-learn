@@ -17,7 +17,6 @@
 package org.springframework.test.context.junit4.statements;
 
 import org.junit.runners.model.Statement;
-
 import org.springframework.test.context.TestContextManager;
 
 /**
@@ -27,9 +26,9 @@ import org.springframework.test.context.TestContextManager;
  * supplied {@link TestContextManager}.
  *
  * @author Sam Brannen
- * @since 3.0
  * @see #evaluate()
  * @see RunAfterTestMethodCallbacks
+ * @since 3.0
  */
 public class RunBeforeTestClassCallbacks extends Statement {
 
@@ -40,9 +39,10 @@ public class RunBeforeTestClassCallbacks extends Statement {
 
 	/**
 	 * Construct a new {@code RunBeforeTestClassCallbacks} statement.
-	 * @param next the next {@code Statement} in the execution chain
+	 *
+	 * @param next               the next {@code Statement} in the execution chain
 	 * @param testContextManager the TestContextManager upon which to call
-	 * {@code beforeTestClass()}
+	 *                           {@code beforeTestClass()}
 	 */
 	public RunBeforeTestClassCallbacks(Statement next, TestContextManager testContextManager) {
 		this.next = next;

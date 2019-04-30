@@ -16,11 +16,7 @@
 
 package org.springframework.web.method.annotation;
 
-import java.util.Collections;
-import java.util.Map;
-
 import org.junit.Test;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.mock.web.test.MockHttpServletResponse;
@@ -31,8 +27,11 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.ResolvableMethod;
 
+import java.util.Collections;
+import java.util.Map;
+
 import static org.junit.Assert.*;
-import static org.springframework.web.method.MvcAnnotationPredicates.*;
+import static org.springframework.web.method.MvcAnnotationPredicates.requestParam;
 
 /**
  * Test fixture with {@link RequestParamMapMethodArgumentResolver}.

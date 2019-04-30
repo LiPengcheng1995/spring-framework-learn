@@ -16,19 +16,14 @@
 
 package org.springframework.web.reactive.result.condition;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.cors.reactive.CorsUtils;
 import org.springframework.web.server.ServerWebExchange;
+
+import java.util.*;
 
 /**
  * A logical disjunction (' || ') request condition that matches a request
@@ -48,8 +43,9 @@ public final class RequestMethodsRequestCondition extends AbstractRequestConditi
 
 	/**
 	 * Create a new instance with the given request methods.
+	 *
 	 * @param requestMethods 0 or more HTTP request methods;
-	 * if, 0 the condition will match to every request
+	 *                       if, 0 the condition will match to every request
 	 */
 	public RequestMethodsRequestCondition(RequestMethod... requestMethods) {
 		this(asList(requestMethods));
@@ -96,6 +92,7 @@ public final class RequestMethodsRequestCondition extends AbstractRequestConditi
 	/**
 	 * Check if any of the HTTP request methods match the given request and
 	 * return an instance that contains the matching HTTP request method only.
+	 *
 	 * @param exchange the current exchange
 	 * @return the same instance if the condition is empty (unless the request
 	 * method is HTTP OPTIONS), a new condition with the matched request method,

@@ -16,9 +16,6 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.lang.Nullable;
@@ -27,6 +24,9 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.annotation.AbstractCookieValueMethodArgumentResolver;
 import org.springframework.web.util.UrlPathHelper;
 import org.springframework.web.util.WebUtils;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * An {@link org.springframework.web.method.annotation.AbstractCookieValueMethodArgumentResolver}
@@ -53,7 +53,7 @@ public class ServletCookieValueMethodArgumentResolver extends AbstractCookieValu
 	@Override
 	@Nullable
 	protected Object resolveName(String cookieName, MethodParameter parameter,
-			NativeWebRequest webRequest) throws Exception {
+								 NativeWebRequest webRequest) throws Exception {
 
 		HttpServletRequest servletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
 		Assert.state(servletRequest != null, "No HttpServletRequest");
@@ -61,11 +61,9 @@ public class ServletCookieValueMethodArgumentResolver extends AbstractCookieValu
 		Cookie cookieValue = WebUtils.getCookie(servletRequest, cookieName);
 		if (Cookie.class.isAssignableFrom(parameter.getNestedParameterType())) {
 			return cookieValue;
-		}
-		else if (cookieValue != null) {
+		} else if (cookieValue != null) {
 			return this.urlPathHelper.decodeRequestString(servletRequest, cookieValue.getValue());
-		}
-		else {
+		} else {
 			return null;
 		}
 	}

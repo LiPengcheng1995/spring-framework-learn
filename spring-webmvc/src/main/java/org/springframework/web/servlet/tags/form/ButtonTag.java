@@ -16,11 +16,11 @@
 
 package org.springframework.web.servlet.tags.form;
 
-import javax.servlet.jsp.JspException;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.support.RequestDataValueProcessor;
+
+import javax.servlet.jsp.JspException;
 
 /**
  * The {@code <button>} tag renders a form field label in an HTML 'button' tag.
@@ -90,14 +90,6 @@ public class ButtonTag extends AbstractHtmlElementTag {
 
 	private boolean disabled;
 
-
-	/**
-	 * Get the value of the '{@code name}' attribute.
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	/**
 	 * Set the value of the '{@code name}' attribute.
 	 */
@@ -108,10 +100,10 @@ public class ButtonTag extends AbstractHtmlElementTag {
 	}
 
 	/**
-	 * Set the value of the '{@code value}' attribute.
+	 * Get the value of the '{@code name}' attribute.
 	 */
-	public void setValue(@Nullable String value) {
-		this.value = value;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	/**
@@ -123,10 +115,10 @@ public class ButtonTag extends AbstractHtmlElementTag {
 	}
 
 	/**
-	 * Set the value of the '{@code disabled}' attribute.
+	 * Set the value of the '{@code value}' attribute.
 	 */
-	public void setDisabled(boolean disabled) {
-		this.disabled = disabled;
+	public void setValue(@Nullable String value) {
+		this.value = value;
 	}
 
 	/**
@@ -136,6 +128,12 @@ public class ButtonTag extends AbstractHtmlElementTag {
 		return this.disabled;
 	}
 
+	/**
+	 * Set the value of the '{@code disabled}' attribute.
+	 */
+	public void setDisabled(boolean disabled) {
+		this.disabled = disabled;
+	}
 
 	@Override
 	protected int writeTagContent(TagWriter tagWriter) throws JspException {
@@ -163,6 +161,7 @@ public class ButtonTag extends AbstractHtmlElementTag {
 
 	/**
 	 * Return the default value.
+	 *
 	 * @return the default value if none supplied
 	 */
 	protected String getDefaultValue() {

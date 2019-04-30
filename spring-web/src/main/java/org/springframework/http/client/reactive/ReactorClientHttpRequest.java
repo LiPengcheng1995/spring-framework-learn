@@ -16,29 +16,28 @@
 
 package org.springframework.http.client.reactive;
 
-import java.io.File;
-import java.net.URI;
-import java.util.Collection;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.ipc.netty.http.client.HttpClientRequest;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.NettyDataBufferFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ZeroCopyHttpOutputMessage;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.ipc.netty.http.client.HttpClientRequest;
+
+import java.io.File;
+import java.net.URI;
+import java.util.Collection;
 
 /**
  * {@link ClientHttpRequest} implementation for the Reactor-Netty HTTP client.
  *
  * @author Brian Clozel
- * @since 5.0
  * @see reactor.ipc.netty.http.client.HttpClient
+ * @since 5.0
  */
 class ReactorClientHttpRequest extends AbstractClientHttpRequest implements ZeroCopyHttpOutputMessage {
 
@@ -50,12 +49,15 @@ class ReactorClientHttpRequest extends AbstractClientHttpRequest implements Zero
 
 
 	public ReactorClientHttpRequest(HttpMethod httpMethod, URI uri,
-			HttpClientRequest httpRequest) {
+									HttpClientRequest httpRequest) {
 		this.httpMethod = httpMethod;
 		this.uri = uri;
 		this.httpRequest = httpRequest.failOnClientError(false).failOnServerError(false);
 	}
 
+	private static Publisher<ByteBuf> toByteBufs(Publisher<? extends DataBuffer> dataBuffers) {
+		return Flux.from(dataBuffers).map(NettyDataBufferFactory::toByteBuf);
+	}
 
 	@Override
 	public DataBufferFactory bufferFactory() {
@@ -82,10 +84,6 @@ class ReactorClientHttpRequest extends AbstractClientHttpRequest implements Zero
 	public Mono<Void> writeAndFlushWith(Publisher<? extends Publisher<? extends DataBuffer>> body) {
 		Publisher<Publisher<ByteBuf>> byteBufs = Flux.from(body).map(ReactorClientHttpRequest::toByteBufs);
 		return doCommit(() -> this.httpRequest.sendGroups(byteBufs).then());
-	}
-
-	private static Publisher<ByteBuf> toByteBufs(Publisher<? extends DataBuffer> dataBuffers) {
-		return Flux.from(dataBuffers).map(NettyDataBufferFactory::toByteBuf);
 	}
 
 	@Override

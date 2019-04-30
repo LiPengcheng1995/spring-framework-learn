@@ -16,15 +16,7 @@
 
 package org.springframework.mock.http.client.reactive.test;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
@@ -37,6 +29,13 @@ import org.springframework.http.client.reactive.ClientHttpResponse;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 
 /**
  * Mock implementation of {@link ClientHttpResponse}.
@@ -52,10 +51,8 @@ public class MockClientHttpResponse implements ClientHttpResponse {
 	private final HttpHeaders headers = new HttpHeaders();
 
 	private final MultiValueMap<String, ResponseCookie> cookies = new LinkedMultiValueMap<>();
-
-	private Flux<DataBuffer> body = Flux.empty();
-
 	private final DataBufferFactory bufferFactory = new DefaultDataBufferFactory();
+	private Flux<DataBuffer> body = Flux.empty();
 
 
 	public MockClientHttpResponse(HttpStatus status) {
@@ -63,6 +60,12 @@ public class MockClientHttpResponse implements ClientHttpResponse {
 		this.status = status;
 	}
 
+	private static String dumpString(DataBuffer buffer, Charset charset) {
+		Assert.notNull(charset, "'charset' must not be null");
+		byte[] bytes = new byte[buffer.readableByteCount()];
+		buffer.read(bytes);
+		return new String(bytes, charset);
+	}
 
 	@Override
 	public HttpStatus getStatusCode() {
@@ -89,14 +92,6 @@ public class MockClientHttpResponse implements ClientHttpResponse {
 		return this.cookies;
 	}
 
-	public void setBody(Publisher<DataBuffer> body) {
-		this.body = Flux.from(body);
-	}
-
-	public void setBody(String body) {
-		setBody(body, StandardCharsets.UTF_8);
-	}
-
 	public void setBody(String body, Charset charset) {
 		DataBuffer buffer = toDataBuffer(body, charset);
 		this.body = Flux.just(buffer);
@@ -113,6 +108,14 @@ public class MockClientHttpResponse implements ClientHttpResponse {
 		return this.body;
 	}
 
+	public void setBody(Publisher<DataBuffer> body) {
+		this.body = Flux.from(body);
+	}
+
+	public void setBody(String body) {
+		setBody(body, StandardCharsets.UTF_8);
+	}
+
 	/**
 	 * Return the response body aggregated and converted to a String using the
 	 * charset of the Content-Type response or otherwise as "UTF-8".
@@ -126,13 +129,6 @@ public class MockClientHttpResponse implements ClientHttpResponse {
 					return previous;
 				})
 				.map(buffer -> dumpString(buffer, charset));
-	}
-
-	private static String dumpString(DataBuffer buffer, Charset charset) {
-		Assert.notNull(charset, "'charset' must not be null");
-		byte[] bytes = new byte[buffer.readableByteCount()];
-		buffer.read(bytes);
-		return new String(bytes, charset);
 	}
 
 	private Charset getCharset() {

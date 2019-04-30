@@ -16,11 +16,8 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.time.Duration;
-
 import org.junit.Test;
 import org.reactivestreams.Publisher;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +25,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.config.EnableWebFlux;
+
+import java.time.Duration;
 
 import static org.junit.Assert.*;
 

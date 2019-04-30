@@ -16,23 +16,25 @@
 
 package org.springframework.test.web.client;
 
-import java.net.SocketException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 
-import static org.junit.Assert.*;
-import static org.springframework.http.HttpMethod.*;
+import java.net.SocketException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.test.web.client.ExpectedCount.*;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 /**
  * Unit tests for {@link SimpleRequestExpectationManager}.
@@ -51,8 +53,7 @@ public class SimpleRequestExpectationManagerTests {
 	public void unexpectedRequest() throws Exception {
 		try {
 			this.manager.validateRequest(createRequest(GET, "/foo"));
-		}
-		catch (AssertionError error) {
+		} catch (AssertionError error) {
 			assertEquals("No further requests expected: HTTP GET /foo\n" +
 					"0 request(s) executed.\n", error.getMessage());
 		}
@@ -183,15 +184,16 @@ public class SimpleRequestExpectationManagerTests {
 	@Test  // SPR-16132
 	public void sequentialRequestsWithFirstFailing() throws Exception {
 		this.manager.expectRequest(once(), requestTo("/foo")).
-				andExpect(method(GET)).andRespond(request -> { throw new SocketException("pseudo network error"); });
+				andExpect(method(GET)).andRespond(request -> {
+			throw new SocketException("pseudo network error");
+		});
 		this.manager.expectRequest(once(), requestTo("/handle-error")).
 				andExpect(method(POST)).andRespond(withSuccess());
 
 		try {
 			this.manager.validateRequest(createRequest(GET, "/foo"));
 			fail("Expected SocketException");
-		}
-		catch (SocketException ex) {
+		} catch (SocketException ex) {
 			// expected
 		}
 		this.manager.validateRequest(createRequest(POST, "/handle-error"));
@@ -202,8 +204,7 @@ public class SimpleRequestExpectationManagerTests {
 	private ClientHttpRequest createRequest(HttpMethod method, String url) {
 		try {
 			return new MockClientHttpRequest(method, new URI(url));
-		}
-		catch (URISyntaxException ex) {
+		} catch (URISyntaxException ex) {
 			throw new IllegalStateException(ex);
 		}
 	}

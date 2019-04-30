@@ -16,14 +16,14 @@
 
 package org.springframework.jdbc.core.support;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.support.lob.LobCreator;
 import org.springframework.jdbc.support.lob.LobHandler;
 import org.springframework.util.Assert;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
  * Abstract {@link PreparedStatementCallback} implementation that manages a {@link LobCreator}.
@@ -49,8 +49,8 @@ import org.springframework.util.Assert;
  * );</pre>
  *
  * @author Juergen Hoeller
- * @since 1.0.2
  * @see org.springframework.jdbc.support.lob.LobCreator
+ * @since 1.0.2
  */
 public abstract class AbstractLobCreatingPreparedStatementCallback implements PreparedStatementCallback<Integer> {
 
@@ -60,6 +60,7 @@ public abstract class AbstractLobCreatingPreparedStatementCallback implements Pr
 	/**
 	 * Create a new AbstractLobCreatingPreparedStatementCallback for the
 	 * given LobHandler.
+	 *
 	 * @param lobHandler the LobHandler to create LobCreators with
 	 */
 	public AbstractLobCreatingPreparedStatementCallback(LobHandler lobHandler) {
@@ -74,8 +75,7 @@ public abstract class AbstractLobCreatingPreparedStatementCallback implements Pr
 		try {
 			setValues(ps, lobCreator);
 			return ps.executeUpdate();
-		}
-		finally {
+		} finally {
 			lobCreator.close();
 		}
 	}
@@ -83,9 +83,10 @@ public abstract class AbstractLobCreatingPreparedStatementCallback implements Pr
 	/**
 	 * Set values on the given PreparedStatement, using the given
 	 * LobCreator for BLOB/CLOB arguments.
-	 * @param ps the PreparedStatement to use
+	 *
+	 * @param ps         the PreparedStatement to use
 	 * @param lobCreator the LobCreator to use
-	 * @throws SQLException if thrown by JDBC methods
+	 * @throws SQLException        if thrown by JDBC methods
 	 * @throws DataAccessException in case of custom exceptions
 	 */
 	protected abstract void setValues(PreparedStatement ps, LobCreator lobCreator)

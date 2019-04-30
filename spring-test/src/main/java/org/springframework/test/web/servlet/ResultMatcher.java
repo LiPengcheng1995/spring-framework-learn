@@ -51,6 +51,7 @@ public interface ResultMatcher {
 
 	/**
 	 * Assert the result of an executed request.
+	 *
 	 * @param result the result of the executed request
 	 * @throws Exception if a failure occurs
 	 */

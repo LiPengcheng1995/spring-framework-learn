@@ -17,13 +17,12 @@
 package org.springframework.web.reactive.function.server;
 
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+import reactor.core.publisher.Mono;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RequestPredicates.path;
 import static org.springframework.web.reactive.function.server.RouterFunctions.nest;
@@ -41,12 +40,12 @@ public class NestedRouteIntegrationTests extends AbstractRouterFunctionIntegrati
 	protected RouterFunction<?> routerFunction() {
 		NestedHandler nestedHandler = new NestedHandler();
 		return nest(path("/foo/"),
-					route(GET("/bar"), nestedHandler::bar)
-					.andRoute(GET("/baz"), nestedHandler::baz))
-			   .andNest(GET("/{foo}"),
-					route(GET("/bar"), nestedHandler::variables).and(
-					nest(GET("/{bar}"),
-								route(GET("/{baz}"), nestedHandler::variables))))
+				route(GET("/bar"), nestedHandler::bar)
+						.andRoute(GET("/baz"), nestedHandler::baz))
+				.andNest(GET("/{foo}"),
+						route(GET("/bar"), nestedHandler::variables).and(
+								nest(GET("/{bar}"),
+										route(GET("/{baz}"), nestedHandler::variables))))
 				.andRoute(GET("/{qux}/quux"), nestedHandler::variables);
 	}
 

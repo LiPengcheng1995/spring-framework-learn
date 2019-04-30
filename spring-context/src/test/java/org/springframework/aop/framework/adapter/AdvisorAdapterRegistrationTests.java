@@ -16,22 +16,28 @@
 
 package org.springframework.aop.framework.adapter;
 
-import java.io.Serializable;
-
 import org.aopalliance.aop.Advice;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.aop.Advisor;
 import org.springframework.aop.BeforeAdvice;
 import org.springframework.aop.framework.Advised;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.tests.sample.beans.ITestBean;
 
-import static org.junit.Assert.*;
+import java.io.Serializable;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+interface SimpleBeforeAdvice extends BeforeAdvice {
+
+	void before() throws Throwable;
+
+}
 
 /**
  * TestCase for AdvisorAdapterRegistrationManager mechanism.
@@ -50,14 +56,13 @@ public class AdvisorAdapterRegistrationTests {
 	@Test
 	public void testAdvisorAdapterRegistrationManagerNotPresentInContext() {
 		ClassPathXmlApplicationContext ctx =
-			new ClassPathXmlApplicationContext(getClass().getSimpleName() + "-without-bpp.xml", getClass());
+				new ClassPathXmlApplicationContext(getClass().getSimpleName() + "-without-bpp.xml", getClass());
 		ITestBean tb = (ITestBean) ctx.getBean("testBean");
 		// just invoke any method to see if advice fired
 		try {
 			tb.getName();
 			fail("Should throw UnknownAdviceTypeException");
-		}
-		catch (UnknownAdviceTypeException ex) {
+		} catch (UnknownAdviceTypeException ex) {
 			// expected
 			assertEquals(0, getAdviceImpl(tb).getInvocationCounter());
 		}
@@ -66,14 +71,13 @@ public class AdvisorAdapterRegistrationTests {
 	@Test
 	public void testAdvisorAdapterRegistrationManagerPresentInContext() {
 		ClassPathXmlApplicationContext ctx =
-			new ClassPathXmlApplicationContext(getClass().getSimpleName() + "-with-bpp.xml", getClass());
+				new ClassPathXmlApplicationContext(getClass().getSimpleName() + "-with-bpp.xml", getClass());
 		ITestBean tb = (ITestBean) ctx.getBean("testBean");
 		// just invoke any method to see if advice fired
 		try {
 			tb.getName();
 			assertEquals(1, getAdviceImpl(tb).getInvocationCounter());
-		}
-		catch (UnknownAdviceTypeException ex) {
+		} catch (UnknownAdviceTypeException ex) {
 			fail("Should not throw UnknownAdviceTypeException");
 		}
 	}
@@ -86,14 +90,6 @@ public class AdvisorAdapterRegistrationTests {
 
 }
 
-
-interface SimpleBeforeAdvice extends BeforeAdvice {
-
-	void before() throws Throwable;
-
-}
-
-
 @SuppressWarnings("serial")
 class SimpleBeforeAdviceAdapter implements AdvisorAdapter, Serializable {
 
@@ -105,7 +101,7 @@ class SimpleBeforeAdviceAdapter implements AdvisorAdapter, Serializable {
 	@Override
 	public MethodInterceptor getInterceptor(Advisor advisor) {
 		SimpleBeforeAdvice advice = (SimpleBeforeAdvice) advisor.getAdvice();
-		return new SimpleBeforeAdviceInterceptor(advice) ;
+		return new SimpleBeforeAdviceInterceptor(advice);
 	}
 
 }

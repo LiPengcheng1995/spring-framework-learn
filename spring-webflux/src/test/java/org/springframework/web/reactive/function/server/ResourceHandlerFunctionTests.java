@@ -16,16 +16,8 @@
 
 package org.springframework.web.reactive.function.server;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.EnumSet;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
@@ -36,10 +28,15 @@ import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpResponse;
 import org.springframework.mock.web.test.server.MockServerWebExchange;
 import org.springframework.web.reactive.result.view.ViewResolver;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.EnumSet;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Arjen Poutsma
@@ -81,13 +78,13 @@ public class ResourceHandlerFunctionTests {
 		Mono<ServerResponse> responseMono = this.handlerFunction.handle(request);
 
 		Mono<Void> result = responseMono.flatMap(response -> {
-					assertEquals(HttpStatus.OK, response.statusCode());
-					assertTrue(response instanceof EntityResponse);
-					@SuppressWarnings("unchecked")
-					EntityResponse<Resource> entityResponse = (EntityResponse<Resource>) response;
-					assertEquals(this.resource, entityResponse.entity());
-					return response.writeTo(exchange, context);
-				});
+			assertEquals(HttpStatus.OK, response.statusCode());
+			assertTrue(response instanceof EntityResponse);
+			@SuppressWarnings("unchecked")
+			EntityResponse<Resource> entityResponse = (EntityResponse<Resource>) response;
+			assertEquals(this.resource, entityResponse.entity());
+			return response.writeTo(exchange, context);
+		});
 
 		StepVerifier.create(result)
 				.expectComplete()

@@ -16,10 +16,10 @@
 
 package org.springframework.web.context.support;
 
-import javax.servlet.ServletContext;
-
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
+
+import javax.servlet.ServletContext;
 
 /**
  * ResourceLoader implementation that resolves paths as ServletContext
@@ -30,12 +30,12 @@ import org.springframework.core.io.Resource;
  * resolved as ServletContext resources by the context implementation.
  *
  * @author Juergen Hoeller
- * @since 1.0.2
  * @see #getResourceByPath
  * @see ServletContextResource
  * @see org.springframework.web.context.WebApplicationContext
  * @see org.springframework.web.servlet.HttpServletBean
  * @see org.springframework.web.filter.GenericFilterBean
+ * @since 1.0.2
  */
 public class ServletContextResourceLoader extends DefaultResourceLoader {
 
@@ -44,6 +44,7 @@ public class ServletContextResourceLoader extends DefaultResourceLoader {
 
 	/**
 	 * Create a new ServletContextResourceLoader.
+	 *
 	 * @param servletContext the ServletContext to load resources with
 	 */
 	public ServletContextResourceLoader(ServletContext servletContext) {
@@ -52,6 +53,7 @@ public class ServletContextResourceLoader extends DefaultResourceLoader {
 
 	/**
 	 * This implementation supports file paths beneath the root of the web application.
+	 *
 	 * @see ServletContextResource
 	 */
 	@Override

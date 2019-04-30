@@ -16,19 +16,18 @@
 
 package org.springframework.test.context.support;
 
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.test.context.SmartContextLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utility methods for {@link SmartContextLoader SmartContextLoaders} that deal
@@ -55,6 +54,7 @@ public abstract class AnnotationConfigContextLoaderUtils {
 	 * {@code @Configuration} class implementations. If a potential candidate
 	 * configuration class does not meet these requirements, this method will log a
 	 * debug message, and the potential candidate class will be ignored.
+	 *
 	 * @param declaringClass the test class that declared {@code @ContextConfiguration}
 	 * @return an array of default configuration classes, potentially empty but
 	 * never {@code null}
@@ -67,13 +67,12 @@ public abstract class AnnotationConfigContextLoaderUtils {
 		for (Class<?> candidate : declaringClass.getDeclaredClasses()) {
 			if (isDefaultConfigurationClassCandidate(candidate)) {
 				configClasses.add(candidate);
-			}
-			else {
+			} else {
 				if (logger.isDebugEnabled()) {
 					logger.debug(String.format(
-						"Ignoring class [%s]; it must be static, non-private, non-final, and annotated " +
-								"with @Configuration to be considered a default configuration class.",
-						candidate.getName()));
+							"Ignoring class [%s]; it must be static, non-private, non-final, and annotated " +
+									"with @Configuration to be considered a default configuration class.",
+							candidate.getName()));
 				}
 			}
 		}
@@ -100,6 +99,7 @@ public abstract class AnnotationConfigContextLoaderUtils {
 	 * <li>must be {@code static}</li>
 	 * <li>must be annotated or meta-annotated with {@code @Configuration}</li>
 	 * </ul>
+	 *
 	 * @param clazz the class to check
 	 * @return {@code true} if the supplied class meets the candidate criteria
 	 */

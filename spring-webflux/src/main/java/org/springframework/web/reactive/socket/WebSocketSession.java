@@ -15,14 +15,13 @@
  */
 package org.springframework.web.reactive.socket;
 
-import java.util.function.Function;
-
 import org.reactivestreams.Publisher;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.core.io.buffer.DataBufferFactory;
+import java.util.function.Function;
 
 /**
  * Represents a WebSocket session.
@@ -48,6 +47,7 @@ public interface WebSocketSession {
 
 	/**
 	 * Return a {@code DataBuffer} Factory to create message payloads.
+	 *
 	 * @return the buffer factory for the session
 	 */
 	DataBufferFactory bufferFactory();
@@ -83,6 +83,7 @@ public interface WebSocketSession {
 
 	/**
 	 * Close the WebSocket session with the given status.
+	 *
 	 * @param status the close status
 	 */
 	Mono<Void> close(CloseStatus status);

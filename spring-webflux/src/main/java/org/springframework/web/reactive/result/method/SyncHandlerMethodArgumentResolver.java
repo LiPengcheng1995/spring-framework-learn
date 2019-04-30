@@ -16,12 +16,11 @@
 
 package org.springframework.web.reactive.result.method;
 
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.BindingContext;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
 
 /**
  * An extension of {@link HandlerMethodArgumentResolver} for implementations
@@ -46,9 +45,10 @@ public interface SyncHandlerMethodArgumentResolver extends HandlerMethodArgument
 
 	/**
 	 * Resolve the value for the method parameter synchronously.
-	 * @param parameter the method parameter
+	 *
+	 * @param parameter      the method parameter
 	 * @param bindingContext the binding context to use
-	 * @param exchange the current exchange
+	 * @param exchange       the current exchange
 	 * @return the resolved value, if any
 	 */
 	@Nullable

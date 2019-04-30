@@ -16,12 +16,12 @@
 
 package org.springframework.jdbc.support.lob;
 
+import org.springframework.lang.Nullable;
+
 import java.io.InputStream;
 import java.io.Reader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import org.springframework.lang.Nullable;
 
 /**
  * Abstract base class for {@link LobHandler} implementations.
@@ -30,8 +30,8 @@ import org.springframework.lang.Nullable;
  * and delegating to the corresponding accessor that takes a column index.
  *
  * @author Juergen Hoeller
- * @since 1.2
  * @see java.sql.ResultSet#findColumn
+ * @since 1.2
  */
 public abstract class AbstractLobHandler implements LobHandler {
 

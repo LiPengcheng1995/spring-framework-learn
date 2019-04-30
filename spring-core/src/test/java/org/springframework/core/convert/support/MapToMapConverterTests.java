@@ -16,24 +16,17 @@
 
 package org.springframework.core.convert.support;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.convert.ConverterNotFoundException;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import static org.hamcrest.Matchers.*;
+import java.util.*;
+
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.*;
 
 /**
@@ -44,13 +37,20 @@ import static org.junit.Assert.*;
 public class MapToMapConverterTests {
 
 	private final GenericConversionService conversionService = new GenericConversionService();
-
+	public Map<Integer, Integer> scalarMapTarget;
+	public Map<Integer, List<Integer>> collectionMapTarget;
+	public Map<String, List<String>> sourceCollectionMapTarget;
+	public Map<String, String> emptyMapTarget;
+	public LinkedHashMap<String, String> emptyMapDifferentTarget;
+	public MultiValueMap<String, String> multiValueMapTarget;
+	@SuppressWarnings("rawtypes")
+	public Map notGenericMapSource;
+	public EnumMap<MyEnum, Integer> enumMap;
 
 	@Before
 	public void setUp() {
 		conversionService.addConverter(new MapToMapConverter(conversionService));
 	}
-
 
 	@Test
 	public void scalarMap() throws Exception {
@@ -63,8 +63,7 @@ public class MapToMapConverterTests {
 		assertTrue(conversionService.canConvert(sourceType, targetType));
 		try {
 			conversionService.convert(map, sourceType, targetType);
-		}
-		catch (ConversionFailedException ex) {
+		} catch (ConversionFailedException ex) {
 			assertTrue(ex.getCause() instanceof ConverterNotFoundException);
 		}
 
@@ -98,8 +97,7 @@ public class MapToMapConverterTests {
 		assertTrue(conversionService.canConvert(sourceType, targetType));
 		try {
 			conversionService.convert(map, sourceType, targetType);
-		}
-		catch (ConversionFailedException ex) {
+		} catch (ConversionFailedException ex) {
 			assertTrue(ex.getCause() instanceof ConverterNotFoundException);
 		}
 
@@ -123,8 +121,7 @@ public class MapToMapConverterTests {
 		assertTrue(conversionService.canConvert(sourceType, targetType));
 		try {
 			conversionService.convert(map, sourceType, targetType);
-		}
-		catch (ConversionFailedException ex) {
+		} catch (ConversionFailedException ex) {
 			assertTrue(ex.getCause() instanceof ConverterNotFoundException);
 		}
 
@@ -150,8 +147,7 @@ public class MapToMapConverterTests {
 		try {
 			conversionService.convert(map, sourceType, targetType);
 			fail("Should have failed");
-		}
-		catch (ConverterNotFoundException ex) {
+		} catch (ConverterNotFoundException ex) {
 			// expected
 		}
 
@@ -280,23 +276,7 @@ public class MapToMapConverterTests {
 	}
 
 
-	public Map<Integer, Integer> scalarMapTarget;
-
-	public Map<Integer, List<Integer>> collectionMapTarget;
-
-	public Map<String, List<String>> sourceCollectionMapTarget;
-
-	public Map<String, String> emptyMapTarget;
-
-	public LinkedHashMap<String, String> emptyMapDifferentTarget;
-
-	public MultiValueMap<String, String> multiValueMapTarget;
-
-	@SuppressWarnings("rawtypes")
-	public Map notGenericMapSource;
-
-	public EnumMap<MyEnum, Integer> enumMap;
-
+	public enum MyEnum {A, B, C}
 
 	@SuppressWarnings("serial")
 	public static class NoDefaultConstructorMap<K, V> extends HashMap<K, V> {
@@ -305,8 +285,5 @@ public class MapToMapConverterTests {
 			super(map);
 		}
 	}
-
-
-	public enum MyEnum {A, B, C}
 
 }

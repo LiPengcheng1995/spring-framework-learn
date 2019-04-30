@@ -16,13 +16,7 @@
 
 package org.springframework.web.socket.handler;
 
-import org.springframework.web.socket.BinaryMessage;
-import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.PongMessage;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketHandler;
-import org.springframework.web.socket.WebSocketMessage;
-import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.*;
 
 /**
  * A convenient base class for {@link WebSocketHandler} implementation with empty methods.
@@ -41,14 +35,11 @@ public abstract class AbstractWebSocketHandler implements WebSocketHandler {
 	public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
 		if (message instanceof TextMessage) {
 			handleTextMessage(session, (TextMessage) message);
-		}
-		else if (message instanceof BinaryMessage) {
+		} else if (message instanceof BinaryMessage) {
 			handleBinaryMessage(session, (BinaryMessage) message);
-		}
-		else if (message instanceof PongMessage) {
+		} else if (message instanceof PongMessage) {
 			handlePongMessage(session, (PongMessage) message);
-		}
-		else {
+		} else {
 			throw new IllegalStateException("Unexpected WebSocket message type: " + message);
 		}
 	}

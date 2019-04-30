@@ -16,13 +16,8 @@
 
 package org.springframework.web.method.annotation;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-import java.lang.reflect.Method;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.SynthesizingMethodParameter;
 import org.springframework.mock.web.test.MockHttpServletRequest;
@@ -40,8 +35,12 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+import java.lang.reflect.Method;
+
 import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.*;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.*;
 
@@ -267,6 +266,22 @@ public class ModelAttributeMethodProcessorTests {
 		verify(factory).createBinder(this.request, target, expectedAttrName);
 	}
 
+	@ModelAttribute("modelAttrName")
+	@SuppressWarnings("unused")
+	private String annotatedReturnValue() {
+		return null;
+	}
+
+	@SuppressWarnings("unused")
+	private TestBean notAnnotatedReturnValue() {
+		return null;
+	}
+
+
+	@Target({METHOD, FIELD, CONSTRUCTOR, PARAMETER})
+	@Retention(RUNTIME)
+	public @interface Valid {
+	}
 
 	private static class StubRequestDataBinder extends WebRequestDataBinder {
 
@@ -303,14 +318,7 @@ public class ModelAttributeMethodProcessorTests {
 		}
 	}
 
-
-	@Target({METHOD, FIELD, CONSTRUCTOR, PARAMETER})
-	@Retention(RUNTIME)
-	public @interface Valid {
-	}
-
-
-	@SessionAttributes(types=TestBean.class)
+	@SessionAttributes(types = TestBean.class)
 	private static class ModelAttributeHandler {
 
 		@SuppressWarnings("unused")
@@ -319,21 +327,9 @@ public class ModelAttributeMethodProcessorTests {
 				Errors errors,
 				int intArg,
 				@ModelAttribute TestBean defaultNameAttr,
-				@ModelAttribute(name="noBindAttr", binding=false) @Valid TestBean noBindAttr,
+				@ModelAttribute(name = "noBindAttr", binding = false) @Valid TestBean noBindAttr,
 				TestBean notAnnotatedAttr) {
 		}
-	}
-
-
-	@ModelAttribute("modelAttrName") @SuppressWarnings("unused")
-	private String annotatedReturnValue() {
-		return null;
-	}
-
-
-	@SuppressWarnings("unused")
-	private TestBean notAnnotatedReturnValue() {
-		return null;
 	}
 
 }

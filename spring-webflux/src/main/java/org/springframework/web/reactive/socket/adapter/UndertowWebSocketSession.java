@@ -16,17 +16,10 @@
 
 package org.springframework.web.reactive.socket.adapter;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-
 import io.undertow.websockets.core.CloseMessage;
 import io.undertow.websockets.core.WebSocketCallback;
 import io.undertow.websockets.core.WebSocketChannel;
 import io.undertow.websockets.core.WebSockets;
-import reactor.core.publisher.Mono;
-import reactor.core.publisher.MonoProcessor;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
@@ -36,11 +29,17 @@ import org.springframework.web.reactive.socket.CloseStatus;
 import org.springframework.web.reactive.socket.HandshakeInfo;
 import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.WebSocketSession;
+import reactor.core.publisher.Mono;
+import reactor.core.publisher.MonoProcessor;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Spring {@link WebSocketSession} implementation that adapts to an Undertow
  * {@link io.undertow.websockets.core.WebSocketChannel}.
- * 
+ *
  * @author Violeta Georgieva
  * @author Rossen Stoyanchev
  * @since 5.0
@@ -52,7 +51,7 @@ public class UndertowWebSocketSession extends AbstractListenerWebSocketSession<W
 	}
 
 	public UndertowWebSocketSession(WebSocketChannel channel, HandshakeInfo info,
-			DataBufferFactory factory, @Nullable MonoProcessor<Void> completionMono) {
+									DataBufferFactory factory, @Nullable MonoProcessor<Void> completionMono) {
 
 		super(channel, ObjectUtils.getIdentityHexString(channel), info, factory, completionMono);
 		suspendReceiving();
@@ -81,20 +80,16 @@ public class UndertowWebSocketSession extends AbstractListenerWebSocketSession<W
 			getSendProcessor().setReadyToSend(false);
 			String text = new String(buffer.array(), StandardCharsets.UTF_8);
 			WebSockets.sendText(text, getDelegate(), new SendProcessorCallback(message.getPayload()));
-		}
-		else if (WebSocketMessage.Type.BINARY.equals(message.getType())) {
+		} else if (WebSocketMessage.Type.BINARY.equals(message.getType())) {
 			getSendProcessor().setReadyToSend(false);
 			WebSockets.sendBinary(buffer, getDelegate(), new SendProcessorCallback(message.getPayload()));
-		}
-		else if (WebSocketMessage.Type.PING.equals(message.getType())) {
+		} else if (WebSocketMessage.Type.PING.equals(message.getType())) {
 			getSendProcessor().setReadyToSend(false);
 			WebSockets.sendPing(buffer, getDelegate(), new SendProcessorCallback(message.getPayload()));
-		}
-		else if (WebSocketMessage.Type.PONG.equals(message.getType())) {
+		} else if (WebSocketMessage.Type.PONG.equals(message.getType())) {
 			getSendProcessor().setReadyToSend(false);
 			WebSockets.sendPong(buffer, getDelegate(), new SendProcessorCallback(message.getPayload()));
-		}
-		else {
+		} else {
 			throw new IllegalArgumentException("Unexpected message type: " + message.getType());
 		}
 		return true;

@@ -16,18 +16,18 @@
 
 package org.springframework.test.web.servlet.result;
 
-import java.util.Date;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.StubMvcResult;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.ModelAndView;
 
-import static org.hamcrest.Matchers.*;
+import java.util.Date;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.startsWith;
 
 /**
  * Unit tests for
@@ -73,17 +73,17 @@ public class ModelResultMatchersTests {
 		this.matchers.attributeExists("bad").match(this.mvcResult);
 	}
 
-    @Test
-    public void  attributeDoesNotExist() throws Exception {
-        this.matchers.attributeDoesNotExist("bad").match(this.mvcResult);
-    }
+	@Test
+	public void attributeDoesNotExist() throws Exception {
+		this.matchers.attributeDoesNotExist("bad").match(this.mvcResult);
+	}
 
-    @Test(expected = AssertionError.class)
-    public void attributeDoesNotExist_doesExist() throws Exception {
-        this.matchers.attributeDoesNotExist("good").match(this.mvcResultWithError);
-    }
+	@Test(expected = AssertionError.class)
+	public void attributeDoesNotExist_doesExist() throws Exception {
+		this.matchers.attributeDoesNotExist("good").match(this.mvcResultWithError);
+	}
 
-    @Test
+	@Test
 	public void attribute_equal() throws Exception {
 		this.matchers.attribute("good", is("good")).match(this.mvcResult);
 	}

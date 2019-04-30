@@ -16,12 +16,13 @@
 
 package org.springframework.jmx.export.assembler;
 
+import org.junit.Test;
+
 import javax.management.modelmbean.ModelMBeanAttributeInfo;
 import javax.management.modelmbean.ModelMBeanInfo;
 
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Rob Harrop
@@ -50,7 +51,7 @@ public class InterfaceBasedMBeanInfoAssemblerCustomTests extends AbstractJmxAsse
 	@Override
 	protected MBeanInfoAssembler getAssembler() {
 		InterfaceBasedMBeanInfoAssembler assembler = new InterfaceBasedMBeanInfoAssembler();
-		assembler.setManagedInterfaces(new Class<?>[] {ICustomJmxBean.class});
+		assembler.setManagedInterfaces(new Class<?>[]{ICustomJmxBean.class});
 		return assembler;
 	}
 

@@ -20,7 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.containsString;
 
 /**
  * Unit tests for {@link GenericXmlWebContextLoader}.
@@ -43,7 +43,7 @@ public class GenericXmlWebContextLoaderTests {
 
 		GenericXmlWebContextLoader loader = new GenericXmlWebContextLoader();
 		WebMergedContextConfiguration mergedConfig = new WebMergedContextConfiguration(getClass(), EMPTY_STRING_ARRAY,
-				new Class<?>[] { getClass() }, null, EMPTY_STRING_ARRAY, EMPTY_STRING_ARRAY, EMPTY_STRING_ARRAY,
+				new Class<?>[]{getClass()}, null, EMPTY_STRING_ARRAY, EMPTY_STRING_ARRAY, EMPTY_STRING_ARRAY,
 				"resource/path", loader, null, null);
 		loader.loadContext(mergedConfig);
 	}

@@ -16,9 +16,6 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.util.Collections;
-import java.util.Map;
-
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapterRegistry;
@@ -32,6 +29,9 @@ import org.springframework.web.bind.annotation.ValueConstants;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.server.ServerErrorException;
 import org.springframework.web.server.ServerWebExchange;
+
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * Resolves method arguments annotated with @{@link PathVariable}.
@@ -49,19 +49,19 @@ import org.springframework.web.server.ServerWebExchange;
  *
  * @author Rossen Stoyanchev
  * @author Juergen Hoeller
- * @since 5.0
  * @see PathVariableMapMethodArgumentResolver
+ * @since 5.0
  */
 public class PathVariableMethodArgumentResolver extends AbstractNamedValueSyncArgumentResolver {
 
 	/**
-	 * @param factory a bean factory to use for resolving  ${...}
-	 * placeholder and #{...} SpEL expressions in default values;
-	 * or {@code null} if default values are not expected to contain expressions
+	 * @param factory  a bean factory to use for resolving  ${...}
+	 *                 placeholder and #{...} SpEL expressions in default values;
+	 *                 or {@code null} if default values are not expected to contain expressions
 	 * @param registry for checking reactive type wrappers
 	 */
 	public PathVariableMethodArgumentResolver(@Nullable ConfigurableBeanFactory factory,
-			ReactiveAdapterRegistry registry) {
+											  ReactiveAdapterRegistry registry) {
 
 		super(factory, registry);
 	}

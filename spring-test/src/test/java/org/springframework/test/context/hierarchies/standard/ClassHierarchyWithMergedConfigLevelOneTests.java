@@ -18,7 +18,6 @@ package org.springframework.test.context.hierarchies.standard;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -37,10 +36,30 @@ import static org.junit.Assert.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextHierarchy({
 //
-	@ContextConfiguration(name = "parent", classes = ClassHierarchyWithMergedConfigLevelOneTests.AppConfig.class),//
-	@ContextConfiguration(name = "child", classes = ClassHierarchyWithMergedConfigLevelOneTests.UserConfig.class) //
+		@ContextConfiguration(name = "parent", classes = ClassHierarchyWithMergedConfigLevelOneTests.AppConfig.class),//
+		@ContextConfiguration(name = "child", classes = ClassHierarchyWithMergedConfigLevelOneTests.UserConfig.class) //
 })
 public class ClassHierarchyWithMergedConfigLevelOneTests {
+
+	@Autowired
+	protected String parent;
+	@Autowired
+	protected String user;
+	@Autowired(required = false)
+	@Qualifier("beanFromUserConfig")
+	protected String beanFromUserConfig;
+	@Autowired
+	protected ApplicationContext context;
+
+	@Test
+	public void loadContextHierarchy() {
+		assertNotNull("child ApplicationContext", context);
+		assertNotNull("parent ApplicationContext", context.getParent());
+		assertNull("grandparent ApplicationContext", context.getParent().getParent());
+		assertEquals("parent", parent);
+		assertEquals("parent + user", user);
+		assertEquals("from UserConfig", beanFromUserConfig);
+	}
 
 	@Configuration
 	static class AppConfig {
@@ -67,31 +86,6 @@ public class ClassHierarchyWithMergedConfigLevelOneTests {
 		public String beanFromUserConfig() {
 			return "from UserConfig";
 		}
-	}
-
-
-	@Autowired
-	protected String parent;
-
-	@Autowired
-	protected String user;
-
-	@Autowired(required = false)
-	@Qualifier("beanFromUserConfig")
-	protected String beanFromUserConfig;
-
-	@Autowired
-	protected ApplicationContext context;
-
-
-	@Test
-	public void loadContextHierarchy() {
-		assertNotNull("child ApplicationContext", context);
-		assertNotNull("parent ApplicationContext", context.getParent());
-		assertNull("grandparent ApplicationContext", context.getParent().getParent());
-		assertEquals("parent", parent);
-		assertEquals("parent + user", user);
-		assertEquals("from UserConfig", beanFromUserConfig);
 	}
 
 }

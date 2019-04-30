@@ -17,30 +17,23 @@
 package org.springframework.web.context.request.async;
 
 
-import java.util.function.Consumer;
-
-import javax.servlet.AsyncEvent;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.mock.web.test.MockAsyncContext;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.mock.web.test.MockHttpServletResponse;
 
+import javax.servlet.AsyncEvent;
+import java.util.function.Consumer;
+
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.mock;
 import static org.mockito.BDDMockito.verify;
 
 /**
  * A test fixture with a {@link StandardServletAsyncWebRequest}.
+ *
  * @author Rossen Stoyanchev
  */
 public class StandardServletAsyncWebRequestTests {
@@ -58,7 +51,7 @@ public class StandardServletAsyncWebRequestTests {
 		this.request.setAsyncSupported(true);
 		this.response = new MockHttpServletResponse();
 		this.asyncRequest = new StandardServletAsyncWebRequest(this.request, this.response);
-		this.asyncRequest.setTimeout(44*1000L);
+		this.asyncRequest.setTimeout(44 * 1000L);
 	}
 
 
@@ -85,7 +78,7 @@ public class StandardServletAsyncWebRequestTests {
 		this.asyncRequest.startAsync();
 		this.asyncRequest.startAsync();
 		this.asyncRequest.startAsync();
-		this.asyncRequest.startAsync();	// idempotent
+		this.asyncRequest.startAsync();    // idempotent
 
 		MockAsyncContext context = (MockAsyncContext) this.request.getAsyncContext();
 		assertNotNull(context);
@@ -98,8 +91,7 @@ public class StandardServletAsyncWebRequestTests {
 		try {
 			this.asyncRequest.startAsync();
 			fail("expected exception");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertThat(ex.getMessage(), containsString("Async support must be enabled"));
 		}
 	}
@@ -110,8 +102,7 @@ public class StandardServletAsyncWebRequestTests {
 		try {
 			this.asyncRequest.startAsync();
 			fail("expected exception");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertEquals("Async processing has already completed", ex.getMessage());
 		}
 	}

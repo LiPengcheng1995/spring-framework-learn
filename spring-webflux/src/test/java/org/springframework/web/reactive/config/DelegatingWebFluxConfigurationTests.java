@@ -16,16 +16,12 @@
 
 package org.springframework.web.reactive.config;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.codec.HttpMessageWriter;
@@ -33,6 +29,9 @@ import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.reactive.accept.RequestedContentTypeResolverBuilder;
+
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.*;

@@ -16,17 +16,17 @@
 
 package org.springframework.messaging.simp.stomp;
 
-import java.nio.ByteBuffer;
-import java.util.Collections;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.LinkedBlockingQueue;
-
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+
+import java.nio.ByteBuffer;
+import java.util.Collections;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * An extension of {@link org.springframework.messaging.simp.stomp.StompDecoder}
@@ -43,8 +43,8 @@ import org.springframework.util.MultiValueMap;
  * It is expected that the underlying session is closed at that point.
  *
  * @author Rossen Stoyanchev
- * @since 4.0.3
  * @see StompDecoder
+ * @since 4.0.3
  */
 public class BufferingStompDecoder {
 
@@ -60,7 +60,8 @@ public class BufferingStompDecoder {
 
 	/**
 	 * Create a new {@code BufferingStompDecoder} wrapping the given {@code StompDecoder}.
-	 * @param stompDecoder the target decoder to wrap
+	 *
+	 * @param stompDecoder    the target decoder to wrap
 	 * @param bufferSizeLimit the buffer size limit
 	 */
 	public BufferingStompDecoder(StompDecoder stompDecoder, int bufferSizeLimit) {
@@ -96,6 +97,7 @@ public class BufferingStompDecoder {
 	 * is "content-length" header, every subsequent call to decode attempts to
 	 * parse again with all available data. Therefore the presence of a "content-length"
 	 * header helps to optimize the decoding of large messages.
+	 *
 	 * @param newBuffer a buffer containing new data to decode
 	 * @return decoded messages or an empty list
 	 * @throws StompConversionException raised in case of decoding issues
@@ -125,8 +127,7 @@ public class BufferingStompDecoder {
 		ByteBuffer result;
 		if (this.chunks.size() == 1) {
 			result = this.chunks.remove();
-		}
-		else {
+		} else {
 			result = ByteBuffer.allocate(getBufferSize());
 			for (ByteBuffer partial : this.chunks) {
 				result.put(partial);
@@ -143,7 +144,7 @@ public class BufferingStompDecoder {
 		if (contentLength != null && contentLength > this.bufferSizeLimit) {
 			throw new StompConversionException(
 					"STOMP 'content-length' header value " + this.expectedContentLength +
-					"  exceeds configured buffer size limit " + this.bufferSizeLimit);
+							"  exceeds configured buffer size limit " + this.bufferSizeLimit);
 		}
 		if (getBufferSize() > this.bufferSizeLimit) {
 			throw new StompConversionException("The configured STOMP buffer size limit of " +

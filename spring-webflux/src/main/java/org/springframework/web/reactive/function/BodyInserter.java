@@ -16,32 +16,32 @@
 
 package org.springframework.web.reactive.function;
 
+import org.springframework.http.ReactiveHttpOutputMessage;
+import org.springframework.http.codec.HttpMessageWriter;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import reactor.core.publisher.Mono;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import reactor.core.publisher.Mono;
-
-import org.springframework.http.ReactiveHttpOutputMessage;
-import org.springframework.http.codec.HttpMessageWriter;
-import org.springframework.http.server.reactive.ServerHttpRequest;
-
 /**
  * A combination of functions that can populate a {@link ReactiveHttpOutputMessage} body.
  *
- * @author Arjen Poutsma
- * @since 5.0
  * @param <T> the type of data to insert
  * @param <M> the type of {@link ReactiveHttpOutputMessage} this inserter can be applied to
+ * @author Arjen Poutsma
  * @see BodyInserters
+ * @since 5.0
  */
 @FunctionalInterface
 public interface BodyInserter<T, M extends ReactiveHttpOutputMessage> {
 
 	/**
 	 * Insert into the given output message.
+	 *
 	 * @param outputMessage the response to insert into
-	 * @param context the context to use
+	 * @param context       the context to use
 	 * @return a {@code Mono} that indicates completion or error
 	 */
 	Mono<Void> insert(M outputMessage, Context context);
@@ -54,6 +54,7 @@ public interface BodyInserter<T, M extends ReactiveHttpOutputMessage> {
 
 		/**
 		 * Return the {@link HttpMessageWriter}s to be used for response body conversion.
+		 *
 		 * @return the stream of message writers
 		 */
 		List<HttpMessageWriter<?>> messageWriters();

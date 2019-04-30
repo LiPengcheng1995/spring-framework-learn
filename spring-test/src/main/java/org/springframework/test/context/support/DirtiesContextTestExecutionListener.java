@@ -23,8 +23,9 @@ import org.springframework.test.annotation.DirtiesContext.MethodMode;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListeners;
 
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.*;
-import static org.springframework.test.annotation.DirtiesContext.MethodMode.*;
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_CLASS;
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
+import static org.springframework.test.annotation.DirtiesContext.MethodMode.AFTER_METHOD;
 
 /**
  * {@code TestExecutionListener} which provides support for marking the
@@ -47,9 +48,9 @@ import static org.springframework.test.annotation.DirtiesContext.MethodMode.*;
  * {@code DependencyInjectionTestExecutionListener}.
  *
  * @author Sam Brannen
- * @since 2.5
  * @see DirtiesContext
  * @see DirtiesContextBeforeModesTestExecutionListener
+ * @since 2.5
  */
 public class DirtiesContextTestExecutionListener extends AbstractDirtiesContextTestExecutionListener {
 

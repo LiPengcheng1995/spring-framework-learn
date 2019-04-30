@@ -16,15 +16,15 @@
 
 package org.springframework.expression.spel.support;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.List;
-
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.expression.AccessException;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.MethodExecutor;
 import org.springframework.lang.Nullable;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.List;
 
 /**
  * A {@link org.springframework.expression.MethodResolver} variant for data binding
@@ -35,9 +35,9 @@ import org.springframework.lang.Nullable;
  * For unrestricted resolution, choose {@link ReflectiveMethodResolver} instead.
  *
  * @author Juergen Hoeller
- * @since 4.3.15
  * @see #forInstanceMethodInvocation()
  * @see DataBindingPropertyAccessor
+ * @since 4.3.15
  */
 public class DataBindingMethodResolver extends ReflectiveMethodResolver {
 
@@ -45,10 +45,17 @@ public class DataBindingMethodResolver extends ReflectiveMethodResolver {
 		super();
 	}
 
+	/**
+	 * Create a new data-binding method resolver for instance method resolution.
+	 */
+	public static DataBindingMethodResolver forInstanceMethodInvocation() {
+		return new DataBindingMethodResolver();
+	}
+
 	@Override
 	@Nullable
 	public MethodExecutor resolve(EvaluationContext context, Object targetObject, String name,
-			List<TypeDescriptor> argumentTypes) throws AccessException {
+								  List<TypeDescriptor> argumentTypes) throws AccessException {
 
 		if (targetObject instanceof Class) {
 			throw new IllegalArgumentException("DataBindingMethodResolver does not support Class targets");
@@ -63,14 +70,6 @@ public class DataBindingMethodResolver extends ReflectiveMethodResolver {
 		}
 		Class<?> clazz = method.getDeclaringClass();
 		return (clazz != Object.class && clazz != Class.class && !ClassLoader.class.isAssignableFrom(targetClass));
-	}
-
-
-	/**
-	 * Create a new data-binding method resolver for instance method resolution.
-	 */
-	public static DataBindingMethodResolver forInstanceMethodInvocation() {
-		return new DataBindingMethodResolver();
 	}
 
 }

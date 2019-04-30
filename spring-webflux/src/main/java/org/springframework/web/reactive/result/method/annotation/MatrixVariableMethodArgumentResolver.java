@@ -16,10 +16,6 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapterRegistry;
@@ -35,6 +31,10 @@ import org.springframework.web.server.ServerErrorException;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.ServerWebInputException;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Resolves arguments annotated with {@link MatrixVariable @MatrixVariable}.
  *
@@ -44,8 +44,8 @@ import org.springframework.web.server.ServerWebInputException;
  * type map (vs multiple attributes collected in a map).
  *
  * @author Rossen Stoyanchev
- * @since 5.0.1
  * @see MatrixVariableMapMethodArgumentResolver
+ * @since 5.0.1
  */
 public class MatrixVariableMethodArgumentResolver extends AbstractNamedValueSyncArgumentResolver {
 
@@ -88,8 +88,7 @@ public class MatrixVariableMethodArgumentResolver extends AbstractNamedValueSync
 			if (pathParameters.containsKey(pathVar)) {
 				paramValues = pathParameters.get(pathVar).get(name);
 			}
-		}
-		else {
+		} else {
 			boolean found = false;
 			paramValues = new ArrayList<>();
 			for (MultiValueMap<String, String> params : pathParameters.values()) {
@@ -98,7 +97,7 @@ public class MatrixVariableMethodArgumentResolver extends AbstractNamedValueSync
 						String paramType = param.getNestedParameterType().getName();
 						throw new ServerErrorException(
 								"Found more than one match for URI path parameter '" + name +
-								"' for parameter type [" + paramType + "]. Use 'pathVar' attribute to disambiguate.",
+										"' for parameter type [" + paramType + "]. Use 'pathVar' attribute to disambiguate.",
 								param, null);
 					}
 					paramValues.addAll(params.get(name));
@@ -109,11 +108,9 @@ public class MatrixVariableMethodArgumentResolver extends AbstractNamedValueSync
 
 		if (CollectionUtils.isEmpty(paramValues)) {
 			return null;
-		}
-		else if (paramValues.size() == 1) {
+		} else if (paramValues.size() == 1) {
 			return paramValues.get(0);
-		}
-		else {
+		} else {
 			return paramValues;
 		}
 	}

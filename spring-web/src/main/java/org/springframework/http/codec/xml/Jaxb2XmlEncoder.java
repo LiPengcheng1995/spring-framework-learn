@@ -16,17 +16,6 @@
 
 package org.springframework.http.codec.xml;
 
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.MarshalException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
-import reactor.core.publisher.Flux;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.codec.AbstractSingleValueEncoder;
 import org.springframework.core.codec.CodecException;
@@ -37,14 +26,24 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
+import reactor.core.publisher.Flux;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.MarshalException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 /**
  * Encode from {@code Object} stream to a byte stream containing XML elements.
  *
  * @author Sebastien Deleuze
  * @author Arjen Poutsma
- * @since 5.0
  * @see Jaxb2XmlDecoder
+ * @since 5.0
  */
 public class Jaxb2XmlEncoder extends AbstractSingleValueEncoder<Object> {
 
@@ -62,8 +61,7 @@ public class Jaxb2XmlEncoder extends AbstractSingleValueEncoder<Object> {
 			Class<?> outputClass = elementType.resolve(Object.class);
 			return (outputClass.isAnnotationPresent(XmlRootElement.class) ||
 					outputClass.isAnnotationPresent(XmlType.class));
-		}
-		else {
+		} else {
 			return false;
 		}
 
@@ -71,7 +69,7 @@ public class Jaxb2XmlEncoder extends AbstractSingleValueEncoder<Object> {
 
 	@Override
 	protected Flux<DataBuffer> encode(Object value, DataBufferFactory dataBufferFactory,
-			ResolvableType type, @Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
+									  ResolvableType type, @Nullable MimeType mimeType, @Nullable Map<String, Object> hints) {
 		try {
 			DataBuffer buffer = dataBufferFactory.allocateBuffer(1024);
 			OutputStream outputStream = buffer.asOutputStream();
@@ -80,11 +78,9 @@ public class Jaxb2XmlEncoder extends AbstractSingleValueEncoder<Object> {
 			marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
 			marshaller.marshal(value, outputStream);
 			return Flux.just(buffer);
-		}
-		catch (MarshalException ex) {
+		} catch (MarshalException ex) {
 			return Flux.error(new EncodingException("Could not marshal " + value.getClass() + " to XML", ex));
-		}
-		catch (JAXBException ex) {
+		} catch (JAXBException ex) {
 			return Flux.error(new CodecException("Invalid JAXB configuration", ex));
 		}
 	}

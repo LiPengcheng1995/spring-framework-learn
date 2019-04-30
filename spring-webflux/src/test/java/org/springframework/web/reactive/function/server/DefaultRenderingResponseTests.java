@@ -16,20 +16,7 @@
 
 package org.springframework.web.reactive.function.server;
 
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -44,8 +31,15 @@ import org.springframework.web.reactive.result.view.View;
 import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.reactive.result.view.ViewResolverSupport;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import static org.junit.Assert.*;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
@@ -174,18 +168,6 @@ public class DefaultRenderingResponseTests {
 		assertEquals(ViewResolverSupport.DEFAULT_CONTENT_TYPE, exchange.getResponse().getHeaders().getContentType());
 	}
 
-
-	private static class TestView extends AbstractView {
-
-		@Override
-		protected Mono<Void> renderInternal(Map<String, Object> renderAttributes,
-				MediaType contentType, ServerWebExchange exchange) {
-
-			return Mono.empty();
-		}
-
-	}
-
 	@Test
 	public void notModifiedEtag() {
 		String etag = "\"foo\"";
@@ -231,6 +213,17 @@ public class DefaultRenderingResponseTests {
 		StepVerifier.create(response.getBody())
 				.expectError(IllegalStateException.class)
 				.verify();
+	}
+
+	private static class TestView extends AbstractView {
+
+		@Override
+		protected Mono<Void> renderInternal(Map<String, Object> renderAttributes,
+											MediaType contentType, ServerWebExchange exchange) {
+
+			return Mono.empty();
+		}
+
 	}
 
 

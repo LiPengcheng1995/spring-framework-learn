@@ -35,6 +35,12 @@ public abstract class AbstractThemeResolver implements ThemeResolver {
 
 	private String defaultThemeName = ORIGINAL_DEFAULT_THEME_NAME;
 
+	/**
+	 * Return the name of the default theme.
+	 */
+	public String getDefaultThemeName() {
+		return this.defaultThemeName;
+	}
 
 	/**
 	 * Set the name of the default theme.
@@ -42,13 +48,6 @@ public abstract class AbstractThemeResolver implements ThemeResolver {
 	 */
 	public void setDefaultThemeName(String defaultThemeName) {
 		this.defaultThemeName = defaultThemeName;
-	}
-
-	/**
-	 * Return the name of the default theme.
-	 */
-	public String getDefaultThemeName() {
-		return this.defaultThemeName;
 	}
 
 }

@@ -16,15 +16,6 @@
 
 package org.springframework.web.servlet.handler;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -43,6 +34,11 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Helper class to get information from the {@code HandlerMapping} that would
@@ -79,6 +75,7 @@ public class HandlerMappingIntrospector
 	 * Constructor that detects the configured {@code HandlerMapping}s in the
 	 * given {@code ApplicationContext} or falls back on
 	 * "DispatcherServlet.properties" like the {@code DispatcherServlet}.
+	 *
 	 * @deprecated as of 4.3.12, in favor of {@link #setApplicationContext}
 	 */
 	@Deprecated
@@ -86,6 +83,41 @@ public class HandlerMappingIntrospector
 		this.handlerMappings = initHandlerMappings(context);
 	}
 
+	private static List<HandlerMapping> initHandlerMappings(ApplicationContext applicationContext) {
+		Map<String, HandlerMapping> beans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
+				applicationContext, HandlerMapping.class, true, false);
+		if (!beans.isEmpty()) {
+			List<HandlerMapping> mappings = new ArrayList<>(beans.values());
+			AnnotationAwareOrderComparator.sort(mappings);
+			return Collections.unmodifiableList(mappings);
+		}
+		return Collections.unmodifiableList(initFallback(applicationContext));
+	}
+
+	private static List<HandlerMapping> initFallback(ApplicationContext applicationContext) {
+		Properties props;
+		String path = "DispatcherServlet.properties";
+		try {
+			Resource resource = new ClassPathResource(path, DispatcherServlet.class);
+			props = PropertiesLoaderUtils.loadProperties(resource);
+		} catch (IOException ex) {
+			throw new IllegalStateException("Could not load '" + path + "': " + ex.getMessage());
+		}
+
+		String value = props.getProperty(HandlerMapping.class.getName());
+		String[] names = StringUtils.commaDelimitedListToStringArray(value);
+		List<HandlerMapping> result = new ArrayList<>(names.length);
+		for (String name : names) {
+			try {
+				Class<?> clazz = ClassUtils.forName(name, DispatcherServlet.class.getClassLoader());
+				Object mapping = applicationContext.getAutowireCapableBeanFactory().createBean(clazz);
+				result.add((HandlerMapping) mapping);
+			} catch (ClassNotFoundException ex) {
+				throw new IllegalStateException("Could not find default HandlerMapping [" + name + "]");
+			}
+		}
+		return result;
+	}
 
 	/**
 	 * Return the configured HandlerMapping's.
@@ -93,7 +125,6 @@ public class HandlerMappingIntrospector
 	public List<HandlerMapping> getHandlerMappings() {
 		return (this.handlerMappings != null ? this.handlerMappings : Collections.emptyList());
 	}
-
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) {
@@ -108,13 +139,13 @@ public class HandlerMappingIntrospector
 		}
 	}
 
-
 	/**
 	 * Find the {@link HandlerMapping} that would handle the given request and
 	 * return it as a {@link MatchableHandlerMapping} that can be used to test
 	 * request-matching criteria.
 	 * <p>If the matching HandlerMapping is not an instance of
 	 * {@link MatchableHandlerMapping}, an IllegalStateException is raised.
+	 *
 	 * @param request the current request
 	 * @return the resolved matcher, or {@code null}
 	 * @throws Exception if any of the HandlerMapping's raise an exception
@@ -145,8 +176,7 @@ public class HandlerMappingIntrospector
 			HandlerExecutionChain handler = null;
 			try {
 				handler = handlerMapping.getHandler(wrapper);
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				// Ignore
 			}
 			if (handler == null) {
@@ -165,46 +195,6 @@ public class HandlerMappingIntrospector
 		}
 		return null;
 	}
-
-
-	private static List<HandlerMapping> initHandlerMappings(ApplicationContext applicationContext) {
-		Map<String, HandlerMapping> beans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
-				applicationContext, HandlerMapping.class, true, false);
-		if (!beans.isEmpty()) {
-			List<HandlerMapping> mappings = new ArrayList<>(beans.values());
-			AnnotationAwareOrderComparator.sort(mappings);
-			return Collections.unmodifiableList(mappings);
-		}
-		return Collections.unmodifiableList(initFallback(applicationContext));
-	}
-
-	private static List<HandlerMapping> initFallback(ApplicationContext applicationContext) {
-		Properties props;
-		String path = "DispatcherServlet.properties";
-		try {
-			Resource resource = new ClassPathResource(path, DispatcherServlet.class);
-			props = PropertiesLoaderUtils.loadProperties(resource);
-		}
-		catch (IOException ex) {
-			throw new IllegalStateException("Could not load '" + path + "': " + ex.getMessage());
-		}
-
-		String value = props.getProperty(HandlerMapping.class.getName());
-		String[] names = StringUtils.commaDelimitedListToStringArray(value);
-		List<HandlerMapping> result = new ArrayList<>(names.length);
-		for (String name : names) {
-			try {
-				Class<?> clazz = ClassUtils.forName(name, DispatcherServlet.class.getClassLoader());
-				Object mapping = applicationContext.getAutowireCapableBeanFactory().createBean(clazz);
-				result.add((HandlerMapping) mapping);
-			}
-			catch (ClassNotFoundException ex) {
-				throw new IllegalStateException("Could not find default HandlerMapping [" + name + "]");
-			}
-		}
-		return result;
-	}
-
 
 	/**
 	 * Request wrapper that ignores request attribute changes.

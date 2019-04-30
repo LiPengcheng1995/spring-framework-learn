@@ -16,30 +16,8 @@
 
 package org.springframework.mock.web.reactive.function.server;
 
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.security.Principal;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalLong;
-import java.util.concurrent.ConcurrentHashMap;
-
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpCookie;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpRange;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.http.codec.multipart.Part;
 import org.springframework.http.server.PathContainer;
 import org.springframework.http.server.RequestPath;
@@ -54,6 +32,15 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.server.WebSession;
 import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.security.Principal;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Mock implementation of {@link ServerRequest}.
@@ -90,9 +77,9 @@ public class MockServerRequest implements ServerRequest {
 
 
 	private MockServerRequest(HttpMethod method, URI uri, String contextPath, MockHeaders headers,
-			MultiValueMap<String, HttpCookie> cookies, @Nullable Object body,
-			Map<String, Object> attributes, MultiValueMap<String, String> queryParams,
-			Map<String, String> pathVariables, @Nullable WebSession session, @Nullable Principal principal) {
+							  MultiValueMap<String, HttpCookie> cookies, @Nullable Object body,
+							  Map<String, Object> attributes, MultiValueMap<String, String> queryParams,
+							  Map<String, String> pathVariables, @Nullable WebSession session, @Nullable Principal principal) {
 
 		this.method = method;
 		this.uri = uri;
@@ -107,6 +94,9 @@ public class MockServerRequest implements ServerRequest {
 		this.principal = principal;
 	}
 
+	public static Builder builder() {
+		return new BuilderImpl();
+	}
 
 	@Override
 	public HttpMethod method() {
@@ -210,7 +200,6 @@ public class MockServerRequest implements ServerRequest {
 		return Mono.justOrEmpty(this.principal);
 	}
 
-
 	@Override
 	@SuppressWarnings("unchecked")
 	public Mono<MultiValueMap<String, String>> formData() {
@@ -223,10 +212,6 @@ public class MockServerRequest implements ServerRequest {
 	public Mono<MultiValueMap<String, Part>> multipartData() {
 		Assert.state(this.body != null, "No body");
 		return (Mono<MultiValueMap<String, Part>>) this.body;
-	}
-
-	public static Builder builder() {
-		return new BuilderImpl();
 	}
 
 	/**

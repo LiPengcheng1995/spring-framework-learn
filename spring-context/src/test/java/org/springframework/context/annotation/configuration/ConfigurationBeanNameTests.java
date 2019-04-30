@@ -17,18 +17,13 @@
 package org.springframework.context.annotation.configuration;
 
 import org.junit.Test;
-
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.context.annotation.AnnotationBeanNameGenerator;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.*;
 import org.springframework.stereotype.Component;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Unit tests ensuring that configuration class bean names as expressed via @Configuration
@@ -85,12 +80,18 @@ public class ConfigurationBeanNameTests {
 	static class A {
 		@Component("nested")
 		static class B {
-			@Bean public String nestedBean() { return ""; }
+			@Bean
+			public String nestedBean() {
+				return "";
+			}
 		}
 	}
 
 	@Configuration("imported")
 	static class C {
-		@Bean public String s() { return "s"; }
+		@Bean
+		public String s() {
+			return "s";
+		}
 	}
 }

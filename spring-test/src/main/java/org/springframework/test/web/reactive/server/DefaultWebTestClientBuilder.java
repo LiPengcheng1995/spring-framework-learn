@@ -16,10 +16,6 @@
 
 package org.springframework.test.web.reactive.server;
 
-import java.time.Duration;
-import java.util.List;
-import java.util.function.Consumer;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -31,6 +27,10 @@ import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 import org.springframework.web.util.UriBuilderFactory;
+
+import java.time.Duration;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Default implementation of {@link WebTestClient.Builder}.
@@ -52,30 +52,38 @@ class DefaultWebTestClientBuilder implements WebTestClient.Builder {
 	private Duration responseTimeout;
 
 
-	/** Connect to server via Reactor Netty */
+	/**
+	 * Connect to server via Reactor Netty
+	 */
 	DefaultWebTestClientBuilder() {
 		this(new ReactorClientHttpConnector());
 	}
 
-	/** Connect to server through the given connector */
+	/**
+	 * Connect to server through the given connector
+	 */
 	DefaultWebTestClientBuilder(ClientHttpConnector connector) {
 		this(null, null, connector, null);
 	}
 
-	/** Connect to given mock server with mock request and response */
+	/**
+	 * Connect to given mock server with mock request and response
+	 */
 	DefaultWebTestClientBuilder(WebHttpHandlerBuilder httpHandlerBuilder) {
 		this(null, httpHandlerBuilder, null, null);
 	}
 
-	/** Copy constructor */
+	/**
+	 * Copy constructor
+	 */
 	DefaultWebTestClientBuilder(DefaultWebTestClientBuilder other) {
 		this(other.webClientBuilder.clone(), other.httpHandlerBuilder, other.connector,
 				other.responseTimeout);
 	}
 
 	private DefaultWebTestClientBuilder(@Nullable WebClient.Builder webClientBuilder,
-			@Nullable WebHttpHandlerBuilder httpHandlerBuilder, @Nullable ClientHttpConnector connector,
-			@Nullable Duration responseTimeout) {
+										@Nullable WebHttpHandlerBuilder httpHandlerBuilder, @Nullable ClientHttpConnector connector,
+										@Nullable Duration responseTimeout) {
 
 		Assert.isTrue(httpHandlerBuilder != null || connector != null,
 				"Either WebHttpHandlerBuilder or ClientHttpConnector must be provided");

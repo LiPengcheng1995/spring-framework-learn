@@ -16,6 +16,12 @@
 
 package org.springframework.http.server.reactive;
 
+import org.junit.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
+import org.springframework.mock.http.server.reactive.test.MockServerHttpResponse;
+import reactor.core.publisher.Mono;
+
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,17 +29,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Test;
-import reactor.core.publisher.Mono;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
-import org.springframework.mock.http.server.reactive.test.MockServerHttpResponse;
-
 import static junit.framework.TestCase.assertFalse;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * Unit tests for {@link ContextPathCompositeHandler}.
@@ -54,8 +51,7 @@ public class ContextPathCompositeHandlerTests {
 		try {
 			new ContextPathCompositeHandler(Collections.singletonMap(contextPath, new TestHttpHandler()));
 			fail();
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			assertEquals(expectedError, ex.getMessage());
 		}
 	}

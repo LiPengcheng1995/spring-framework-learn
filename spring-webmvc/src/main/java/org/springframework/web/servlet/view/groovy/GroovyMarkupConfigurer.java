@@ -16,17 +16,9 @@
 
 package org.springframework.web.servlet.view.groovy;
 
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
 import groovy.text.markup.MarkupTemplateEngine;
 import groovy.text.markup.TemplateConfiguration;
 import groovy.text.markup.TemplateResolver;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -35,6 +27,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * An extension of Groovy's {@link groovy.text.markup.TemplateConfiguration} and
@@ -53,14 +52,14 @@ import org.springframework.util.StringUtils;
  *     return configurer;
  * }
  * </pre>
- *
+ * <p>
  * By default this bean will create a {@link MarkupTemplateEngine} with:
  * <ul>
  * <li>a parent ClassLoader for loading Groovy templates with their references
  * <li>the default configuration in the base class {@link TemplateConfiguration}
  * <li>a {@link groovy.text.markup.TemplateResolver} for resolving template files
  * </ul>
- *
+ * <p>
  * You can provide the {@link MarkupTemplateEngine} instance directly to this bean
  * in which case all other properties will not be effectively ignored.
  *
@@ -73,15 +72,15 @@ import org.springframework.util.StringUtils;
  *
  * <p>Note that resource caching is enabled by default in {@link MarkupTemplateEngine}.
  * Use the {@link #setCacheTemplates(boolean)} to configure that as necessary.
-
+ *
  * <p>Spring's Groovy Markup template support requires Groovy 2.3.1 or higher.
  *
  * @author Brian Clozel
  * @author Rossen Stoyanchev
- * @since 4.1
  * @see GroovyMarkupView
  * @see <a href="http://groovy-lang.org/templating.html#_the_markuptemplateengine">
- *     Groovy Markup Template engine documentation</a>
+ * Groovy Markup Template engine documentation</a>
+ * @since 4.1
  */
 public class GroovyMarkupConfigurer extends TemplateConfiguration
 		implements GroovyMarkupConfig, ApplicationContextAware, InitializingBean {
@@ -94,6 +93,9 @@ public class GroovyMarkupConfigurer extends TemplateConfiguration
 	@Nullable
 	private ApplicationContext applicationContext;
 
+	public String getResourceLoaderPath() {
+		return this.resourceLoaderPath;
+	}
 
 	/**
 	 * Set the Groovy Markup Template resource loader path(s) via a Spring resource
@@ -101,14 +103,14 @@ public class GroovyMarkupConfigurer extends TemplateConfiguration
 	 * Standard URLs like "file:" and "classpath:" and pseudo URLs are supported
 	 * as understood by Spring's {@link org.springframework.core.io.ResourceLoader}.
 	 * Relative paths are allowed when running in an ApplicationContext.
-	 *
 	 */
 	public void setResourceLoaderPath(String resourceLoaderPath) {
 		this.resourceLoaderPath = resourceLoaderPath;
 	}
 
-	public String getResourceLoaderPath() {
-		return this.resourceLoaderPath;
+	public MarkupTemplateEngine getTemplateEngine() {
+		Assert.state(this.templateEngine != null, "No MarkupTemplateEngine set");
+		return this.templateEngine;
 	}
 
 	/**
@@ -121,19 +123,14 @@ public class GroovyMarkupConfigurer extends TemplateConfiguration
 		this.templateEngine = templateEngine;
 	}
 
-	public MarkupTemplateEngine getTemplateEngine() {
-		Assert.state(this.templateEngine != null, "No MarkupTemplateEngine set");
-		return this.templateEngine;
+	protected ApplicationContext getApplicationContext() {
+		Assert.state(this.applicationContext != null, "No ApplicationContext set");
+		return this.applicationContext;
 	}
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
-	}
-
-	protected ApplicationContext getApplicationContext() {
-		Assert.state(this.applicationContext != null, "No ApplicationContext set");
-		return this.applicationContext;
 	}
 
 	/**
@@ -188,6 +185,7 @@ public class GroovyMarkupConfigurer extends TemplateConfiguration
 	 * <p>The default implementation uses the Locale associated with the current request,
 	 * as obtained through {@link org.springframework.context.i18n.LocaleContextHolder LocaleContextHolder},
 	 * to find the template file. Effectively the locale configured at the engine level is ignored.
+	 *
 	 * @see LocaleContextHolder
 	 * @see #setLocale
 	 */

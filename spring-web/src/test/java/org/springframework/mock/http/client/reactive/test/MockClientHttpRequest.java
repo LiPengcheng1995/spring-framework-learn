@@ -16,14 +16,7 @@
 
 package org.springframework.mock.http.client.reactive.test;
 
-import java.net.URI;
-import java.util.Collection;
-import java.util.function.Function;
-
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
@@ -33,21 +26,25 @@ import org.springframework.http.client.reactive.AbstractClientHttpRequest;
 import org.springframework.http.client.reactive.ClientHttpRequest;
 import org.springframework.util.Assert;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.net.URI;
+import java.util.Collection;
+import java.util.function.Function;
 
 /**
  * Mock implementation of {@link ClientHttpRequest}.
+ *
  * @author Brian Clozel
  * @author Rossen Stoyanchev
  * @since 5.0
  */
 public class MockClientHttpRequest extends AbstractClientHttpRequest {
 
-	private HttpMethod httpMethod;
-
-	private URI url;
-
 	private final DataBufferFactory bufferFactory = new DefaultDataBufferFactory();
-
+	private HttpMethod httpMethod;
+	private URI url;
 	private Flux<DataBuffer> body = Flux.error(
 			new IllegalStateException("The body is not set. " +
 					"Did handling complete with success? Is a custom \"writeHandler\" configured?"));
@@ -103,7 +100,7 @@ public class MockClientHttpRequest extends AbstractClientHttpRequest {
 	 * when the request body is an infinite stream.
 	 *
 	 * @param writeHandler the write handler to use returning {@code Mono<Void>}
-	 * when the body has been "written" (i.e. consumed).
+	 *                     when the body has been "written" (i.e. consumed).
 	 */
 	public void setWriteHandler(Function<Flux<DataBuffer>, Mono<Void>> writeHandler) {
 		Assert.notNull(writeHandler, "'writeHandler' is required");

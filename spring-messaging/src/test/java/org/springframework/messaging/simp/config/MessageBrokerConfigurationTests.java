@@ -16,15 +16,8 @@
 
 package org.springframework.messaging.simp.config;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.hamcrest.Matchers;
 import org.junit.Test;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -34,13 +27,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
-import org.springframework.messaging.converter.ByteArrayMessageConverter;
-import org.springframework.messaging.converter.CompositeMessageConverter;
-import org.springframework.messaging.converter.ContentTypeResolver;
-import org.springframework.messaging.converter.DefaultContentTypeResolver;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
-import org.springframework.messaging.converter.MessageConverter;
-import org.springframework.messaging.converter.StringMessageConverter;
+import org.springframework.messaging.converter.*;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolver;
@@ -55,11 +42,7 @@ import org.springframework.messaging.simp.broker.SimpleBrokerMessageHandler;
 import org.springframework.messaging.simp.stomp.StompBrokerRelayMessageHandler;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.messaging.simp.user.DefaultUserDestinationResolver;
-import org.springframework.messaging.simp.user.MultiServerUserRegistry;
-import org.springframework.messaging.simp.user.SimpUserRegistry;
-import org.springframework.messaging.simp.user.UserDestinationMessageHandler;
-import org.springframework.messaging.simp.user.UserRegistryMessageHandler;
+import org.springframework.messaging.simp.user.*;
 import org.springframework.messaging.support.AbstractSubscribableChannel;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.ExecutorSubscribableChannel;
@@ -73,8 +56,14 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.OptionalValidatorFactoryBean;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * Test fixture for {@link AbstractMessageBrokerConfiguration}.
@@ -357,7 +346,8 @@ public class MessageBrokerConfigurationTests {
 
 	@Test
 	public void simpValidatorDefault() {
-		AbstractMessageBrokerConfiguration config = new BaseTestMessageBrokerConfig() {};
+		AbstractMessageBrokerConfiguration config = new BaseTestMessageBrokerConfig() {
+		};
 		config.setApplicationContext(new StaticApplicationContext());
 
 		assertThat(config.simpValidator(), Matchers.notNullValue());
@@ -381,7 +371,8 @@ public class MessageBrokerConfigurationTests {
 	public void simpValidatorMvc() {
 		StaticApplicationContext appCxt = new StaticApplicationContext();
 		appCxt.registerSingleton("mvcValidator", TestValidator.class);
-		AbstractMessageBrokerConfiguration config = new BaseTestMessageBrokerConfig() {};
+		AbstractMessageBrokerConfiguration config = new BaseTestMessageBrokerConfig() {
+		};
 		config.setApplicationContext(appCxt);
 
 		assertThat(config.simpValidator(), Matchers.notNullValue());
@@ -600,7 +591,8 @@ public class MessageBrokerConfigurationTests {
 	@Configuration
 	static class CustomConfig extends BaseTestMessageBrokerConfig {
 
-		private ChannelInterceptor interceptor = new ChannelInterceptor() {};
+		private ChannelInterceptor interceptor = new ChannelInterceptor() {
+		};
 
 		@Override
 		protected void configureClientInboundChannel(ChannelRegistration registration) {

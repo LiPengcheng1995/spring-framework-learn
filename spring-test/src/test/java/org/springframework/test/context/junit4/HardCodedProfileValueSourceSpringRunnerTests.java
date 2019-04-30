@@ -17,7 +17,6 @@
 package org.springframework.test.context.junit4;
 
 import org.junit.BeforeClass;
-
 import org.springframework.test.annotation.ProfileValueSource;
 import org.springframework.test.annotation.ProfileValueSourceConfiguration;
 
@@ -32,8 +31,8 @@ import org.springframework.test.annotation.ProfileValueSourceConfiguration;
  * </p>
  *
  * @author Sam Brannen
- * @since 2.5
  * @see EnabledAndIgnoredSpringRunnerTests
+ * @since 2.5
  */
 @ProfileValueSourceConfiguration(HardCodedProfileValueSourceSpringRunnerTests.HardCodedProfileValueSource.class)
 public class HardCodedProfileValueSourceSpringRunnerTests extends EnabledAndIgnoredSpringRunnerTests {

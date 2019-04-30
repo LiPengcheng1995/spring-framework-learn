@@ -16,14 +16,13 @@
 
 package org.springframework.web.context.support;
 
-import java.util.Map;
-import javax.servlet.ServletContext;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.lang.Nullable;
 import org.springframework.web.context.ServletContextAware;
+
+import javax.servlet.ServletContext;
+import java.util.Map;
 
 /**
  * Exporter that takes Spring-defined objects and exposes them as
@@ -41,9 +40,9 @@ import org.springframework.web.context.ServletContextAware;
  * interface. This makes client code aware of Spring API, of course.
  *
  * @author Juergen Hoeller
- * @since 1.1.4
  * @see javax.servlet.ServletContext#getAttribute
  * @see WebApplicationContextUtils#getWebApplicationContext
+ * @since 1.1.4
  */
 public class ServletContextAttributeExporter implements ServletContextAware {
 

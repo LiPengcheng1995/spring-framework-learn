@@ -18,13 +18,13 @@ package org.springframework.web.servlet.support;
 
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.util.UriComponents;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Unit tests for
@@ -90,7 +90,7 @@ public class ServletUriComponentsBuilderTests {
 		request.addHeader("X-Forwarded-Proto", "https");
 		request.addHeader("X-Forwarded-Host", "84.198.58.199");
 		request.addHeader("X-Forwarded-Port", "443");
-		UriComponents result =  ServletUriComponentsBuilder.fromRequest(request).build();
+		UriComponents result = ServletUriComponentsBuilder.fromRequest(request).build();
 		assertEquals("https://84.198.58.199/mvc-showcase", result.toString());
 	}
 
@@ -173,8 +173,7 @@ public class ServletUriComponentsBuilderTests {
 		try {
 			String result = ServletUriComponentsBuilder.fromCurrentRequest().build().toUriString();
 			assertEquals("http://localhost/mvc-showcase/data/param?foo=123", result);
-		}
-		finally {
+		} finally {
 			RequestContextHolder.resetRequestAttributes();
 		}
 	}

@@ -16,13 +16,13 @@
 
 package org.springframework.web.reactive.result.view;
 
-import java.util.Collection;
-import java.util.Map;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.ui.Model;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Public API for HTML rendering. Supported as a return value in Spring WebFlux
@@ -42,6 +42,26 @@ import org.springframework.ui.Model;
  * @since 5.0
  */
 public interface Rendering {
+
+	/**
+	 * Create a new builder for response rendering based on the given view name.
+	 *
+	 * @param name the view name to be resolved to a {@link View}
+	 * @return the builder
+	 */
+	static Builder<?> view(String name) {
+		return new DefaultRenderingBuilder(name);
+	}
+
+	/**
+	 * Create a new builder for a redirect through a {@link RedirectView}.
+	 *
+	 * @param url the redirect URL
+	 * @return the builder
+	 */
+	static RedirectBuilder redirectTo(String url) {
+		return new DefaultRenderingBuilder(new RedirectView(url));
+	}
 
 	/**
 	 * Return the selected {@link String} view name or {@link View} object.
@@ -67,31 +87,13 @@ public interface Rendering {
 
 
 	/**
-	 * Create a new builder for response rendering based on the given view name.
-	 * @param name the view name to be resolved to a {@link View}
-	 * @return the builder
-	 */
-	static Builder<?> view(String name) {
-		return new DefaultRenderingBuilder(name);
-	}
-
-	/**
-	 * Create a new builder for a redirect through a {@link RedirectView}.
-	 * @param url the redirect URL
-	 * @return the builder
-	 */
-	static RedirectBuilder redirectTo(String url) {
-		return new DefaultRenderingBuilder(new RedirectView(url));
-	}
-
-
-	/**
 	 * Defines a builder for {@link Rendering}.
 	 */
 	interface Builder<B extends Builder<B>> {
 
 		/**
 		 * Add the given model attribute with the supplied name.
+		 *
 		 * @see Model#addAttribute(String, Object)
 		 */
 		B modelAttribute(String name, Object value);
@@ -99,6 +101,7 @@ public interface Rendering {
 		/**
 		 * Add an attribute to the model using a
 		 * {@link org.springframework.core.Conventions#getVariableName generated name}.
+		 *
 		 * @see Model#addAttribute(Object)
 		 */
 		B modelAttribute(Object value);
@@ -106,12 +109,14 @@ public interface Rendering {
 		/**
 		 * Add all given attributes to the model using
 		 * {@link org.springframework.core.Conventions#getVariableName generated names}.
+		 *
 		 * @see Model#addAllAttributes(Collection)
 		 */
 		B modelAttributes(Object... values);
 
 		/**
 		 * Add the given attributes to the model.
+		 *
 		 * @see Model#addAllAttributes(Map)
 		 */
 		B model(Map<String, ?> map);

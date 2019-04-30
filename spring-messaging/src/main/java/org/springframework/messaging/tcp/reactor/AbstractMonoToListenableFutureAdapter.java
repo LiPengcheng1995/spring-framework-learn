@@ -16,30 +16,25 @@
 
 package org.springframework.messaging.tcp.reactor;
 
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+import org.springframework.util.concurrent.*;
+import reactor.core.publisher.Mono;
+import reactor.core.publisher.MonoProcessor;
+
 import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import reactor.core.publisher.Mono;
-import reactor.core.publisher.MonoProcessor;
-
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.concurrent.FailureCallback;
-import org.springframework.util.concurrent.ListenableFuture;
-import org.springframework.util.concurrent.ListenableFutureCallback;
-import org.springframework.util.concurrent.ListenableFutureCallbackRegistry;
-import org.springframework.util.concurrent.SuccessCallback;
-
 /**
  * Adapts {@link Mono} to {@link ListenableFuture} optionally converting the
  * result Object type {@code <S>} to the expected target type {@code <T>}.
  *
- * @author Rossen Stoyanchev
- * @since 5.0
  * @param <S> the type of object expected from the {@link Mono}
  * @param <T> the type of object expected from the {@link ListenableFuture}
+ * @author Rossen Stoyanchev
+ * @since 5.0
  */
 abstract class AbstractMonoToListenableFutureAdapter<S, T> implements ListenableFuture<T> {
 
@@ -55,8 +50,7 @@ abstract class AbstractMonoToListenableFutureAdapter<S, T> implements Listenable
 					T adapted;
 					try {
 						adapted = adapt(result);
-					}
-					catch (Throwable ex) {
+					} catch (Throwable ex) {
 						registry.failure(ex);
 						return;
 					}

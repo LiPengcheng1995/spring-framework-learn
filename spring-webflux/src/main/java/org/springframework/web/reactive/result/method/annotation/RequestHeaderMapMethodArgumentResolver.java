@@ -16,8 +16,6 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.util.Map;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.http.HttpHeaders;
@@ -27,6 +25,8 @@ import org.springframework.web.reactive.BindingContext;
 import org.springframework.web.reactive.result.method.HandlerMethodArgumentResolverSupport;
 import org.springframework.web.reactive.result.method.SyncHandlerMethodArgumentResolver;
 import org.springframework.web.server.ServerWebExchange;
+
+import java.util.Map;
 
 /**
  * Resolves {@link Map} method arguments annotated with {@code @RequestHeader}.
@@ -38,8 +38,8 @@ import org.springframework.web.server.ServerWebExchange;
  * values for a header, not only the first one.
  *
  * @author Rossen Stoyanchev
- * @since 5.0
  * @see RequestHeaderMethodArgumentResolver
+ * @since 5.0
  */
 public class RequestHeaderMapMethodArgumentResolver extends HandlerMethodArgumentResolverSupport
 		implements SyncHandlerMethodArgumentResolver {

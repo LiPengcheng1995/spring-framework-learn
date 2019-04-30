@@ -16,6 +16,15 @@
 
 package org.springframework.test.web.reactive.server;
 
+import org.springframework.http.*;
+import org.springframework.http.client.reactive.ClientHttpRequest;
+import org.springframework.http.client.reactive.ClientHttpResponse;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+import org.springframework.util.MultiValueMap;
+import org.springframework.util.ObjectUtils;
+import reactor.core.publisher.MonoProcessor;
+
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -23,20 +32,6 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import reactor.core.publisher.MonoProcessor;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.client.reactive.ClientHttpRequest;
-import org.springframework.http.client.reactive.ClientHttpResponse;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.MultiValueMap;
-import org.springframework.util.ObjectUtils;
 
 /**
  * Container for request and response details for exchanges performed through
@@ -49,9 +44,9 @@ import org.springframework.util.ObjectUtils;
  * respectively.
  *
  * @author Rossen Stoyanchev
- * @since 5.0
  * @see EntityExchangeResult
  * @see FluxExchangeResult
+ * @since 5.0
  */
 public class ExchangeResult {
 
@@ -76,15 +71,15 @@ public class ExchangeResult {
 	 * Create an instance with an HTTP request and response along with promises
 	 * for the serialized request and response body content.
 	 *
-	 * @param request the HTTP request
-	 * @param response the HTTP response
-	 * @param requestBody capture of serialized request body content
+	 * @param request      the HTTP request
+	 * @param response     the HTTP response
+	 * @param requestBody  capture of serialized request body content
 	 * @param responseBody capture of serialized response body content
-	 * @param uriTemplate the URI template used to set up the request, if any
+	 * @param uriTemplate  the URI template used to set up the request, if any
 	 */
 	ExchangeResult(ClientHttpRequest request, ClientHttpResponse response,
-			MonoProcessor<byte[]> requestBody, MonoProcessor<byte[]> responseBody,
-			@Nullable String uriTemplate) {
+				   MonoProcessor<byte[]> requestBody, MonoProcessor<byte[]> responseBody,
+				   @Nullable String uriTemplate) {
 
 		Assert.notNull(request, "ClientHttpRequest is required");
 		Assert.notNull(response, "ClientHttpResponse is required");
@@ -141,6 +136,7 @@ public class ExchangeResult {
 
 	/**
 	 * Return the raw request body content written as a {@code byte[]}.
+	 *
 	 * @throws IllegalStateException if the request body is not fully written yet.
 	 */
 	@Nullable
@@ -174,6 +170,7 @@ public class ExchangeResult {
 
 	/**
 	 * Return the raw request body content written as a {@code byte[]}.
+	 *
 	 * @throws IllegalStateException if the response is not fully read yet.
 	 */
 	@Nullable
@@ -192,8 +189,7 @@ public class ExchangeResult {
 	public void assertWithDiagnostics(Runnable assertion) {
 		try {
 			assertion.run();
-		}
-		catch (AssertionError ex) {
+		} catch (AssertionError ex) {
 			throw new AssertionError(ex.getMessage() + "\n" + this, ex);
 		}
 	}
@@ -210,7 +206,7 @@ public class ExchangeResult {
 				"< " + getStatus() + " " + getStatusReason() + "\n" +
 				"< " + formatHeaders(getResponseHeaders(), "\n< ") + "\n" +
 				"\n" +
-				formatBody(getResponseHeaders().getContentType(), this.responseBody) +"\n";
+				formatBody(getResponseHeaders().getContentType(), this.responseBody) + "\n";
 	}
 
 	private String getStatusReason() {
@@ -240,11 +236,9 @@ public class ExchangeResult {
 				return new String(bytes, StandardCharsets.UTF_8);
 			}
 			return "Unknown charset (" + bytes.length + " bytes)";
-		}
-		else if (body.isError()) {
+		} else if (body.isError()) {
 			return "I/O failure: " + body.getError();
-		}
-		else {
+		} else {
 			return "Content not available yet";
 		}
 	}

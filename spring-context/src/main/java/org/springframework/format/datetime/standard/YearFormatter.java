@@ -16,19 +16,19 @@
 
 package org.springframework.format.datetime.standard;
 
+import org.springframework.format.Formatter;
+
 import java.text.ParseException;
 import java.time.Year;
 import java.util.Locale;
-
-import org.springframework.format.Formatter;
 
 /**
  * {@link Formatter} implementation for a JSR-310 {@link Year},
  * following JSR-310's parsing rules for a Year.
  *
  * @author Juergen Hoeller
- * @since 5.0.4
  * @see Year#parse
+ * @since 5.0.4
  */
 class YearFormatter implements Formatter<Year> {
 

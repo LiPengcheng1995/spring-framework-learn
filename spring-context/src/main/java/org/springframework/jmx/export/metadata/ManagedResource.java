@@ -24,10 +24,10 @@ import org.springframework.lang.Nullable;
  * Only valid when used on a {@code Class}.
  *
  * @author Rob Harrop
- * @since 1.2
  * @see org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler
  * @see org.springframework.jmx.export.naming.MetadataNamingStrategy
  * @see org.springframework.jmx.export.MBeanExporter
+ * @since 1.2
  */
 public class ManagedResource extends AbstractJmxAttribute {
 
@@ -50,14 +50,6 @@ public class ManagedResource extends AbstractJmxAttribute {
 	@Nullable
 	private String persistLocation;
 
-
-	/**
-	 * Set the JMX ObjectName of this managed resource.
-	 */
-	public void setObjectName(@Nullable String objectName) {
-		this.objectName = objectName;
-	}
-
 	/**
 	 * Return the JMX ObjectName of this managed resource.
 	 */
@@ -66,16 +58,19 @@ public class ManagedResource extends AbstractJmxAttribute {
 		return this.objectName;
 	}
 
-	public void setLog(boolean log) {
-		this.log = log;
+	/**
+	 * Set the JMX ObjectName of this managed resource.
+	 */
+	public void setObjectName(@Nullable String objectName) {
+		this.objectName = objectName;
 	}
 
 	public boolean isLog() {
 		return this.log;
 	}
 
-	public void setLogFile(@Nullable String logFile) {
-		this.logFile = logFile;
+	public void setLog(boolean log) {
+		this.log = log;
 	}
 
 	@Nullable
@@ -83,8 +78,8 @@ public class ManagedResource extends AbstractJmxAttribute {
 		return this.logFile;
 	}
 
-	public void setPersistPolicy(@Nullable String persistPolicy) {
-		this.persistPolicy = persistPolicy;
+	public void setLogFile(@Nullable String logFile) {
+		this.logFile = logFile;
 	}
 
 	@Nullable
@@ -92,16 +87,16 @@ public class ManagedResource extends AbstractJmxAttribute {
 		return this.persistPolicy;
 	}
 
-	public void setPersistPeriod(int persistPeriod) {
-		this.persistPeriod = persistPeriod;
+	public void setPersistPolicy(@Nullable String persistPolicy) {
+		this.persistPolicy = persistPolicy;
 	}
 
 	public int getPersistPeriod() {
 		return this.persistPeriod;
 	}
 
-	public void setPersistName(@Nullable String persistName) {
-		this.persistName = persistName;
+	public void setPersistPeriod(int persistPeriod) {
+		this.persistPeriod = persistPeriod;
 	}
 
 	@Nullable
@@ -109,13 +104,17 @@ public class ManagedResource extends AbstractJmxAttribute {
 		return this.persistName;
 	}
 
-	public void setPersistLocation(@Nullable String persistLocation) {
-		this.persistLocation = persistLocation;
+	public void setPersistName(@Nullable String persistName) {
+		this.persistName = persistName;
 	}
 
 	@Nullable
 	public String getPersistLocation() {
 		return this.persistLocation;
+	}
+
+	public void setPersistLocation(@Nullable String persistLocation) {
+		this.persistLocation = persistLocation;
 	}
 
 }

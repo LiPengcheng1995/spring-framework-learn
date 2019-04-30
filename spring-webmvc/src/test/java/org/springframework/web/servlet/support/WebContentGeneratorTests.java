@@ -15,17 +15,17 @@
  */
 package org.springframework.web.servlet.support;
 
-import java.util.Arrays;
-
 import org.junit.Test;
-
 import org.springframework.mock.web.test.MockHttpServletResponse;
+
+import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 /**
  * Unit tests for {@link WebContentGenerator}.
+ *
  * @author Rossen Stoyanchev
  */
 public class WebContentGeneratorTests {

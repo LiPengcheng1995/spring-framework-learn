@@ -16,10 +16,10 @@
 
 package org.springframework.jdbc.core.metadata;
 
+import org.springframework.lang.Nullable;
+
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-
-import org.springframework.lang.Nullable;
 
 /**
  * Sybase specific implementation for the {@link CallMetaDataProvider} interface.
@@ -45,11 +45,9 @@ public class SybaseCallMetaDataProvider extends GenericCallMetaDataProvider {
 	public String parameterNameToUse(@Nullable String parameterName) {
 		if (parameterName == null) {
 			return null;
-		}
-		else if (parameterName.length() > 1 && parameterName.startsWith(REMOVABLE_COLUMN_PREFIX)) {
+		} else if (parameterName.length() > 1 && parameterName.startsWith(REMOVABLE_COLUMN_PREFIX)) {
 			return super.parameterNameToUse(parameterName.substring(1));
-		}
-		else {
+		} else {
 			return super.parameterNameToUse(parameterName);
 		}
 	}

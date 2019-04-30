@@ -16,12 +16,11 @@
 
 package org.springframework.web.reactive.result.condition;
 
-import java.util.Collection;
-
 import org.junit.Test;
-
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.mock.web.test.server.MockServerWebExchange;
+
+import java.util.Collection;
 
 import static org.junit.Assert.*;
 
@@ -45,7 +44,7 @@ public class HeadersRequestConditionTests {
 	public void headerPresent() throws Exception {
 		MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/").header("Accept", ""));
 		HeadersRequestCondition condition = new HeadersRequestCondition("accept");
-	
+
 		assertNotNull(condition.getMatchingCondition(exchange));
 	}
 

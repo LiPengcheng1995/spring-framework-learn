@@ -16,40 +16,14 @@
 
 package org.springframework.web.multipart.commons;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileItemHeaders;
 import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.junit.Test;
-
 import org.springframework.beans.MutablePropertyValues;
-import org.springframework.mock.web.test.MockFilterConfig;
-import org.springframework.mock.web.test.MockHttpServletRequest;
-import org.springframework.mock.web.test.MockHttpServletResponse;
-import org.springframework.mock.web.test.MockServletContext;
-import org.springframework.mock.web.test.PassThroughFilterChain;
+import org.springframework.mock.web.test.*;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.context.WebApplicationContext;
@@ -60,6 +34,15 @@ import org.springframework.web.multipart.support.ByteArrayMultipartFileEditor;
 import org.springframework.web.multipart.support.MultipartFilter;
 import org.springframework.web.multipart.support.StringMultipartFileEditor;
 import org.springframework.web.util.WebUtils;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -221,7 +204,7 @@ public class CommonsMultipartResolverTests {
 	}
 
 	private void doTestBinding(MockCommonsMultipartResolver resolver, MockHttpServletRequest originalRequest,
-			MultipartHttpServletRequest request) throws UnsupportedEncodingException {
+							   MultipartHttpServletRequest request) throws UnsupportedEncodingException {
 
 		MultipartTestBean1 mtb1 = new MultipartTestBean1();
 		assertArrayEquals(null, mtb1.getField1());
@@ -335,9 +318,10 @@ public class CommonsMultipartResolverTests {
 
 		MultipartFilter filter = new MultipartFilter() {
 			private boolean invoked = false;
+
 			@Override
 			protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-					FilterChain filterChain) throws ServletException, IOException {
+											FilterChain filterChain) throws ServletException, IOException {
 				super.doFilterInternal(request, response, filterChain);
 				super.doFilterInternal(request, response, filterChain);
 				if (invoked) {
@@ -379,13 +363,13 @@ public class CommonsMultipartResolverTests {
 					}
 					List<FileItem> fileItems = new ArrayList<>();
 					MockFileItem fileItem1 = new MockFileItem(
-						"field1", "type1", empty ? "" : "field1.txt", empty ? "" : "text1");
+							"field1", "type1", empty ? "" : "field1.txt", empty ? "" : "text1");
 					MockFileItem fileItem1x = new MockFileItem(
-						"field1", "type1", empty ? "" : "field1.txt", empty ? "" : "text1");
+							"field1", "type1", empty ? "" : "field1.txt", empty ? "" : "text1");
 					MockFileItem fileItem2 = new MockFileItem(
-						"field2", "type2", empty ? "" : "C:\\mypath/field2.txt", empty ? "" : "text2");
+							"field2", "type2", empty ? "" : "C:\\mypath/field2.txt", empty ? "" : "text2");
 					MockFileItem fileItem2x = new MockFileItem(
-						"field2x", "type2", empty ? "" : "C:/mypath\\field2x.txt", empty ? "" : "text2");
+							"field2x", "type2", empty ? "" : "C:/mypath\\field2x.txt", empty ? "" : "text2");
 					MockFileItem fileItem3 = new MockFileItem("field3", null, null, "value3");
 					MockFileItem fileItem4 = new MockFileItem("field4", "text/html; charset=iso-8859-1", null, "value4");
 					MockFileItem fileItem5 = new MockFileItem("field4", null, null, "value5");
@@ -513,20 +497,20 @@ public class CommonsMultipartResolverTests {
 		private MultipartFile[] field1;
 		private byte[] field2;
 
-		public void setField1(MultipartFile[] field1) {
-			this.field1 = field1;
-		}
-
 		public MultipartFile[] getField1() {
 			return field1;
 		}
 
-		public void setField2(byte[] field2) {
-			this.field2 = field2;
+		public void setField1(MultipartFile[] field1) {
+			this.field1 = field1;
 		}
 
 		public byte[] getField2() {
 			return field2;
+		}
+
+		public void setField2(byte[] field2) {
+			this.field2 = field2;
 		}
 	}
 
@@ -536,20 +520,20 @@ public class CommonsMultipartResolverTests {
 		private String[] field1;
 		private String field2;
 
-		public void setField1(String[] field1) {
-			this.field1 = field1;
-		}
-
 		public String[] getField1() {
 			return field1;
 		}
 
-		public void setField2(String field2) {
-			this.field2 = field2;
+		public void setField1(String[] field1) {
+			this.field1 = field1;
 		}
 
 		public String getField2() {
 			return field2;
+		}
+
+		public void setField2(String field2) {
+			this.field2 = field2;
 		}
 	}
 

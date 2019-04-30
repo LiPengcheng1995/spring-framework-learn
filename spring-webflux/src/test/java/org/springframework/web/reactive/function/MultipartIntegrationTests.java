@@ -16,12 +16,7 @@
 
 package org.springframework.web.reactive.function;
 
-import java.util.Map;
-
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -36,10 +31,14 @@ import org.springframework.web.reactive.function.server.AbstractRouterFunctionIn
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import static org.junit.Assert.*;
-import static org.springframework.web.reactive.function.server.RequestPredicates.*;
-import static org.springframework.web.reactive.function.server.RouterFunctions.*;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
+import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 /**
  * @author Sebastien Deleuze
@@ -103,8 +102,7 @@ public class MultipartIntegrationTests extends AbstractRouterFunctionIntegration
 							assertEquals(2, parts.size());
 							assertEquals("foo.txt", ((FilePart) parts.get("fooPart")).filename());
 							assertEquals("bar", ((FormFieldPart) parts.get("barPart")).value());
-						}
-						catch(Exception e) {
+						} catch (Exception e) {
 							return Mono.error(e);
 						}
 						return ServerResponse.ok().build();
@@ -118,8 +116,7 @@ public class MultipartIntegrationTests extends AbstractRouterFunctionIntegration
 							assertEquals(2, parts.size());
 							assertEquals("foo.txt", ((FilePart) parts.get(0)).filename());
 							assertEquals("bar", ((FormFieldPart) parts.get(1)).value());
-						}
-						catch(Exception e) {
+						} catch (Exception e) {
 							return Mono.error(e);
 						}
 						return ServerResponse.ok().build();

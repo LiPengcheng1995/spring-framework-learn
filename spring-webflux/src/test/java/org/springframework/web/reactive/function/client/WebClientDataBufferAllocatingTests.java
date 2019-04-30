@@ -15,9 +15,6 @@
  */
 package org.springframework.web.reactive.function.client;
 
-import java.time.Duration;
-import java.util.function.Function;
-
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelOption;
 import okhttp3.mockwebserver.MockResponse;
@@ -25,19 +22,23 @@ import okhttp3.mockwebserver.MockWebServer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.io.buffer.AbstractDataBufferAllocatingTestCase;
 import org.springframework.core.io.buffer.NettyDataBufferFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import static org.junit.Assert.*;
+import java.time.Duration;
+import java.util.function.Function;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 /**
  * WebClient integration tests focusing on data buffer management.
+ *
  * @author Rossen Stoyanchev
  */
 public class WebClientDataBufferAllocatingTests extends AbstractDataBufferAllocatingTestCase {
@@ -64,8 +65,7 @@ public class WebClientDataBufferAllocatingTests extends AbstractDataBufferAlloca
 		if (bufferFactory instanceof NettyDataBufferFactory) {
 			ByteBufAllocator allocator = ((NettyDataBufferFactory) bufferFactory).getByteBufAllocator();
 			return new ReactorClientHttpConnector(builder -> builder.option(ChannelOption.ALLOCATOR, allocator));
-		}
-		else {
+		} else {
 			return new ReactorClientHttpConnector();
 		}
 	}
@@ -119,7 +119,7 @@ public class WebClientDataBufferAllocatingTests extends AbstractDataBufferAlloca
 	}
 
 	private void testOnStatus(Throwable expected,
-			Function<ClientResponse, Mono<? extends Throwable>> exceptionFunction) {
+							  Function<ClientResponse, Mono<? extends Throwable>> exceptionFunction) {
 
 		HttpStatus errorStatus = HttpStatus.BAD_GATEWAY;
 

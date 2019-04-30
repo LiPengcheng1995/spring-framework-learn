@@ -16,35 +16,16 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import javax.servlet.MultipartConfigElement;
-
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
+import org.junit.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -67,6 +48,11 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.servlet.MultipartConfigElement;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+
 import static org.junit.Assert.assertEquals;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -79,12 +65,9 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  */
 public class RequestPartIntegrationTests {
 
-	private RestTemplate restTemplate;
-
 	private static Server server;
-
 	private static String baseUrl;
-
+	private RestTemplate restTemplate;
 
 	@BeforeClass
 	public static void startServer() throws Exception {
@@ -161,12 +144,12 @@ public class RequestPartIntegrationTests {
 
 		String content =
 				"--" + boundaryText + "\n" +
-				"Content-Disposition: form-data; name=\"file\"; filename*=\"utf-8''%C3%A9l%C3%A8ve.txt\"\n" +
-				"Content-Type: text/plain\n" +
-				"Content-Length: 7\n" +
-				"\n" +
-				"content\n" +
-				"--" + boundaryText + "--";
+						"Content-Disposition: form-data; name=\"file\"; filename*=\"utf-8''%C3%A9l%C3%A8ve.txt\"\n" +
+						"Content-Type: text/plain\n" +
+						"Content-Length: 7\n" +
+						"\n" +
+						"content\n" +
+						"--" + boundaryText + "--";
 
 		RequestEntity<byte[]> requestEntity =
 				RequestEntity.post(new URI(baseUrl + "/standard-resolver/spr13319"))
@@ -189,7 +172,7 @@ public class RequestPartIntegrationTests {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(new MediaType("application", "octet-stream", StandardCharsets.ISO_8859_1));
-		parts.add("iso-8859-1-data", new HttpEntity<>(new byte[] {(byte) 0xC4}, headers)); // SPR-13096
+		parts.add("iso-8859-1-data", new HttpEntity<>(new byte[]{(byte) 0xC4}, headers)); // SPR-13096
 
 		URI location = restTemplate.postForLocation(url, parts);
 		assertEquals("http://localhost:8080/test/" + basename + "/logo.jpg", location.toString());
@@ -235,9 +218,9 @@ public class RequestPartIntegrationTests {
 
 		@RequestMapping(value = "/test", method = POST, consumes = {"multipart/mixed", "multipart/form-data"})
 		public ResponseEntity<Object> create(@RequestPart(name = "json-data") TestData testData,
-				@RequestPart("file-data") Optional<MultipartFile> file,
-				@RequestPart(name = "empty-data", required = false) TestData emptyData,
-				@RequestPart(name = "iso-8859-1-data") byte[] iso88591Data) {
+											 @RequestPart("file-data") Optional<MultipartFile> file,
+											 @RequestPart(name = "empty-data", required = false) TestData emptyData,
+											 @RequestPart(name = "iso-8859-1-data") byte[] iso88591Data) {
 
 			Assert.assertArrayEquals(new byte[]{(byte) 0xC4}, iso88591Data);
 

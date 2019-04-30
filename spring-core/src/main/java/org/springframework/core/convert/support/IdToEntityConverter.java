@@ -16,11 +16,6 @@
 
 package org.springframework.core.convert.support;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Collections;
-import java.util.Set;
-
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.ConditionalGenericConverter;
@@ -28,6 +23,11 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Converts an entity identifier to a entity reference by calling a static finder method
@@ -83,8 +83,7 @@ final class IdToEntityConverter implements ConditionalGenericConverter {
 		try {
 			methods = entityClass.getDeclaredMethods();
 			localOnlyFiltered = true;
-		}
-		catch (SecurityException ex) {
+		} catch (SecurityException ex) {
 			// Not allowed to access non-public methods...
 			// Fallback: check locally declared public methods only.
 			methods = entityClass.getMethods();
@@ -105,8 +104,7 @@ final class IdToEntityConverter implements ConditionalGenericConverter {
 		int lastDot = shortName.lastIndexOf('.');
 		if (lastDot != -1) {
 			return shortName.substring(lastDot + 1);
-		}
-		else {
+		} else {
 			return shortName;
 		}
 	}

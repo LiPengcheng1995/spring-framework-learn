@@ -16,12 +16,12 @@
 
 package org.springframework.web.servlet.mvc.support;
 
-import java.util.Collection;
-import java.util.Map;
-
 import org.springframework.lang.Nullable;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.DataBinder;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * A {@link ModelMap} implementation of {@link RedirectAttributes} that formats
@@ -51,6 +51,7 @@ public class RedirectAttributesModelMap extends ModelMap implements RedirectAttr
 
 	/**
 	 * Constructor with a DataBinder.
+	 *
 	 * @param dataBinder used to format attribute values as Strings
 	 */
 	public RedirectAttributesModelMap(@Nullable DataBinder dataBinder) {

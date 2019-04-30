@@ -16,19 +16,18 @@
 
 package org.springframework.jdbc.core.simple;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.util.HashMap;
-import javax.sql.DataSource;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.util.HashMap;
 
 import static org.mockito.BDDMockito.*;
 
@@ -39,15 +38,11 @@ import static org.mockito.BDDMockito.*;
  */
 public class SimpleJdbcInsertTests {
 
-	private Connection connection;
-
-	private DatabaseMetaData databaseMetaData;
-
-	private DataSource dataSource;
-
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
-
+	private Connection connection;
+	private DatabaseMetaData databaseMetaData;
+	private DataSource dataSource;
 
 	@Before
 	public void setUp() throws Exception {
@@ -80,8 +75,7 @@ public class SimpleJdbcInsertTests {
 		thrown.expect(InvalidDataAccessApiUsageException.class);
 		try {
 			insert.execute(new HashMap<>());
-		}
-		finally {
+		} finally {
 			verify(resultSet).close();
 		}
 	}

@@ -16,11 +16,11 @@
 
 package org.springframework.jdbc.support.incrementer;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
+
+import javax.sql.DataSource;
 
 /**
  * Base implementation of {@link DataFieldMaxValueIncrementer} that delegates
@@ -34,17 +34,20 @@ import org.springframework.util.Assert;
  */
 public abstract class AbstractDataFieldMaxValueIncrementer implements DataFieldMaxValueIncrementer, InitializingBean {
 
-	private DataSource dataSource;
-
-	/** The name of the sequence/table containing the sequence */
-	private String incrementerName;
-
-	/** The length to which a string result should be pre-pended with zeroes */
+	/**
+	 * The length to which a string result should be pre-pended with zeroes
+	 */
 	protected int paddingLength = 0;
+	private DataSource dataSource;
+	/**
+	 * The name of the sequence/table containing the sequence
+	 */
+	private String incrementerName;
 
 
 	/**
 	 * Default constructor for bean property style usage.
+	 *
 	 * @see #setDataSource
 	 * @see #setIncrementerName
 	 */
@@ -53,7 +56,8 @@ public abstract class AbstractDataFieldMaxValueIncrementer implements DataFieldM
 
 	/**
 	 * Convenience constructor.
-	 * @param dataSource the DataSource to use
+	 *
+	 * @param dataSource      the DataSource to use
 	 * @param incrementerName the name of the sequence/table to use
 	 */
 	public AbstractDataFieldMaxValueIncrementer(DataSource dataSource, String incrementerName) {
@@ -61,14 +65,6 @@ public abstract class AbstractDataFieldMaxValueIncrementer implements DataFieldM
 		Assert.notNull(incrementerName, "Incrementer name must not be null");
 		this.dataSource = dataSource;
 		this.incrementerName = incrementerName;
-	}
-
-
-	/**
-	 * Set the data source to retrieve the value from.
-	 */
-	public void setDataSource(DataSource dataSource) {
-		this.dataSource = dataSource;
 	}
 
 	/**
@@ -79,10 +75,10 @@ public abstract class AbstractDataFieldMaxValueIncrementer implements DataFieldM
 	}
 
 	/**
-	 * Set the name of the sequence/table.
+	 * Set the data source to retrieve the value from.
 	 */
-	public void setIncrementerName(String incrementerName) {
-		this.incrementerName = incrementerName;
+	public void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
 	}
 
 	/**
@@ -93,11 +89,10 @@ public abstract class AbstractDataFieldMaxValueIncrementer implements DataFieldM
 	}
 
 	/**
-	 * Set the padding length, i.e. the length to which a string result
-	 * should be pre-pended with zeroes.
+	 * Set the name of the sequence/table.
 	 */
-	public void setPaddingLength(int paddingLength) {
-		this.paddingLength = paddingLength;
+	public void setIncrementerName(String incrementerName) {
+		this.incrementerName = incrementerName;
 	}
 
 	/**
@@ -105,6 +100,14 @@ public abstract class AbstractDataFieldMaxValueIncrementer implements DataFieldM
 	 */
 	public int getPaddingLength() {
 		return this.paddingLength;
+	}
+
+	/**
+	 * Set the padding length, i.e. the length to which a string result
+	 * should be pre-pended with zeroes.
+	 */
+	public void setPaddingLength(int paddingLength) {
+		this.paddingLength = paddingLength;
 	}
 
 	@Override
@@ -146,6 +149,7 @@ public abstract class AbstractDataFieldMaxValueIncrementer implements DataFieldM
 
 	/**
 	 * Determine the next key to use, as a long.
+	 *
 	 * @return the key to use as a long. It will eventually be converted later
 	 * in another format by the public concrete methods of this class.
 	 */

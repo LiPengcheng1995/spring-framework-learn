@@ -16,22 +16,17 @@
 
 package org.springframework.web.socket.server.support;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
-
-import static org.junit.Assert.*;
 import org.junit.Test;
 import org.mockito.Mockito;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.socket.AbstractHttpRequestTests;
 import org.springframework.web.socket.WebSocketHandler;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
+
+import static org.junit.Assert.*;
 
 /**
  * Test fixture for {@link OriginHandshakeInterceptor}.

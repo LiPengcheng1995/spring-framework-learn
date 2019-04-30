@@ -16,17 +16,7 @@
 
 package org.springframework.web.servlet.view;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.junit.Test;
-
 import org.springframework.context.ApplicationContextException;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.mock.web.test.MockHttpServletResponse;
@@ -34,8 +24,17 @@ import org.springframework.mock.web.test.MockServletContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.View;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
 import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
 
 /**
  * Base tests for {@link AbstractView}.
@@ -241,31 +240,27 @@ public class BaseViewTests {
 			// No equals
 			v.setAttributesCSV("fweoiruiu");
 			fail();
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 		}
 
 		try {
 			// No value
 			v.setAttributesCSV("fweoiruiu=");
 			fail();
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 		}
 
 		try {
 			// No closing ]
 			v.setAttributesCSV("fweoiruiu=[");
 			fail();
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 		}
 		try {
 			// Second one is bogus
 			v.setAttributesCSV("fweoiruiu=[de],=");
 			fail();
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 		}
 	}
 
@@ -279,7 +274,7 @@ public class BaseViewTests {
 	/**
 	 * Check that all keys in expected have same values in actual.
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	private void checkContainsAll(Map expected, Map<String, Object> actual) {
 		expected.forEach((k, v) -> assertEquals("Values for model key '" + k
 				+ "' must match", expected.get(k), actual.get(k)));
@@ -294,9 +289,9 @@ public class BaseViewTests {
 		// Do-nothing concrete subclass
 		@Override
 		protected void renderMergedOutputModel(Map<String, Object> model,
-				HttpServletRequest request, HttpServletResponse response)
+											   HttpServletRequest request, HttpServletResponse response)
 
-			throws ServletException, IOException {
+				throws ServletException, IOException {
 			throw new UnsupportedOperationException();
 		}
 	}
@@ -311,7 +306,9 @@ public class BaseViewTests {
 
 		boolean initialized;
 
-		/** Captured model in render */
+		/**
+		 * Captured model in render
+		 */
 		Map<String, Object> model;
 
 		TestView(WebApplicationContext wac) {
@@ -320,7 +317,7 @@ public class BaseViewTests {
 
 		@Override
 		protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request,
-				HttpServletResponse response) throws ServletException, IOException {
+											   HttpServletResponse response) throws ServletException, IOException {
 			this.model = model;
 		}
 

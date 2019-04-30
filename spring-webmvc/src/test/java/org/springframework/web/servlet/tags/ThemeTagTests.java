@@ -16,21 +16,21 @@
 
 package org.springframework.web.servlet.tags;
 
-import java.util.Arrays;
-import java.util.List;
+import org.junit.Test;
+import org.springframework.context.MessageSourceResolvable;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.web.servlet.support.RequestContext;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.Tag;
+import java.util.Arrays;
+import java.util.List;
 
-import org.junit.Test;
-
-import org.springframework.context.MessageSourceResolvable;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.web.servlet.support.RequestContext;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Juergen Hoeller
@@ -66,12 +66,12 @@ public class ThemeTagTests extends AbstractTagTests {
 		assertEquals("theme test message", rc.getThemeMessage("themetest", "default"));
 		assertEquals("theme test message", rc.getThemeMessage("themetest", (Object[]) null, "default"));
 		assertEquals("theme test message arg1",
-				rc.getThemeMessage("themetestArgs", new String[] {"arg1"}));
+				rc.getThemeMessage("themetestArgs", new String[]{"arg1"}));
 		assertEquals("theme test message arg1",
-				rc.getThemeMessage("themetestArgs", Arrays.asList(new String[] {"arg1"})));
+				rc.getThemeMessage("themetestArgs", Arrays.asList(new String[]{"arg1"})));
 		assertEquals("default", rc.getThemeMessage("themetesta", "default"));
 		assertEquals("default", rc.getThemeMessage("themetesta", (List) null, "default"));
-		MessageSourceResolvable resolvable = new DefaultMessageSourceResolvable(new String[] {"themetest"});
+		MessageSourceResolvable resolvable = new DefaultMessageSourceResolvable(new String[]{"themetest"});
 		assertEquals("theme test message", rc.getThemeMessage(resolvable));
 	}
 

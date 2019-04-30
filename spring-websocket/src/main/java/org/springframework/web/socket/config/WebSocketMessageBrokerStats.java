@@ -16,15 +16,8 @@
 
 package org.springframework.web.socket.config;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.simp.stomp.StompBrokerRelayMessageHandler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -32,6 +25,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.socket.messaging.StompSubProtocolHandler;
 import org.springframework.web.socket.messaging.SubProtocolHandler;
 import org.springframework.web.socket.messaging.SubProtocolWebSocketHandler;
+
+import java.util.concurrent.*;
 
 /**
  * A central class for aggregating information about internal state and counters
@@ -128,6 +123,13 @@ public class WebSocketMessageBrokerStats {
 	}
 
 	/**
+	 * Return the configured logging period frequency in milliseconds.
+	 */
+	public long getLoggingPeriod() {
+		return this.loggingPeriod;
+	}
+
+	/**
 	 * Set the frequency for logging information at INFO level in milliseconds.
 	 * If set 0 or less than 0, the logging task is cancelled.
 	 * <p>By default this property is set to 30 minutes (30 * 60 * 1000).
@@ -138,13 +140,6 @@ public class WebSocketMessageBrokerStats {
 		}
 		this.loggingPeriod = period;
 		this.loggingTask = initLoggingTask(0);
-	}
-
-	/**
-	 * Return the configured logging period frequency in milliseconds.
-	 */
-	public long getLoggingPeriod() {
-		return this.loggingPeriod;
 	}
 
 	/**

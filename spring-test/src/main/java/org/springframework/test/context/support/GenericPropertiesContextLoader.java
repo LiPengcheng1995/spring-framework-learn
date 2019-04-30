@@ -16,13 +16,13 @@
 
 package org.springframework.test.context.support;
 
-import java.util.Properties;
-
 import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.support.PropertiesBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.util.ObjectUtils;
+
+import java.util.Properties;
 
 /**
  * Concrete implementation of {@link AbstractGenericContextLoader} that reads
@@ -35,6 +35,7 @@ public class GenericPropertiesContextLoader extends AbstractGenericContextLoader
 
 	/**
 	 * Creates a new {@link PropertiesBeanDefinitionReader}.
+	 *
 	 * @return a new PropertiesBeanDefinitionReader
 	 * @see PropertiesBeanDefinitionReader
 	 */
@@ -54,16 +55,17 @@ public class GenericPropertiesContextLoader extends AbstractGenericContextLoader
 	/**
 	 * Ensure that the supplied {@link MergedContextConfiguration} does not
 	 * contain {@link MergedContextConfiguration#getClasses() classes}.
-	 * @since 4.0.4
+	 *
 	 * @see AbstractGenericContextLoader#validateMergedContextConfiguration
+	 * @since 4.0.4
 	 */
 	@Override
 	protected void validateMergedContextConfiguration(MergedContextConfiguration mergedConfig) {
 		if (mergedConfig.hasClasses()) {
 			String msg = String.format(
-				"Test class [%s] has been configured with @ContextConfiguration's 'classes' attribute %s, "
-						+ "but %s does not support annotated classes.", mergedConfig.getTestClass().getName(),
-				ObjectUtils.nullSafeToString(mergedConfig.getClasses()), getClass().getSimpleName());
+					"Test class [%s] has been configured with @ContextConfiguration's 'classes' attribute %s, "
+							+ "but %s does not support annotated classes.", mergedConfig.getTestClass().getName(),
+					ObjectUtils.nullSafeToString(mergedConfig.getClasses()), getClass().getSimpleName());
 			logger.error(msg);
 			throw new IllegalStateException(msg);
 		}

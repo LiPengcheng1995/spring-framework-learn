@@ -16,17 +16,16 @@
 
 package org.springframework.web.servlet.view.xml;
 
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.json.AbstractJackson2View;
+
+import java.util.Map;
 
 /**
  * Spring MVC {@link View} that renders XML content by serializing the model for the current request
@@ -41,8 +40,8 @@ import org.springframework.web.servlet.view.json.AbstractJackson2View;
  * <p>Compatible with Jackson 2.6 and higher, as of Spring 4.3.
  *
  * @author Sebastien Deleuze
- * @since 4.1
  * @see org.springframework.web.servlet.view.json.MappingJackson2JsonView
+ * @since 4.1
  */
 public class MappingJackson2XmlView extends AbstractJackson2View {
 
@@ -68,6 +67,7 @@ public class MappingJackson2XmlView extends AbstractJackson2View {
 	/**
 	 * Construct a new {@code MappingJackson2XmlView} using the provided {@link XmlMapper}
 	 * and setting the content type to {@code application/xml}.
+	 *
 	 * @since 4.2.1
 	 */
 	public MappingJackson2XmlView(XmlMapper xmlMapper) {
@@ -89,8 +89,7 @@ public class MappingJackson2XmlView extends AbstractJackson2View {
 				throw new IllegalStateException(
 						"Model contains no object with key [" + this.modelKey + "]");
 			}
-		}
-		else {
+		} else {
 			for (Map.Entry<String, Object> entry : model.entrySet()) {
 				if (!(entry.getValue() instanceof BindingResult) && !entry.getKey().equals(JsonView.class.getName())) {
 					if (value != null) {

@@ -16,23 +16,7 @@
 
 package org.springframework.web.servlet.view;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.jsp.jstl.core.Config;
-import javax.servlet.jsp.jstl.fmt.LocalizationContext;
-
 import org.junit.Test;
-
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
@@ -52,6 +36,17 @@ import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.theme.FixedThemeResolver;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.jsp.jstl.core.Config;
+import javax.servlet.jsp.jstl.fmt.LocalizationContext;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
 
@@ -273,7 +268,7 @@ public class ViewResolverTests {
 		Map map = new HashMap();
 		map.put("key2", new Integer(2));
 		vr.setAttributesMap(map);
-		vr.setExposedContextBeanNames(new String[] {"myBean2"});
+		vr.setExposedContextBeanNames(new String[]{"myBean2"});
 		vr.setApplicationContext(wac);
 
 		MockHttpServletRequest request = new MockHttpServletRequest(sc) {
@@ -437,8 +432,7 @@ public class ViewResolverTests {
 			vr.setApplicationContext(wac);
 			vr.afterPropertiesSet();
 			fail("Should have thrown BeanDefinitionStoreException");
-		}
-		catch (BeanDefinitionStoreException ex) {
+		} catch (BeanDefinitionStoreException ex) {
 			// expected
 		}
 	}
@@ -458,15 +452,13 @@ public class ViewResolverTests {
 		vr.setCache(false);
 		try {
 			vr.setApplicationContext(wac);
-		}
-		catch (ApplicationContextException ex) {
+		} catch (ApplicationContextException ex) {
 			fail("Should not have thrown ApplicationContextException: " + ex.getMessage());
 		}
 		try {
 			vr.resolveViewName("example1", Locale.getDefault());
 			fail("Should have thrown BeanDefinitionStoreException");
-		}
-		catch (BeanDefinitionStoreException ex) {
+		} catch (BeanDefinitionStoreException ex) {
 			// expected
 		}
 	}

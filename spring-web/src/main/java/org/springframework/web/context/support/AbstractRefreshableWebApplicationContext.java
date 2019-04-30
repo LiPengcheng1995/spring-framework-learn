@@ -16,9 +16,6 @@
 
 package org.springframework.web.context.support;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.support.AbstractRefreshableConfigApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -33,6 +30,9 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.ConfigurableWebEnvironment;
 import org.springframework.web.context.ServletConfigAware;
 import org.springframework.web.context.ServletContextAware;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 
 /**
  * {@link org.springframework.context.support.AbstractRefreshableApplicationContext}
@@ -72,28 +72,36 @@ import org.springframework.web.context.ServletContextAware;
  * (for example, {@link org.springframework.context.support.GenericApplicationContext}).
  *
  * @author Juergen Hoeller
- * @since 1.1.3
  * @see #loadBeanDefinitions
  * @see org.springframework.web.context.ConfigurableWebApplicationContext#setConfigLocations
  * @see org.springframework.ui.context.ThemeSource
  * @see XmlWebApplicationContext
+ * @since 1.1.3
  */
 public abstract class AbstractRefreshableWebApplicationContext extends AbstractRefreshableConfigApplicationContext
 		implements ConfigurableWebApplicationContext, ThemeSource {
 
-	/** Servlet context that this context runs in */
+	/**
+	 * Servlet context that this context runs in
+	 */
 	@Nullable
 	private ServletContext servletContext;
 
-	/** Servlet config that this context runs in, if any */
+	/**
+	 * Servlet config that this context runs in, if any
+	 */
 	@Nullable
 	private ServletConfig servletConfig;
 
-	/** Namespace of this context, or {@code null} if root */
+	/**
+	 * Namespace of this context, or {@code null} if root
+	 */
 	@Nullable
 	private String namespace;
 
-	/** the ThemeSource for this ApplicationContext */
+	/**
+	 * the ThemeSource for this ApplicationContext
+	 */
 	@Nullable
 	private ThemeSource themeSource;
 
@@ -102,6 +110,11 @@ public abstract class AbstractRefreshableWebApplicationContext extends AbstractR
 		setDisplayName("Root WebApplicationContext");
 	}
 
+	@Override
+	@Nullable
+	public ServletContext getServletContext() {
+		return this.servletContext;
+	}
 
 	@Override
 	public void setServletContext(@Nullable ServletContext servletContext) {
@@ -110,8 +123,8 @@ public abstract class AbstractRefreshableWebApplicationContext extends AbstractR
 
 	@Override
 	@Nullable
-	public ServletContext getServletContext() {
-		return this.servletContext;
+	public ServletConfig getServletConfig() {
+		return this.servletConfig;
 	}
 
 	@Override
@@ -124,8 +137,8 @@ public abstract class AbstractRefreshableWebApplicationContext extends AbstractR
 
 	@Override
 	@Nullable
-	public ServletConfig getServletConfig() {
-		return this.servletConfig;
+	public String getNamespace() {
+		return this.namespace;
 	}
 
 	@Override
@@ -134,12 +147,6 @@ public abstract class AbstractRefreshableWebApplicationContext extends AbstractR
 		if (namespace != null) {
 			setDisplayName("WebApplicationContext for namespace '" + namespace + "'");
 		}
-	}
-
-	@Override
-	@Nullable
-	public String getNamespace() {
-		return this.namespace;
 	}
 
 	@Override
@@ -176,6 +183,7 @@ public abstract class AbstractRefreshableWebApplicationContext extends AbstractR
 
 	/**
 	 * This implementation supports file paths beneath the root of the ServletContext.
+	 *
 	 * @see ServletContextResource
 	 */
 	@Override
@@ -186,6 +194,7 @@ public abstract class AbstractRefreshableWebApplicationContext extends AbstractR
 
 	/**
 	 * This implementation supports pattern matching in unexpanded WARs too.
+	 *
 	 * @see ServletContextResourcePatternResolver
 	 */
 	@Override

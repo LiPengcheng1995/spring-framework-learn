@@ -17,14 +17,14 @@
 package org.springframework.messaging.simp.config;
 
 import org.junit.Test;
-
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.StubMessageChannel;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.messaging.simp.stomp.StompBrokerRelayMessageHandler;
 import org.springframework.util.StringUtils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Unit tests for
@@ -39,7 +39,7 @@ public class StompBrokerRelayRegistrationTests {
 
 		SubscribableChannel inChannel = new StubMessageChannel();
 		MessageChannel outChannel = new StubMessageChannel();
-		String[] prefixes = new String[] { "/foo", "/bar" };
+		String[] prefixes = new String[]{"/foo", "/bar"};
 
 		StompBrokerRelayRegistration registration = new StompBrokerRelayRegistration(inChannel, outChannel, prefixes);
 		registration.setClientLogin("clientlogin");

@@ -16,30 +16,29 @@
 
 package org.springframework.http.server.reactive;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
+import org.apache.catalina.connector.CoyoteInputStream;
+import org.apache.catalina.connector.CoyoteOutputStream;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferFactory;
+import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.util.Assert;
+
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.catalina.connector.CoyoteInputStream;
-import org.apache.catalina.connector.CoyoteOutputStream;
-
-import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.core.io.buffer.DataBufferFactory;
-import org.springframework.core.io.buffer.DataBufferUtils;
-import org.springframework.util.Assert;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
 
 /**
  * {@link ServletHttpHandlerAdapter} extension that uses Tomcat APIs for reading
  * from the request and writing to the response with {@link ByteBuffer}.
  *
  * @author Violeta Georgieva
- * @since 5.0
  * @see org.springframework.web.server.adapter.AbstractReactiveWebInitializer
+ * @since 5.0
  */
 public class TomcatHttpHandlerAdapter extends ServletHttpHandlerAdapter {
 
@@ -65,11 +64,28 @@ public class TomcatHttpHandlerAdapter extends ServletHttpHandlerAdapter {
 		return new TomcatServerHttpResponse(response, cxt, getDataBufferFactory(), getBufferSize());
 	}
 
+	private static final class TomcatServerHttpResponse extends ServletServerHttpResponse {
+
+		public TomcatServerHttpResponse(HttpServletResponse response, AsyncContext context,
+										DataBufferFactory factory, int bufferSize) throws IOException {
+
+			super(response, context, factory, bufferSize);
+		}
+
+		@Override
+		protected int writeToOutputStream(DataBuffer dataBuffer) throws IOException {
+			ByteBuffer input = dataBuffer.asByteBuffer();
+			int len = input.remaining();
+			ServletResponse response = getNativeResponse();
+			((CoyoteOutputStream) response.getOutputStream()).write(input);
+			return len;
+		}
+	}
 
 	private final class TomcatServerHttpRequest extends ServletServerHttpRequest {
 
 		public TomcatServerHttpRequest(HttpServletRequest request, AsyncContext context,
-				String servletPath, DataBufferFactory factory, int bufferSize)
+									   String servletPath, DataBufferFactory factory, int bufferSize)
 				throws IOException, URISyntaxException {
 
 			super(request, context, servletPath, factory, bufferSize);
@@ -93,38 +109,16 @@ public class TomcatHttpHandlerAdapter extends ServletHttpHandlerAdapter {
 					dataBuffer.writePosition(read);
 					release = false;
 					return dataBuffer;
-				}
-				else if (read == -1) {
+				} else if (read == -1) {
 					return EOF_BUFFER;
-				}
-				else {
+				} else {
 					return null;
 				}
-			}
-			finally {
+			} finally {
 				if (release) {
 					DataBufferUtils.release(dataBuffer);
 				}
 			}
-		}
-	}
-
-
-	private static final class TomcatServerHttpResponse extends ServletServerHttpResponse {
-
-		public TomcatServerHttpResponse(HttpServletResponse response, AsyncContext context,
-				DataBufferFactory factory, int bufferSize) throws IOException {
-
-			super(response, context, factory, bufferSize);
-		}
-
-		@Override
-		protected int writeToOutputStream(DataBuffer dataBuffer) throws IOException {
-			ByteBuffer input = dataBuffer.asByteBuffer();
-			int len = input.remaining();
-			ServletResponse response = getNativeResponse();
-			((CoyoteOutputStream) response.getOutputStream()).write(input);
-			return len;
 		}
 	}
 

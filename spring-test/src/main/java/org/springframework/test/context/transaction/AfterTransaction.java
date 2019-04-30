@@ -16,11 +16,7 @@
 
 package org.springframework.test.context.transaction;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * <p>Test annotation which indicates that the annotated {@code void} method
@@ -38,9 +34,9 @@ import java.lang.annotation.Target;
  * declared on Java 8 based interface default methods.
  *
  * @author Sam Brannen
- * @since 2.5
  * @see org.springframework.transaction.annotation.Transactional
  * @see BeforeTransaction
+ * @since 2.5
  */
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)

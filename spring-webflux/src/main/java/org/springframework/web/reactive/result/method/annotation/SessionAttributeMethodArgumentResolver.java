@@ -16,8 +16,6 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import reactor.core.publisher.Mono;
-
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapterRegistry;
@@ -26,13 +24,14 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.ValueConstants;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.ServerWebInputException;
+import reactor.core.publisher.Mono;
 
 /**
  * Resolves method arguments annotated with an @{@link SessionAttribute}.
  *
  * @author Rossen Stoyanchev
- * @since 5.0
  * @see RequestAttributeMethodArgumentResolver
+ * @since 5.0
  */
 public class SessionAttributeMethodArgumentResolver extends AbstractNamedValueArgumentResolver {
 

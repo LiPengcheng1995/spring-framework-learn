@@ -16,14 +16,14 @@
 
 package org.springframework.web.reactive.result.condition;
 
+import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.server.ServerWebExchange;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
-import org.springframework.web.server.ServerWebExchange;
 
 /**
  * Implements the {@link RequestCondition} contract by delegating to multiple
@@ -112,14 +112,11 @@ public class CompositeRequestCondition extends AbstractRequestCondition<Composit
 	public CompositeRequestCondition combine(CompositeRequestCondition other) {
 		if (isEmpty() && other.isEmpty()) {
 			return this;
-		}
-		else if (other.isEmpty()) {
+		} else if (other.isEmpty()) {
 			return this;
-		}
-		else if (isEmpty()) {
+		} else if (isEmpty()) {
 			return other;
-		}
-		else {
+		} else {
 			assertNumberOfConditions(other);
 			RequestConditionHolder[] combinedConditions = new RequestConditionHolder[getLength()];
 			for (int i = 0; i < getLength(); i++) {
@@ -132,8 +129,8 @@ public class CompositeRequestCondition extends AbstractRequestCondition<Composit
 	private void assertNumberOfConditions(CompositeRequestCondition other) {
 		Assert.isTrue(getLength() == other.getLength(),
 				"Cannot combine CompositeRequestConditions with a different number of conditions. " +
-				ObjectUtils.nullSafeToString(this.requestConditions) + " and  " +
-				ObjectUtils.nullSafeToString(other.requestConditions));
+						ObjectUtils.nullSafeToString(this.requestConditions) + " and  " +
+						ObjectUtils.nullSafeToString(other.requestConditions));
 	}
 
 	/**
@@ -164,14 +161,11 @@ public class CompositeRequestCondition extends AbstractRequestCondition<Composit
 	public int compareTo(CompositeRequestCondition other, ServerWebExchange exchange) {
 		if (isEmpty() && other.isEmpty()) {
 			return 0;
-		}
-		else if (isEmpty()) {
+		} else if (isEmpty()) {
 			return 1;
-		}
-		else if (other.isEmpty()) {
+		} else if (other.isEmpty()) {
 			return -1;
-		}
-		else {
+		} else {
 			assertNumberOfConditions(other);
 			for (int i = 0; i < getLength(); i++) {
 				int result = this.requestConditions[i].compareTo(other.requestConditions[i], exchange);

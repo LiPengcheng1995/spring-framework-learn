@@ -18,7 +18,6 @@ package org.springframework.web.socket.handler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketMessage;
@@ -43,7 +42,7 @@ public class LoggingWebSocketHandlerDecorator extends WebSocketHandlerDecorator 
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		if (logger.isDebugEnabled()) {
-			logger.debug("New "	+ session);
+			logger.debug("New " + session);
 		}
 		super.afterConnectionEstablished(session);
 	}

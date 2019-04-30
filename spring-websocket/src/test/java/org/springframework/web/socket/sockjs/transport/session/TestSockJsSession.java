@@ -16,6 +16,13 @@
 
 package org.springframework.web.socket.sockjs.transport.session;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.WebSocketExtension;
+import org.springframework.web.socket.WebSocketHandler;
+import org.springframework.web.socket.sockjs.frame.SockJsFrame;
+import org.springframework.web.socket.sockjs.transport.SockJsServiceConfig;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
@@ -24,32 +31,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.http.HttpHeaders;
-import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.WebSocketExtension;
-import org.springframework.web.socket.WebSocketHandler;
-import org.springframework.web.socket.sockjs.frame.SockJsFrame;
-import org.springframework.web.socket.sockjs.transport.SockJsServiceConfig;
-
 /**
  * @author Rossen Stoyanchev
  */
 public class TestSockJsSession extends AbstractSockJsSession {
 
-	private URI uri;
-
-	private HttpHeaders headers;
-
-	private Principal principal;
-
-	private InetSocketAddress localAddress;
-
-	private InetSocketAddress remoteAddress;
-
-	private boolean active;
-
 	private final List<SockJsFrame> sockJsFrames = new ArrayList<>();
-
+	private URI uri;
+	private HttpHeaders headers;
+	private Principal principal;
+	private InetSocketAddress localAddress;
+	private InetSocketAddress remoteAddress;
+	private boolean active;
 	private CloseStatus closeStatus;
 
 	private IOException exceptionOnWrite;
@@ -64,19 +57,18 @@ public class TestSockJsSession extends AbstractSockJsSession {
 
 
 	public TestSockJsSession(String sessionId, SockJsServiceConfig config,
-			WebSocketHandler wsHandler, Map<String, Object> attributes) {
+							 WebSocketHandler wsHandler, Map<String, Object> attributes) {
 
 		super(sessionId, config, wsHandler, attributes);
-	}
-
-
-	public void setUri(URI uri) {
-		this.uri = uri;
 	}
 
 	@Override
 	public URI getUri() {
 		return this.uri;
+	}
+
+	public void setUri(URI uri) {
+		this.uri = uri;
 	}
 
 	@Override
@@ -129,21 +121,21 @@ public class TestSockJsSession extends AbstractSockJsSession {
 	}
 
 	@Override
-	public void setTextMessageSizeLimit(int messageSizeLimit) {
-	}
-
-	@Override
 	public int getTextMessageSizeLimit() {
 		return 0;
 	}
 
 	@Override
-	public void setBinaryMessageSizeLimit(int messageSizeLimit) {
+	public void setTextMessageSizeLimit(int messageSizeLimit) {
 	}
 
 	@Override
 	public int getBinaryMessageSizeLimit() {
 		return 0;
+	}
+
+	@Override
+	public void setBinaryMessageSizeLimit(int messageSizeLimit) {
 	}
 
 	@Override

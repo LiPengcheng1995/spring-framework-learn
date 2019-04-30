@@ -16,18 +16,18 @@
 
 package org.springframework.web.servlet.resource;
 
-import java.io.IOException;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.context.ServletContextAware;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * An {@link HttpRequestHandler} for serving static files using the Servlet container's "default" Servlet.
@@ -52,19 +52,29 @@ import org.springframework.web.context.ServletContextAware;
  */
 public class DefaultServletHttpRequestHandler implements HttpRequestHandler, ServletContextAware {
 
-	/** Default Servlet name used by Tomcat, Jetty, JBoss, and GlassFish */
+	/**
+	 * Default Servlet name used by Tomcat, Jetty, JBoss, and GlassFish
+	 */
 	private static final String COMMON_DEFAULT_SERVLET_NAME = "default";
 
-	/** Default Servlet name used by Google App Engine */
+	/**
+	 * Default Servlet name used by Google App Engine
+	 */
 	private static final String GAE_DEFAULT_SERVLET_NAME = "_ah_default";
 
-	/** Default Servlet name used by Resin */
+	/**
+	 * Default Servlet name used by Resin
+	 */
 	private static final String RESIN_DEFAULT_SERVLET_NAME = "resin-file";
 
-	/** Default Servlet name used by WebLogic */
+	/**
+	 * Default Servlet name used by WebLogic
+	 */
 	private static final String WEBLOGIC_DEFAULT_SERVLET_NAME = "FileServlet";
 
-	/** Default Servlet name used by WebSphere */
+	/**
+	 * Default Servlet name used by WebSphere
+	 */
 	private static final String WEBSPHERE_DEFAULT_SERVLET_NAME = "SimpleFileServlet";
 
 
@@ -93,20 +103,15 @@ public class DefaultServletHttpRequestHandler implements HttpRequestHandler, Ser
 		if (!StringUtils.hasText(this.defaultServletName)) {
 			if (this.servletContext.getNamedDispatcher(COMMON_DEFAULT_SERVLET_NAME) != null) {
 				this.defaultServletName = COMMON_DEFAULT_SERVLET_NAME;
-			}
-			else if (this.servletContext.getNamedDispatcher(GAE_DEFAULT_SERVLET_NAME) != null) {
+			} else if (this.servletContext.getNamedDispatcher(GAE_DEFAULT_SERVLET_NAME) != null) {
 				this.defaultServletName = GAE_DEFAULT_SERVLET_NAME;
-			}
-			else if (this.servletContext.getNamedDispatcher(RESIN_DEFAULT_SERVLET_NAME) != null) {
+			} else if (this.servletContext.getNamedDispatcher(RESIN_DEFAULT_SERVLET_NAME) != null) {
 				this.defaultServletName = RESIN_DEFAULT_SERVLET_NAME;
-			}
-			else if (this.servletContext.getNamedDispatcher(WEBLOGIC_DEFAULT_SERVLET_NAME) != null) {
+			} else if (this.servletContext.getNamedDispatcher(WEBLOGIC_DEFAULT_SERVLET_NAME) != null) {
 				this.defaultServletName = WEBLOGIC_DEFAULT_SERVLET_NAME;
-			}
-			else if (this.servletContext.getNamedDispatcher(WEBSPHERE_DEFAULT_SERVLET_NAME) != null) {
+			} else if (this.servletContext.getNamedDispatcher(WEBSPHERE_DEFAULT_SERVLET_NAME) != null) {
 				this.defaultServletName = WEBSPHERE_DEFAULT_SERVLET_NAME;
-			}
-			else {
+			} else {
 				throw new IllegalStateException("Unable to locate the default servlet for serving static content. " +
 						"Please set the 'defaultServletName' property explicitly.");
 			}

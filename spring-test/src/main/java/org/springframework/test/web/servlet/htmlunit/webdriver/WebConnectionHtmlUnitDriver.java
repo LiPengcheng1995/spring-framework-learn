@@ -21,7 +21,6 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebConnection;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
@@ -35,8 +34,8 @@ import org.springframework.util.Assert;
  *
  * @author Rob Winch
  * @author Sam Brannen
- * @since 4.2
  * @see MockMvcHtmlUnitDriverBuilder
+ * @since 4.2
  */
 public class WebConnectionHtmlUnitDriver extends HtmlUnitDriver {
 
@@ -65,6 +64,7 @@ public class WebConnectionHtmlUnitDriver extends HtmlUnitDriver {
 	 * {@link WebConnection} is {@linkplain #getWebConnection accessible} for later use.
 	 * <p>Delegates to {@link HtmlUnitDriver#modifyWebClient} for default behavior
 	 * and to {@link #modifyWebClientInternal} for further customization.
+	 *
 	 * @param webClient the client to modify
 	 * @return the modified client
 	 * @see HtmlUnitDriver#modifyWebClient(WebClient)
@@ -82,6 +82,7 @@ public class WebConnectionHtmlUnitDriver extends HtmlUnitDriver {
 	 * <p>The default implementation simply returns the supplied client unmodified.
 	 * <p>Subclasses can override this method to customize the {@code WebClient}
 	 * that the {@link HtmlUnitDriver} uses.
+	 *
 	 * @param webClient the client to modify
 	 * @return the modified client
 	 */
@@ -91,6 +92,7 @@ public class WebConnectionHtmlUnitDriver extends HtmlUnitDriver {
 
 	/**
 	 * Return the current {@link WebClient}.
+	 *
 	 * @since 4.3
 	 */
 	@Override
@@ -100,20 +102,22 @@ public class WebConnectionHtmlUnitDriver extends HtmlUnitDriver {
 	}
 
 	/**
+	 * Access the current {@link WebConnection} for the {@link WebClient}.
+	 *
+	 * @return the current {@code WebConnection}
+	 */
+	public WebConnection getWebConnection() {
+		return getWebClient().getWebConnection();
+	}
+
+	/**
 	 * Set the {@link WebConnection} to be used with the {@link WebClient}.
+	 *
 	 * @param webConnection the {@code WebConnection} to use
 	 */
 	public void setWebConnection(WebConnection webConnection) {
 		Assert.notNull(webConnection, "WebConnection must not be null");
 		getWebClient().setWebConnection(webConnection);
-	}
-
-	/**
-	 * Access the current {@link WebConnection} for the {@link WebClient}.
-	 * @return the current {@code WebConnection}
-	 */
-	public WebConnection getWebConnection() {
-		return getWebClient().getWebConnection();
 	}
 
 }

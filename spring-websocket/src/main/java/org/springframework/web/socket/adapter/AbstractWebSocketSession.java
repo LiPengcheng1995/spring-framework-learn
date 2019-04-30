@@ -16,24 +16,17 @@
 
 package org.springframework.web.socket.adapter;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.AlternativeJdkIdGenerator;
 import org.springframework.util.Assert;
 import org.springframework.util.IdGenerator;
-import org.springframework.web.socket.BinaryMessage;
-import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.PingMessage;
-import org.springframework.web.socket.PongMessage;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketMessage;
-import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.*;
+
+import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * An abstract base class for implementations of {@link WebSocketSession}.
@@ -56,8 +49,9 @@ public abstract class AbstractWebSocketSession<T> implements NativeWebSocketSess
 
 	/**
 	 * Create a new instance and associate the given attributes with it.
+	 *
 	 * @param attributes attributes from the HTTP handshake to associate with the WebSocket
-	 * session; the provided attributes are copied, the original map is not used.
+	 *                   session; the provided attributes are copied, the original map is not used.
 	 */
 	public AbstractWebSocketSession(@Nullable Map<String, Object> attributes) {
 		if (attributes != null) {
@@ -103,17 +97,13 @@ public abstract class AbstractWebSocketSession<T> implements NativeWebSocketSess
 
 		if (message instanceof TextMessage) {
 			sendTextMessage((TextMessage) message);
-		}
-		else if (message instanceof BinaryMessage) {
+		} else if (message instanceof BinaryMessage) {
 			sendBinaryMessage((BinaryMessage) message);
-		}
-		else if (message instanceof PingMessage) {
+		} else if (message instanceof PingMessage) {
 			sendPingMessage((PingMessage) message);
-		}
-		else if (message instanceof PongMessage) {
+		} else if (message instanceof PongMessage) {
 			sendPongMessage((PongMessage) message);
-		}
-		else {
+		} else {
 			throw new IllegalStateException("Unexpected WebSocketMessage type: " + message);
 		}
 	}
@@ -148,8 +138,7 @@ public abstract class AbstractWebSocketSession<T> implements NativeWebSocketSess
 	public String toString() {
 		if (this.nativeSession != null) {
 			return getClass().getSimpleName() + "[id=" + getId() + ", uri=" + getUri() + "]";
-		}
-		else {
+		} else {
 			return getClass().getSimpleName() + "[nativeSession=null]";
 		}
 	}

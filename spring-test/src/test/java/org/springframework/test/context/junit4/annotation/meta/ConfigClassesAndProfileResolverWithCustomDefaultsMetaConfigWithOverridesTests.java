@@ -18,7 +18,6 @@ package org.springframework.test.context.junit4.annotation.meta;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +25,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.ActiveProfilesResolver;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Integration tests for meta-annotation attribute override support, overriding
@@ -67,6 +66,6 @@ class DevResolver implements ActiveProfilesResolver {
 		// test class is passed to this method as opposed to a "*Config" class which would
 		// imply that we likely have been passed the 'declaringClass' instead of the
 		// 'rootDeclaringClass'.
-		return testClass.getName().endsWith("Tests") ? new String[] { "dev" } : new String[] {};
+		return testClass.getName().endsWith("Tests") ? new String[]{"dev"} : new String[]{};
 	}
 }

@@ -20,10 +20,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
-
 import org.springframework.test.context.TestExecutionListeners;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Verifies support for JUnit 4.7 {@link Rule Rules} in conjunction with the
@@ -35,7 +34,7 @@ import static org.junit.Assert.*;
  * @since 3.0
  */
 @RunWith(SpringRunner.class)
-@TestExecutionListeners( {})
+@TestExecutionListeners({})
 public class SpringJUnit47ClassRunnerRuleTests {
 
 	@Rule

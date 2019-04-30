@@ -28,6 +28,12 @@ public class AbstractJmxAttribute {
 
 	private int currencyTimeLimit = -1;
 
+	/**
+	 * Return a description for this attribute.
+	 */
+	public String getDescription() {
+		return this.description;
+	}
 
 	/**
 	 * Set a description for this attribute.
@@ -37,10 +43,10 @@ public class AbstractJmxAttribute {
 	}
 
 	/**
-	 * Return a description for this attribute.
+	 * Return a currency time limit for this attribute.
 	 */
-	public String getDescription() {
-		return this.description;
+	public int getCurrencyTimeLimit() {
+		return this.currencyTimeLimit;
 	}
 
 	/**
@@ -48,13 +54,6 @@ public class AbstractJmxAttribute {
 	 */
 	public void setCurrencyTimeLimit(int currencyTimeLimit) {
 		this.currencyTimeLimit = currencyTimeLimit;
-	}
-
-	/**
-	 * Return a currency time limit for this attribute.
-	 */
-	public int getCurrencyTimeLimit() {
-		return this.currencyTimeLimit;
 	}
 
 }

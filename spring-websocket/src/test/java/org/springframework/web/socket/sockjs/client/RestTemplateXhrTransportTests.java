@@ -16,18 +16,7 @@
 
 package org.springframework.web.socket.sockjs.client;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Queue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.LinkedBlockingDeque;
-
 import org.junit.Test;
-
 import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -42,12 +31,7 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RequestCallback;
-import org.springframework.web.client.ResponseExtractor;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestOperations;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.*;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHandler;
@@ -55,6 +39,16 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.sockjs.frame.Jackson2SockJsMessageCodec;
 import org.springframework.web.socket.sockjs.frame.SockJsFrame;
 import org.springframework.web.socket.sockjs.transport.TransportType;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Queue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import static org.mockito.BDDMockito.*;
 
@@ -130,6 +124,7 @@ public class RestTemplateXhrTransportTests {
 					@Override
 					public void onSuccess(WebSocketSession result) {
 					}
+
 					@Override
 					public void onFailure(Throwable ex) {
 						if (ex == expected) {
@@ -196,7 +191,6 @@ public class RestTemplateXhrTransportTests {
 	}
 
 
-
 	private static class TestRestTemplate extends RestTemplate {
 
 		private Queue<ClientHttpResponse> responses = new LinkedBlockingDeque<>();
@@ -208,12 +202,11 @@ public class RestTemplateXhrTransportTests {
 
 		@Override
 		public <T> T execute(URI url, HttpMethod method, @Nullable RequestCallback callback,
-				@Nullable ResponseExtractor<T> extractor) throws RestClientException {
+							 @Nullable ResponseExtractor<T> extractor) throws RestClientException {
 
 			try {
 				extractor.extractData(this.responses.remove());
-			}
-			catch (Throwable t) {
+			} catch (Throwable t) {
 				throw new RestClientException("Failed to invoke extractor", t);
 			}
 			return null;

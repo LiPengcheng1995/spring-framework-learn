@@ -31,14 +31,6 @@ public class ManagedOperationParameter {
 
 	private String description = "";
 
-
-	/**
-	 * Set the index of this parameter in the operation signature.
-	 */
-	public void setIndex(int index) {
-		this.index = index;
-	}
-
 	/**
 	 * Return the index of this parameter in the operation signature.
 	 */
@@ -47,10 +39,10 @@ public class ManagedOperationParameter {
 	}
 
 	/**
-	 * Set the name of this parameter in the operation signature.
+	 * Set the index of this parameter in the operation signature.
 	 */
-	public void setName(String name) {
-		this.name = name;
+	public void setIndex(int index) {
+		this.index = index;
 	}
 
 	/**
@@ -61,10 +53,10 @@ public class ManagedOperationParameter {
 	}
 
 	/**
-	 * Set a description for this parameter.
+	 * Set the name of this parameter in the operation signature.
 	 */
-	public void setDescription(String description) {
-		this.description = description;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	/**
@@ -72,6 +64,13 @@ public class ManagedOperationParameter {
 	 */
 	public String getDescription() {
 		return this.description;
+	}
+
+	/**
+	 * Set a description for this parameter.
+	 */
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 }

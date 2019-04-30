@@ -16,26 +16,21 @@
 
 package org.springframework.web.socket.messaging;
 
-import java.security.Principal;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.SmartApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.user.DestinationUserNameProvider;
-import org.springframework.messaging.simp.user.SimpSession;
-import org.springframework.messaging.simp.user.SimpSubscription;
-import org.springframework.messaging.simp.user.SimpSubscriptionMatcher;
-import org.springframework.messaging.simp.user.SimpUser;
-import org.springframework.messaging.simp.user.SimpUserRegistry;
+import org.springframework.messaging.simp.user.*;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.util.Assert;
+
+import java.security.Principal;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A default implementation of {@link SimpUserRegistry} that relies on
@@ -47,29 +42,26 @@ import org.springframework.util.Assert;
  */
 public class DefaultSimpUserRegistry implements SimpUserRegistry, SmartApplicationListener {
 
-	private int order = Ordered.LOWEST_PRECEDENCE;
-
 	/* Primary lookup that holds all users and their sessions */
 	private final Map<String, LocalSimpUser> users = new ConcurrentHashMap<>();
-
 	/* Secondary lookup across all sessions by id */
 	private final Map<String, LocalSimpSession> sessions = new ConcurrentHashMap<>();
-
 	private final Object sessionLock = new Object();
-
-
-	/**
-	 * Specify the order value for this registry.
-	 * <p>Default is {@link Ordered#LOWEST_PRECEDENCE}.
-	 * @since 5.0.8
-	 */
-	public void setOrder(int order) {
-		this.order = order;
-	}
+	private int order = Ordered.LOWEST_PRECEDENCE;
 
 	@Override
 	public int getOrder() {
 		return this.order;
+	}
+
+	/**
+	 * Specify the order value for this registry.
+	 * <p>Default is {@link Ordered#LOWEST_PRECEDENCE}.
+	 *
+	 * @since 5.0.8
+	 */
+	public void setOrder(int order) {
+		this.order = order;
 	}
 
 
@@ -101,8 +93,7 @@ public class DefaultSimpUserRegistry implements SimpUserRegistry, SmartApplicati
 					session.addSubscription(id, destination);
 				}
 			}
-		}
-		else if (event instanceof SessionConnectedEvent) {
+		} else if (event instanceof SessionConnectedEvent) {
 			Principal user = subProtocolEvent.getUser();
 			if (user == null) {
 				return;
@@ -121,8 +112,7 @@ public class DefaultSimpUserRegistry implements SimpUserRegistry, SmartApplicati
 				simpUser.addSession(session);
 				this.sessions.put(sessionId, session);
 			}
-		}
-		else if (event instanceof SessionDisconnectEvent) {
+		} else if (event instanceof SessionDisconnectEvent) {
 			synchronized (this.sessionLock) {
 				LocalSimpSession session = this.sessions.remove(sessionId);
 				if (session != null) {
@@ -133,8 +123,7 @@ public class DefaultSimpUserRegistry implements SimpUserRegistry, SmartApplicati
 					}
 				}
 			}
-		}
-		else if (event instanceof SessionUnsubscribeEvent) {
+		} else if (event instanceof SessionUnsubscribeEvent) {
 			LocalSimpSession session = this.sessions.get(sessionId);
 			if (session != null) {
 				String subscriptionId = accessor.getSubscriptionId();

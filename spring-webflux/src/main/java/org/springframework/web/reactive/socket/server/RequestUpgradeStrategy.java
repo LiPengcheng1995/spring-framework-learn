@@ -16,13 +16,12 @@
 
 package org.springframework.web.reactive.socket.server;
 
-import reactor.core.publisher.Mono;
-
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
 
 /**
  * A strategy for upgrading an HTTP request to a WebSocket session depending
@@ -40,13 +39,14 @@ public interface RequestUpgradeStrategy {
 
 	/**
 	 * Upgrade to a WebSocket session and handle it with the given handler.
-	 * @param exchange the current exchange
+	 *
+	 * @param exchange         the current exchange
 	 * @param webSocketHandler handler for the WebSocket session
-	 * @param subProtocol the selected sub-protocol got the handler
+	 * @param subProtocol      the selected sub-protocol got the handler
 	 * @return completion {@code Mono<Void>} to indicate the outcome of the
 	 * WebSocket session handling.
 	 */
 	Mono<Void> upgrade(ServerWebExchange exchange, WebSocketHandler webSocketHandler,
-			@Nullable String subProtocol);
+					   @Nullable String subProtocol);
 
 }

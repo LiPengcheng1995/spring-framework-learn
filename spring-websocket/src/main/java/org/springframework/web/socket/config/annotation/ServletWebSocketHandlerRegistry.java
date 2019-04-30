@@ -16,11 +16,6 @@
 
 package org.springframework.web.socket.config.annotation;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -31,6 +26,11 @@ import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.support.WebSocketHandlerMapping;
 import org.springframework.web.util.UrlPathHelper;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A {@link WebSocketHandlerRegistry} that maps {@link WebSocketHandler}s to URLs for use
@@ -57,6 +57,7 @@ public class ServletWebSocketHandlerRegistry implements WebSocketHandlerRegistry
 
 	/**
 	 * Deprecated constructor with a TaskScheduler for SockJS use.
+	 *
 	 * @deprecated as of 5.0 a TaskScheduler is not provided upfront, not until
 	 * it is obvious that it is needed, see {@link #requiresTaskScheduler()} and
 	 * {@link #setTaskScheduler}.
@@ -75,6 +76,10 @@ public class ServletWebSocketHandlerRegistry implements WebSocketHandlerRegistry
 		return registration;
 	}
 
+	public int getOrder() {
+		return this.order;
+	}
+
 	/**
 	 * Set the order for the resulting {@link SimpleUrlHandlerMapping} relative to
 	 * other handler mappings configured in Spring MVC.
@@ -84,8 +89,9 @@ public class ServletWebSocketHandlerRegistry implements WebSocketHandlerRegistry
 		this.order = order;
 	}
 
-	public int getOrder() {
-		return this.order;
+	@Nullable
+	public UrlPathHelper getUrlPathHelper() {
+		return this.urlPathHelper;
 	}
 
 	/**
@@ -95,12 +101,6 @@ public class ServletWebSocketHandlerRegistry implements WebSocketHandlerRegistry
 	public void setUrlPathHelper(@Nullable UrlPathHelper urlPathHelper) {
 		this.urlPathHelper = urlPathHelper;
 	}
-
-	@Nullable
-	public UrlPathHelper getUrlPathHelper() {
-		return this.urlPathHelper;
-	}
-
 
 	/**
 	 * Whether there are any endpoint SockJS registrations without a TaskScheduler.

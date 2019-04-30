@@ -16,11 +16,8 @@
 
 package org.springframework.web.socket.sockjs.client;
 
-import java.net.URI;
-
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,6 +27,8 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
+
+import java.net.URI;
 
 import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.*;
@@ -135,8 +134,8 @@ public class XhrTransportTests {
 
 		@Override
 		protected void connectInternal(TransportRequest request, WebSocketHandler handler, URI receiveUrl,
-				HttpHeaders handshakeHeaders, XhrClientSockJsSession session,
-				SettableListenableFuture<WebSocketSession> connectFuture) {
+									   HttpHeaders handshakeHeaders, XhrClientSockJsSession session,
+									   SettableListenableFuture<WebSocketSession> connectFuture) {
 
 			this.actualHandshakeHeaders = handshakeHeaders;
 			this.actualSession = session;

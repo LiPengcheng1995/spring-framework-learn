@@ -16,30 +16,12 @@
 
 package org.springframework.web.servlet.tags.form;
 
-import java.beans.PropertyEditor;
-import java.beans.PropertyEditorSupport;
-import java.io.StringReader;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TreeMap;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.Tag;
-
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-
 import org.junit.Test;
-
 import org.springframework.beans.propertyeditors.CustomCollectionEditor;
 import org.springframework.format.Formatter;
 import org.springframework.format.support.FormattingConversionService;
@@ -49,6 +31,14 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.TransformTag;
 
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.Tag;
+import java.beans.PropertyEditor;
+import java.beans.PropertyEditorSupport;
+import java.io.StringReader;
+import java.text.ParseException;
+import java.util.*;
+
 import static org.junit.Assert.*;
 
 /**
@@ -57,7 +47,7 @@ import static org.junit.Assert.*;
  * @author Jeremy Grelle
  * @author Dave Syer
  */
-@SuppressWarnings({ "rawtypes", "unchecked" })
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class SelectTagTests extends AbstractFormTagTests {
 
 	private static final Locale LOCALE_AT = new Locale("de", "AT");
@@ -192,13 +182,14 @@ public class SelectTagTests extends AbstractFormTagTests {
 		BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(getTestBean(), "testBean");
 		bindingResult.getPropertyAccessor().registerCustomEditor(Country.class, new PropertyEditorSupport() {
 			@Override
+			public String getAsText() {
+				return ((Country) getValue()).getName();
+			}			@Override
 			public void setAsText(String text) throws IllegalArgumentException {
 				setValue(Country.getCountryWithIsoCode(text));
 			}
-			@Override
-			public String getAsText() {
-				return ((Country) getValue()).getName();
-			}
+
+
 		});
 		getPageContext().getRequest().setAttribute(BindingResult.MODEL_KEY_PREFIX + "testBean", bindingResult);
 		this.tag.doStartTag();
@@ -221,13 +212,14 @@ public class SelectTagTests extends AbstractFormTagTests {
 		BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(getTestBean(), "testBean");
 		bindingResult.getPropertyAccessor().registerCustomEditor(Country.class, new PropertyEditorSupport() {
 			@Override
+			public String getAsText() {
+				return ((Country) getValue()).getName();
+			}			@Override
 			public void setAsText(String text) throws IllegalArgumentException {
 				setValue(Country.getCountryWithIsoCode(text));
 			}
-			@Override
-			public String getAsText() {
-				return ((Country) getValue()).getName();
-			}
+
+
 		});
 		getPageContext().getRequest().setAttribute(BindingResult.MODEL_KEY_PREFIX + "testBean", bindingResult);
 		this.tag.doStartTag();
@@ -248,24 +240,25 @@ public class SelectTagTests extends AbstractFormTagTests {
 		TestBeanWithRealCountry withCountry = (TestBeanWithRealCountry) getTestBean();
 		withCountry.setRealCountry(null);
 		testBean.setBean(withCountry);
-		BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(testBean , "testBean");
+		BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(testBean, "testBean");
 		bindingResult.getPropertyAccessor().registerCustomEditor(Country.class, new PropertyEditorSupport() {
 			@Override
+			public String getAsText() {
+				Country value = (Country) getValue();
+				if (value == null) {
+					return null;
+				}
+				return value.getName();
+			}			@Override
 			public void setAsText(String text) throws IllegalArgumentException {
-				if (text==null || text.length()==0) {
+				if (text == null || text.length() == 0) {
 					setValue(null);
 					return;
 				}
 				setValue(Country.getCountryWithIsoCode(text));
 			}
-			@Override
-			public String getAsText() {
-				Country value = (Country) getValue();
-				if (value==null) {
-					return null;
-				}
-				return value.getName();
-			}
+
+
 		});
 		getPageContext().getRequest().setAttribute(BindingResult.MODEL_KEY_PREFIX + "testBean", bindingResult);
 		this.tag.doStartTag();
@@ -284,16 +277,17 @@ public class SelectTagTests extends AbstractFormTagTests {
 		this.tag.setItemLabel("name");
 		TestBeanWrapper testBean = new TestBeanWrapper();
 		testBean.setBean(getTestBean());
-		BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(testBean , "testBean");
+		BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(testBean, "testBean");
 		bindingResult.getPropertyAccessor().registerCustomEditor(Country.class, new PropertyEditorSupport() {
-			@Override
-			public void setAsText(String text) throws IllegalArgumentException {
-				setValue(Country.getCountryWithIsoCode(text));
-			}
 			@Override
 			public String getAsText() {
 				return ((Country) getValue()).getName();
+			}			@Override
+			public void setAsText(String text) throws IllegalArgumentException {
+				setValue(Country.getCountryWithIsoCode(text));
 			}
+
+
 		});
 		getPageContext().getRequest().setAttribute(BindingResult.MODEL_KEY_PREFIX + "testBean", bindingResult);
 		this.tag.doStartTag();
@@ -314,17 +308,18 @@ public class SelectTagTests extends AbstractFormTagTests {
 		BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(testBean, "testBean");
 		bindingResult.getPropertyAccessor().registerCustomEditor(Country.class, new PropertyEditorSupport() {
 			@Override
-			public void setAsText(String text) throws IllegalArgumentException {
-				setValue(Country.getCountryWithIsoCode(text));
-			}
-			@Override
 			public String getAsText() {
 				Country value = (Country) getValue();
-				if (value==null) {
+				if (value == null) {
 					return "";
 				}
 				return value.getName();
+			}			@Override
+			public void setAsText(String text) throws IllegalArgumentException {
+				setValue(Country.getCountryWithIsoCode(text));
 			}
+
+
 		});
 		getPageContext().getRequest().setAttribute(BindingResult.MODEL_KEY_PREFIX + "testBean", bindingResult);
 		this.tag.doStartTag();
@@ -350,8 +345,7 @@ public class SelectTagTests extends AbstractFormTagTests {
 		try {
 			this.tag.doStartTag();
 			fail("Must not be able to use a non-Collection typed value as the value of 'items'");
-		}
-		catch (JspException expected) {
+		} catch (JspException expected) {
 			String message = expected.getMessage();
 			assertTrue(message.contains("items"));
 			assertTrue(message.contains("org.springframework.tests.sample.beans.TestBean"));
@@ -433,7 +427,7 @@ public class SelectTagTests extends AbstractFormTagTests {
 
 		this.tag.setPath("myFloat");
 
-		Float[] array = new Float[] {
+		Float[] array = new Float[]{
 				new Float("12.30"), new Float("12.32"), new Float("12.34"), new Float("12.36"),
 				new Float("12.38"), new Float("12.40"), new Float("12.42"), new Float("12.44"),
 				new Float("12.46"), new Float("12.48")
@@ -510,6 +504,7 @@ public class SelectTagTests extends AbstractFormTagTests {
 			public String print(Country object, Locale locale) {
 				return object.getName();
 			}
+
 			@Override
 			public Country parse(String text, Locale locale) throws ParseException {
 				return new Country(text, text);
@@ -558,6 +553,7 @@ public class SelectTagTests extends AbstractFormTagTests {
 			public String print(Country object, Locale locale) {
 				return object.getName();
 			}
+
 			@Override
 			public Country parse(String text, Locale locale) throws ParseException {
 				return new Country(text, text);
@@ -715,14 +711,14 @@ public class SelectTagTests extends AbstractFormTagTests {
 			BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(getTestBean(), COMMAND_NAME);
 			bindingResult.getPropertyAccessor().registerCustomEditor(Country.class, new PropertyEditorSupport() {
 				@Override
+				public String getAsText() {
+					return ((Country) getValue()).getIsoCode();
+				}				@Override
 				public void setAsText(final String text) throws IllegalArgumentException {
 					setValue(Country.getCountryWithIsoCode(text));
 				}
 
-				@Override
-				public String getAsText() {
-					return ((Country) getValue()).getIsoCode();
-				}
+
 			});
 			exposeBindingResult(bindingResult);
 
@@ -757,8 +753,7 @@ public class SelectTagTests extends AbstractFormTagTests {
 			assertEquals("US Locale displayLanguage property not used for option label.",
 					Locale.US.getDisplayLanguage(), e.getData());
 
-		}
-		finally {
+		} finally {
 			// Restore original default locale.
 			Locale.setDefault(defaultLocale);
 		}
@@ -959,7 +954,7 @@ public class SelectTagTests extends AbstractFormTagTests {
 		Map map = new TreeMap(new Comparator() {
 			@Override
 			public int compare(Object o1, Object o2) {
-				return ((Country)o1).getName().compareTo(((Country)o2).getName());
+				return ((Country) o1).getName().compareTo(((Country) o2).getName());
 			}
 		});
 		map.put(Country.COUNTRY_AT, LOCALE_AT);
@@ -1005,8 +1000,7 @@ public class SelectTagTests extends AbstractFormTagTests {
 		Attribute selectedAttr = e.attribute("selected");
 		if (selected) {
 			assertTrue(selectedAttr != null && "selected".equals(selectedAttr.getValue()));
-		}
-		else {
+		} else {
 			assertNull(selectedAttr);
 		}
 	}

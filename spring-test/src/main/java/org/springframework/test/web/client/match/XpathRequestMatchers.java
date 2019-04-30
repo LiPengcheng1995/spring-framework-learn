@@ -16,18 +16,17 @@
 
 package org.springframework.test.web.client.match;
 
-import java.io.IOException;
-import java.util.Map;
-import javax.xml.xpath.XPathExpressionException;
-
 import org.hamcrest.Matcher;
-import org.w3c.dom.Node;
-
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.lang.Nullable;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.util.XpathExpectationsHelper;
 import org.springframework.test.web.client.RequestMatcher;
+import org.w3c.dom.Node;
+
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * Factory methods for request content {@code RequestMatcher}'s using an XPath
@@ -48,13 +47,14 @@ public class XpathRequestMatchers {
 	 * Class constructor, not for direct instantiation. Use
 	 * {@link MockRestRequestMatchers#xpath(String, Object...)} or
 	 * {@link MockRestRequestMatchers#xpath(String, Map, Object...)}.
+	 *
 	 * @param expression the XPath expression
 	 * @param namespaces XML namespaces referenced in the XPath expression, or {@code null}
-	 * @param args arguments to parameterize the XPath expression with using the
-	 * formatting specifiers defined in {@link String#format(String, Object...)}
+	 * @param args       arguments to parameterize the XPath expression with using the
+	 *                   formatting specifiers defined in {@link String#format(String, Object...)}
 	 * @throws XPathExpressionException if expression compilation failed
 	 */
-	protected XpathRequestMatchers(String expression, @Nullable Map<String, String> namespaces, Object ... args)
+	protected XpathRequestMatchers(String expression, @Nullable Map<String, String> namespaces, Object... args)
 			throws XPathExpressionException {
 
 		this.xpathHelper = new XpathExpectationsHelper(expression, namespaces, args);
@@ -193,8 +193,7 @@ public class XpathRequestMatchers {
 			try {
 				MockClientHttpRequest mockRequest = (MockClientHttpRequest) request;
 				matchInternal(mockRequest);
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				throw new AssertionError("Failed to parse XML request content", ex);
 			}
 		}

@@ -16,12 +16,6 @@
 
 package org.springframework.web.servlet.view;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import javax.servlet.ServletContext;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -32,6 +26,12 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
+
+import javax.servlet.ServletContext;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * A {@link org.springframework.web.servlet.ViewResolver} that delegates to others.
@@ -47,6 +47,12 @@ public class ViewResolverComposite implements ViewResolver, Ordered, Initializin
 
 	private int order = Ordered.LOWEST_PRECEDENCE;
 
+	/**
+	 * Return the list of view viewResolvers to delegate to.
+	 */
+	public List<ViewResolver> getViewResolvers() {
+		return Collections.unmodifiableList(this.viewResolvers);
+	}
 
 	/**
 	 * Set the list of view viewResolvers to delegate to.
@@ -58,11 +64,9 @@ public class ViewResolverComposite implements ViewResolver, Ordered, Initializin
 		}
 	}
 
-	/**
-	 * Return the list of view viewResolvers to delegate to.
-	 */
-	public List<ViewResolver> getViewResolvers() {
-		return Collections.unmodifiableList(this.viewResolvers);
+	@Override
+	public int getOrder() {
+		return this.order;
 	}
 
 	public void setOrder(int order) {
@@ -70,15 +74,10 @@ public class ViewResolverComposite implements ViewResolver, Ordered, Initializin
 	}
 
 	@Override
-	public int getOrder() {
-		return this.order;
-	}
-
-	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		for (ViewResolver viewResolver : this.viewResolvers) {
 			if (viewResolver instanceof ApplicationContextAware) {
-				((ApplicationContextAware)viewResolver).setApplicationContext(applicationContext);
+				((ApplicationContextAware) viewResolver).setApplicationContext(applicationContext);
 			}
 		}
 	}
@@ -87,7 +86,7 @@ public class ViewResolverComposite implements ViewResolver, Ordered, Initializin
 	public void setServletContext(ServletContext servletContext) {
 		for (ViewResolver viewResolver : this.viewResolvers) {
 			if (viewResolver instanceof ServletContextAware) {
-				((ServletContextAware)viewResolver).setServletContext(servletContext);
+				((ServletContextAware) viewResolver).setServletContext(servletContext);
 			}
 		}
 	}

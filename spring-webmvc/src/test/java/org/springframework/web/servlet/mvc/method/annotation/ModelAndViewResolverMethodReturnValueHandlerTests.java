@@ -16,13 +16,8 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.tests.sample.beans.TestBean;
@@ -32,6 +27,10 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.annotation.ModelAndViewResolver;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -97,7 +96,7 @@ public class ModelAndViewResolverMethodReturnValueHandlerTests {
 	}
 
 	@Test
-	public void handleNonSimpleType() throws Exception{
+	public void handleNonSimpleType() throws Exception {
 		MethodParameter returnType = new MethodParameter(getClass().getDeclaredMethod("testBeanReturnValue"), -1);
 		handler.handleReturnValue(new TestBean(), returnType, mavContainer, request);
 
@@ -127,12 +126,11 @@ public class ModelAndViewResolverMethodReturnValueHandlerTests {
 		@Override
 		@SuppressWarnings("rawtypes")
 		public ModelAndView resolveModelAndView(Method method, Class<?> handlerType, Object returnValue,
-				ExtendedModelMap model, NativeWebRequest request) {
+												ExtendedModelMap model, NativeWebRequest request) {
 
 			if (returnValue != null && returnValue.getClass().equals(returnValueType)) {
 				return new ModelAndView("viewName", "modelAttrName", returnValue);
-			}
-			else {
+			} else {
 				return ModelAndViewResolver.UNRESOLVED;
 			}
 		}

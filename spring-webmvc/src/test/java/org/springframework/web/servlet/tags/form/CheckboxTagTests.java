@@ -16,29 +16,22 @@
 
 package org.springframework.web.servlet.tags.form;
 
-import java.beans.PropertyEditorSupport;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.Tag;
-
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-
 import org.junit.Test;
-
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.tests.sample.beans.Colour;
 import org.springframework.tests.sample.beans.Pet;
 import org.springframework.tests.sample.beans.TestBean;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.Tag;
+import java.beans.PropertyEditorSupport;
+import java.io.StringReader;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -47,7 +40,7 @@ import static org.junit.Assert.*;
  * @author Juergen Hoeller
  * @author Jeremy Grelle
  */
-@SuppressWarnings({ "rawtypes", "unchecked" })
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class CheckboxTagTests extends AbstractFormTagTests {
 
 	private CheckboxTag tag;
@@ -616,8 +609,7 @@ public class CheckboxTagTests extends AbstractFormTagTests {
 			this.tag.setPath("name");
 			this.tag.doStartTag();
 			fail("Should not be able to render with a null value when binding to a non-boolean.");
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			// success
 		}
 	}
@@ -650,8 +642,7 @@ public class CheckboxTagTests extends AbstractFormTagTests {
 		try {
 			this.tag.setDynamicAttribute(null, "type", "email");
 			fail("Expected exception");
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			assertEquals("Attribute type=\"email\" is not allowed", e.getMessage());
 		}
 	}
@@ -693,8 +684,8 @@ public class CheckboxTagTests extends AbstractFormTagTests {
 		this.bean.setName("Rob Harrop");
 		this.bean.setJedi(true);
 		this.bean.setSomeBoolean(Boolean.TRUE);
-		this.bean.setStringArray(new String[] {"bar", "foo"});
-		this.bean.setSomeIntegerArray(new Integer[] {new Integer(2), new Integer(1)});
+		this.bean.setStringArray(new String[]{"bar", "foo"});
+		this.bean.setSomeIntegerArray(new Integer[]{new Integer(2), new Integer(1)});
 		this.bean.setOtherColours(colours);
 		this.bean.setPets(pets);
 		this.bean.setSomeList(someList);

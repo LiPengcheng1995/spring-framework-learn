@@ -16,16 +16,15 @@
 
 package org.springframework.test.web.servlet.result;
 
-import java.util.Map;
-import javax.xml.xpath.XPathExpressionException;
-
 import org.hamcrest.Matcher;
-import org.w3c.dom.Node;
-
 import org.springframework.lang.Nullable;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.util.XpathExpectationsHelper;
 import org.springframework.test.web.servlet.ResultMatcher;
+import org.w3c.dom.Node;
+
+import javax.xml.xpath.XPathExpressionException;
+import java.util.Map;
 
 /**
  * Factory for assertions on the response content using XPath expressions.
@@ -45,12 +44,13 @@ public class XpathResultMatchers {
 	 * Protected constructor, not for direct instantiation. Use
 	 * {@link MockMvcResultMatchers#xpath(String, Object...)} or
 	 * {@link MockMvcResultMatchers#xpath(String, Map, Object...)}.
+	 *
 	 * @param expression the XPath expression
 	 * @param namespaces XML namespaces referenced in the XPath expression, or {@code null}
-	 * @param args arguments to parameterize the XPath expression with using the
-	 * formatting specifiers defined in {@link String#format(String, Object...)}
+	 * @param args       arguments to parameterize the XPath expression with using the
+	 *                   formatting specifiers defined in {@link String#format(String, Object...)}
 	 */
-	protected XpathResultMatchers(String expression, @Nullable Map<String, String> namespaces, Object ... args)
+	protected XpathResultMatchers(String expression, @Nullable Map<String, String> namespaces, Object... args)
 			throws XPathExpressionException {
 
 		this.xpathHelper = new XpathExpectationsHelper(expression, namespaces, args);

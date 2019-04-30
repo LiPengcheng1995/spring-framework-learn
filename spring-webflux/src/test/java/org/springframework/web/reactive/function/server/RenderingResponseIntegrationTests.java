@@ -16,16 +16,7 @@
 
 package org.springframework.web.reactive.function.server;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -36,8 +27,12 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.result.view.View;
 import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
 
-import static org.junit.Assert.*;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+
+import static org.junit.Assert.assertEquals;
 import static org.springframework.web.reactive.function.server.HandlerFilterFunction.ofResponseProcessor;
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
@@ -143,7 +138,7 @@ public class RenderingResponseIntegrationTests extends AbstractRouterFunctionInt
 
 		@Override
 		public Mono<Void> render(@Nullable Map<String, ?> model, @Nullable MediaType contentType,
-				ServerWebExchange exchange) {
+								 ServerWebExchange exchange) {
 			StringBuilder builder = new StringBuilder();
 			builder.append("name=").append(this.name).append('\n');
 			for (Map.Entry<String, ?> entry : model.entrySet()) {

@@ -16,13 +16,13 @@
 
 package org.springframework.http.client.support;
 
-import java.net.URI;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.net.URI;
 
 /**
  * Provides a convenient implementation of the {@link HttpRequest} interface
@@ -40,6 +40,7 @@ public class HttpRequestWrapper implements HttpRequest {
 
 	/**
 	 * Create a new {@code HttpRequest} wrapping the given request object.
+	 *
 	 * @param request the request object to be wrapped
 	 */
 	public HttpRequestWrapper(HttpRequest request) {

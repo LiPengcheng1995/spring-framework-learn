@@ -16,17 +16,6 @@
 
 package org.springframework.web.servlet.support;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TimeZone;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.jsp.jstl.core.Config;
-
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
@@ -53,6 +42,13 @@ import org.springframework.web.util.UriTemplate;
 import org.springframework.web.util.UrlPathHelper;
 import org.springframework.web.util.WebUtils;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.servlet.jsp.jstl.core.Config;
+import java.util.*;
+
 /**
  * Context holder for request-specific state, like current web application context, current locale,
  * current theme, and potential binding errors. Provides easy access to localized messages and
@@ -69,10 +65,10 @@ import org.springframework.web.util.WebUtils;
  *
  * @author Juergen Hoeller
  * @author Rossen Stoyanchev
- * @since 03.03.2003
  * @see org.springframework.web.servlet.DispatcherServlet
  * @see org.springframework.web.servlet.view.AbstractView#setRequestContextAttribute
  * @see org.springframework.web.servlet.view.UrlBasedViewResolver#setRequestContextAttribute
+ * @since 03.03.2003
  */
 public class RequestContext {
 
@@ -80,6 +76,7 @@ public class RequestContext {
 	 * Default theme name used if the RequestContext cannot find a ThemeResolver.
 	 * Only applies to non-DispatcherServlet requests.
 	 * <p>Same as AbstractThemeResolver's default, but not linked in here to avoid package interdependencies.
+	 *
 	 * @see org.springframework.web.servlet.theme.AbstractThemeResolver#ORIGINAL_DEFAULT_THEME_NAME
 	 */
 	public static final String DEFAULT_THEME_NAME = "theme";
@@ -134,6 +131,7 @@ public class RequestContext {
 	 * normally exposed as request attributes. It will typically be used within JSPs or custom tags.
 	 * <p><b>Will only work within a DispatcherServlet request.</b>
 	 * Pass in a ServletContext to be able to fallback to the root WebApplicationContext.
+	 *
 	 * @param request current HTTP request
 	 * @see org.springframework.web.servlet.DispatcherServlet
 	 * @see #RequestContext(javax.servlet.http.HttpServletRequest, javax.servlet.ServletContext)
@@ -148,7 +146,8 @@ public class RequestContext {
 	 * normally exposed as request attributes. It will typically be used within JSPs or custom tags.
 	 * <p><b>Will only work within a DispatcherServlet request.</b>
 	 * Pass in a ServletContext to be able to fallback to the root WebApplicationContext.
-	 * @param request current HTTP request
+	 *
+	 * @param request  current HTTP request
 	 * @param response current HTTP response
 	 * @see org.springframework.web.servlet.DispatcherServlet
 	 * @see #RequestContext(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, javax.servlet.ServletContext, Map)
@@ -163,9 +162,10 @@ public class RequestContext {
 	 * normally exposed as request attributes. It will typically be used within JSPs or custom tags.
 	 * <p>If a ServletContext is specified, the RequestContext will also work with the root
 	 * WebApplicationContext (outside a DispatcherServlet).
-	 * @param request current HTTP request
+	 *
+	 * @param request        current HTTP request
 	 * @param servletContext the servlet context of the web application (can be {@code null};
-	 * necessary for fallback to root WebApplicationContext)
+	 *                       necessary for fallback to root WebApplicationContext)
 	 * @see org.springframework.web.context.WebApplicationContext
 	 * @see org.springframework.web.servlet.DispatcherServlet
 	 */
@@ -178,9 +178,10 @@ public class RequestContext {
 	 * <p>This works with all View implementations. It will typically be used by View implementations.
 	 * <p><b>Will only work within a DispatcherServlet request.</b>
 	 * Pass in a ServletContext to be able to fallback to the root WebApplicationContext.
+	 *
 	 * @param request current HTTP request
-	 * @param model the model attributes for the current view (can be {@code null},
-	 * using the request attributes for Errors retrieval)
+	 * @param model   the model attributes for the current view (can be {@code null},
+	 *                using the request attributes for Errors retrieval)
 	 * @see org.springframework.web.servlet.DispatcherServlet
 	 * @see #RequestContext(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, javax.servlet.ServletContext, Map)
 	 */
@@ -193,17 +194,18 @@ public class RequestContext {
 	 * <p>This works with all View implementations. It will typically be used by View implementations.
 	 * <p>If a ServletContext is specified, the RequestContext will also work with a root
 	 * WebApplicationContext (outside a DispatcherServlet).
-	 * @param request current HTTP request
-	 * @param response current HTTP response
+	 *
+	 * @param request        current HTTP request
+	 * @param response       current HTTP response
 	 * @param servletContext the servlet context of the web application (can be {@code null}; necessary for
-	 * fallback to root WebApplicationContext)
-	 * @param model the model attributes for the current view (can be {@code null}, using the request attributes
-	 * for Errors retrieval)
+	 *                       fallback to root WebApplicationContext)
+	 * @param model          the model attributes for the current view (can be {@code null}, using the request attributes
+	 *                       for Errors retrieval)
 	 * @see org.springframework.web.context.WebApplicationContext
 	 * @see org.springframework.web.servlet.DispatcherServlet
 	 */
 	public RequestContext(HttpServletRequest request, @Nullable HttpServletResponse response,
-			@Nullable ServletContext servletContext, @Nullable Map<String, Object> model) {
+						  @Nullable ServletContext servletContext, @Nullable Map<String, Object> model) {
 
 		this.request = request;
 		this.response = response;
@@ -232,8 +234,7 @@ public class RequestContext {
 			if (localeContext instanceof TimeZoneAwareLocaleContext) {
 				timeZone = ((TimeZoneAwareLocaleContext) localeContext).getTimeZone();
 			}
-		}
-		else if (localeResolver != null) {
+		} else if (localeResolver != null) {
 			// Try LocaleResolver (we're within a DispatcherServlet request).
 			locale = localeResolver.resolveLocale(request);
 		}
@@ -290,6 +291,7 @@ public class RequestContext {
 
 	/**
 	 * Return the model Map that this RequestContext encapsulates, if any.
+	 *
 	 * @return the populated model Map, or {@code null} if none available
 	 */
 	@Nullable
@@ -301,6 +303,7 @@ public class RequestContext {
 	 * Return the current Locale (falling back to the request locale; never {@code null}).
 	 * <p>Typically coming from a DispatcherServlet's {@link LocaleResolver}.
 	 * Also includes a fallback check for JSTL's Locale attribute.
+	 *
 	 * @see RequestContextUtils#getLocale
 	 */
 	public final Locale getLocale() {
@@ -311,6 +314,7 @@ public class RequestContext {
 	 * Return the current TimeZone (or {@code null} if none derivable from the request).
 	 * <p>Typically coming from a DispatcherServlet's {@link LocaleContextResolver}.
 	 * Also includes a fallback check for JSTL's TimeZone attribute.
+	 *
 	 * @see RequestContextUtils#getTimeZone
 	 */
 	@Nullable
@@ -322,6 +326,7 @@ public class RequestContext {
 	 * Determine the fallback locale for this context.
 	 * <p>The default implementation checks for a JSTL locale attribute in request, session
 	 * or application scope; if not found, returns the {@code HttpServletRequest.getLocale()}.
+	 *
 	 * @return the fallback locale (never {@code null})
 	 * @see javax.servlet.http.HttpServletRequest#getLocale()
 	 */
@@ -339,6 +344,7 @@ public class RequestContext {
 	 * Determine the fallback time zone for this context.
 	 * <p>The default implementation checks for a JSTL time zone attribute in request,
 	 * session or application scope; returns {@code null} if not found.
+	 *
 	 * @return the fallback time zone (or {@code null} if none derivable from the request)
 	 */
 	@Nullable
@@ -355,6 +361,7 @@ public class RequestContext {
 	/**
 	 * Change the current locale to the specified one,
 	 * storing the new locale through the configured {@link LocaleResolver}.
+	 *
 	 * @param locale the new locale
 	 * @see LocaleResolver#setLocale
 	 * @see #changeLocale(java.util.Locale, java.util.TimeZone)
@@ -371,7 +378,8 @@ public class RequestContext {
 	/**
 	 * Change the current locale to the specified locale and time zone context,
 	 * storing the new locale context through the configured {@link LocaleResolver}.
-	 * @param locale the new locale
+	 *
+	 * @param locale   the new locale
 	 * @param timeZone the new time zone
 	 * @see LocaleContextResolver#setLocaleContext
 	 * @see org.springframework.context.i18n.SimpleTimeZoneAwareLocaleContext
@@ -406,6 +414,7 @@ public class RequestContext {
 	/**
 	 * Determine the fallback theme for this context.
 	 * <p>The default implementation returns the default theme (with name "theme").
+	 *
 	 * @return the fallback theme (never {@code null})
 	 */
 	protected Theme getFallbackTheme() {
@@ -423,6 +432,7 @@ public class RequestContext {
 	/**
 	 * Change the current theme to the specified one,
 	 * storing the new theme name through the configured {@link ThemeResolver}.
+	 *
 	 * @param theme the new theme
 	 * @see ThemeResolver#setThemeName
 	 */
@@ -438,6 +448,7 @@ public class RequestContext {
 	/**
 	 * Change the current theme to the specified theme by name,
 	 * storing the new theme name through the configured {@link ThemeResolver}.
+	 *
 	 * @param themeName the name of the new theme
 	 * @see ThemeResolver#setThemeName
 	 */
@@ -452,15 +463,6 @@ public class RequestContext {
 	}
 
 	/**
-	 * (De)activate default HTML escaping for messages and errors, for the scope of this RequestContext.
-	 * <p>The default is the application-wide setting (the "defaultHtmlEscape" context-param in web.xml).
-	 * @see org.springframework.web.util.WebUtils#getDefaultHtmlEscape
-	 */
-	public void setDefaultHtmlEscape(boolean defaultHtmlEscape) {
-		this.defaultHtmlEscape = defaultHtmlEscape;
-	}
-
-	/**
 	 * Is default HTML escaping active? Falls back to {@code false} in case of no explicit default given.
 	 */
 	public boolean isDefaultHtmlEscape() {
@@ -469,6 +471,7 @@ public class RequestContext {
 
 	/**
 	 * Return the default HTML escape setting, differentiating between no default specified and an explicit value.
+	 *
 	 * @return whether default HTML escaping is enabled (null = no explicit default)
 	 */
 	@Nullable
@@ -477,9 +480,20 @@ public class RequestContext {
 	}
 
 	/**
+	 * (De)activate default HTML escaping for messages and errors, for the scope of this RequestContext.
+	 * <p>The default is the application-wide setting (the "defaultHtmlEscape" context-param in web.xml).
+	 *
+	 * @see org.springframework.web.util.WebUtils#getDefaultHtmlEscape
+	 */
+	public void setDefaultHtmlEscape(boolean defaultHtmlEscape) {
+		this.defaultHtmlEscape = defaultHtmlEscape;
+	}
+
+	/**
 	 * Is HTML escaping using the response encoding by default?
 	 * If enabled, only XML markup significant characters will be escaped with UTF-* encodings.
 	 * <p>Falls back to {@code true} in case of no explicit default given, as of Spring 4.2.
+	 *
 	 * @since 4.1.2
 	 */
 	public boolean isResponseEncodedHtmlEscape() {
@@ -489,23 +503,13 @@ public class RequestContext {
 	/**
 	 * Return the default setting about use of response encoding for HTML escape setting,
 	 * differentiating between no default specified and an explicit value.
+	 *
 	 * @return whether default use of response encoding HTML escaping is enabled (null = no explicit default)
 	 * @since 4.1.2
 	 */
 	@Nullable
 	public Boolean getResponseEncodedHtmlEscape() {
 		return this.responseEncodedHtmlEscape;
-	}
-
-
-	/**
-	 * Set the UrlPathHelper to use for context path and request URI decoding.
-	 * Can be used to pass a shared UrlPathHelper instance in.
-	 * <p>A default UrlPathHelper is always available.
-	 */
-	public void setUrlPathHelper(UrlPathHelper urlPathHelper) {
-		Assert.notNull(urlPathHelper, "UrlPathHelper must not be null");
-		this.urlPathHelper = urlPathHelper;
 	}
 
 	/**
@@ -515,6 +519,16 @@ public class RequestContext {
 	 */
 	public UrlPathHelper getUrlPathHelper() {
 		return this.urlPathHelper;
+	}
+
+	/**
+	 * Set the UrlPathHelper to use for context path and request URI decoding.
+	 * Can be used to pass a shared UrlPathHelper instance in.
+	 * <p>A default UrlPathHelper is always available.
+	 */
+	public void setUrlPathHelper(UrlPathHelper urlPathHelper) {
+		Assert.notNull(urlPathHelper, "UrlPathHelper must not be null");
+		this.urlPathHelper = urlPathHelper;
 	}
 
 	/**
@@ -532,6 +546,7 @@ public class RequestContext {
 	 * indicates the current web application. This is useful for building links
 	 * to other resources within the application.
 	 * <p>Delegates to the UrlPathHelper for decoding.
+	 *
 	 * @see javax.servlet.http.HttpServletRequest#getContextPath
 	 * @see #getUrlPathHelper
 	 */
@@ -541,6 +556,7 @@ public class RequestContext {
 
 	/**
 	 * Return a context-aware URl for the given relative URL.
+	 *
 	 * @param relativeUrl the relative URL part
 	 * @return a URL that points back to the server with an absolute path (also URL-encoded accordingly)
 	 */
@@ -556,8 +572,9 @@ public class RequestContext {
 	 * Return a context-aware URl for the given relative URL with placeholders (named keys with braces {@code {}}).
 	 * For example, send in a relative URL {@code foo/{bar}?spam={spam}} and a parameter map
 	 * {@code {bar=baz,spam=nuts}} and the result will be {@code [contextpath]/foo/baz?spam=nuts}.
+	 *
 	 * @param relativeUrl the relative URL part
-	 * @param params a map of parameters to insert as placeholders in the url
+	 * @param params      a map of parameters to insert as placeholders in the url
 	 * @return a URL that points back to the server with an absolute path (also URL-encoded accordingly)
 	 */
 	public String getContextUrl(String relativeUrl, Map<String, ?> params) {
@@ -590,6 +607,7 @@ public class RequestContext {
 	 * without parameters. This is particularly useful as HTML form action target,
 	 * possibly in combination with the original query string.
 	 * <p>Delegates to the UrlPathHelper for decoding.
+	 *
 	 * @see #getQueryString
 	 * @see org.springframework.web.util.UrlPathHelper#getOriginatingRequestUri
 	 * @see #getUrlPathHelper
@@ -603,6 +621,7 @@ public class RequestContext {
 	 * the request path. This is particularly useful for building an HTML form
 	 * action target in combination with the original request URI.
 	 * <p>Delegates to the UrlPathHelper for decoding.
+	 *
 	 * @see #getRequestUri
 	 * @see org.springframework.web.util.UrlPathHelper#getOriginatingQueryString
 	 * @see #getUrlPathHelper
@@ -613,7 +632,8 @@ public class RequestContext {
 
 	/**
 	 * Retrieve the message for the given code, using the "defaultHtmlEscape" setting.
-	 * @param code code of the message
+	 *
+	 * @param code           code of the message
 	 * @param defaultMessage String to return if the lookup fails
 	 * @return the message
 	 */
@@ -623,8 +643,9 @@ public class RequestContext {
 
 	/**
 	 * Retrieve the message for the given code, using the "defaultHtmlEscape" setting.
-	 * @param code code of the message
-	 * @param args arguments for the message, or {@code null} if none
+	 *
+	 * @param code           code of the message
+	 * @param args           arguments for the message, or {@code null} if none
 	 * @param defaultMessage String to return if the lookup fails
 	 * @return the message
 	 */
@@ -634,8 +655,9 @@ public class RequestContext {
 
 	/**
 	 * Retrieve the message for the given code, using the "defaultHtmlEscape" setting.
-	 * @param code code of the message
-	 * @param args arguments for the message as a List, or {@code null} if none
+	 *
+	 * @param code           code of the message
+	 * @param args           arguments for the message as a List, or {@code null} if none
 	 * @param defaultMessage String to return if the lookup fails
 	 * @return the message
 	 */
@@ -645,10 +667,11 @@ public class RequestContext {
 
 	/**
 	 * Retrieve the message for the given code.
-	 * @param code code of the message
-	 * @param args arguments for the message, or {@code null} if none
+	 *
+	 * @param code           code of the message
+	 * @param args           arguments for the message, or {@code null} if none
 	 * @param defaultMessage String to return if the lookup fails
-	 * @param htmlEscape HTML escape the message?
+	 * @param htmlEscape     HTML escape the message?
 	 * @return the message
 	 */
 	public String getMessage(String code, @Nullable Object[] args, String defaultMessage, boolean htmlEscape) {
@@ -661,6 +684,7 @@ public class RequestContext {
 
 	/**
 	 * Retrieve the message for the given code, using the "defaultHtmlEscape" setting.
+	 *
 	 * @param code code of the message
 	 * @return the message
 	 * @throws org.springframework.context.NoSuchMessageException if not found
@@ -671,6 +695,7 @@ public class RequestContext {
 
 	/**
 	 * Retrieve the message for the given code, using the "defaultHtmlEscape" setting.
+	 *
 	 * @param code code of the message
 	 * @param args arguments for the message, or {@code null} if none
 	 * @return the message
@@ -682,6 +707,7 @@ public class RequestContext {
 
 	/**
 	 * Retrieve the message for the given code, using the "defaultHtmlEscape" setting.
+	 *
 	 * @param code code of the message
 	 * @param args arguments for the message as a List, or {@code null} if none
 	 * @return the message
@@ -693,8 +719,9 @@ public class RequestContext {
 
 	/**
 	 * Retrieve the message for the given code.
-	 * @param code code of the message
-	 * @param args arguments for the message, or {@code null} if none
+	 *
+	 * @param code       code of the message
+	 * @param args       arguments for the message, or {@code null} if none
 	 * @param htmlEscape HTML escape the message?
 	 * @return the message
 	 * @throws org.springframework.context.NoSuchMessageException if not found
@@ -706,6 +733,7 @@ public class RequestContext {
 
 	/**
 	 * Retrieve the given MessageSourceResolvable (e.g. an ObjectError instance), using the "defaultHtmlEscape" setting.
+	 *
 	 * @param resolvable the MessageSourceResolvable
 	 * @return the message
 	 * @throws org.springframework.context.NoSuchMessageException if not found
@@ -716,6 +744,7 @@ public class RequestContext {
 
 	/**
 	 * Retrieve the given MessageSourceResolvable (e.g. an ObjectError instance).
+	 *
 	 * @param resolvable the MessageSourceResolvable
 	 * @param htmlEscape HTML escape the message?
 	 * @return the message
@@ -730,7 +759,8 @@ public class RequestContext {
 	 * Retrieve the theme message for the given code.
 	 * <p>Note that theme messages are never HTML-escaped, as they typically denote
 	 * theme-specific resource paths and not client-visible messages.
-	 * @param code code of the message
+	 *
+	 * @param code           code of the message
 	 * @param defaultMessage String to return if the lookup fails
 	 * @return the message
 	 */
@@ -743,8 +773,9 @@ public class RequestContext {
 	 * Retrieve the theme message for the given code.
 	 * <p>Note that theme messages are never HTML-escaped, as they typically denote
 	 * theme-specific resource paths and not client-visible messages.
-	 * @param code code of the message
-	 * @param args arguments for the message, or {@code null} if none
+	 *
+	 * @param code           code of the message
+	 * @param args           arguments for the message, or {@code null} if none
 	 * @param defaultMessage String to return if the lookup fails
 	 * @return the message
 	 */
@@ -757,8 +788,9 @@ public class RequestContext {
 	 * Retrieve the theme message for the given code.
 	 * <p>Note that theme messages are never HTML-escaped, as they typically denote
 	 * theme-specific resource paths and not client-visible messages.
-	 * @param code code of the message
-	 * @param args arguments for the message as a List, or {@code null} if none
+	 *
+	 * @param code           code of the message
+	 * @param args           arguments for the message as a List, or {@code null} if none
 	 * @param defaultMessage String to return if the lookup fails
 	 * @return the message
 	 */
@@ -772,6 +804,7 @@ public class RequestContext {
 	 * Retrieve the theme message for the given code.
 	 * <p>Note that theme messages are never HTML-escaped, as they typically denote
 	 * theme-specific resource paths and not client-visible messages.
+	 *
 	 * @param code code of the message
 	 * @return the message
 	 * @throws org.springframework.context.NoSuchMessageException if not found
@@ -784,6 +817,7 @@ public class RequestContext {
 	 * Retrieve the theme message for the given code.
 	 * <p>Note that theme messages are never HTML-escaped, as they typically denote
 	 * theme-specific resource paths and not client-visible messages.
+	 *
 	 * @param code code of the message
 	 * @param args arguments for the message, or {@code null} if none
 	 * @return the message
@@ -797,6 +831,7 @@ public class RequestContext {
 	 * Retrieve the theme message for the given code.
 	 * <p>Note that theme messages are never HTML-escaped, as they typically denote
 	 * theme-specific resource paths and not client-visible messages.
+	 *
 	 * @param code code of the message
 	 * @param args arguments for the message as a List, or {@code null} if none
 	 * @return the message
@@ -810,6 +845,7 @@ public class RequestContext {
 	 * Retrieve the given MessageSourceResolvable in the current theme.
 	 * <p>Note that theme messages are never HTML-escaped, as they typically denote
 	 * theme-specific resource paths and not client-visible messages.
+	 *
 	 * @param resolvable the MessageSourceResolvable
 	 * @return the message
 	 * @throws org.springframework.context.NoSuchMessageException if not found
@@ -820,6 +856,7 @@ public class RequestContext {
 
 	/**
 	 * Retrieve the Errors instance for the given bind object, using the "defaultHtmlEscape" setting.
+	 *
 	 * @param name name of the bind object
 	 * @return the Errors instance, or {@code null} if not found
 	 */
@@ -830,7 +867,8 @@ public class RequestContext {
 
 	/**
 	 * Retrieve the Errors instance for the given bind object.
-	 * @param name name of the bind object
+	 *
+	 * @param name       name of the bind object
 	 * @param htmlEscape create an Errors instance with automatic HTML escaping?
 	 * @return the Errors instance, or {@code null} if not found
 	 */
@@ -855,8 +893,7 @@ public class RequestContext {
 		if (htmlEscape && !(errors instanceof EscapedErrors)) {
 			errors = new EscapedErrors(errors);
 			put = true;
-		}
-		else if (!htmlEscape && errors instanceof EscapedErrors) {
+		} else if (!htmlEscape && errors instanceof EscapedErrors) {
 			errors = ((EscapedErrors) errors).getSource();
 			put = true;
 		}
@@ -869,6 +906,7 @@ public class RequestContext {
 	/**
 	 * Retrieve the model object for the given model name, either from the model
 	 * or from the request attributes.
+	 *
 	 * @param modelName the name of the model object
 	 * @return the model object
 	 */
@@ -876,14 +914,14 @@ public class RequestContext {
 	protected Object getModelObject(String modelName) {
 		if (this.model != null) {
 			return this.model.get(modelName);
-		}
-		else {
+		} else {
 			return this.request.getAttribute(modelName);
 		}
 	}
 
 	/**
 	 * Create a BindStatus for the given bind object, using the "defaultHtmlEscape" setting.
+	 *
 	 * @param path the bean and property path for which values and errors will be resolved (e.g. "person.age")
 	 * @return the new BindStatus instance
 	 * @throws IllegalStateException if no corresponding Errors object found
@@ -894,7 +932,8 @@ public class RequestContext {
 
 	/**
 	 * Create a BindStatus for the given bind object, using the "defaultHtmlEscape" setting.
-	 * @param path the bean and property path for which values and errors will be resolved (e.g. "person.age")
+	 *
+	 * @param path       the bean and property path for which values and errors will be resolved (e.g. "person.age")
 	 * @param htmlEscape create a BindStatus with automatic HTML escaping?
 	 * @return the new BindStatus instance
 	 * @throws IllegalStateException if no corresponding Errors object found

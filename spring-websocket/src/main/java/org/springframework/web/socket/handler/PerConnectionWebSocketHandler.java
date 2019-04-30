@@ -16,18 +16,17 @@
 
 package org.springframework.web.socket.handler;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A {@link WebSocketHandler} that initializes and destroys a {@link WebSocketHandler}
@@ -95,8 +94,7 @@ public class PerConnectionWebSocketHandler implements WebSocketHandler, BeanFact
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
 		try {
 			getHandler(session).afterConnectionClosed(session, closeStatus);
-		}
-		finally {
+		} finally {
 			destroyHandler(session);
 		}
 	}
@@ -121,8 +119,7 @@ public class PerConnectionWebSocketHandler implements WebSocketHandler, BeanFact
 			if (handler != null) {
 				this.provider.destroy(handler);
 			}
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			if (logger.isWarnEnabled()) {
 				logger.warn("Error while destroying " + handler, ex);
 			}

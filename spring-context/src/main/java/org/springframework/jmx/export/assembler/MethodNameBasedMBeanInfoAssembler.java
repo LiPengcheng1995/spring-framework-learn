@@ -16,17 +16,11 @@
 
 package org.springframework.jmx.export.assembler;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
+
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  * Subclass of {@code AbstractReflectiveMBeanInfoAssembler} that allows
@@ -45,13 +39,13 @@ import org.springframework.util.StringUtils;
  * method names defined by {@code managedMethods}.
  *
  * @author Juergen Hoeller
- * @since 1.2
  * @see #setManagedMethods
  * @see #setMethodMappings
  * @see InterfaceBasedMBeanInfoAssembler
  * @see SimpleReflectiveMBeanInfoAssembler
  * @see MethodExclusionMBeanInfoAssembler
  * @see org.springframework.jmx.export.MBeanExporter
+ * @since 1.2
  */
 public class MethodNameBasedMBeanInfoAssembler extends AbstractConfigurableMBeanInfoAssembler {
 
@@ -72,6 +66,7 @@ public class MethodNameBasedMBeanInfoAssembler extends AbstractConfigurableMBean
 	 * Set the array of method names to use for creating the management info.
 	 * These method names will be used for a bean if no entry corresponding to
 	 * that bean is found in the {@code methodMappings} property.
+	 *
 	 * @param methodNames an array of method names indicating the methods to use
 	 * @see #setMethodMappings
 	 */
@@ -84,11 +79,12 @@ public class MethodNameBasedMBeanInfoAssembler extends AbstractConfigurableMBean
 	 * The property key should match the bean key and the property value should match
 	 * the list of method names. When searching for method names for a bean, Spring
 	 * will check these mappings first.
+	 *
 	 * @param mappings the mappins of bean keys to method names
 	 */
 	public void setMethodMappings(Properties mappings) {
 		this.methodMappings = new HashMap<>();
-		for (Enumeration<?> en = mappings.keys(); en.hasMoreElements();) {
+		for (Enumeration<?> en = mappings.keys(); en.hasMoreElements(); ) {
 			String beanKey = (String) en.nextElement();
 			String[] methodNames = StringUtils.commaDelimitedListToStringArray(mappings.getProperty(beanKey));
 			this.methodMappings.put(beanKey, new HashSet<>(Arrays.asList(methodNames)));

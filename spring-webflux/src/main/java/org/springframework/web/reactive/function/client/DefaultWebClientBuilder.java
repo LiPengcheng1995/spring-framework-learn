@@ -16,13 +16,6 @@
 
 package org.springframework.web.reactive.function.client;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -33,6 +26,9 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriBuilderFactory;
+
+import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Default implementation of {@link WebClient.Builder}.
@@ -83,8 +79,7 @@ final class DefaultWebClientBuilder implements WebClient.Builder {
 		if (other.defaultHeaders != null) {
 			this.defaultHeaders = new HttpHeaders();
 			this.defaultHeaders.putAll(other.defaultHeaders);
-		}
-		else {
+		} else {
 			this.defaultHeaders = null;
 		}
 		this.defaultCookies = (other.defaultCookies != null ?
@@ -95,6 +90,23 @@ final class DefaultWebClientBuilder implements WebClient.Builder {
 		this.exchangeStrategies = other.exchangeStrategies;
 	}
 
+	private static @Nullable
+	HttpHeaders unmodifiableCopy(@Nullable HttpHeaders original) {
+		if (original != null) {
+			return HttpHeaders.readOnlyHttpHeaders(original);
+		} else {
+			return null;
+		}
+	}
+
+	private static @Nullable
+	<K, V> MultiValueMap<K, V> unmodifiableCopy(@Nullable MultiValueMap<K, V> original) {
+		if (original != null) {
+			return CollectionUtils.unmodifiableMultiValueMap(new LinkedMultiValueMap<>(original));
+		} else {
+			return null;
+		}
+	}
 
 	@Override
 	public WebClient.Builder baseUrl(String baseUrl) {
@@ -206,24 +218,6 @@ final class DefaultWebClientBuilder implements WebClient.Builder {
 				new DefaultWebClientBuilder(this));
 	}
 
-	private static @Nullable HttpHeaders unmodifiableCopy(@Nullable HttpHeaders original) {
-		if (original != null) {
-			return HttpHeaders.readOnlyHttpHeaders(original);
-		}
-		else {
-			return null;
-		}
-	}
-
-	private static @Nullable <K, V> MultiValueMap<K, V> unmodifiableCopy(@Nullable MultiValueMap<K, V> original) {
-		if (original != null) {
-			return CollectionUtils.unmodifiableMultiValueMap(new LinkedMultiValueMap<>(original));
-		}
-		else {
-			return null;
-		}
-	}
-
 	private UriBuilderFactory initUriBuilderFactory() {
 		if (this.uriBuilderFactory != null) {
 			return this.uriBuilderFactory;
@@ -237,11 +231,9 @@ final class DefaultWebClientBuilder implements WebClient.Builder {
 	private ExchangeFunction initExchangeFunction() {
 		if (this.exchangeFunction != null) {
 			return this.exchangeFunction;
-		}
-		else if (this.connector != null) {
+		} else if (this.connector != null) {
 			return ExchangeFunctions.create(this.connector, this.exchangeStrategies);
-		}
-		else {
+		} else {
 			return ExchangeFunctions.create(new ReactorClientHttpConnector(), this.exchangeStrategies);
 		}
 	}

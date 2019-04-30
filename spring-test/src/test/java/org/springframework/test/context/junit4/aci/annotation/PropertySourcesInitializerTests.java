@@ -18,7 +18,6 @@ package org.springframework.test.context.junit4.aci.annotation;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContextInitializer;
@@ -30,7 +29,7 @@ import org.springframework.mock.env.MockPropertySource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Integration tests that verify that a {@link PropertySource} can be set via a
@@ -42,6 +41,14 @@ import static org.junit.Assert.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(initializers = PropertySourcesInitializerTests.PropertySourceInitializer.class)
 public class PropertySourcesInitializerTests {
+
+	@Autowired
+	private String enigma;
+
+	@Test
+	public void customPropertySourceConfiguredViaContextInitializer() {
+		assertEquals("foo", enigma);
+	}
 
 	@Configuration
 	static class Config {
@@ -60,24 +67,13 @@ public class PropertySourcesInitializerTests {
 
 	}
 
-
-	@Autowired
-	private String enigma;
-
-
-	@Test
-	public void customPropertySourceConfiguredViaContextInitializer() {
-		assertEquals("foo", enigma);
-	}
-
-
 	public static class PropertySourceInitializer implements
 			ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 		@Override
 		public void initialize(ConfigurableApplicationContext applicationContext) {
 			applicationContext.getEnvironment().getPropertySources().addFirst(
-				new MockPropertySource().withProperty("enigma", "foo"));
+					new MockPropertySource().withProperty("enigma", "foo"));
 		}
 	}
 

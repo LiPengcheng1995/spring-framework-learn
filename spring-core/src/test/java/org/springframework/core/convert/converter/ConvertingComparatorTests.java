@@ -16,21 +16,17 @@
 
 package org.springframework.core.convert.converter;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.junit.Test;
-
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.util.comparator.ComparableComparator;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import java.util.*;
+import java.util.Map.Entry;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link ConvertingComparator}.
@@ -63,7 +59,7 @@ public class ConvertingComparatorTests {
 	@Test(expected = IllegalArgumentException.class)
 	public void shouldThrowOnNullType() throws Exception {
 		new ConvertingComparator<String, Integer>(this.comparator,
-			this.conversionService, null);
+				this.conversionService, null);
 	}
 
 	@Test
@@ -138,7 +134,9 @@ public class ConvertingComparatorTests {
 			assertThat(o2, instanceOf(Integer.class));
 			this.called = true;
 			return super.compare(o1, o2);
-		};
+		}
+
+		;
 
 		public void assertCalled() {
 			assertThat(this.called, is(true));

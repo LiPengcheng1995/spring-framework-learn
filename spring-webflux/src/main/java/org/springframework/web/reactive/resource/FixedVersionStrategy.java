@@ -16,9 +16,8 @@
 
 package org.springframework.web.reactive.resource;
 
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.io.Resource;
+import reactor.core.publisher.Mono;
 
 /**
  * A {@code VersionStrategy} that relies on a fixed version applied as a request
@@ -30,8 +29,8 @@ import org.springframework.core.io.Resource;
  *
  * @author Rossen Stoyanchev
  * @author Brian Clozel
- * @since 5.0
  * @see VersionResourceResolver
+ * @since 5.0
  */
 public class FixedVersionStrategy extends AbstractPrefixVersionStrategy {
 
@@ -40,6 +39,7 @@ public class FixedVersionStrategy extends AbstractPrefixVersionStrategy {
 
 	/**
 	 * Create a new FixedVersionStrategy with the given version string.
+	 *
 	 * @param version the fixed version string to use
 	 */
 	public FixedVersionStrategy(String version) {

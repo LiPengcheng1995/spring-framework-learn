@@ -16,11 +16,8 @@
 
 package org.springframework.web.socket.sockjs.transport.handler;
 
-import java.util.Date;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.web.socket.AbstractHttpRequestTests;
 import org.springframework.web.socket.WebSocketHandler;
@@ -33,6 +30,8 @@ import org.springframework.web.socket.sockjs.transport.session.StreamingSockJsSe
 import org.springframework.web.socket.sockjs.transport.session.StubSockJsServiceConfig;
 import org.springframework.web.util.UriUtils;
 
+import java.util.Date;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -41,7 +40,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Rossen Stoyanchev
  */
-public class HttpSendingTransportHandlerTests  extends AbstractHttpRequestTests {
+public class HttpSendingTransportHandlerTests extends AbstractHttpRequestTests {
 
 	private WebSocketHandler webSocketHandler;
 
@@ -117,8 +116,7 @@ public class HttpSendingTransportHandlerTests  extends AbstractHttpRequestTests 
 
 		try {
 			transportHandler.handleRequest(this.request, this.response, this.webSocketHandler, session);
-		}
-		catch (SockJsTransportFailureException ex) {
+		} catch (SockJsTransportFailureException ex) {
 			if (expectSuccess) {
 				throw new AssertionError("Unexpected transport failure", ex);
 			}
@@ -128,8 +126,7 @@ public class HttpSendingTransportHandlerTests  extends AbstractHttpRequestTests 
 			assertEquals(200, this.servletResponse.getStatus());
 			assertEquals("application/javascript;charset=UTF-8", this.response.getHeaders().getContentType().toString());
 			verify(this.webSocketHandler).afterConnectionEstablished(session);
-		}
-		else {
+		} else {
 			assertEquals(500, this.servletResponse.getStatus());
 			verifyNoMoreInteractions(this.webSocketHandler);
 		}

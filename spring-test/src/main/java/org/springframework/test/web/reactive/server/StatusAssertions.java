@@ -18,14 +18,14 @@ package org.springframework.test.web.reactive.server;
 
 import org.springframework.http.HttpStatus;
 
-import static org.springframework.test.util.AssertionErrors.*;
+import static org.springframework.test.util.AssertionErrors.assertEquals;
 
 /**
  * Assertions on the response status.
  *
  * @author Rossen Stoyanchev
- * @since 5.0
  * @see WebTestClient.ResponseSpec#expectStatus()
+ * @since 5.0
  */
 public class StatusAssertions {
 
@@ -136,6 +136,7 @@ public class StatusAssertions {
 
 	/**
 	 * Assert the response status code is {@code HttpStatus.FORBIDDEN} (403).
+	 *
 	 * @since 5.0.2
 	 */
 	public WebTestClient.ResponseSpec isForbidden() {

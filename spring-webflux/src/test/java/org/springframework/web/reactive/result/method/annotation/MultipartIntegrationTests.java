@@ -16,17 +16,10 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.junit.Before;
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,23 +34,43 @@ import org.springframework.http.codec.multipart.Part;
 import org.springframework.http.server.reactive.AbstractHttpHandlerIntegrationTests;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.DispatcherHandler;
 import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import static org.junit.Assert.*;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertEquals;
 
 public class MultipartIntegrationTests extends AbstractHttpHandlerIntegrationTests {
 
 	private WebClient webClient;
 
+	private static String partMapDescription(MultiValueMap<String, Part> partsMap) {
+		return partsMap.keySet().stream().sorted()
+				.map(key -> partListDescription(partsMap.get(key)))
+				.collect(Collectors.joining(",", "Map[", "]"));
+	}
+
+	private static Mono<String> partFluxDescription(Flux<? extends Part> partsFlux) {
+		return partsFlux.log().collectList().map(MultipartIntegrationTests::partListDescription);
+	}
+
+	private static String partListDescription(List<? extends Part> parts) {
+		return parts.stream().map(MultipartIntegrationTests::partDescription)
+				.collect(Collectors.joining(",", "[", "]"));
+	}
+
+	private static String partDescription(Part part) {
+		return part instanceof FilePart ? part.name() + ":" + ((FilePart) part).filename() : part.name();
+	}
 
 	@Override
 	@Before
@@ -65,7 +78,6 @@ public class MultipartIntegrationTests extends AbstractHttpHandlerIntegrationTes
 		super.setup();
 		this.webClient = WebClient.create("http://localhost:" + this.port);
 	}
-
 
 	@Override
 	protected HttpHandler createHttpHandler() {
@@ -143,7 +155,6 @@ public class MultipartIntegrationTests extends AbstractHttpHandlerIntegrationTes
 		return builder.build();
 	}
 
-
 	@Configuration
 	@EnableWebFlux
 	@SuppressWarnings("unused")
@@ -199,25 +210,6 @@ public class MultipartIntegrationTests extends AbstractHttpHandlerIntegrationTes
 		String modelAttribute(@ModelAttribute FormBean formBean) {
 			return formBean.toString();
 		}
-	}
-
-	private static String partMapDescription(MultiValueMap<String, Part> partsMap) {
-		return partsMap.keySet().stream().sorted()
-				.map(key -> partListDescription(partsMap.get(key)))
-				.collect(Collectors.joining(",", "Map[", "]"));
-	}
-
-	private static Mono<String> partFluxDescription(Flux<? extends Part> partsFlux) {
-		return partsFlux.log().collectList().map(MultipartIntegrationTests::partListDescription);
-	}
-
-	private static String partListDescription(List<? extends Part> parts) {
-		return parts.stream().map(MultipartIntegrationTests::partDescription)
-				.collect(Collectors.joining(",", "[", "]"));
-	}
-
-	private static String partDescription(Part part) {
-		return part instanceof FilePart ? part.name() + ":" + ((FilePart) part).filename() : part.name();
 	}
 
 	static class FormBean {

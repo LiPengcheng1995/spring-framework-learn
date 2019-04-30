@@ -16,13 +16,8 @@
 
 package org.springframework.messaging.handler.annotation.support;
 
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.MethodParameter;
@@ -31,6 +26,10 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHandlingException;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.support.MessageBuilder;
+
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -78,7 +77,7 @@ public class DestinationVariableMethodArgumentResolverTests {
 		vars.put("name", "value");
 
 		Message<byte[]> message = MessageBuilder.withPayload(new byte[0]).setHeader(
-			DestinationVariableMethodArgumentResolver.DESTINATION_TEMPLATE_VARIABLES_HEADER, vars).build();
+				DestinationVariableMethodArgumentResolver.DESTINATION_TEMPLATE_VARIABLES_HEADER, vars).build();
 
 		Object result = this.resolver.resolveArgument(this.paramAnnotated, message);
 		assertEquals("bar", result);

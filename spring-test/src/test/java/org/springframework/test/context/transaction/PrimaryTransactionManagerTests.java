@@ -16,11 +16,8 @@
 
 package org.springframework.test.context.transaction;
 
-import javax.sql.DataSource;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,15 +35,17 @@ import org.springframework.test.transaction.TransactionTestUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.Assert.*;
+import javax.sql.DataSource;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Integration tests that ensure that <em>primary</em> transaction managers
  * are supported.
  *
  * @author Sam Brannen
- * @since 4.3
  * @see org.springframework.test.context.jdbc.PrimaryDataSourceTests
+ * @since 4.3
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration

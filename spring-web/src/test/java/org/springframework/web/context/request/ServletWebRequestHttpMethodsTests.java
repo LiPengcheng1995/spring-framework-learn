@@ -16,21 +16,20 @@
 
 package org.springframework.web.context.request;
 
-import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.Date;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
-
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.mock.web.test.MockHttpServletResponse;
 
-import static java.time.format.DateTimeFormatter.*;
+import java.time.ZonedDateTime;
+import java.util.Arrays;
+import java.util.Date;
+
+import static java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME;
 import static org.junit.Assert.*;
 
 /**
@@ -44,21 +43,16 @@ import static org.junit.Assert.*;
 public class ServletWebRequestHttpMethodsTests {
 
 	private static final String CURRENT_TIME = "Wed, 9 Apr 2014 09:57:42 GMT";
-
-	private MockHttpServletRequest servletRequest;
-
-	private MockHttpServletResponse servletResponse;
-
-	private ServletWebRequest request;
-
-	private Date currentDate;
-
 	@Parameter
 	public String method;
+	private MockHttpServletRequest servletRequest;
+	private MockHttpServletResponse servletResponse;
+	private ServletWebRequest request;
+	private Date currentDate;
 
 	@Parameters(name = "{0}")
 	static public Iterable<Object[]> safeMethods() {
-		return Arrays.asList(new Object[][] {
+		return Arrays.asList(new Object[][]{
 				{"GET"}, {"HEAD"}
 		});
 	}

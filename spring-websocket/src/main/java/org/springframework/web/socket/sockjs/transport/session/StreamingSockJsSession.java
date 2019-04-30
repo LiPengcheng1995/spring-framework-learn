@@ -16,9 +16,6 @@
 
 package org.springframework.web.socket.sockjs.transport.session;
 
-import java.io.IOException;
-import java.util.Map;
-
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.socket.WebSocketHandler;
@@ -26,6 +23,9 @@ import org.springframework.web.socket.sockjs.SockJsTransportFailureException;
 import org.springframework.web.socket.sockjs.frame.SockJsFrame;
 import org.springframework.web.socket.sockjs.frame.SockJsMessageCodec;
 import org.springframework.web.socket.sockjs.transport.SockJsServiceConfig;
+
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * A SockJS session for use with streaming HTTP transports.
@@ -39,7 +39,7 @@ public abstract class StreamingSockJsSession extends AbstractHttpSockJsSession {
 
 
 	public StreamingSockJsSession(String sessionId, SockJsServiceConfig config,
-			WebSocketHandler wsHandler, Map<String, Object> attributes) {
+								  WebSocketHandler wsHandler, Map<String, Object> attributes) {
 
 		super(sessionId, config, wsHandler, attributes);
 	}
@@ -47,6 +47,7 @@ public abstract class StreamingSockJsSession extends AbstractHttpSockJsSession {
 
 	/**
 	 * Get the prelude to write to the response before any other data.
+	 *
 	 * @since 4.2
 	 */
 	protected abstract byte[] getPrelude(ServerHttpRequest request);
@@ -54,7 +55,7 @@ public abstract class StreamingSockJsSession extends AbstractHttpSockJsSession {
 
 	@Override
 	protected void handleRequestInternal(ServerHttpRequest request, ServerHttpResponse response,
-			boolean initialRequest) throws IOException {
+										 boolean initialRequest) throws IOException {
 
 		byte[] prelude = getPrelude(request);
 		response.getBody().write(prelude);

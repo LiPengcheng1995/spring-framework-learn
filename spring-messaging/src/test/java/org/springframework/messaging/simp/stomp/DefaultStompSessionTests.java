@@ -16,12 +16,6 @@
 
 package org.springframework.messaging.simp.stomp;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
-import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,7 +25,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageDeliveryException;
 import org.springframework.messaging.converter.MessageConversionException;
@@ -46,9 +39,14 @@ import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.concurrent.SettableListenableFuture;
 
-import static org.hamcrest.Matchers.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 
 /**
@@ -58,22 +56,16 @@ import static org.mockito.Mockito.*;
  */
 public class DefaultStompSessionTests {
 
-	private DefaultStompSession session;
-
-	@Mock
-	private StompSessionHandler sessionHandler;
-
-	private StompHeaders connectHeaders;
-
-	@Mock
-	private TcpConnection<byte[]> connection;
-
-	@Captor
-	private ArgumentCaptor<Message<byte[]>> messageCaptor;
-
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
-
+	private DefaultStompSession session;
+	@Mock
+	private StompSessionHandler sessionHandler;
+	private StompHeaders connectHeaders;
+	@Mock
+	private TcpConnection<byte[]> connection;
+	@Captor
+	private ArgumentCaptor<Message<byte[]>> messageCaptor;
 
 	@Before
 	public void setUp() {
@@ -94,7 +86,7 @@ public class DefaultStompSessionTests {
 	public void afterConnected() {
 		assertFalse(this.session.isConnected());
 		this.connectHeaders.setHost("my-host");
-		this.connectHeaders.setHeartbeat(new long[] {11, 12});
+		this.connectHeaders.setHeartbeat(new long[]{11, 12});
 
 		this.session.afterConnected(this.connection);
 
@@ -104,13 +96,13 @@ public class DefaultStompSessionTests {
 		assertEquals(StompCommand.CONNECT, accessor.getCommand());
 		assertEquals("my-host", accessor.getHost());
 		assertThat(accessor.getAcceptVersion(), containsInAnyOrder("1.1", "1.2"));
-		assertArrayEquals(new long[] {11, 12}, accessor.getHeartbeat());
+		assertArrayEquals(new long[]{11, 12}, accessor.getHeartbeat());
 	}
 
 	@Test // SPR-16844
 	public void afterConnectedWithSpecificVersion() {
 		assertFalse(this.session.isConnected());
-		this.connectHeaders.setAcceptVersion(new String[] {"1.1"});
+		this.connectHeaders.setAcceptVersion(new String[]{"1.1"});
 
 		this.session.afterConnected(this.connection);
 
@@ -133,7 +125,7 @@ public class DefaultStompSessionTests {
 		this.session.afterConnected(this.connection);
 		assertTrue(this.session.isConnected());
 
-		this.connectHeaders.setHeartbeat(new long[] {10000, 10000});
+		this.connectHeaders.setHeartbeat(new long[]{10000, 10000});
 
 		StompHeaderAccessor accessor = StompHeaderAccessor.create(StompCommand.CONNECTED);
 		accessor.setVersion("1.2");
@@ -151,7 +143,7 @@ public class DefaultStompSessionTests {
 		this.session.afterConnected(this.connection);
 		assertTrue(this.session.isConnected());
 
-		this.connectHeaders.setHeartbeat(new long[] {10000, 10000});
+		this.connectHeaders.setHeartbeat(new long[]{10000, 10000});
 
 		StompHeaderAccessor accessor = StompHeaderAccessor.create(StompCommand.CONNECTED);
 		accessor.setVersion("1.2");
@@ -173,7 +165,7 @@ public class DefaultStompSessionTests {
 		this.session.afterConnected(this.connection);
 		verify(this.connection).send(any());
 
-		this.connectHeaders.setHeartbeat(new long[] {10000, 10000});
+		this.connectHeaders.setHeartbeat(new long[]{10000, 10000});
 
 		StompHeaderAccessor accessor = StompHeaderAccessor.create(StompCommand.CONNECTED);
 		accessor.setVersion("1.2");
@@ -189,7 +181,7 @@ public class DefaultStompSessionTests {
 		this.session.afterConnected(this.connection);
 		verify(this.connection).send(any());
 
-		this.connectHeaders.setHeartbeat(new long[] {10000, 10000});
+		this.connectHeaders.setHeartbeat(new long[]{10000, 10000});
 
 		StompHeaderAccessor connected = StompHeaderAccessor.create(StompCommand.CONNECTED);
 		connected.setVersion("1.2");
@@ -209,7 +201,7 @@ public class DefaultStompSessionTests {
 
 		writeTask.run();
 		StompHeaderAccessor accessor = StompHeaderAccessor.createForHeartbeat();
-		Message<byte[]> message = MessageBuilder.createMessage(new byte[] {'\n'}, accessor.getMessageHeaders());
+		Message<byte[]> message = MessageBuilder.createMessage(new byte[]{'\n'}, accessor.getMessageHeaders());
 		verify(this.connection).send(eq(message));
 		verifyNoMoreInteractions(this.connection);
 
@@ -500,7 +492,7 @@ public class DefaultStompSessionTests {
 		Subscription subscription = this.session.subscribe(subscribeHeaders, frameHandler);
 
 		StompHeaders unsubscribeHeaders = new StompHeaders();
-		unsubscribeHeaders.set(headerName,  subscription.getSubscriptionHeaders().getFirst(headerName));
+		unsubscribeHeaders.set(headerName, subscription.getSubscriptionHeaders().getFirst(headerName));
 		subscription.unsubscribe(unsubscribeHeaders);
 
 		Message<byte[]> message = this.messageCaptor.getValue();
@@ -595,7 +587,7 @@ public class DefaultStompSessionTests {
 	}
 
 	@Test
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void receiptNotReceived() {
 		TaskScheduler taskScheduler = mock(TaskScheduler.class);
 

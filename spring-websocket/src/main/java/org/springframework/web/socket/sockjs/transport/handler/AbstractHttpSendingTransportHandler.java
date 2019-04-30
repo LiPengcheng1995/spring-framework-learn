@@ -16,10 +16,6 @@
 
 package org.springframework.web.socket.sockjs.transport.handler;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.regex.Pattern;
-
 import org.springframework.http.MediaType;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -35,6 +31,10 @@ import org.springframework.web.socket.sockjs.transport.SockJsSessionFactory;
 import org.springframework.web.socket.sockjs.transport.session.AbstractHttpSockJsSession;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriUtils;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.regex.Pattern;
 
 /**
  * Base class for HTTP transport handlers that push messages to connected clients.
@@ -53,7 +53,7 @@ public abstract class AbstractHttpSendingTransportHandler extends AbstractTransp
 
 	@Override
 	public final void handleRequest(ServerHttpRequest request, ServerHttpResponse response,
-			WebSocketHandler wsHandler, SockJsSession wsSession) throws SockJsException {
+									WebSocketHandler wsHandler, SockJsSession wsSession) throws SockJsException {
 
 		AbstractHttpSockJsSession sockJsSession = (AbstractHttpSockJsSession) wsSession;
 
@@ -67,41 +67,36 @@ public abstract class AbstractHttpSendingTransportHandler extends AbstractTransp
 	}
 
 	protected void handleRequestInternal(ServerHttpRequest request, ServerHttpResponse response,
-			AbstractHttpSockJsSession sockJsSession) throws SockJsException {
+										 AbstractHttpSockJsSession sockJsSession) throws SockJsException {
 
 		if (sockJsSession.isNew()) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(request.getMethod() + " " + request.getURI());
 			}
 			sockJsSession.handleInitialRequest(request, response, getFrameFormat(request));
-		}
-		else if (sockJsSession.isClosed()) {
+		} else if (sockJsSession.isClosed()) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Connection already closed (but not removed yet) for " + sockJsSession);
 			}
 			SockJsFrame frame = SockJsFrame.closeFrameGoAway();
 			try {
 				response.getBody().write(frame.getContentBytes());
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				throw new SockJsException("Failed to send " + frame, sockJsSession.getId(), ex);
 			}
-		}
-		else if (!sockJsSession.isActive()) {
+		} else if (!sockJsSession.isActive()) {
 			if (logger.isTraceEnabled()) {
 				logger.trace("Starting " + getTransportType() + " async request.");
 			}
 			sockJsSession.handleSuccessiveRequest(request, response, getFrameFormat(request));
-		}
-		else {
+		} else {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Another " + getTransportType() + " connection still open for " + sockJsSession);
 			}
 			String formattedFrame = getFrameFormat(request).format(SockJsFrame.closeFrameAnotherConnectionOpen());
 			try {
 				response.getBody().write(formattedFrame.getBytes(SockJsFrame.CHARSET));
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				throw new SockJsException("Failed to send " + formattedFrame, sockJsSession.getId(), ex);
 			}
 		}

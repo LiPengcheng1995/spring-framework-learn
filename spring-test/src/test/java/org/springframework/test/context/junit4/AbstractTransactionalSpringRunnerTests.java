@@ -17,7 +17,6 @@
 package org.springframework.test.context.junit4;
 
 import org.junit.runner.RunWith;
-
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,10 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
  * &#64;Transactional} annotation.
  *
  * @author Sam Brannen
- * @since 2.5
  * @see ClassLevelTransactionalSpringRunnerTests
  * @see MethodLevelTransactionalSpringRunnerTests
  * @see Transactional
+ * @since 2.5
  */
 @RunWith(SpringRunner.class)
 @ContextConfiguration("transactionalTests-context.xml")

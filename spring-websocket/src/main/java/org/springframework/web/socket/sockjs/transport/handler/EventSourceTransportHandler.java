@@ -16,9 +16,6 @@
 
 package org.springframework.web.socket.sockjs.transport.handler;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
-
 import org.springframework.http.MediaType;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.web.socket.WebSocketHandler;
@@ -28,6 +25,9 @@ import org.springframework.web.socket.sockjs.transport.SockJsServiceConfig;
 import org.springframework.web.socket.sockjs.transport.SockJsSession;
 import org.springframework.web.socket.sockjs.transport.TransportType;
 import org.springframework.web.socket.sockjs.transport.session.StreamingSockJsSession;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 /**
  * A TransportHandler for sending messages via Server-Sent events:
@@ -69,14 +69,14 @@ public class EventSourceTransportHandler extends AbstractHttpSendingTransportHan
 	private class EventSourceStreamingSockJsSession extends StreamingSockJsSession {
 
 		public EventSourceStreamingSockJsSession(String sessionId, SockJsServiceConfig config,
-				WebSocketHandler wsHandler, Map<String, Object> attributes) {
+												 WebSocketHandler wsHandler, Map<String, Object> attributes) {
 
 			super(sessionId, config, wsHandler, attributes);
 		}
 
 		@Override
 		protected byte[] getPrelude(ServerHttpRequest request) {
-			return new byte[] { '\r', '\n' };
+			return new byte[]{'\r', '\n'};
 		}
 	}
 

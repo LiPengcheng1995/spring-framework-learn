@@ -16,14 +16,8 @@
 
 package org.springframework.expression.spel.standard;
 
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.asm.ClassWriter;
 import org.springframework.asm.MethodVisitor;
 import org.springframework.asm.Opcodes;
@@ -36,6 +30,11 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ConcurrentReferenceHashMap;
 import org.springframework.util.ReflectionUtils;
+
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A SpelCompiler will take a regular parsed expression and create (and load) a class
@@ -73,24 +72,65 @@ public class SpelCompiler implements Opcodes {
 	// A compiler is created for each classloader, it manages a child class loader of that
 	// classloader and the child is used to load the compiled expressions.
 	private static final Map<ClassLoader, SpelCompiler> compilers = new ConcurrentReferenceHashMap<>();
-
-	// The child ClassLoader used to load the compiled expression classes
-	private ChildClassLoader ccl;
-
 	// Counter suffix for generated classes within this SpelCompiler instance
 	private final AtomicInteger suffixId = new AtomicInteger(1);
+	// The child ClassLoader used to load the compiled expression classes
+	private ChildClassLoader ccl;
 
 
 	private SpelCompiler(@Nullable ClassLoader classloader) {
 		this.ccl = new ChildClassLoader(classloader);
 	}
 
+	/**
+	 * Factory method for compiler instances. The returned SpelCompiler will
+	 * attach a class loader as the child of the given class loader and this
+	 * child will be used to load compiled expressions.
+	 *
+	 * @param classLoader the ClassLoader to use as the basis for compilation
+	 * @return a corresponding SpelCompiler instance
+	 */
+	public static SpelCompiler getCompiler(@Nullable ClassLoader classLoader) {
+		ClassLoader clToUse = (classLoader != null ? classLoader : ClassUtils.getDefaultClassLoader());
+		synchronized (compilers) {
+			SpelCompiler compiler = compilers.get(clToUse);
+			if (compiler == null) {
+				compiler = new SpelCompiler(clToUse);
+				compilers.put(clToUse, compiler);
+			}
+			return compiler;
+		}
+	}
+
+	/**
+	 * Request that an attempt is made to compile the specified expression. It may fail if
+	 * components of the expression are not suitable for compilation or the data types
+	 * involved are not suitable for compilation. Used for testing.
+	 *
+	 * @return true if the expression was successfully compiled
+	 */
+	public static boolean compile(Expression expression) {
+		return (expression instanceof SpelExpression && ((SpelExpression) expression).compileExpression());
+	}
+
+	/**
+	 * Request to revert to the interpreter for expression evaluation.
+	 * Any compiled form is discarded but can be recreated by later recompiling again.
+	 *
+	 * @param expression the expression
+	 */
+	public static void revertToInterpreted(Expression expression) {
+		if (expression instanceof SpelExpression) {
+			((SpelExpression) expression).revertToInterpreted();
+		}
+	}
 
 	/**
 	 * Attempt compilation of the supplied expression. A check is made to see
 	 * if it is compilable before compilation proceeds. The check involves
 	 * visiting all the nodes in the expression Ast and ensuring enough state
 	 * is known about them that bytecode can be generated for them.
+	 *
 	 * @param expression the expression to compile
 	 * @return an instance of the class implementing the compiled expression,
 	 * or {@code null} if compilation is not possible
@@ -105,8 +145,7 @@ public class SpelCompiler implements Opcodes {
 			if (clazz != null) {
 				try {
 					return ReflectionUtils.accessibleConstructor(clazz).newInstance();
-				}
-				catch (Throwable ex) {
+				} catch (Throwable ex) {
 					throw new IllegalStateException("Failed to instantiate CompiledExpression", ex);
 				}
 			}
@@ -125,6 +164,7 @@ public class SpelCompiler implements Opcodes {
 	/**
 	 * Generate the class that encapsulates the compiled expression and define it.
 	 * The  generated class will be a subtype of CompiledExpression.
+	 *
 	 * @param expressionToCompile the expression to be compiled
 	 * @return the expression call, or {@code null} if the decision was to opt out of
 	 * compilation during code generation
@@ -149,7 +189,7 @@ public class SpelCompiler implements Opcodes {
 		// Create getValue() method
 		mv = cw.visitMethod(ACC_PUBLIC, "getValue",
 				"(Ljava/lang/Object;Lorg/springframework/expression/EvaluationContext;)Ljava/lang/Object;", null,
-				new String[ ]{"org/springframework/expression/EvaluationException"});
+				new String[]{"org/springframework/expression/EvaluationException"});
 		mv.visitCode();
 
 		CodeFlow cf = new CodeFlow(className, cw);
@@ -157,8 +197,7 @@ public class SpelCompiler implements Opcodes {
 		// Ask the expression AST to generate the body of the method
 		try {
 			expressionToCompile.generateCode(mv, cf);
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			if (logger.isDebugEnabled()) {
 				logger.debug(expressionToCompile.getClass().getSimpleName() +
 						".generateCode opted out of compilation: " + ex.getMessage());
@@ -189,7 +228,8 @@ public class SpelCompiler implements Opcodes {
 	 * because they anchor compiled classes in memory and prevent GC.  If you have expressions
 	 * continually recompiling over time then by replacing the classloader periodically
 	 * at least some of the older variants can be garbage collected.
-	 * @param name name of the class
+	 *
+	 * @param name  name of the class
 	 * @param bytes bytecode for the class
 	 * @return the Class object for the compiled expression
 	 */
@@ -200,47 +240,6 @@ public class SpelCompiler implements Opcodes {
 		}
 		return (Class<? extends CompiledExpression>) this.ccl.defineClass(name, bytes);
 	}
-
-	/**
-	 * Factory method for compiler instances. The returned SpelCompiler will
-	 * attach a class loader as the child of the given class loader and this
-	 * child will be used to load compiled expressions.
-	 * @param classLoader the ClassLoader to use as the basis for compilation
-	 * @return a corresponding SpelCompiler instance
-	 */
-	public static SpelCompiler getCompiler(@Nullable ClassLoader classLoader) {
-		ClassLoader clToUse = (classLoader != null ? classLoader : ClassUtils.getDefaultClassLoader());
-		synchronized (compilers) {
-			SpelCompiler compiler = compilers.get(clToUse);
-			if (compiler == null) {
-				compiler = new SpelCompiler(clToUse);
-				compilers.put(clToUse, compiler);
-			}
-			return compiler;
-		}
-	}
-
-	/**
-	 * Request that an attempt is made to compile the specified expression. It may fail if
-	 * components of the expression are not suitable for compilation or the data types
-	 * involved are not suitable for compilation. Used for testing.
-	 * @return true if the expression was successfully compiled
-	 */
-	public static boolean compile(Expression expression) {
-		return (expression instanceof SpelExpression && ((SpelExpression) expression).compileExpression());
-	}
-
-	/**
-	 * Request to revert to the interpreter for expression evaluation.
-	 * Any compiled form is discarded but can be recreated by later recompiling again.
-	 * @param expression the expression
-	 */
-	public static void revertToInterpreted(Expression expression) {
-		if (expression instanceof SpelExpression) {
-			((SpelExpression) expression).revertToInterpreted();
-		}
-	}
-
 
 	/**
 	 * A ChildClassLoader will load the generated compiled expression classes.

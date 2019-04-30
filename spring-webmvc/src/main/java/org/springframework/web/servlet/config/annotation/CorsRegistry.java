@@ -16,12 +16,12 @@
 
 package org.springframework.web.servlet.config.annotation;
 
+import org.springframework.web.cors.CorsConfiguration;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.web.cors.CorsConfiguration;
 
 /**
  * Assists with the registration of global, URL pattern based
@@ -29,8 +29,8 @@ import org.springframework.web.cors.CorsConfiguration;
  *
  * @author Sebastien Deleuze
  * @author Rossen Stoyanchev
- * @since 4.2
  * @see CorsRegistration
+ * @since 4.2
  */
 public class CorsRegistry {
 
@@ -48,10 +48,10 @@ public class CorsRegistry {
 	 *
 	 * <p>The following defaults are applied to the {@link CorsRegistration}:
 	 * <ul>
-	 *     <li>Allow all origins.</li>
-	 *     <li>Allow "simple" methods {@code GET}, {@code HEAD} and {@code POST}.</li>
-	 *     <li>Allow all headers.</li>
-	 *     <li>Set max age to 1800 seconds (30 minutes).</li>
+	 * <li>Allow all origins.</li>
+	 * <li>Allow "simple" methods {@code GET}, {@code HEAD} and {@code POST}.</li>
+	 * <li>Allow all headers.</li>
+	 * <li>Set max age to 1800 seconds (30 minutes).</li>
 	 * </ul>
 	 */
 	public CorsRegistration addMapping(String pathPattern) {

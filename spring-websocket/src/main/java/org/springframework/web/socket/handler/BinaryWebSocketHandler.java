@@ -16,12 +16,12 @@
 
 package org.springframework.web.socket.handler;
 
-import java.io.IOException;
-
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
+
+import java.io.IOException;
 
 /**
  * A convenient base class for {@link WebSocketHandler} implementations
@@ -40,8 +40,7 @@ public class BinaryWebSocketHandler extends AbstractWebSocketHandler {
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) {
 		try {
 			session.close(CloseStatus.NOT_ACCEPTABLE.withReason("Text messages not supported"));
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			// ignore
 		}
 	}

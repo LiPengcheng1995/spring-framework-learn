@@ -16,21 +16,21 @@
 
 package org.springframework.cache.jcache.interceptor;
 
-import javax.cache.annotation.CacheMethodDetails;
-import javax.cache.annotation.CacheResult;
-
 import org.springframework.cache.interceptor.CacheResolver;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ExceptionTypeFilter;
 import org.springframework.util.StringUtils;
 
+import javax.cache.annotation.CacheMethodDetails;
+import javax.cache.annotation.CacheResult;
+
 /**
  * The {@link JCacheOperation} implementation for a {@link CacheResult} operation.
  *
  * @author Stephane Nicoll
- * @since 4.1
  * @see CacheResult
+ * @since 4.1
  */
 class CacheResultOperation extends AbstractJCacheKeyOperation<CacheResult> {
 
@@ -44,7 +44,7 @@ class CacheResultOperation extends AbstractJCacheKeyOperation<CacheResult> {
 
 
 	public CacheResultOperation(CacheMethodDetails<CacheResult> methodDetails, CacheResolver cacheResolver,
-			KeyGenerator keyGenerator, @Nullable CacheResolver exceptionCacheResolver) {
+								KeyGenerator keyGenerator, @Nullable CacheResolver exceptionCacheResolver) {
 
 		super(methodDetails, cacheResolver, keyGenerator);
 
@@ -63,6 +63,7 @@ class CacheResultOperation extends AbstractJCacheKeyOperation<CacheResult> {
 	/**
 	 * Specify if the method should always be invoked regardless of a cache hit.
 	 * By default, the method is only invoked in case of a cache miss.
+	 *
 	 * @see javax.cache.annotation.CacheResult#skipGet()
 	 */
 	public boolean isAlwaysInvoked() {
@@ -81,6 +82,7 @@ class CacheResultOperation extends AbstractJCacheKeyOperation<CacheResult> {
 	/**
 	 * Return the name of the cache to cache exceptions, or {@code null} if
 	 * caching exceptions should be disabled.
+	 *
 	 * @see javax.cache.annotation.CacheResult#exceptionCacheName()
 	 */
 	@Nullable

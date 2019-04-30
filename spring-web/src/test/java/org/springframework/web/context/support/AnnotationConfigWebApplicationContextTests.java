@@ -17,15 +17,15 @@
 package org.springframework.web.context.support;
 
 import org.junit.Test;
-
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.AnnotationBeanNameGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Chris Beams
@@ -73,7 +73,7 @@ public class AnnotationConfigWebApplicationContextTests {
 		ctx.setBeanNameGenerator(new AnnotationBeanNameGenerator() {
 			@Override
 			public String generateBeanName(BeanDefinition definition,
-					BeanDefinitionRegistry registry) {
+										   BeanDefinitionRegistry registry) {
 				return "custom-" + super.generateBeanName(definition, registry);
 			}
 		});

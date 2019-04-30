@@ -16,13 +16,13 @@
 
 package org.springframework.jdbc.core.simple;
 
-import java.util.Arrays;
-import java.util.Map;
-import javax.sql.DataSource;
-
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.KeyHolder;
+
+import javax.sql.DataSource;
+import java.util.Arrays;
+import java.util.Map;
 
 /**
  * A SimpleJdbcInsert is a multi-threaded, reusable object providing easy insert
@@ -43,15 +43,16 @@ import org.springframework.jdbc.support.KeyHolder;
  *
  * @author Thomas Risberg
  * @author Juergen Hoeller
- * @since 2.5
  * @see java.sql.DatabaseMetaData
  * @see org.springframework.jdbc.core.JdbcTemplate
+ * @since 2.5
  */
 public class SimpleJdbcInsert extends AbstractJdbcInsert implements SimpleJdbcInsertOperations {
 
 	/**
 	 * Constructor that takes one parameter with the JDBC DataSource to use when creating the
 	 * JdbcTemplate.
+	 *
 	 * @param dataSource the {@code DataSource} to use
 	 * @see org.springframework.jdbc.core.JdbcTemplate#setDataSource
 	 */
@@ -61,6 +62,7 @@ public class SimpleJdbcInsert extends AbstractJdbcInsert implements SimpleJdbcIn
 
 	/**
 	 * Alternative Constructor that takes one parameter with the JdbcTemplate to be used.
+	 *
 	 * @param jdbcTemplate the {@code JdbcTemplate} to use
 	 * @see org.springframework.jdbc.core.JdbcTemplate#setDataSource
 	 */

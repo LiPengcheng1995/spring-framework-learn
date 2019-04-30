@@ -16,19 +16,9 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpStatus;
@@ -58,7 +48,12 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.FlashMap;
 import org.springframework.web.servlet.ModelAndView;
 
-import static org.junit.Assert.*;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for {@link RequestMappingHandlerAdapter}.
@@ -234,7 +229,7 @@ public class RequestMappingHandlerAdapterTests {
 
 		assertEquals("lAttr1", mav.getModel().get("attr1"));
 		assertEquals("gAttr2", mav.getModel().get("attr2"));
-		assertEquals(null,mav.getModel().get("attr3"));
+		assertEquals(null, mav.getModel().get("attr3"));
 	}
 
 	// SPR-10859
@@ -302,8 +297,7 @@ public class RequestMappingHandlerAdapterTests {
 		assertEquals(200, this.response.getStatus());
 		if (validValue) {
 			assertEquals("/**/" + value + "({\"foo\":\"bar\"});", this.response.getContentAsString());
-		}
-		else {
+		} else {
 			assertEquals("{\"foo\":\"bar\"}", this.response.getContentAsString());
 		}
 	}
@@ -398,7 +392,7 @@ public class RequestMappingHandlerAdapterTests {
 		@SuppressWarnings("unchecked")
 		@Override
 		protected void beforeBodyWriteInternal(MappingJacksonValue bodyContainer, MediaType contentType,
-				MethodParameter returnType, ServerHttpRequest request, ServerHttpResponse response) {
+											   MethodParameter returnType, ServerHttpRequest request, ServerHttpResponse response) {
 
 			int status = ((ServletServerHttpResponse) response).getServletResponse().getStatus();
 			response.setStatusCode(HttpStatus.OK);
@@ -411,28 +405,28 @@ public class RequestMappingHandlerAdapterTests {
 
 		@Override
 		public boolean supports(MethodParameter methodParameter, Type targetType,
-				Class<? extends HttpMessageConverter<?>> converterType) {
+								Class<? extends HttpMessageConverter<?>> converterType) {
 
 			return StringHttpMessageConverter.class.equals(converterType);
 		}
 
 		@Override
 		public HttpInputMessage beforeBodyRead(HttpInputMessage inputMessage, MethodParameter parameter,
-				Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+											   Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
 
 			return inputMessage;
 		}
 
 		@Override
 		public Object afterBodyRead(Object body, HttpInputMessage inputMessage, MethodParameter parameter,
-				Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+									Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
 
 			return body;
 		}
 
 		@Override
 		public Object handleEmptyBody(@Nullable Object body, HttpInputMessage inputMessage, MethodParameter parameter,
-				Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+									  Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
 
 			return "default value for empty body";
 		}

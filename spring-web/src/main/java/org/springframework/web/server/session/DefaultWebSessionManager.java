@@ -16,14 +16,13 @@
 
 package org.springframework.web.server.session;
 
-import java.util.List;
-
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.util.Assert;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebSession;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 /**
  * Default implementation of {@link WebSessionManager} delegating to a
@@ -40,17 +39,6 @@ public class DefaultWebSessionManager implements WebSessionManager {
 
 	private WebSessionStore sessionStore = new InMemoryWebSessionStore();
 
-
-	/**
-	 * Configure the id resolution strategy.
-	 * <p>By default an instance of {@link CookieWebSessionIdResolver}.
-	 * @param sessionIdResolver the resolver to use
-	 */
-	public void setSessionIdResolver(WebSessionIdResolver sessionIdResolver) {
-		Assert.notNull(sessionIdResolver, "WebSessionIdResolver is required");
-		this.sessionIdResolver = sessionIdResolver;
-	}
-
 	/**
 	 * Return the configured {@link WebSessionIdResolver}.
 	 */
@@ -59,13 +47,14 @@ public class DefaultWebSessionManager implements WebSessionManager {
 	}
 
 	/**
-	 * Configure the persistence strategy.
-	 * <p>By default an instance of {@link InMemoryWebSessionStore}.
-	 * @param sessionStore the persistence strategy to use
+	 * Configure the id resolution strategy.
+	 * <p>By default an instance of {@link CookieWebSessionIdResolver}.
+	 *
+	 * @param sessionIdResolver the resolver to use
 	 */
-	public void setSessionStore(WebSessionStore sessionStore) {
-		Assert.notNull(sessionStore, "WebSessionStore is required");
-		this.sessionStore = sessionStore;
+	public void setSessionIdResolver(WebSessionIdResolver sessionIdResolver) {
+		Assert.notNull(sessionIdResolver, "WebSessionIdResolver is required");
+		this.sessionIdResolver = sessionIdResolver;
 	}
 
 	/**
@@ -75,6 +64,16 @@ public class DefaultWebSessionManager implements WebSessionManager {
 		return this.sessionStore;
 	}
 
+	/**
+	 * Configure the persistence strategy.
+	 * <p>By default an instance of {@link InMemoryWebSessionStore}.
+	 *
+	 * @param sessionStore the persistence strategy to use
+	 */
+	public void setSessionStore(WebSessionStore sessionStore) {
+		Assert.notNull(sessionStore, "WebSessionStore is required");
+		this.sessionStore = sessionStore;
+	}
 
 	@Override
 	public Mono<WebSession> getSession(ServerWebExchange exchange) {

@@ -16,17 +16,17 @@
 
 package org.springframework.context.annotation.configuration;
 
-import javax.annotation.Resource;
-
 import org.junit.Test;
-
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
-import static org.junit.Assert.*;
-import static org.springframework.beans.factory.config.BeanDefinition.*;
+import javax.annotation.Resource;
+
+import static org.junit.Assert.assertNotNull;
+import static org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE;
+import static org.springframework.beans.factory.config.BeanDefinition.SCOPE_SINGLETON;
 
 /**
  * @author Marcin Piela
@@ -48,6 +48,11 @@ public class Spr12526Tests {
 		assertNotNull("SecondService.dependency is null", secondService.getDependency());
 	}
 
+
+	public interface Service {
+
+		void doStuff();
+	}
 
 	@Configuration
 	public static class TestContext {
@@ -77,7 +82,6 @@ public class Spr12526Tests {
 		}
 	}
 
-
 	public static class CustomCondition {
 
 		private boolean condition;
@@ -91,13 +95,6 @@ public class Spr12526Tests {
 		}
 	}
 
-
-	public interface Service {
-
-		void doStuff();
-	}
-
-
 	public static class FirstService implements Service {
 
 		private DependencyOne dependency;
@@ -110,14 +107,13 @@ public class Spr12526Tests {
 			}
 		}
 
+		public DependencyOne getDependency() {
+			return dependency;
+		}
+
 		@Resource(name = "dependencyOne")
 		public void setDependency(DependencyOne dependency) {
 			this.dependency = dependency;
-		}
-
-
-		public DependencyOne getDependency() {
-			return dependency;
 		}
 	}
 
@@ -133,14 +129,13 @@ public class Spr12526Tests {
 			}
 		}
 
+		public DependencyTwo getDependency() {
+			return dependency;
+		}
+
 		@Resource(name = "dependencyTwo")
 		public void setDependency(DependencyTwo dependency) {
 			this.dependency = dependency;
-		}
-
-
-		public DependencyTwo getDependency() {
-			return dependency;
 		}
 	}
 

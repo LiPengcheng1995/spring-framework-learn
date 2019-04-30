@@ -16,12 +16,7 @@
 
 package org.springframework.web.filter.reactive;
 
-import java.net.URI;
-import java.time.Duration;
-
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.lang.Nullable;
@@ -29,6 +24,10 @@ import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.mock.web.test.server.MockServerWebExchange;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilterChain;
+import reactor.core.publisher.Mono;
+
+import java.net.URI;
+import java.time.Duration;
 
 import static org.junit.Assert.*;
 
@@ -117,7 +116,7 @@ public class ForwardedHeaderFilterTests {
 	@Test // SPR-17525
 	public void shouldNotDoubleEncode() throws Exception {
 		MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest
-				.method(HttpMethod.GET, new URI ("https://example.com/a%20b?q=a%2Bb"))
+				.method(HttpMethod.GET, new URI("https://example.com/a%20b?q=a%2Bb"))
 				.header("Forwarded", "host=84.198.58.199;proto=https"));
 
 		this.filter.filter(exchange, this.filterChain).block(Duration.ZERO);
@@ -152,7 +151,6 @@ public class ForwardedHeaderFilterTests {
 			return Mono.empty();
 		}
 	}
-
 
 
 }

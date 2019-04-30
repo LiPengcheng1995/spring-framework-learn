@@ -16,11 +16,9 @@
 
 package org.springframework.http.client.reactive;
 
-import java.net.URI;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
 import io.netty.buffer.UnpooledByteBufAllocator;
+import org.springframework.core.io.buffer.NettyDataBufferFactory;
+import org.springframework.http.HttpMethod;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.http.client.HttpClient;
 import reactor.ipc.netty.http.client.HttpClientOptions;
@@ -28,15 +26,16 @@ import reactor.ipc.netty.http.client.HttpClientRequest;
 import reactor.ipc.netty.http.client.HttpClientResponse;
 import reactor.ipc.netty.options.ClientOptions;
 
-import org.springframework.core.io.buffer.NettyDataBufferFactory;
-import org.springframework.http.HttpMethod;
+import java.net.URI;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Reactor-Netty implementation of {@link ClientHttpConnector}.
  *
  * @author Brian Clozel
- * @since 5.0
  * @see reactor.ipc.netty.http.client.HttpClient
+ * @since 5.0
  */
 public class ReactorClientHttpConnector implements ClientHttpConnector {
 
@@ -69,7 +68,7 @@ public class ReactorClientHttpConnector implements ClientHttpConnector {
 
 	@Override
 	public Mono<ClientHttpResponse> connect(HttpMethod method, URI uri,
-			Function<? super ClientHttpRequest, Mono<Void>> requestCallback) {
+											Function<? super ClientHttpRequest, Mono<Void>> requestCallback) {
 
 		if (!uri.isAbsolute()) {
 			return Mono.error(new IllegalArgumentException("URI is not absolute: " + uri));

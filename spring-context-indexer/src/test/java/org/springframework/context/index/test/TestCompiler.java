@@ -16,20 +16,16 @@
 
 package org.springframework.context.index.test;
 
+import org.junit.rules.TemporaryFolder;
+
+import javax.annotation.processing.Processor;
+import javax.tools.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.annotation.processing.Processor;
-import javax.tools.JavaCompiler;
-import javax.tools.JavaFileObject;
-import javax.tools.StandardJavaFileManager;
-import javax.tools.StandardLocation;
-import javax.tools.ToolProvider;
-
-import org.junit.rules.TemporaryFolder;
 
 /**
  * Wrapper to make the {@link JavaCompiler} easier to use in tests.
@@ -60,6 +56,9 @@ public class TestCompiler {
 		this.fileManager.setLocation(StandardLocation.SOURCE_OUTPUT, temp);
 	}
 
+	private static String sourcePathFor(String type) {
+		return type.replace(".", "/") + ".java";
+	}
 
 	public TestCompilationTask getTask(Class<?>... types) {
 		List<String> names = Arrays.stream(types).map(Class::getName).collect(Collectors.toList());
@@ -90,10 +89,6 @@ public class TestCompiler {
 
 	private File getFile(String type) {
 		return new File(getSourceFolder(), sourcePathFor(type));
-	}
-
-	private static String sourcePathFor(String type) {
-		return type.replace(".", "/") + ".java";
 	}
 
 	private File getSourceFolder() {

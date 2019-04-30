@@ -16,14 +16,14 @@
 
 package org.springframework.web.servlet.tags.form;
 
-import java.util.Collection;
-import java.util.Map;
-import javax.servlet.jsp.JspException;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.servlet.support.BindStatus;
+
+import javax.servlet.jsp.JspException;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * The {@code <select>} tag renders an HTML 'select' element.
@@ -235,8 +235,8 @@ import org.springframework.web.servlet.support.BindStatus;
  *
  * @author Rob Harrop
  * @author Juergen Hoeller
- * @since 2.0
  * @see OptionTag
+ * @since 2.0
  */
 @SuppressWarnings("serial")
 public class SelectTag extends AbstractHtmlInputElementTag {
@@ -297,17 +297,12 @@ public class SelectTag extends AbstractHtmlInputElementTag {
 	@Nullable
 	private TagWriter tagWriter;
 
-
 	/**
-	 * Set the {@link Collection}, {@link Map} or array of objects used to
-	 * generate the inner '{@code option}' tags.
-	 * <p>Required when wishing to render '{@code option}' tags from
-	 * an array, {@link Collection} or {@link Map}.
-	 * <p>Typically a runtime expression.
-	 * @param items the items that comprise the options of this selection
+	 * Returns '{@code true}' for arrays, {@link Collection Collections}
+	 * and {@link Map Maps}.
 	 */
-	public void setItems(@Nullable Object items) {
-		this.items = (items != null ? items : EMPTY);
+	private static boolean typeRequiresMultiple(Class<?> type) {
+		return (type.isArray() || Collection.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type));
 	}
 
 	/**
@@ -317,6 +312,28 @@ public class SelectTag extends AbstractHtmlInputElementTag {
 	@Nullable
 	protected Object getItems() {
 		return this.items;
+	}
+
+	/**
+	 * Set the {@link Collection}, {@link Map} or array of objects used to
+	 * generate the inner '{@code option}' tags.
+	 * <p>Required when wishing to render '{@code option}' tags from
+	 * an array, {@link Collection} or {@link Map}.
+	 * <p>Typically a runtime expression.
+	 *
+	 * @param items the items that comprise the options of this selection
+	 */
+	public void setItems(@Nullable Object items) {
+		this.items = (items != null ? items : EMPTY);
+	}
+
+	/**
+	 * Get the value of the '{@code itemValue}' attribute.
+	 * <p>May be a runtime expression.
+	 */
+	@Nullable
+	protected String getItemValue() {
+		return this.itemValue;
 	}
 
 	/**
@@ -331,12 +348,12 @@ public class SelectTag extends AbstractHtmlInputElementTag {
 	}
 
 	/**
-	 * Get the value of the '{@code itemValue}' attribute.
+	 * Get the value of the '{@code itemLabel}' attribute.
 	 * <p>May be a runtime expression.
 	 */
 	@Nullable
-	protected String getItemValue() {
-		return this.itemValue;
+	protected String getItemLabel() {
+		return this.itemLabel;
 	}
 
 	/**
@@ -349,23 +366,6 @@ public class SelectTag extends AbstractHtmlInputElementTag {
 	}
 
 	/**
-	 * Get the value of the '{@code itemLabel}' attribute.
-	 * <p>May be a runtime expression.
-	 */
-	@Nullable
-	protected String getItemLabel() {
-		return this.itemLabel;
-	}
-
-	/**
-	 * Set the value of the HTML '{@code size}' attribute rendered
-	 * on the final '{@code select}' element.
-	 */
-	public void setSize(String size) {
-		this.size = size;
-	}
-
-	/**
 	 * Get the value of the '{@code size}' attribute.
 	 */
 	@Nullable
@@ -374,11 +374,11 @@ public class SelectTag extends AbstractHtmlInputElementTag {
 	}
 
 	/**
-	 * Set the value of the HTML '{@code multiple}' attribute rendered
+	 * Set the value of the HTML '{@code size}' attribute rendered
 	 * on the final '{@code select}' element.
 	 */
-	public void setMultiple(Object multiple) {
-		this.multiple = multiple;
+	public void setSize(String size) {
+		this.size = size;
 	}
 
 	/**
@@ -431,8 +431,7 @@ public class SelectTag extends AbstractHtmlInputElementTag {
 			tagWriter.endTag(true);
 			writeHiddenTagIfNecessary(tagWriter);
 			return SKIP_BODY;
-		}
-		else {
+		} else {
 			// Using nested <form:option/> tags, so just expose the value in the PageContext...
 			tagWriter.forceBlock();
 			this.tagWriter = tagWriter;
@@ -467,6 +466,14 @@ public class SelectTag extends AbstractHtmlInputElementTag {
 	}
 
 	/**
+	 * Set the value of the HTML '{@code multiple}' attribute rendered
+	 * on the final '{@code select}' element.
+	 */
+	public void setMultiple(Object multiple) {
+		this.multiple = multiple;
+	}
+
+	/**
 	 * Returns '{@code true}' if the bound value requires the
 	 * resultant '{@code select}' tag to be multi-select.
 	 */
@@ -475,22 +482,13 @@ public class SelectTag extends AbstractHtmlInputElementTag {
 		Class<?> valueType = bindStatus.getValueType();
 		if (valueType != null && typeRequiresMultiple(valueType)) {
 			return true;
-		}
-		else if (bindStatus.getEditor() != null) {
+		} else if (bindStatus.getEditor() != null) {
 			Object editorValue = bindStatus.getEditor().getValue();
 			if (editorValue != null && typeRequiresMultiple(editorValue.getClass())) {
 				return true;
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * Returns '{@code true}' for arrays, {@link Collection Collections}
-	 * and {@link Map Maps}.
-	 */
-	private static boolean typeRequiresMultiple(Class<?> type) {
-		return (type.isArray() || Collection.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type));
 	}
 
 	/**

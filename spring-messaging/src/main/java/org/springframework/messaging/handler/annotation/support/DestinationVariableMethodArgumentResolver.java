@@ -16,8 +16,6 @@
 
 package org.springframework.messaging.handler.annotation.support;
 
-import java.util.Map;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.lang.Nullable;
@@ -26,6 +24,8 @@ import org.springframework.messaging.MessageHandlingException;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.ValueConstants;
 import org.springframework.util.Assert;
+
+import java.util.Map;
 
 /**
  * Resolves method parameters annotated with

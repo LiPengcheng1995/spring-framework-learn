@@ -16,20 +16,19 @@
 
 package org.springframework.format.datetime.joda;
 
+import org.joda.time.Period;
+import org.springframework.format.Formatter;
+
 import java.text.ParseException;
 import java.util.Locale;
-
-import org.joda.time.Period;
-
-import org.springframework.format.Formatter;
 
 /**
  * {@link Formatter} implementation for a Joda-Time {@link Period},
  * following Joda-Time's parsing rules for a Period.
  *
  * @author Juergen Hoeller
- * @since 4.2.4
  * @see Period#parse
+ * @since 4.2.4
  */
 class PeriodFormatter implements Formatter<Period> {
 

@@ -16,30 +16,9 @@
 
 package org.springframework.web.reactive.function.server;
 
-import java.net.URI;
-import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.CacheControl;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseCookie;
+import org.springframework.http.*;
 import org.springframework.http.codec.HttpMessageWriter;
 import org.springframework.http.server.reactive.AbstractServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -51,6 +30,14 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+import java.net.URI;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 /**
  * Default {@link ServerResponse.BodyBuilder} implementation.
@@ -218,7 +205,7 @@ class DefaultServerResponseBuilder implements ServerResponse.BodyBuilder {
 
 	@Override
 	public <T, P extends Publisher<T>> Mono<ServerResponse> body(P publisher,
-			ParameterizedTypeReference<T> typeReference) {
+																 ParameterizedTypeReference<T> typeReference) {
 
 		Assert.notNull(publisher, "Publisher must not be null");
 		Assert.notNull(typeReference, "ParameterizedTypeReference must not be null");
@@ -293,6 +280,14 @@ class DefaultServerResponseBuilder implements ServerResponse.BodyBuilder {
 			this.cookies = CollectionUtils.unmodifiableMultiValueMap(new LinkedMultiValueMap<>(cookies));
 		}
 
+		private static <K, V> void copy(MultiValueMap<K, V> src, MultiValueMap<K, V> dst) {
+			if (!src.isEmpty()) {
+				src.entrySet().stream()
+						.filter(entry -> !dst.containsKey(entry.getKey()))
+						.forEach(entry -> dst.put(entry.getKey(), entry.getValue()));
+			}
+		}
+
 		@Override
 		public final HttpStatus statusCode() {
 			return HttpStatus.valueOf(this.statusCode);
@@ -316,8 +311,7 @@ class DefaultServerResponseBuilder implements ServerResponse.BodyBuilder {
 			HttpMethod httpMethod = exchange.getRequest().getMethod();
 			if (SAFE_METHODS.contains(httpMethod) && exchange.checkNotModified(headers().getETag(), lastModified)) {
 				return exchange.getResponse().setComplete();
-			}
-			else {
+			} else {
 				return writeToInternal(exchange, context);
 			}
 		}
@@ -325,8 +319,7 @@ class DefaultServerResponseBuilder implements ServerResponse.BodyBuilder {
 		private void writeStatusAndHeaders(ServerHttpResponse response) {
 			if (response instanceof AbstractServerHttpResponse) {
 				((AbstractServerHttpResponse) response).setStatusCodeValue(this.statusCode);
-			}
-			else {
+			} else {
 				HttpStatus status = HttpStatus.resolve(this.statusCode);
 				if (status == null) {
 					throw new IllegalStateException(
@@ -339,14 +332,6 @@ class DefaultServerResponseBuilder implements ServerResponse.BodyBuilder {
 		}
 
 		protected abstract Mono<Void> writeToInternal(ServerWebExchange exchange, Context context);
-
-		private static <K,V> void copy(MultiValueMap<K,V> src, MultiValueMap<K,V> dst) {
-			if (!src.isEmpty()) {
-				src.entrySet().stream()
-						.filter(entry -> !dst.containsKey(entry.getKey()))
-						.forEach(entry -> dst.put(entry.getKey(), entry.getValue()));
-			}
-		}
 	}
 
 
@@ -355,8 +340,8 @@ class DefaultServerResponseBuilder implements ServerResponse.BodyBuilder {
 		private final BiFunction<ServerWebExchange, Context, Mono<Void>> writeFunction;
 
 		public WriterFunctionResponse(int statusCode, HttpHeaders headers,
-				MultiValueMap<String, ResponseCookie> cookies,
-				BiFunction<ServerWebExchange, Context, Mono<Void>> writeFunction) {
+									  MultiValueMap<String, ResponseCookie> cookies,
+									  BiFunction<ServerWebExchange, Context, Mono<Void>> writeFunction) {
 
 			super(statusCode, headers, cookies);
 			Assert.notNull(writeFunction, "BiFunction must not be null");
@@ -377,8 +362,8 @@ class DefaultServerResponseBuilder implements ServerResponse.BodyBuilder {
 		private final Map<String, Object> hints;
 
 		public BodyInserterResponse(int statusCode, HttpHeaders headers,
-				MultiValueMap<String, ResponseCookie> cookies,
-				BodyInserter<T, ? super ServerHttpResponse> body, Map<String, Object> hints) {
+									MultiValueMap<String, ResponseCookie> cookies,
+									BodyInserter<T, ? super ServerHttpResponse> body, Map<String, Object> hints) {
 
 			super(statusCode, headers, cookies);
 			Assert.notNull(body, "BodyInserter must not be null");
@@ -393,10 +378,12 @@ class DefaultServerResponseBuilder implements ServerResponse.BodyBuilder {
 				public List<HttpMessageWriter<?>> messageWriters() {
 					return context.messageWriters();
 				}
+
 				@Override
 				public Optional<ServerHttpRequest> serverRequest() {
 					return Optional.of(exchange.getRequest());
 				}
+
 				@Override
 				public Map<String, Object> hints() {
 					return hints;

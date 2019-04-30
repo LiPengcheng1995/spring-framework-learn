@@ -16,17 +16,16 @@
 
 package org.springframework.http.client.support;
 
-import java.io.IOException;
-import java.net.URI;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.Assert;
+
+import java.io.IOException;
+import java.net.URI;
 
 /**
  * Base class for {@link org.springframework.web.client.RestTemplate}
@@ -38,17 +37,25 @@ import org.springframework.util.Assert;
  *
  * @author Arjen Poutsma
  * @author Juergen Hoeller
- * @since 3.0
  * @see ClientHttpRequestFactory
  * @see org.springframework.web.client.RestTemplate
+ * @since 3.0
  */
 public abstract class HttpAccessor {
 
-	/** Logger available to subclasses */
+	/**
+	 * Logger available to subclasses
+	 */
 	protected final Log logger = LogFactory.getLog(getClass());
 
 	private ClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 
+	/**
+	 * Return the request factory that this accessor uses for obtaining client request handles.
+	 */
+	public ClientHttpRequestFactory getRequestFactory() {
+		return this.requestFactory;
+	}
 
 	/**
 	 * Set the request factory that this accessor uses for obtaining client request handles.
@@ -56,6 +63,7 @@ public abstract class HttpAccessor {
 	 * HTTP libraries ({@link java.net.HttpURLConnection}).
 	 * <p><b>Note that the standard JDK HTTP library does not support the HTTP PATCH method.
 	 * Configure the Apache HttpComponents or OkHttp request factory to enable PATCH.</b>
+	 *
 	 * @see #createRequest(URI, HttpMethod)
 	 * @see SimpleClientHttpRequestFactory
 	 * @see org.springframework.http.client.HttpComponentsAsyncClientHttpRequestFactory
@@ -67,16 +75,9 @@ public abstract class HttpAccessor {
 	}
 
 	/**
-	 * Return the request factory that this accessor uses for obtaining client request handles.
-	 */
-	public ClientHttpRequestFactory getRequestFactory() {
-		return this.requestFactory;
-	}
-
-
-	/**
 	 * Create a new {@link ClientHttpRequest} via this template's {@link ClientHttpRequestFactory}.
-	 * @param url the URL to connect to
+	 *
+	 * @param url    the URL to connect to
 	 * @param method the HTTP method to execute (GET, POST, etc)
 	 * @return the created request
 	 * @throws IOException in case of I/O errors

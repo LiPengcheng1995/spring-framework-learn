@@ -16,6 +16,17 @@
 
 package org.springframework.web.servlet.resource;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.springframework.cache.Cache;
+import org.springframework.cache.concurrent.ConcurrentMapCache;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.mock.web.test.MockHttpServletRequest;
+import org.springframework.util.FileCopyUtils;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -28,21 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import org.springframework.cache.Cache;
-import org.springframework.cache.concurrent.ConcurrentMapCache;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-import org.springframework.mock.web.test.MockHttpServletRequest;
-import org.springframework.util.FileCopyUtils;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 
 /**
@@ -108,7 +105,7 @@ public class GzipResourceResolverTests {
 		Resource resolved = this.resolver.resolveResource(request, file, this.locations);
 
 		String gzFile = file + ".gz";
-		Resource resource = new ClassPathResource("test/"+gzFile, getClass());
+		Resource resource = new ClassPathResource("test/" + gzFile, getClass());
 		assertEquals(resource.getDescription(), resolved.getDescription());
 		assertEquals(new ClassPathResource("test/" + file).getFilename(), resolved.getFilename());
 		assertTrue("Expected " + resolved + " to be of type " + HttpResource.class,
@@ -123,9 +120,9 @@ public class GzipResourceResolverTests {
 		Resource resolved = this.resolver.resolveResource(request, file, this.locations);
 
 		String gzFile = file + ".gz";
-		Resource resource = new ClassPathResource("test/"+gzFile, getClass());
+		Resource resource = new ClassPathResource("test/" + gzFile, getClass());
 		assertEquals(resource.getDescription(), resolved.getDescription());
-		assertEquals(new ClassPathResource("test/"+file).getFilename(), resolved.getFilename());
+		assertEquals(new ClassPathResource("test/" + file).getFilename(), resolved.getFilename());
 		assertTrue("Expected " + resolved + " to be of type " + HttpResource.class,
 				resolved instanceof HttpResource);
 	}
@@ -138,7 +135,7 @@ public class GzipResourceResolverTests {
 		Resource resolved = this.resolver.resolveResource(request, file, this.locations);
 
 		String gzFile = file + ".gz";
-		Resource gzResource = new ClassPathResource("test/"+gzFile, getClass());
+		Resource gzResource = new ClassPathResource("test/" + gzFile, getClass());
 		assertEquals(gzResource.getDescription(), resolved.getDescription());
 		assertEquals(new ClassPathResource("test/" + file).getFilename(), resolved.getFilename());
 		assertTrue("Expected " + resolved + " to be of type " + HttpResource.class,
@@ -149,7 +146,7 @@ public class GzipResourceResolverTests {
 		request = new MockHttpServletRequest("GET", "/js/foo.js");
 		resolved = this.resolver.resolveResource(request, file, this.locations);
 
-		Resource resource = new ClassPathResource("test/"+file, getClass());
+		Resource resource = new ClassPathResource("test/" + file, getClass());
 		assertEquals(resource.getDescription(), resolved.getDescription());
 		assertEquals(new ClassPathResource("test/" + file).getFilename(), resolved.getFilename());
 		assertFalse("Expected " + resolved + " to *not* be of type " + HttpResource.class,
@@ -161,8 +158,8 @@ public class GzipResourceResolverTests {
 		String file = "js/foo.js";
 		Resource resolved = this.resolver.resolveResource(null, file, this.locations);
 
-		String gzFile = file+".gz";
-		Resource gzResource = new ClassPathResource("test/"+gzFile, getClass());
+		String gzFile = file + ".gz";
+		Resource gzResource = new ClassPathResource("test/" + gzFile, getClass());
 		assertEquals(gzResource.getDescription(), resolved.getDescription());
 		assertEquals(new ClassPathResource("test/" + file).getFilename(), resolved.getFilename());
 		assertTrue("Expected " + resolved + " to be of type " + HttpResource.class,

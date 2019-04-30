@@ -43,6 +43,13 @@ public class WebSocketHandlerDecorator implements WebSocketHandler {
 		this.delegate = delegate;
 	}
 
+	public static WebSocketHandler unwrap(WebSocketHandler handler) {
+		if (handler instanceof WebSocketHandlerDecorator) {
+			return ((WebSocketHandlerDecorator) handler).getLastHandler();
+		} else {
+			return handler;
+		}
+	}
 
 	public WebSocketHandler getDelegate() {
 		return this.delegate;
@@ -54,15 +61,6 @@ public class WebSocketHandlerDecorator implements WebSocketHandler {
 			result = ((WebSocketHandlerDecorator) result).getDelegate();
 		}
 		return result;
-	}
-
-	public static WebSocketHandler unwrap(WebSocketHandler handler) {
-		if (handler instanceof WebSocketHandlerDecorator) {
-			return ((WebSocketHandlerDecorator) handler).getLastHandler();
-		}
-		else {
-			return handler;
-		}
 	}
 
 	@Override

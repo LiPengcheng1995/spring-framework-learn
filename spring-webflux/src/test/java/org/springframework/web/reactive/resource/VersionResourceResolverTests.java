@@ -15,37 +15,27 @@
  */
 package org.springframework.web.reactive.resource;
 
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.mock.web.test.server.MockServerWebExchange;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+import java.time.Duration;
+import java.util.*;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.mock;
-import static org.mockito.BDDMockito.never;
-import static org.mockito.BDDMockito.times;
-import static org.mockito.BDDMockito.verify;
+import static org.junit.Assert.*;
+import static org.mockito.BDDMockito.*;
 
 /**
  * Unit tests for {@link VersionResourceResolver}.
+ *
  * @author Rossen Stoyanchev
  * @author Brian Clozel
  */
@@ -179,7 +169,7 @@ public class VersionResourceResolverTests {
 		assertEquals(expected.getFilename(), actual.getFilename());
 		verify(this.versionStrategy, times(1)).getResourceVersion(expected);
 		assertThat(actual, instanceOf(HttpResource.class));
-		assertEquals("\"" + version + "\"", ((HttpResource)actual).getResponseHeaders().getETag());
+		assertEquals("\"" + version + "\"", ((HttpResource) actual).getResponseHeaders().getETag());
 	}
 
 	@Test

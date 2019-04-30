@@ -16,11 +16,7 @@
 
 package org.springframework.jmx.export.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Method-level annotation that indicates to expose a given method as a
@@ -28,8 +24,8 @@ import java.lang.annotation.Target;
  * Only valid when used on a method that is not a JavaBean getter or setter.
  *
  * @author Rob Harrop
- * @since 1.2
  * @see org.springframework.jmx.export.metadata.ManagedOperation
+ * @since 1.2
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

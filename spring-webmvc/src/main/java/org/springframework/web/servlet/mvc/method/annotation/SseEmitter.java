@@ -16,18 +16,18 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * A specialization of {@link ResponseBodyEmitter} for sending
@@ -56,6 +56,7 @@ public class SseEmitter extends ResponseBodyEmitter {
 	 * <p>By default not set in which case the default configured in the MVC
 	 * Java Config or the MVC namespace is used, or if that's not set, then the
 	 * timeout depends on the default of the underlying server.
+	 *
 	 * @param timeout timeout value in milliseconds
 	 * @since 4.2.2
 	 */
@@ -63,6 +64,9 @@ public class SseEmitter extends ResponseBodyEmitter {
 		super(timeout);
 	}
 
+	public static SseEventBuilder event() {
+		return new SseEventBuilderImpl();
+	}
 
 	@Override
 	protected void extendResponse(ServerHttpResponse outputMessage) {
@@ -87,7 +91,7 @@ public class SseEmitter extends ResponseBodyEmitter {
 	 * for important notes on exception handling.
 	 *
 	 * @param object the object to write
-	 * @throws IOException raised when an I/O error occurs
+	 * @throws IOException                     raised when an I/O error occurs
 	 * @throws java.lang.IllegalStateException wraps any other errors
 	 */
 	@Override
@@ -107,7 +111,7 @@ public class SseEmitter extends ResponseBodyEmitter {
 	 * <p>Please, see {@link ResponseBodyEmitter#send(Object) parent Javadoc}
 	 * for important notes on exception handling.
 	 *
-	 * @param object the object to write
+	 * @param object    the object to write
 	 * @param mediaType a MediaType hint for selecting an HttpMessageConverter
 	 * @throws IOException raised when an I/O error occurs
 	 */
@@ -123,6 +127,7 @@ public class SseEmitter extends ResponseBodyEmitter {
 	 * SseEmitter emitter = new SseEmitter();
 	 * emitter.send(event().name("update").id("1").data(myObject));
 	 * </pre>
+	 *
 	 * @param builder a builder for an SSE formatted event.
 	 * @throws IOException raised when an I/O error occurs
 	 */
@@ -138,11 +143,6 @@ public class SseEmitter extends ResponseBodyEmitter {
 	@Override
 	public String toString() {
 		return "SseEmitter@" + ObjectUtils.getIdentityHexString(this);
-	}
-
-
-	public static SseEventBuilder event() {
-		return new SseEventBuilderImpl();
 	}
 
 
@@ -184,6 +184,7 @@ public class SseEmitter extends ResponseBodyEmitter {
 		/**
 		 * Return one or more Object-MediaType  pairs to write via
 		 * {@link #send(Object, MediaType)}.
+		 *
 		 * @since 4.2.3
 		 */
 		Set<DataWithMediaType> build();

@@ -16,12 +16,7 @@
 
 package org.springframework.test.context.jdbc;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Container annotation that aggregates several {@link Sql @Sql} annotations.
@@ -35,8 +30,8 @@ import java.lang.annotation.Target;
  * <em>composed annotations</em>.
  *
  * @author Sam Brannen
- * @since 4.1
  * @see Sql
+ * @since 4.1
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

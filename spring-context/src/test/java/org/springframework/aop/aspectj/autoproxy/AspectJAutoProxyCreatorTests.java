@@ -16,10 +16,6 @@
 
 package org.springframework.aop.aspectj.autoproxy;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.reflect.Method;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.JoinPoint;
@@ -29,7 +25,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.junit.Test;
-
 import org.springframework.aop.MethodBeforeAdvice;
 import org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator;
 import org.springframework.aop.aspectj.annotation.AspectMetadata;
@@ -59,7 +54,22 @@ import org.springframework.tests.sample.beans.NestedTestBean;
 import org.springframework.tests.sample.beans.TestBean;
 import org.springframework.util.StopWatch;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.Method;
+
 import static org.junit.Assert.*;
+
+@Retention(RetentionPolicy.RUNTIME)
+@interface Marker {
+}
+
+interface IMarkerTestBean extends ITestBean {
+
+	@Marker
+	@Override
+	int getAge();
+}
 
 /**
  * Integration tests for AspectJ auto-proxying. Includes mixing with Spring AOP Advisors
@@ -494,16 +504,15 @@ class IncreaseReturnValue {
 @Aspect
 class MultiplyReturnValue {
 
-	private int multiple = 2;
-
 	public int invocations;
-
-	public void setMultiple(int multiple) {
-		this.multiple = multiple;
-	}
+	private int multiple = 2;
 
 	public int getMultiple() {
 		return this.multiple;
+	}
+
+	public void setMultiple(int multiple) {
+		this.multiple = multiple;
 	}
 
 	@Around("execution(int *.getAge())")
@@ -514,23 +523,18 @@ class MultiplyReturnValue {
 	}
 }
 
-@Retention(RetentionPolicy.RUNTIME)
-@interface Marker {
-}
-
 @Aspect
 class MultiplyReturnValueForMarker {
 
-	private int multiple = 2;
-
 	public int invocations;
-
-	public void setMultiple(int multiple) {
-		this.multiple = multiple;
-	}
+	private int multiple = 2;
 
 	public int getMultiple() {
 		return this.multiple;
+	}
+
+	public void setMultiple(int multiple) {
+		this.multiple = multiple;
 	}
 
 	@Around("@annotation(org.springframework.aop.aspectj.autoproxy.Marker)")
@@ -539,13 +543,6 @@ class MultiplyReturnValueForMarker {
 		int result = (Integer) pjp.proceed();
 		return result * this.multiple;
 	}
-}
-
-interface IMarkerTestBean extends ITestBean {
-
-	@Marker
-	@Override
-	int getAge();
 }
 
 class MarkerTestBean extends TestBean implements IMarkerTestBean {
@@ -584,13 +581,11 @@ class RetryAspect {
 				try {
 					o = jp.proceed();
 					this.commitCalls++;
-				}
-				catch (RetryableException re) {
+				} catch (RetryableException re) {
 					this.rollbackCalls++;
 					throw re;
 				}
-			}
-			catch (RetryableException re) {
+			} catch (RetryableException re) {
 				retry = true;
 			}
 		}

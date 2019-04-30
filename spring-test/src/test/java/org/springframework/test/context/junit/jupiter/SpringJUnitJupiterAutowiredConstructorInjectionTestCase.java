@@ -17,7 +17,6 @@
 package org.springframework.test.context.junit.jupiter;
 
 import org.junit.jupiter.api.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -26,7 +25,8 @@ import org.springframework.test.context.junit.SpringJUnitJupiterTestSuite;
 import org.springframework.test.context.junit.jupiter.comics.Dog;
 import org.springframework.test.context.junit.jupiter.comics.Person;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Integration tests which demonstrate support for {@link Autowired @Autowired}
@@ -36,9 +36,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * Platform, simply run {@link SpringJUnitJupiterTestSuite} as a JUnit 4 test.
  *
  * @author Sam Brannen
- * @since 5.0
  * @see SpringExtension
  * @see SpringJUnitJupiterConstructorInjectionTestCase
+ * @since 5.0
  */
 @SpringJUnitConfig(TestConfig.class)
 @TestPropertySource(properties = "enigma = 42")
@@ -51,7 +51,7 @@ class SpringJUnitJupiterAutowiredConstructorInjectionTestCase {
 
 	@Autowired
 	SpringJUnitJupiterAutowiredConstructorInjectionTestCase(ApplicationContext applicationContext, Person dilbert, Dog dog,
-			@Value("${enigma}") Integer enigma) {
+															@Value("${enigma}") Integer enigma) {
 
 		this.applicationContext = applicationContext;
 		this.dilbert = dilbert;

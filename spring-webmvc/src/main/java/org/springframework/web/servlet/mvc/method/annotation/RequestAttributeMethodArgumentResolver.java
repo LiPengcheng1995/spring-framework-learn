@@ -16,8 +16,6 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import javax.servlet.ServletException;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
@@ -27,6 +25,8 @@ import org.springframework.web.bind.annotation.ValueConstants;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.method.annotation.AbstractNamedValueMethodArgumentResolver;
+
+import javax.servlet.ServletException;
 
 /**
  * Resolves method arguments annotated with an @{@link RequestAttribute}.
@@ -50,14 +50,14 @@ public class RequestAttributeMethodArgumentResolver extends AbstractNamedValueMe
 
 	@Override
 	@Nullable
-	protected Object resolveName(String name, MethodParameter parameter, NativeWebRequest request){
+	protected Object resolveName(String name, MethodParameter parameter, NativeWebRequest request) {
 		return request.getAttribute(name, RequestAttributes.SCOPE_REQUEST);
 	}
 
 	@Override
 	protected void handleMissingValue(String name, MethodParameter parameter) throws ServletException {
 		throw new ServletRequestBindingException("Missing request attribute '" + name +
-				"' of type " +  parameter.getNestedParameterType().getSimpleName());
+				"' of type " + parameter.getNestedParameterType().getSimpleName());
 	}
 
 }

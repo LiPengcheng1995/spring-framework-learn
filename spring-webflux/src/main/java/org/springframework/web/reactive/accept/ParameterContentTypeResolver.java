@@ -15,19 +15,15 @@
  */
 package org.springframework.web.reactive.accept;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.NotAcceptableStatusException;
 import org.springframework.web.server.ServerWebExchange;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Resolver that checks a query parameter and uses it to lookup a matching
@@ -39,7 +35,9 @@ import org.springframework.web.server.ServerWebExchange;
  */
 public class ParameterContentTypeResolver implements RequestedContentTypeResolver {
 
-	/** Primary lookup for media types by key (e.g. "json" -> "application/json") */
+	/**
+	 * Primary lookup for media types by key (e.g. "json" -> "application/json")
+	 */
 	private final Map<String, MediaType> mediaTypes = new ConcurrentHashMap<>(64);
 
 	private String parameterName = "format";
@@ -53,6 +51,9 @@ public class ParameterContentTypeResolver implements RequestedContentTypeResolve
 		return key.toLowerCase(Locale.ENGLISH);
 	}
 
+	public String getParameterName() {
+		return this.parameterName;
+	}
 
 	/**
 	 * Set the name of the parameter to use to determine requested media types.
@@ -62,11 +63,6 @@ public class ParameterContentTypeResolver implements RequestedContentTypeResolve
 		Assert.notNull(parameterName, "'parameterName' is required");
 		this.parameterName = parameterName;
 	}
-
-	public String getParameterName() {
-		return this.parameterName;
-	}
-
 
 	@Override
 	public List<MediaType> resolveMediaTypes(ServerWebExchange exchange) throws NotAcceptableStatusException {

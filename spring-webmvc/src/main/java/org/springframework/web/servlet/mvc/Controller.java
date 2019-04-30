@@ -16,11 +16,11 @@
 
 package org.springframework.web.servlet.mvc;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Base Controller interface, representing a component that receives
@@ -115,7 +115,8 @@ public interface Controller {
 	 * will render. A {@code null} return value is not an error: it indicates that
 	 * this object completed request processing itself and that there is therefore no
 	 * ModelAndView to render.
-	 * @param request current HTTP request
+	 *
+	 * @param request  current HTTP request
 	 * @param response current HTTP response
 	 * @return a ModelAndView to render, or {@code null} if handled directly
 	 * @throws Exception in case of errors

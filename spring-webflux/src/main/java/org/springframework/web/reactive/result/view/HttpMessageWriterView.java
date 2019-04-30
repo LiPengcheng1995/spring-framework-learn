@@ -16,16 +16,7 @@
 
 package org.springframework.web.reactive.result.view;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.codec.Encoder;
 import org.springframework.http.MediaType;
@@ -34,6 +25,10 @@ import org.springframework.http.codec.HttpMessageWriter;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * {@code View} that writes model attribute(s) with an {@link HttpMessageWriter}.
@@ -85,6 +80,13 @@ public class HttpMessageWriterView implements View {
 	}
 
 	/**
+	 * Return the configured model keys.
+	 */
+	public final Set<String> getModelKeys() {
+		return this.modelKeys;
+	}
+
+	/**
 	 * Set the attributes in the model that should be rendered by this view.
 	 * When set, all other model attributes will be ignored. The matching
 	 * attributes are further narrowed with {@link HttpMessageWriter#canWrite}.
@@ -102,14 +104,6 @@ public class HttpMessageWriterView implements View {
 			this.modelKeys.addAll(modelKeys);
 		}
 	}
-
-	/**
-	 * Return the configured model keys.
-	 */
-	public final Set<String> getModelKeys() {
-		return this.modelKeys;
-	}
-
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -132,14 +126,11 @@ public class HttpMessageWriterView implements View {
 
 		if (result.isEmpty()) {
 			return null;
-		}
-		else if (result.size() == 1) {
+		} else if (result.size() == 1) {
 			return result.values().iterator().next();
-		}
-		else if (this.canWriteMap) {
+		} else if (this.canWriteMap) {
 			return result;
-		}
-		else {
+		} else {
 			throw new IllegalStateException("Multiple matches found: " + result + " but " +
 					"Map rendering is not supported by " + getMessageWriter().getClass().getName());
 		}

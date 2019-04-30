@@ -16,9 +16,9 @@
 
 package org.springframework.web.servlet.tags.form;
 
-import javax.servlet.jsp.JspException;
-
 import org.springframework.lang.Nullable;
+
+import javax.servlet.jsp.JspException;
 
 /**
  * The {@code <textarea>} tag renders an HTML 'textarea'.
@@ -240,15 +240,6 @@ public class TextareaTag extends AbstractHtmlInputElementTag {
 	@Nullable
 	private String onselect;
 
-
-	/**
-	 * Set the value of the '{@code rows}' attribute.
-	 * May be a runtime expression.
-	 */
-	public void setRows(String rows) {
-		this.rows = rows;
-	}
-
 	/**
 	 * Get the value of the '{@code rows}' attribute.
 	 */
@@ -258,11 +249,11 @@ public class TextareaTag extends AbstractHtmlInputElementTag {
 	}
 
 	/**
-	 * Set the value of the '{@code cols}' attribute.
+	 * Set the value of the '{@code rows}' attribute.
 	 * May be a runtime expression.
 	 */
-	public void setCols(String cols) {
-		this.cols = cols;
+	public void setRows(String rows) {
+		this.rows = rows;
 	}
 
 	/**
@@ -274,11 +265,11 @@ public class TextareaTag extends AbstractHtmlInputElementTag {
 	}
 
 	/**
-	 * Set the value of the '{@code onselect}' attribute.
+	 * Set the value of the '{@code cols}' attribute.
 	 * May be a runtime expression.
 	 */
-	public void setOnselect(String onselect) {
-		this.onselect = onselect;
+	public void setCols(String cols) {
+		this.cols = cols;
 	}
 
 	/**
@@ -289,6 +280,13 @@ public class TextareaTag extends AbstractHtmlInputElementTag {
 		return this.onselect;
 	}
 
+	/**
+	 * Set the value of the '{@code onselect}' attribute.
+	 * May be a runtime expression.
+	 */
+	public void setOnselect(String onselect) {
+		this.onselect = onselect;
+	}
 
 	@Override
 	protected int writeTagContent(TagWriter tagWriter) throws JspException {

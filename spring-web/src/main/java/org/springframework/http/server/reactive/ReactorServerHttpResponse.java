@@ -16,23 +16,22 @@
 
 package org.springframework.http.server.reactive;
 
-import java.io.File;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.ipc.netty.http.server.HttpServerResponse;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.NettyDataBufferFactory;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ZeroCopyHttpOutputMessage;
 import org.springframework.util.Assert;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.ipc.netty.http.server.HttpServerResponse;
+
+import java.io.File;
 
 /**
  * Adapt {@link ServerHttpResponse} to the {@link HttpServerResponse}.
@@ -52,13 +51,15 @@ class ReactorServerHttpResponse extends AbstractServerHttpResponse implements Ze
 		this.response = response;
 	}
 
+	private static Publisher<ByteBuf> toByteBufs(Publisher<? extends DataBuffer> dataBuffers) {
+		return Flux.from(dataBuffers).map(NettyDataBufferFactory::toByteBuf);
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T getNativeResponse() {
 		return (T) this.response;
 	}
-
 
 	@Override
 	protected void applyStatusCode() {
@@ -114,10 +115,6 @@ class ReactorServerHttpResponse extends AbstractServerHttpResponse implements Ze
 	@Override
 	public Mono<Void> writeWith(File file, long position, long count) {
 		return doCommit(() -> this.response.sendFile(file.toPath(), position, count).then());
-	}
-
-	private static Publisher<ByteBuf> toByteBufs(Publisher<? extends DataBuffer> dataBuffers) {
-		return Flux.from(dataBuffers).map(NettyDataBufferFactory::toByteBuf);
 	}
 
 }

@@ -16,12 +16,8 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.lang.reflect.Method;
-
 import org.junit.Before;
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.MethodParameter;
@@ -30,11 +26,11 @@ import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.mock.web.test.server.MockServerWebExchange;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.reactive.BindingContext;
+import reactor.core.publisher.Mono;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import java.lang.reflect.Method;
+
+import static org.junit.Assert.*;
 
 /**
  * Unit tests for {@link ExpressionValueMethodArgumentResolver}.
@@ -43,10 +39,8 @@ import static org.junit.Assert.fail;
  */
 public class ExpressionValueMethodArgumentResolverTests {
 
-	private ExpressionValueMethodArgumentResolver resolver;
-
 	private final MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/"));
-
+	private ExpressionValueMethodArgumentResolver resolver;
 	private MethodParameter paramSystemProperty;
 	private MethodParameter paramNotSupported;
 	private MethodParameter paramAlsoNotSupported;
@@ -78,8 +72,7 @@ public class ExpressionValueMethodArgumentResolverTests {
 		try {
 			this.resolver.supportsParameter(this.paramAlsoNotSupported);
 			fail();
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertTrue("Unexpected error message:\n" + ex.getMessage(),
 					ex.getMessage().startsWith(
 							"ExpressionValueMethodArgumentResolver doesn't support reactive type wrapper"));
@@ -91,12 +84,11 @@ public class ExpressionValueMethodArgumentResolverTests {
 		System.setProperty("systemProperty", "22");
 		try {
 			Mono<Object> mono = this.resolver.resolveArgument(
-					this.paramSystemProperty,  new BindingContext(), this.exchange);
+					this.paramSystemProperty, new BindingContext(), this.exchange);
 
 			Object value = mono.block();
 			assertEquals(22, value);
-		}
-		finally {
+		} finally {
 			System.clearProperty("systemProperty");
 		}
 

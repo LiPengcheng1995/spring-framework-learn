@@ -16,20 +16,19 @@
 
 package org.springframework.web.context.support;
 
-import java.io.IOException;
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.junit.Test;
-
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.mock.web.test.MockHttpServletResponse;
 import org.springframework.mock.web.test.MockServletConfig;
 import org.springframework.mock.web.test.MockServletContext;
 import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.context.WebApplicationContext;
+
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 import static org.junit.Assert.*;
 
@@ -76,8 +75,7 @@ public class HttpRequestHandlerTests {
 			request.setParameter("exception", "ServletException");
 			servlet.service(request, response);
 			fail("Should have thrown ServletException");
-		}
-		catch (ServletException ex) {
+		} catch (ServletException ex) {
 			assertEquals("test", ex.getMessage());
 		}
 
@@ -85,8 +83,7 @@ public class HttpRequestHandlerTests {
 			request.setParameter("exception", "IOException");
 			servlet.service(request, response);
 			fail("Should have thrown IOException");
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			assertEquals("test", ex.getMessage());
 		}
 	}

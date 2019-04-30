@@ -26,7 +26,7 @@ import org.mockito.Answers
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.reactivestreams.Publisher
-import org.springframework.web.reactive.function.server.ServerResponse.*
+import org.springframework.web.reactive.function.server.ServerResponse.ok
 import org.springframework.web.reactive.function.server.router
 
 /**
@@ -60,7 +60,7 @@ class WebTestClientExtensionsTests {
 	@Test
 	fun `KotlinBodySpec#isEqualTo`() {
 		WebTestClient
-				.bindToRouterFunction( router { GET("/") { ok().syncBody("foo") } } )
+				.bindToRouterFunction(router { GET("/") { ok().syncBody("foo") } })
 				.build()
 				.get().uri("/").exchange().expectBody<String>().isEqualTo("foo")
 	}
@@ -68,7 +68,7 @@ class WebTestClientExtensionsTests {
 	@Test
 	fun `KotlinBodySpec#consumeWith`() {
 		WebTestClient
-				.bindToRouterFunction( router { GET("/") { ok().syncBody("foo") } } )
+				.bindToRouterFunction(router { GET("/") { ok().syncBody("foo") } })
 				.build()
 				.get().uri("/").exchange().expectBody<String>().consumeWith { assertEquals("foo", it.responseBody) }
 	}
@@ -76,7 +76,7 @@ class WebTestClientExtensionsTests {
 	@Test
 	fun `KotlinBodySpec#returnResult`() {
 		WebTestClient
-				.bindToRouterFunction( router { GET("/") { ok().syncBody("foo") } } )
+				.bindToRouterFunction(router { GET("/") { ok().syncBody("foo") } })
 				.build()
 				.get().uri("/").exchange().expectBody<String>().returnResult().apply { assertEquals("foo", responseBody) }
 	}

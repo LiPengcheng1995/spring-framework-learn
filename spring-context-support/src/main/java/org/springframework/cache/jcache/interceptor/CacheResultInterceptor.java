@@ -16,8 +16,6 @@
 
 package org.springframework.cache.jcache.interceptor;
 
-import javax.cache.annotation.CacheResult;
-
 import org.springframework.cache.Cache;
 import org.springframework.cache.interceptor.CacheErrorHandler;
 import org.springframework.cache.interceptor.CacheOperationInvocationContext;
@@ -27,6 +25,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ExceptionTypeFilter;
 import org.springframework.util.SerializationUtils;
+
+import javax.cache.annotation.CacheResult;
 
 /**
  * Intercept methods annotated with {@link CacheResult}.
@@ -41,6 +41,65 @@ class CacheResultInterceptor extends AbstractKeyCacheInterceptor<CacheResultOper
 		super(errorHandler);
 	}
 
+	/**
+	 * Rewrite the call stack of the specified {@code exception} so that it matches
+	 * the current call stack up to (included) the specified method invocation.
+	 * <p>Clone the specified exception. If the exception is not {@code serializable},
+	 * the original exception is returned. If no common ancestor can be found, returns
+	 * the original exception.
+	 * <p>Used to make sure that a cached exception has a valid invocation context.
+	 *
+	 * @param exception  the exception to merge with the current call stack
+	 * @param className  the class name of the common ancestor
+	 * @param methodName the method name of the common ancestor
+	 * @return a clone exception with a rewritten call stack composed of the current call
+	 * stack up to (included) the common ancestor specified by the {@code className} and
+	 * {@code methodName} arguments, followed by stack trace elements of the specified
+	 * {@code exception} after the common ancestor.
+	 */
+	private static CacheOperationInvoker.ThrowableWrapper rewriteCallStack(
+			Throwable exception, String className, String methodName) {
+
+		Throwable clone = cloneException(exception);
+		if (clone == null) {
+			return new CacheOperationInvoker.ThrowableWrapper(exception);
+		}
+
+		StackTraceElement[] callStack = new Exception().getStackTrace();
+		StackTraceElement[] cachedCallStack = exception.getStackTrace();
+
+		int index = findCommonAncestorIndex(callStack, className, methodName);
+		int cachedIndex = findCommonAncestorIndex(cachedCallStack, className, methodName);
+		if (index == -1 || cachedIndex == -1) {
+			return new CacheOperationInvoker.ThrowableWrapper(exception); // Cannot find common ancestor
+		}
+		StackTraceElement[] result = new StackTraceElement[cachedIndex + callStack.length - index];
+		System.arraycopy(cachedCallStack, 0, result, 0, cachedIndex);
+		System.arraycopy(callStack, index, result, cachedIndex, callStack.length - index);
+
+		clone.setStackTrace(result);
+		return new CacheOperationInvoker.ThrowableWrapper(clone);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Nullable
+	private static <T extends Throwable> T cloneException(T exception) {
+		try {
+			return (T) SerializationUtils.deserialize(SerializationUtils.serialize(exception));
+		} catch (Exception ex) {
+			return null;  // exception parameter cannot be cloned
+		}
+	}
+
+	private static int findCommonAncestorIndex(StackTraceElement[] callStack, String className, String methodName) {
+		for (int i = 0; i < callStack.length; i++) {
+			StackTraceElement element = callStack[i];
+			if (className.equals(element.getClassName()) && methodName.equals(element.getMethodName())) {
+				return i;
+			}
+		}
+		return -1;
+	}
 
 	@Override
 	@Nullable
@@ -65,8 +124,7 @@ class CacheResultInterceptor extends AbstractKeyCacheInterceptor<CacheResultOper
 			Object invocationResult = invoker.invoke();
 			doPut(cache, cacheKey, invocationResult);
 			return invocationResult;
-		}
-		catch (CacheOperationInvoker.ThrowableWrapper ex) {
+		} catch (CacheOperationInvoker.ThrowableWrapper ex) {
 			Throwable original = ex.getOriginal();
 			cacheException(exceptionCache, operation.getExceptionTypeFilter(), cacheKey, original);
 			throw ex;
@@ -104,67 +162,6 @@ class CacheResultInterceptor extends AbstractKeyCacheInterceptor<CacheResultOper
 			return extractFrom(context.getOperation().getExceptionCacheResolver().resolveCaches(context));
 		}
 		return null;
-	}
-
-
-	/**
-	 * Rewrite the call stack of the specified {@code exception} so that it matches
-	 * the current call stack up to (included) the specified method invocation.
-	 * <p>Clone the specified exception. If the exception is not {@code serializable},
-	 * the original exception is returned. If no common ancestor can be found, returns
-	 * the original exception.
-	 * <p>Used to make sure that a cached exception has a valid invocation context.
-	 * @param exception the exception to merge with the current call stack
-	 * @param className the class name of the common ancestor
-	 * @param methodName the method name of the common ancestor
-	 * @return a clone exception with a rewritten call stack composed of the current call
-	 * stack up to (included) the common ancestor specified by the {@code className} and
-	 * {@code methodName} arguments, followed by stack trace elements of the specified
-	 * {@code exception} after the common ancestor.
-	 */
-	private static CacheOperationInvoker.ThrowableWrapper rewriteCallStack(
-			Throwable exception, String className, String methodName) {
-
-		Throwable clone = cloneException(exception);
-		if (clone == null) {
-			return new CacheOperationInvoker.ThrowableWrapper(exception);
-		}
-
-		StackTraceElement[] callStack = new Exception().getStackTrace();
-		StackTraceElement[] cachedCallStack = exception.getStackTrace();
-
-		int index = findCommonAncestorIndex(callStack, className, methodName);
-		int cachedIndex = findCommonAncestorIndex(cachedCallStack, className, methodName);
-		if (index == -1 || cachedIndex == -1) {
-			return new CacheOperationInvoker.ThrowableWrapper(exception); // Cannot find common ancestor
-		}
-		StackTraceElement[] result = new StackTraceElement[cachedIndex + callStack.length - index];
-		System.arraycopy(cachedCallStack, 0, result, 0, cachedIndex);
-		System.arraycopy(callStack, index, result, cachedIndex, callStack.length - index);
-
-		clone.setStackTrace(result);
-		return new CacheOperationInvoker.ThrowableWrapper(clone);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Nullable
-	private static <T extends Throwable> T cloneException(T exception) {
-		try {
-			return (T) SerializationUtils.deserialize(SerializationUtils.serialize(exception));
-		}
-		catch (Exception ex) {
-			return null;  // exception parameter cannot be cloned
-		}
-	}
-
-	private static int findCommonAncestorIndex(StackTraceElement[] callStack, String className, String methodName) {
-		for (int i = 0; i < callStack.length; i++) {
-			StackTraceElement element = callStack[i];
-			if (className.equals(element.getClassName()) && methodName.equals(element.getMethodName())) {
-				return i;
-			}
-		}
-		return -1;
 	}
 
 }

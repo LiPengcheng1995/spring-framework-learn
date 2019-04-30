@@ -16,14 +16,14 @@
 
 package org.springframework.web.servlet.support;
 
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.FlashMap;
 import org.springframework.web.util.WebUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.List;
 
 /**
  * Store and retrieve {@link FlashMap} instances to and from the HTTP session.
@@ -58,6 +58,7 @@ public class SessionFlashMapManager extends AbstractFlashMapManager {
 
 	/**
 	 * Exposes the best available session mutex.
+	 *
 	 * @see org.springframework.web.util.WebUtils#getSessionMutex
 	 * @see org.springframework.web.util.HttpSessionMutexListener
 	 */

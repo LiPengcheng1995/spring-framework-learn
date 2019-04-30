@@ -16,12 +16,7 @@
 
 package org.springframework.web.socket.client;
 
-import java.net.URI;
-import java.util.Arrays;
-import java.util.List;
-
 import org.junit.Test;
-
 import org.springframework.context.Lifecycle;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.concurrent.ListenableFuture;
@@ -33,6 +28,10 @@ import org.springframework.web.socket.handler.LoggingWebSocketHandlerDecorator;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.web.socket.handler.WebSocketHandlerDecorator;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -51,7 +50,7 @@ public class WebSocketConnectionManagerTests {
 		TestLifecycleWebSocketClient client = new TestLifecycleWebSocketClient(false);
 		WebSocketHandler handler = new TextWebSocketHandler();
 
-		WebSocketConnectionManager manager = new WebSocketConnectionManager(client, handler , "/path/{id}", "123");
+		WebSocketConnectionManager manager = new WebSocketConnectionManager(client, handler, "/path/{id}", "123");
 		manager.setSubProtocols(subprotocols);
 		manager.openConnection();
 
@@ -71,7 +70,7 @@ public class WebSocketConnectionManagerTests {
 	public void clientLifecycle() throws Exception {
 		TestLifecycleWebSocketClient client = new TestLifecycleWebSocketClient(false);
 		WebSocketHandler handler = new TextWebSocketHandler();
-		WebSocketConnectionManager manager = new WebSocketConnectionManager(client, handler , "/a");
+		WebSocketConnectionManager manager = new WebSocketConnectionManager(client, handler, "/a");
 
 		manager.startInternal();
 		assertTrue(client.isRunning());
@@ -113,7 +112,7 @@ public class WebSocketConnectionManagerTests {
 
 		@Override
 		public ListenableFuture<WebSocketSession> doHandshake(WebSocketHandler handler,
-				String uriTemplate, Object... uriVars) {
+															  String uriTemplate, Object... uriVars) {
 
 			URI uri = UriComponentsBuilder.fromUriString(uriTemplate).buildAndExpand(uriVars).encode().toUri();
 			return doHandshake(handler, null, uri);
@@ -121,7 +120,7 @@ public class WebSocketConnectionManagerTests {
 
 		@Override
 		public ListenableFuture<WebSocketSession> doHandshake(WebSocketHandler handler,
-				WebSocketHttpHeaders headers, URI uri) {
+															  WebSocketHttpHeaders headers, URI uri) {
 
 			this.webSocketHandler = handler;
 			this.headers = headers;

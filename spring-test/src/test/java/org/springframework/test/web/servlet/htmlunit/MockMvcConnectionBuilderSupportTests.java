@@ -16,19 +16,13 @@
 
 package org.springframework.test.web.servlet.htmlunit;
 
-import java.io.IOException;
-import java.net.URL;
-import javax.servlet.http.HttpServletRequest;
-
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebConnection;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
@@ -40,6 +34,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.net.URL;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -72,18 +70,21 @@ public class MockMvcConnectionBuilderSupportTests {
 	@Before
 	public void setup() {
 		when(this.client.getWebConnection()).thenReturn(mock(WebConnection.class));
-		this.builder = new MockMvcWebConnectionBuilderSupport(this.wac) {};
+		this.builder = new MockMvcWebConnectionBuilderSupport(this.wac) {
+		};
 	}
 
 
 	@Test(expected = IllegalArgumentException.class)
 	public void constructorMockMvcNull() {
-		new MockMvcWebConnectionBuilderSupport((MockMvc) null){};
+		new MockMvcWebConnectionBuilderSupport((MockMvc) null) {
+		};
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void constructorContextNull() {
-		new MockMvcWebConnectionBuilderSupport((WebApplicationContext) null){};
+		new MockMvcWebConnectionBuilderSupport((WebApplicationContext) null) {
+		};
 	}
 
 	@Test
@@ -97,7 +98,8 @@ public class MockMvcConnectionBuilderSupportTests {
 	@Test
 	public void mockMvc() throws Exception {
 		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
-		WebConnection conn = new MockMvcWebConnectionBuilderSupport(mockMvc) {}.createConnection(this.client);
+		WebConnection conn = new MockMvcWebConnectionBuilderSupport(mockMvc) {
+		}.createConnection(this.client);
 
 		assertMockMvcUsed(conn, "http://localhost/");
 		assertMockMvcNotUsed(conn, "https://example.com/");

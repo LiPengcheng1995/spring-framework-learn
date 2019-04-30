@@ -16,19 +16,19 @@
 
 package org.springframework.format.datetime.standard;
 
+import org.springframework.format.Formatter;
+
 import java.text.ParseException;
 import java.time.MonthDay;
 import java.util.Locale;
-
-import org.springframework.format.Formatter;
 
 /**
  * {@link Formatter} implementation for a JSR-310 {@link MonthDay},
  * following JSR-310's parsing rules for a MonthDay.
  *
  * @author Juergen Hoeller
- * @since 4.2.4
  * @see MonthDay#parse
+ * @since 4.2.4
  */
 class MonthDayFormatter implements Formatter<MonthDay> {
 

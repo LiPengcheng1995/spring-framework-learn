@@ -16,17 +16,12 @@
 
 package org.springframework.web.reactive.accept;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
 import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
+
+import java.util.*;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Builder for a composite {@link RequestedContentTypeResolver} that delegates
@@ -68,6 +63,7 @@ public class RequestedContentTypeResolverBuilder {
 
 	/**
 	 * Add resolver that returns a fixed set of media types.
+	 *
 	 * @param mediaTypes the media types to use
 	 */
 	public void fixedResolver(MediaType... mediaTypes) {
@@ -76,6 +72,7 @@ public class RequestedContentTypeResolverBuilder {
 
 	/**
 	 * Add a custom resolver.
+	 *
 	 * @param resolver the resolver to add
 	 */
 	public void resolver(RequestedContentTypeResolver resolver) {
@@ -117,7 +114,8 @@ public class RequestedContentTypeResolverBuilder {
 		/**
 		 * Configure a mapping between a lookup key (extracted from a query
 		 * parameter value) and a corresponding {@code MediaType}.
-		 * @param key the lookup key
+		 *
+		 * @param key       the lookup key
 		 * @param mediaType the MediaType for that key
 		 */
 		public ParameterResolverConfigurer mediaType(String key, MediaType mediaType) {
@@ -127,6 +125,7 @@ public class RequestedContentTypeResolverBuilder {
 
 		/**
 		 * Map-based variant of {@link #mediaType(String, MediaType)}.
+		 *
 		 * @param mediaTypes the mappings to copy
 		 */
 		public ParameterResolverConfigurer mediaType(Map<String, MediaType> mediaTypes) {

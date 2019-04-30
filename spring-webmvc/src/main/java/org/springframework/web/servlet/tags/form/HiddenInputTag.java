@@ -75,6 +75,12 @@ public class HiddenInputTag extends AbstractHtmlElementTag {
 
 	private boolean disabled;
 
+	/**
+	 * Get the value of the '{@code disabled}' attribute.
+	 */
+	public boolean isDisabled() {
+		return this.disabled;
+	}
 
 	/**
 	 * Set the value of the '{@code disabled}' attribute.
@@ -83,14 +89,6 @@ public class HiddenInputTag extends AbstractHtmlElementTag {
 	public void setDisabled(boolean disabled) {
 		this.disabled = disabled;
 	}
-
-	/**
-	 * Get the value of the '{@code disabled}' attribute.
-	 */
-	public boolean isDisabled() {
-		return this.disabled;
-	}
-
 
 	/**
 	 * Flags "type" as an illegal dynamic attribute.
@@ -103,6 +101,7 @@ public class HiddenInputTag extends AbstractHtmlElementTag {
 	/**
 	 * Writes the HTML '{@code input}' tag to the supplied {@link TagWriter} including the
 	 * databound value.
+	 *
 	 * @see #writeDefaultAttributes(TagWriter)
 	 * @see #getBoundValue()
 	 */

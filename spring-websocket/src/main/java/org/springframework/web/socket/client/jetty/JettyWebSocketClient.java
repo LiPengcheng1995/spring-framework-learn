@@ -16,17 +16,9 @@
 
 package org.springframework.web.socket.client.jetty;
 
-import java.net.URI;
-import java.security.Principal;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-
 import org.springframework.context.Lifecycle;
 import org.springframework.core.task.AsyncListenableTaskExecutor;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
@@ -44,6 +36,13 @@ import org.springframework.web.socket.adapter.jetty.WebSocketToJettyExtensionCon
 import org.springframework.web.socket.client.AbstractWebSocketClient;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
+import java.security.Principal;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 /**
  * Initiates WebSocket requests to a WebSocket server programmatically
@@ -81,6 +80,13 @@ public class JettyWebSocketClient extends AbstractWebSocketClient implements Lif
 		this.client = client;
 	}
 
+	/**
+	 * Return the configured {@link TaskExecutor}.
+	 */
+	@Nullable
+	public AsyncListenableTaskExecutor getTaskExecutor() {
+		return this.taskExecutor;
+	}
 
 	/**
 	 * Set an {@link AsyncListenableTaskExecutor} to use when opening connections.
@@ -92,21 +98,11 @@ public class JettyWebSocketClient extends AbstractWebSocketClient implements Lif
 		this.taskExecutor = taskExecutor;
 	}
 
-	/**
-	 * Return the configured {@link TaskExecutor}.
-	 */
-	@Nullable
-	public AsyncListenableTaskExecutor getTaskExecutor() {
-		return this.taskExecutor;
-	}
-
-
 	@Override
 	public void start() {
 		try {
 			this.client.start();
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new IllegalStateException("Failed to start Jetty WebSocketClient", ex);
 		}
 	}
@@ -115,8 +111,7 @@ public class JettyWebSocketClient extends AbstractWebSocketClient implements Lif
 	public void stop() {
 		try {
 			this.client.stop();
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			logger.error("Failed to stop Jetty WebSocketClient", ex);
 		}
 	}
@@ -129,7 +124,7 @@ public class JettyWebSocketClient extends AbstractWebSocketClient implements Lif
 
 	@Override
 	public ListenableFuture<WebSocketSession> doHandshake(WebSocketHandler webSocketHandler,
-			String uriTemplate, Object... uriVars) {
+														  String uriTemplate, Object... uriVars) {
 
 		UriComponents uriComponents = UriComponentsBuilder.fromUriString(uriTemplate).buildAndExpand(uriVars).encode();
 		return doHandshake(webSocketHandler, null, uriComponents.toUri());
@@ -137,8 +132,8 @@ public class JettyWebSocketClient extends AbstractWebSocketClient implements Lif
 
 	@Override
 	public ListenableFuture<WebSocketSession> doHandshakeInternal(WebSocketHandler wsHandler,
-			HttpHeaders headers, final URI uri, List<String> protocols,
-			List<WebSocketExtension> extensions,  Map<String, Object> attributes) {
+																  HttpHeaders headers, final URI uri, List<String> protocols,
+																  List<WebSocketExtension> extensions, Map<String, Object> attributes) {
 
 		final ClientUpgradeRequest request = new ClientUpgradeRequest();
 		request.setSubProtocols(protocols);
@@ -161,8 +156,7 @@ public class JettyWebSocketClient extends AbstractWebSocketClient implements Lif
 
 		if (this.taskExecutor != null) {
 			return this.taskExecutor.submitListenable(connectTask);
-		}
-		else {
+		} else {
 			ListenableFutureTask<WebSocketSession> task = new ListenableFutureTask<>(connectTask);
 			task.run();
 			return task;
@@ -171,7 +165,7 @@ public class JettyWebSocketClient extends AbstractWebSocketClient implements Lif
 
 	/**
 	 * @return the user to make available through {@link WebSocketSession#getPrincipal()};
-	 * 	by default this method returns {@code null}
+	 * by default this method returns {@code null}
 	 */
 	@Nullable
 	protected Principal getUser() {

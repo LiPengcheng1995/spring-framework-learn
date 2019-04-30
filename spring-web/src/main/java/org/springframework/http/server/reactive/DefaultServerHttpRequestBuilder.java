@@ -16,14 +16,6 @@
 
 package org.springframework.http.server.reactive;
 
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.LinkedList;
-import java.util.function.Consumer;
-
-import reactor.core.publisher.Flux;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpHeaders;
@@ -33,6 +25,13 @@ import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
+import reactor.core.publisher.Flux;
+
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.LinkedList;
+import java.util.function.Consumer;
 
 /**
  * Package-private default implementation of {@link ServerHttpRequest.Builder}.
@@ -43,26 +42,18 @@ import org.springframework.util.StringUtils;
  */
 class DefaultServerHttpRequestBuilder implements ServerHttpRequest.Builder {
 
-	private URI uri;
-
-	private HttpHeaders httpHeaders;
-
-	private String httpMethodValue;
-
 	private final MultiValueMap<String, HttpCookie> cookies;
-
+	private final ServerHttpRequest originalRequest;
+	private URI uri;
+	private HttpHeaders httpHeaders;
+	private String httpMethodValue;
 	@Nullable
 	private String uriPath;
-
 	@Nullable
 	private String contextPath;
-
 	@Nullable
 	private SslInfo sslInfo;
-
 	private Flux<DataBuffer> body;
-
-	private final ServerHttpRequest originalRequest;
 
 
 	public DefaultServerHttpRequestBuilder(ServerHttpRequest original) {
@@ -81,7 +72,7 @@ class DefaultServerHttpRequestBuilder implements ServerHttpRequest.Builder {
 		this.originalRequest = original;
 	}
 
-	private static <K, V> void copyMultiValueMap(MultiValueMap<K,V> source, MultiValueMap<K,V> target) {
+	private static <K, V> void copyMultiValueMap(MultiValueMap<K, V> source, MultiValueMap<K, V> target) {
 		source.forEach((key, value) -> target.put(key, new LinkedList<>(value)));
 	}
 
@@ -168,8 +159,7 @@ class DefaultServerHttpRequestBuilder implements ServerHttpRequest.Builder {
 		}
 		try {
 			return new URI(uriBuilder.toString());
-		}
-		catch (URISyntaxException ex) {
+		} catch (URISyntaxException ex) {
 			throw new IllegalStateException("Invalid URI path: \"" + this.uriPath + "\"", ex);
 		}
 	}
@@ -193,8 +183,8 @@ class DefaultServerHttpRequestBuilder implements ServerHttpRequest.Builder {
 
 
 		public MutatedServerHttpRequest(URI uri, @Nullable String contextPath,
-				HttpHeaders headers, String methodValue, MultiValueMap<String, HttpCookie> cookies,
-				@Nullable SslInfo sslInfo, Flux<DataBuffer> body, ServerHttpRequest originalRequest) {
+										HttpHeaders headers, String methodValue, MultiValueMap<String, HttpCookie> cookies,
+										@Nullable SslInfo sslInfo, Flux<DataBuffer> body, ServerHttpRequest originalRequest) {
 
 			super(uri, contextPath, headers);
 			this.methodValue = methodValue;

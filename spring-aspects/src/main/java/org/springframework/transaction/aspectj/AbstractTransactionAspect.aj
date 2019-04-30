@@ -73,10 +73,10 @@ public abstract aspect AbstractTransactionAspect extends TransactionAspectSuppor
                      * despite AspectJ around advice supporting specifically declared exceptions only.
                      */
 
-    @Override
-    public void destroy() {
-        clearTransactionManagerCache(); // An aspect is basically a singleton
-    });
+            @Override
+            public void destroy () {
+                clearTransactionManagerCache(); // An aspect is basically a singleton
+            });
         } catch (RuntimeException | Error ex) {
             throw ex;
         } catch (Throwable thr) {
@@ -92,17 +92,17 @@ public abstract aspect AbstractTransactionAspect extends TransactionAspectSuppor
      */
     protected abstract pointcut transactionalMethodExecution(Object txObject);
 
-private static class Rethrower {
+    private static class Rethrower {
 
-                public static void rethrow(final Throwable exception) {
-                    class CheckedExceptionRethrower<T extends Throwable> {
-                        @SuppressWarnings("unchecked")
-                        private void rethrow(Throwable exception) throws T {
-                            throw (T) exception;
-                        }
-                    }
-                    new CheckedExceptionRethrower<RuntimeException>().rethrow(exception);
+        public static void rethrow(final Throwable exception) {
+            class CheckedExceptionRethrower<T extends Throwable> {
+                @SuppressWarnings("unchecked")
+                private void rethrow(Throwable exception) throws T {
+                    throw (T) exception;
                 }
             }
+            new CheckedExceptionRethrower<RuntimeException>().rethrow(exception);
+        }
+    }
 
 }

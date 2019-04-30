@@ -16,16 +16,15 @@
 
 package org.springframework.test.context.junit4.spr16716;
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runners.model.Statement;
 import org.mockito.stubbing.Answer;
-
 import org.springframework.test.context.junit4.statements.SpringFailOnTimeout;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.mockito.Mockito.*;
 
@@ -38,11 +37,9 @@ import static org.mockito.Mockito.*;
  */
 public class SpringFailOnTimeoutTests {
 
-	private Statement statement = mock(Statement.class);
-
 	@Rule
 	public final ExpectedException exception = ExpectedException.none();
-
+	private Statement statement = mock(Statement.class);
 
 	@Test
 	public void nullNextStatement() throws Throwable {

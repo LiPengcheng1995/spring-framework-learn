@@ -16,27 +16,18 @@
 
 package org.springframework.test.context.support;
 
+import org.mockito.Mockito;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.*;
+import org.springframework.test.context.web.WebAppConfiguration;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Collections;
 import java.util.Set;
-
-import org.mockito.Mockito;
-
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.BootstrapContext;
-import org.springframework.test.context.BootstrapTestUtils;
-import org.springframework.test.context.CacheAwareContextLoaderDelegate;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.ContextConfigurationAttributes;
-import org.springframework.test.context.ContextLoader;
-import org.springframework.test.context.MergedContextConfiguration;
-import org.springframework.test.context.TestContextBootstrapper;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.junit.Assert.*;
 
@@ -54,8 +45,12 @@ abstract class AbstractContextConfigurationUtilsTests {
 	static final String[] EMPTY_STRING_ARRAY = new String[0];
 
 	static final Set<Class<? extends ApplicationContextInitializer<?>>>
-			EMPTY_INITIALIZER_CLASSES = Collections.<Class<? extends ApplicationContextInitializer<?>>> emptySet();
+			EMPTY_INITIALIZER_CLASSES = Collections.<Class<? extends ApplicationContextInitializer<?>>>emptySet();
 
+	@SafeVarargs
+	static <T> T[] array(T... objects) {
+		return objects;
+	}
 
 	MergedContextConfiguration buildMergedContextConfiguration(Class<?> testClass) {
 		CacheAwareContextLoaderDelegate cacheAwareContextLoaderDelegate = Mockito.mock(CacheAwareContextLoaderDelegate.class);
@@ -65,8 +60,8 @@ abstract class AbstractContextConfigurationUtilsTests {
 	}
 
 	void assertAttributes(ContextConfigurationAttributes attributes, Class<?> expectedDeclaringClass,
-			String[] expectedLocations, Class<?>[] expectedClasses,
-			Class<? extends ContextLoader> expectedContextLoaderClass, boolean expectedInheritLocations) {
+						  String[] expectedLocations, Class<?>[] expectedClasses,
+						  Class<? extends ContextLoader> expectedContextLoaderClass, boolean expectedInheritLocations) {
 
 		assertEquals("declaring class", expectedDeclaringClass, attributes.getDeclaringClass());
 		assertArrayEquals("locations", expectedLocations, attributes.getLocations());
@@ -76,8 +71,8 @@ abstract class AbstractContextConfigurationUtilsTests {
 	}
 
 	void assertMergedConfig(MergedContextConfiguration mergedConfig, Class<?> expectedTestClass,
-			String[] expectedLocations, Class<?>[] expectedClasses,
-			Class<? extends ContextLoader> expectedContextLoaderClass) {
+							String[] expectedLocations, Class<?>[] expectedClasses,
+							Class<? extends ContextLoader> expectedContextLoaderClass) {
 
 		assertMergedConfig(mergedConfig, expectedTestClass, expectedLocations, expectedClasses,
 				EMPTY_INITIALIZER_CLASSES, expectedContextLoaderClass);
@@ -100,35 +95,13 @@ abstract class AbstractContextConfigurationUtilsTests {
 		assertNotNull(mergedConfig.getActiveProfiles());
 		if (expectedContextLoaderClass == null) {
 			assertNull(mergedConfig.getContextLoader());
-		}
-		else {
+		} else {
 			assertEquals(expectedContextLoaderClass, mergedConfig.getContextLoader().getClass());
 		}
 		assertNotNull(mergedConfig.getContextInitializerClasses());
 		assertEquals(expectedInitializerClasses, mergedConfig.getContextInitializerClasses());
 	}
 
-	@SafeVarargs
-	static <T> T[] array(T... objects) {
-		return objects;
-	}
-
-
-	static class Enigma {
-	}
-
-	@ContextConfiguration
-	@ActiveProfiles
-	static class BareAnnotations {
-	}
-
-	@Configuration
-	static class FooConfig {
-	}
-
-	@Configuration
-	static class BarConfig {
-	}
 
 	@ContextConfiguration("/foo.xml")
 	@ActiveProfiles(profiles = "foo")
@@ -153,6 +126,22 @@ abstract class AbstractContextConfigurationUtilsTests {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.TYPE)
 	public static @interface MetaLocationsBarConfig {
+	}
+
+	static class Enigma {
+	}
+
+	@ContextConfiguration
+	@ActiveProfiles
+	static class BareAnnotations {
+	}
+
+	@Configuration
+	static class FooConfig {
+	}
+
+	@Configuration
+	static class BarConfig {
 	}
 
 	@MetaLocationsFooConfig

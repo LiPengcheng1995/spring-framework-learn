@@ -27,11 +27,7 @@ import org.xmlunit.matchers.CompareMatcher;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -42,6 +38,11 @@ import static org.junit.Assert.assertThat;
 public class AtomFeedViewTests {
 
 	private AbstractAtomFeedView view;
+
+	private static CompareMatcher isSimilarTo(final String content) {
+		return CompareMatcher.isSimilarTo(content)
+				.ignoreWhitespace();
+	}
 
 	@Before
 	public void createView() throws Exception {
@@ -65,11 +66,6 @@ public class AtomFeedViewTests {
 		assertThat(response.getContentAsString(), isSimilarTo(expected));
 	}
 
-	private static CompareMatcher isSimilarTo(final String content) {
-		return CompareMatcher.isSimilarTo(content)
-				.ignoreWhitespace();
-	}
-
 	private static class MyAtomFeedView extends AbstractAtomFeedView {
 
 		@Override
@@ -81,7 +77,7 @@ public class AtomFeedViewTests {
 		protected List<Entry> buildFeedEntries(Map model, HttpServletRequest request, HttpServletResponse response)
 				throws Exception {
 			List<Entry> entries = new ArrayList<>();
-			for (Iterator iterator = model.keySet().iterator(); iterator.hasNext();) {
+			for (Iterator iterator = model.keySet().iterator(); iterator.hasNext(); ) {
 				String name = (String) iterator.next();
 				Entry entry = new Entry();
 				entry.setTitle(name);

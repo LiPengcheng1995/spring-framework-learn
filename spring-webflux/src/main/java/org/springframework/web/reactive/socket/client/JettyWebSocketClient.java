@@ -16,16 +16,10 @@
 
 package org.springframework.web.reactive.socket.client;
 
-import java.net.URI;
-import java.util.List;
-
 import org.eclipse.jetty.websocket.api.UpgradeRequest;
 import org.eclipse.jetty.websocket.api.UpgradeResponse;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.io.UpgradeListener;
-import reactor.core.publisher.Mono;
-import reactor.core.publisher.MonoProcessor;
-
 import org.springframework.context.Lifecycle;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
@@ -34,6 +28,11 @@ import org.springframework.web.reactive.socket.HandshakeInfo;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.adapter.JettyWebSocketHandlerAdapter;
 import org.springframework.web.reactive.socket.adapter.JettyWebSocketSession;
+import reactor.core.publisher.Mono;
+import reactor.core.publisher.MonoProcessor;
+
+import java.net.URI;
+import java.util.List;
 
 /**
  * A {@link WebSocketClient} implementation for use with Jetty
@@ -53,12 +52,9 @@ public class JettyWebSocketClient extends WebSocketClientSupport implements WebS
 	private final org.eclipse.jetty.websocket.client.WebSocketClient jettyClient;
 
 	private final boolean externallyManaged;
-
-	private volatile boolean running = false;
-
 	private final Object lifecycleMonitor = new Object();
-
 	private final DataBufferFactory bufferFactory = new DefaultDataBufferFactory();
+	private volatile boolean running = false;
 
 
 	/**
@@ -107,8 +103,7 @@ public class JettyWebSocketClient extends WebSocketClientSupport implements WebS
 				try {
 					this.running = true;
 					this.jettyClient.start();
-				}
-				catch (Exception ex) {
+				} catch (Exception ex) {
 					throw new IllegalStateException("Failed to start Jetty WebSocketClient", ex);
 				}
 			}
@@ -125,8 +120,7 @@ public class JettyWebSocketClient extends WebSocketClientSupport implements WebS
 				try {
 					this.running = false;
 					this.jettyClient.stop();
-				}
-				catch (Exception ex) {
+				} catch (Exception ex) {
 					throw new IllegalStateException("Error stopping Jetty WebSocketClient", ex);
 				}
 			}

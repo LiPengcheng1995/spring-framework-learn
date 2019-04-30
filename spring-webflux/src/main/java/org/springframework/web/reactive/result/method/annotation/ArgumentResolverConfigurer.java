@@ -15,12 +15,12 @@
  */
 package org.springframework.web.reactive.result.method.annotation;
 
+import org.springframework.util.Assert;
+import org.springframework.web.reactive.result.method.HandlerMethodArgumentResolver;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import org.springframework.util.Assert;
-import org.springframework.web.reactive.result.method.HandlerMethodArgumentResolver;
 
 /**
  * Helps to configure resolvers for Controller method arguments.
@@ -35,6 +35,7 @@ public class ArgumentResolverConfigurer {
 
 	/**
 	 * Configure resolvers for custom controller method arguments.
+	 *
 	 * @param resolver the resolver(s) to add
 	 */
 	public void addCustomResolver(HandlerMethodArgumentResolver... resolver) {

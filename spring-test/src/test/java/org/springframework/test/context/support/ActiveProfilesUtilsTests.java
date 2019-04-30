@@ -16,6 +16,12 @@
 
 package org.springframework.test.context.support;
 
+import org.junit.Test;
+import org.springframework.core.annotation.AnnotationConfigurationException;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ActiveProfilesResolver;
+import org.springframework.util.StringUtils;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -24,15 +30,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
-
-import org.springframework.core.annotation.AnnotationConfigurationException;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ActiveProfilesResolver;
-import org.springframework.util.StringUtils;
-
-import static org.junit.Assert.*;
-import static org.springframework.test.context.support.ActiveProfilesUtils.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.springframework.test.context.support.ActiveProfilesUtils.resolveActiveProfiles;
 
 /**
  * Unit tests for {@link ActiveProfilesUtils} involving resolution of active bean
@@ -212,6 +211,7 @@ public class ActiveProfilesUtilsTests extends AbstractContextConfigurationUtilsT
 	/**
 	 * This test verifies that the actual test class, not the composed annotation,
 	 * is passed to the resolver.
+	 *
 	 * @since 4.0.3
 	 */
 	@Test
@@ -222,6 +222,7 @@ public class ActiveProfilesUtilsTests extends AbstractContextConfigurationUtilsT
 
 	/**
 	 * This test verifies that {@link DefaultActiveProfilesResolver} can be declared explicitly.
+	 *
 	 * @since 4.1.5
 	 */
 	@Test
@@ -231,6 +232,7 @@ public class ActiveProfilesUtilsTests extends AbstractContextConfigurationUtilsT
 
 	/**
 	 * This test verifies that {@link DefaultActiveProfilesResolver} can be extended.
+	 *
 	 * @since 4.1.5
 	 */
 	@Test
@@ -241,23 +243,7 @@ public class ActiveProfilesUtilsTests extends AbstractContextConfigurationUtilsT
 
 	// -------------------------------------------------------------------------
 
-	@ActiveProfiles({ "    ", "\t" })
-	private static class EmptyProfiles {
-	}
-
-	@ActiveProfiles({ "foo", "bar", "  foo", "bar  ", "baz" })
-	private static class DuplicatedProfiles {
-	}
-
-	@ActiveProfiles({ "cat", "dog", "  foo", "bar  ", "cat" })
-	private static class ExtendedDuplicatedProfiles extends DuplicatedProfiles {
-	}
-
-	@ActiveProfiles(profiles = { "dog", "cat" }, inheritProfiles = false)
-	private static class Animals extends LocationsBar {
-	}
-
-	@ActiveProfiles(profiles = { "dog", "cat" }, inheritProfiles = false)
+	@ActiveProfiles(profiles = {"dog", "cat"}, inheritProfiles = false)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.TYPE)
 	private static @interface MetaAnimalsConfig {
@@ -267,6 +253,22 @@ public class ActiveProfilesUtilsTests extends AbstractContextConfigurationUtilsT
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.TYPE)
 	private static @interface MetaResolverConfig {
+	}
+
+	@ActiveProfiles({"    ", "\t"})
+	private static class EmptyProfiles {
+	}
+
+	@ActiveProfiles({"foo", "bar", "  foo", "bar  ", "baz"})
+	private static class DuplicatedProfiles {
+	}
+
+	@ActiveProfiles({"cat", "dog", "  foo", "bar  ", "cat"})
+	private static class ExtendedDuplicatedProfiles extends DuplicatedProfiles {
+	}
+
+	@ActiveProfiles(profiles = {"dog", "cat"}, inheritProfiles = false)
+	private static class Animals extends LocationsBar {
 	}
 
 	@MetaAnimalsConfig
@@ -332,7 +334,7 @@ public class ActiveProfilesUtilsTests extends AbstractContextConfigurationUtilsT
 
 		@Override
 		public String[] resolve(Class<?> testClass) {
-			return new String[] { "foo" };
+			return new String[]{"foo"};
 		}
 	}
 
@@ -340,7 +342,7 @@ public class ActiveProfilesUtilsTests extends AbstractContextConfigurationUtilsT
 
 		@Override
 		public String[] resolve(Class<?> testClass) {
-			return new String[] { "bar" };
+			return new String[]{"bar"};
 		}
 	}
 
@@ -368,8 +370,8 @@ public class ActiveProfilesUtilsTests extends AbstractContextConfigurationUtilsT
 
 		@Override
 		public String[] resolve(Class<?> testClass) {
-			return testClass.isAnnotation() ? new String[] { "@" + testClass.getSimpleName() }
-					: new String[] { testClass.getSimpleName() };
+			return testClass.isAnnotation() ? new String[]{"@" + testClass.getSimpleName()}
+					: new String[]{testClass.getSimpleName()};
 		}
 	}
 

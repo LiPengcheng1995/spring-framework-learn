@@ -16,14 +16,13 @@
 
 package org.springframework.test.context.testng;
 
-import org.testng.annotations.Test;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestContextManager;
+import org.testng.annotations.Test;
 
-import static org.springframework.test.transaction.TransactionTestUtils.*;
+import static org.springframework.test.transaction.TransactionTestUtils.assertInTransaction;
 import static org.testng.Assert.*;
 
 /**
@@ -55,9 +54,9 @@ public class DirtiesContextTransactionalTestNGSpringContextTests extends Abstrac
 	private void performCommonAssertions() {
 		assertInTransaction(true);
 		assertNotNull(super.applicationContext,
-			"The application context should have been set due to ApplicationContextAware semantics.");
+				"The application context should have been set due to ApplicationContextAware semantics.");
 		assertNotNull(super.jdbcTemplate,
-			"The JdbcTemplate should have been created in setDataSource() via DI for the DataSource.");
+				"The JdbcTemplate should have been created in setDataSource() via DI for the DataSource.");
 	}
 
 	@Test
@@ -67,18 +66,18 @@ public class DirtiesContextTransactionalTestNGSpringContextTests extends Abstrac
 		this.dirtiedApplicationContext = super.applicationContext;
 	}
 
-	@Test(dependsOnMethods = { "dirtyContext" })
+	@Test(dependsOnMethods = {"dirtyContext"})
 	public void verifyContextWasDirtied() {
 		performCommonAssertions();
 		assertNotSame(super.applicationContext, this.dirtiedApplicationContext,
-			"The application context should have been 'dirtied'.");
+				"The application context should have been 'dirtied'.");
 		this.dirtiedApplicationContext = super.applicationContext;
 	}
 
-	@Test(dependsOnMethods = { "verifyContextWasDirtied" })
+	@Test(dependsOnMethods = {"verifyContextWasDirtied"})
 	public void verifyContextWasNotDirtied() {
 		assertSame(this.applicationContext, this.dirtiedApplicationContext,
-			"The application context should NOT have been 'dirtied'.");
+				"The application context should NOT have been 'dirtied'.");
 	}
 
 }

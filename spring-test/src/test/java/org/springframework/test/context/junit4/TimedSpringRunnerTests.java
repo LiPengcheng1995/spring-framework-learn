@@ -16,19 +16,18 @@
 
 package org.springframework.test.context.junit4;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runner.Runner;
 import org.junit.runners.JUnit4;
-
 import org.springframework.test.annotation.Timed;
 import org.springframework.test.context.TestExecutionListeners;
 
-import static org.springframework.test.context.junit4.JUnitTestingUtils.*;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+import static org.springframework.test.context.junit4.JUnitTestingUtils.runTestsAndAssertCounters;
 
 /**
  * Verifies proper handling of the following in conjunction with the
@@ -57,6 +56,17 @@ public class TimedSpringRunnerTests {
 		runTestsAndAssertCounters(getRunnerClass(), getTestCase(), 7, 5, 7, 0, 0);
 	}
 
+
+	@Timed(millis = 100)
+	@Retention(RetentionPolicy.RUNTIME)
+	private static @interface MetaTimed {
+	}
+
+	@Timed(millis = 1000)
+	@Retention(RetentionPolicy.RUNTIME)
+	private static @interface MetaTimedWithOverride {
+		long millis() default 1000;
+	}
 
 	@Ignore("TestCase classes are run manually by the enclosing test class")
 	@TestExecutionListeners({})
@@ -108,17 +118,6 @@ public class TimedSpringRunnerTests {
 		public void springAndJUnitTimeouts() {
 			/* no-op */
 		}
-	}
-
-	@Timed(millis = 100)
-	@Retention(RetentionPolicy.RUNTIME)
-	private static @interface MetaTimed {
-	}
-
-	@Timed(millis = 1000)
-	@Retention(RetentionPolicy.RUNTIME)
-	private static @interface MetaTimedWithOverride {
-		long millis() default 1000;
 	}
 
 }

@@ -16,13 +16,9 @@
 
 package org.springframework.web.reactive.config;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.context.annotation.Import;
+
+import java.lang.annotation.*;
 
 /**
  * Adding this annotation to an {@code @Configuration} class imports the Spring
@@ -51,7 +47,7 @@ import org.springframework.context.annotation.Import;
  * 	   &#064;Override
  * 	   public void configureMessageWriters(List&lt;HttpMessageWriter&lt;?&gt&gt messageWriters) {
  *         messageWriters.add(new MyHttpMessageWriter());
- * 	   }
+ *       }
  *
  * 	   // ...
  * }
@@ -71,10 +67,10 @@ import org.springframework.context.annotation.Import;
  *
  * @author Brian Clozel
  * @author Rossen Stoyanchev
- * @since 5.0
  * @see WebFluxConfigurer
  * @see WebFluxConfigurationSupport
  * @see DelegatingWebFluxConfiguration
+ * @since 5.0
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

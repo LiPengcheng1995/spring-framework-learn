@@ -16,25 +16,7 @@
 
 package org.springframework.web.reactive.function.client;
 
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpHeaders;
@@ -43,17 +25,26 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ClientHttpRequest;
 import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MimeType;
-import org.springframework.util.MultiValueMap;
+import org.springframework.util.*;
 import org.springframework.web.reactive.function.BodyExtractors;
 import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriBuilderFactory;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Default implementation of {@link WebClient}.
@@ -83,8 +74,8 @@ class DefaultWebClient implements WebClient {
 
 
 	DefaultWebClient(ExchangeFunction exchangeFunction, @Nullable UriBuilderFactory factory,
-			@Nullable HttpHeaders defaultHeaders, @Nullable MultiValueMap<String, String> defaultCookies,
-			DefaultWebClientBuilder builder) {
+					 @Nullable HttpHeaders defaultHeaders, @Nullable MultiValueMap<String, String> defaultCookies,
+					 DefaultWebClientBuilder builder) {
 
 		this.exchangeFunction = exchangeFunction;
 		this.uriBuilderFactory = (factory != null ? factory : new DefaultUriBuilderFactory());
@@ -144,24 +135,155 @@ class DefaultWebClient implements WebClient {
 		return new DefaultWebClientBuilder(this.builder);
 	}
 
+	private static class DefaultResponseSpec implements ResponseSpec {
+
+		private static final StatusHandler DEFAULT_STATUS_HANDLER =
+				new StatusHandler(HttpStatus::isError, DefaultResponseSpec::createResponseException);
+
+		private final Mono<ClientResponse> responseMono;
+
+		private List<StatusHandler> statusHandlers = new ArrayList<>(1);
+
+		DefaultResponseSpec(Mono<ClientResponse> responseMono) {
+			this.responseMono = responseMono;
+			this.statusHandlers.add(DEFAULT_STATUS_HANDLER);
+		}
+
+		private static Mono<WebClientResponseException> createResponseException(ClientResponse response) {
+
+			return DataBufferUtils.join(response.body(BodyExtractors.toDataBuffers()))
+					.map(dataBuffer -> {
+						byte[] bytes = new byte[dataBuffer.readableByteCount()];
+						dataBuffer.read(bytes);
+						DataBufferUtils.release(dataBuffer);
+						return bytes;
+					})
+					.defaultIfEmpty(new byte[0])
+					.map(bodyBytes -> {
+						String msg = String.format("ClientResponse has erroneous status code: %d %s", response.statusCode().value(),
+								response.statusCode().getReasonPhrase());
+						Charset charset = response.headers().contentType()
+								.map(MimeType::getCharset)
+								.orElse(StandardCharsets.ISO_8859_1);
+						return new WebClientResponseException(msg,
+								response.statusCode().value(),
+								response.statusCode().getReasonPhrase(),
+								response.headers().asHttpHeaders(),
+								bodyBytes,
+								charset
+						);
+					});
+		}
+
+		@Override
+		public ResponseSpec onStatus(Predicate<HttpStatus> statusPredicate,
+									 Function<ClientResponse, Mono<? extends Throwable>> exceptionFunction) {
+
+			if (this.statusHandlers.size() == 1 && this.statusHandlers.get(0) == DEFAULT_STATUS_HANDLER) {
+				this.statusHandlers.clear();
+			}
+			this.statusHandlers.add(new StatusHandler(statusPredicate, exceptionFunction));
+
+			return this;
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public <T> Mono<T> bodyToMono(Class<T> bodyType) {
+			// Use bodyToMono (vs BodyExtractors) to ensure proper handling of Void.class...
+			return this.responseMono.flatMap(
+					response -> bodyToPublisher(response, response.bodyToMono(bodyType),
+							this::monoThrowableToMono));
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public <T> Mono<T> bodyToMono(ParameterizedTypeReference<T> typeReference) {
+			return this.responseMono.flatMap(
+					response -> bodyToPublisher(response, response.bodyToMono(typeReference),
+							this::monoThrowableToMono));
+		}
+
+		private <T> Mono<T> monoThrowableToMono(Mono<? extends Throwable> mono) {
+			return mono.flatMap(Mono::error);
+		}
+
+		@Override
+		public <T> Flux<T> bodyToFlux(Class<T> elementType) {
+			return this.responseMono.flatMapMany(
+					response -> bodyToPublisher(response, response.bodyToFlux(elementType),
+							this::monoThrowableToFlux));
+		}
+
+		@Override
+		public <T> Flux<T> bodyToFlux(ParameterizedTypeReference<T> typeReference) {
+			return this.responseMono.flatMapMany(
+					response -> bodyToPublisher(response, response.bodyToFlux(typeReference),
+							this::monoThrowableToFlux));
+		}
+
+		private <T> Flux<T> monoThrowableToFlux(Mono<? extends Throwable> mono) {
+			return mono.flatMapMany(Flux::error);
+		}
+
+		private <T extends Publisher<?>> T bodyToPublisher(ClientResponse response,
+														   T bodyPublisher, Function<Mono<? extends Throwable>, T> errorFunction) {
+
+			for (StatusHandler handler : this.statusHandlers) {
+				if (handler.test(response.statusCode())) {
+					Mono<? extends Throwable> exMono = handler.apply(response);
+					exMono = exMono.flatMap(ex -> drainBody(response, ex));
+					exMono = exMono.onErrorResume(ex -> drainBody(response, ex));
+					return errorFunction.apply(exMono);
+				}
+			}
+			return bodyPublisher;
+		}
+
+		@SuppressWarnings("unchecked")
+		private <T> Mono<T> drainBody(ClientResponse response, Throwable ex) {
+			// Ensure the body is drained, even if the StatusHandler didn't consume it,
+			// but ignore errors in case it did consume it.
+			return (Mono<T>) response.bodyToMono(Void.class).onErrorMap(ex2 -> ex).thenReturn(ex);
+		}
+
+		private static class StatusHandler {
+
+			private final Predicate<HttpStatus> predicate;
+
+			private final Function<ClientResponse, Mono<? extends Throwable>> exceptionFunction;
+
+			public StatusHandler(Predicate<HttpStatus> predicate,
+								 Function<ClientResponse, Mono<? extends Throwable>> exceptionFunction) {
+
+				Assert.notNull(predicate, "Predicate must not be null");
+				Assert.notNull(exceptionFunction, "Function must not be null");
+				this.predicate = predicate;
+				this.exceptionFunction = exceptionFunction;
+			}
+
+			public boolean test(HttpStatus status) {
+				return this.predicate.test(status);
+			}
+
+			public Mono<? extends Throwable> apply(ClientResponse response) {
+				return this.exceptionFunction.apply(response);
+			}
+		}
+	}
 
 	private class DefaultRequestBodyUriSpec implements RequestBodyUriSpec {
 
 		private final HttpMethod httpMethod;
-
+		private final Map<String, Object> attributes = new LinkedHashMap<>(4);
 		@Nullable
 		private URI uri;
-
 		@Nullable
 		private HttpHeaders headers;
-
 		@Nullable
 		private MultiValueMap<String, String> cookies;
-
 		@Nullable
 		private BodyInserter<?, ? super ClientHttpRequest> inserter;
-
-		private final Map<String, Object> attributes = new LinkedHashMap<>(4);
 
 		DefaultRequestBodyUriSpec(HttpMethod httpMethod) {
 			this.httpMethod = httpMethod;
@@ -288,7 +410,7 @@ class DefaultWebClient implements WebClient {
 
 		@Override
 		public <T, P extends Publisher<T>> RequestHeadersSpec<?> body(P publisher,
-				ParameterizedTypeReference<T> typeReference) {
+																	  ParameterizedTypeReference<T> typeReference) {
 
 			this.inserter = BodyInserters.fromPublisher(publisher, typeReference);
 			return this;
@@ -327,11 +449,9 @@ class DefaultWebClient implements WebClient {
 		private HttpHeaders initHeaders() {
 			if (CollectionUtils.isEmpty(this.headers)) {
 				return (defaultHeaders != null ? defaultHeaders : new HttpHeaders());
-			}
-			else if (CollectionUtils.isEmpty(defaultHeaders)) {
+			} else if (CollectionUtils.isEmpty(defaultHeaders)) {
 				return this.headers;
-			}
-			else {
+			} else {
 				HttpHeaders result = new HttpHeaders();
 				result.putAll(this.headers);
 				defaultHeaders.forEach((name, values) -> {
@@ -346,11 +466,9 @@ class DefaultWebClient implements WebClient {
 		private MultiValueMap<String, String> initCookies() {
 			if (CollectionUtils.isEmpty(this.cookies)) {
 				return (defaultCookies != null ? defaultCookies : new LinkedMultiValueMap<>());
-			}
-			else if (CollectionUtils.isEmpty(defaultCookies)) {
+			} else if (CollectionUtils.isEmpty(defaultCookies)) {
 				return this.cookies;
-			}
-			else {
+			} else {
 				MultiValueMap<String, String> result = new LinkedMultiValueMap<>();
 				result.putAll(this.cookies);
 				defaultCookies.forEach(result::putIfAbsent);
@@ -361,145 +479,6 @@ class DefaultWebClient implements WebClient {
 		@Override
 		public ResponseSpec retrieve() {
 			return new DefaultResponseSpec(exchange());
-		}
-	}
-
-
-	private static class DefaultResponseSpec implements ResponseSpec {
-
-		private static final StatusHandler DEFAULT_STATUS_HANDLER =
-				new StatusHandler(HttpStatus::isError, DefaultResponseSpec::createResponseException);
-
-		private final Mono<ClientResponse> responseMono;
-
-		private List<StatusHandler> statusHandlers = new ArrayList<>(1);
-
-		DefaultResponseSpec(Mono<ClientResponse> responseMono) {
-			this.responseMono = responseMono;
-			this.statusHandlers.add(DEFAULT_STATUS_HANDLER);
-		}
-
-		@Override
-		public ResponseSpec onStatus(Predicate<HttpStatus> statusPredicate,
-				Function<ClientResponse, Mono<? extends Throwable>> exceptionFunction) {
-
-			if (this.statusHandlers.size() == 1 && this.statusHandlers.get(0) == DEFAULT_STATUS_HANDLER) {
-				this.statusHandlers.clear();
-			}
-			this.statusHandlers.add(new StatusHandler(statusPredicate, exceptionFunction));
-
-			return this;
-		}
-
-		@Override
-		@SuppressWarnings("unchecked")
-		public <T> Mono<T> bodyToMono(Class<T> bodyType) {
-			// Use bodyToMono (vs BodyExtractors) to ensure proper handling of Void.class...
-			return this.responseMono.flatMap(
-					response -> bodyToPublisher(response, response.bodyToMono(bodyType),
-							this::monoThrowableToMono));
-		}
-
-		@Override
-		@SuppressWarnings("unchecked")
-		public <T> Mono<T> bodyToMono(ParameterizedTypeReference<T> typeReference) {
-			return this.responseMono.flatMap(
-					response -> bodyToPublisher(response, response.bodyToMono(typeReference),
-							this::monoThrowableToMono));
-		}
-
-		private <T> Mono<T> monoThrowableToMono(Mono<? extends Throwable> mono) {
-			return mono.flatMap(Mono::error);
-		}
-
-		@Override
-		public <T> Flux<T> bodyToFlux(Class<T> elementType) {
-			return this.responseMono.flatMapMany(
-					response -> bodyToPublisher(response, response.bodyToFlux(elementType),
-							this::monoThrowableToFlux));
-		}
-
-		@Override
-		public <T> Flux<T> bodyToFlux(ParameterizedTypeReference<T> typeReference) {
-			return this.responseMono.flatMapMany(
-					response -> bodyToPublisher(response, response.bodyToFlux(typeReference),
-							this::monoThrowableToFlux));
-		}
-
-		private <T> Flux<T> monoThrowableToFlux(Mono<? extends Throwable> mono) {
-			return mono.flatMapMany(Flux::error);
-		}
-
-		private <T extends Publisher<?>> T bodyToPublisher(ClientResponse response,
-				T bodyPublisher, Function<Mono<? extends Throwable>, T> errorFunction) {
-
-			for (StatusHandler handler : this.statusHandlers) {
-				if (handler.test(response.statusCode())) {
-					Mono<? extends Throwable> exMono = handler.apply(response);
-					exMono = exMono.flatMap(ex -> drainBody(response, ex));
-					exMono = exMono.onErrorResume(ex -> drainBody(response, ex));
-					return errorFunction.apply(exMono);
-				}
-			}
-			return bodyPublisher;
-		}
-
-		@SuppressWarnings("unchecked")
-		private <T> Mono<T> drainBody(ClientResponse response, Throwable ex) {
-			// Ensure the body is drained, even if the StatusHandler didn't consume it,
-			// but ignore errors in case it did consume it.
-			return (Mono<T>) response.bodyToMono(Void.class).onErrorMap(ex2 -> ex).thenReturn(ex);
-		}
-
-		private static Mono<WebClientResponseException> createResponseException(ClientResponse response) {
-
-			return DataBufferUtils.join(response.body(BodyExtractors.toDataBuffers()))
-					.map(dataBuffer -> {
-						byte[] bytes = new byte[dataBuffer.readableByteCount()];
-						dataBuffer.read(bytes);
-						DataBufferUtils.release(dataBuffer);
-						return bytes;
-					})
-					.defaultIfEmpty(new byte[0])
-					.map(bodyBytes -> {
-						String msg = String.format("ClientResponse has erroneous status code: %d %s", response.statusCode().value(),
-								response.statusCode().getReasonPhrase());
-						Charset charset = response.headers().contentType()
-								.map(MimeType::getCharset)
-								.orElse(StandardCharsets.ISO_8859_1);
-						return new WebClientResponseException(msg,
-								response.statusCode().value(),
-								response.statusCode().getReasonPhrase(),
-								response.headers().asHttpHeaders(),
-								bodyBytes,
-								charset
-								);
-					});
-		}
-
-
-		private static class StatusHandler {
-
-			private final Predicate<HttpStatus> predicate;
-
-			private final Function<ClientResponse, Mono<? extends Throwable>> exceptionFunction;
-
-			public StatusHandler(Predicate<HttpStatus> predicate,
-					Function<ClientResponse, Mono<? extends Throwable>> exceptionFunction) {
-
-				Assert.notNull(predicate, "Predicate must not be null");
-				Assert.notNull(exceptionFunction, "Function must not be null");
-				this.predicate = predicate;
-				this.exceptionFunction = exceptionFunction;
-			}
-
-			public boolean test(HttpStatus status) {
-				return this.predicate.test(status);
-			}
-
-			public Mono<? extends Throwable> apply(ClientResponse response) {
-				return this.exceptionFunction.apply(response);
-			}
 		}
 	}
 

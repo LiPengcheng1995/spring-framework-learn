@@ -16,21 +16,20 @@
 
 package org.springframework.context.annotation.configuration;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.junit.Test;
-
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.tests.sample.beans.TestBean;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests that @Import may be used both as a locally declared and meta-declared
@@ -82,6 +81,18 @@ public class ImportAnnotationDetectionTests {
 		assertThat(ctx.getBean("testBean1", TestBean.class).getName(), is("1"));
 	}
 
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Import(Config1.class)
+	@interface MetaImport1 {
+	}
+
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Import(Config2.class)
+	@interface MetaImport2 {
+	}
+
 	@Configuration
 	@MetaImport1
 	@MetaImport2
@@ -101,21 +112,6 @@ public class ImportAnnotationDetectionTests {
 	@Import(Config2a.class)
 	static class MultiMetaImportConfigWithLocalImportWithBeanOverride {
 	}
-
-
-	@Target(ElementType.TYPE)
-	@Retention(RetentionPolicy.RUNTIME)
-	@Import(Config1.class)
-	@interface MetaImport1 {
-	}
-
-
-	@Target(ElementType.TYPE)
-	@Retention(RetentionPolicy.RUNTIME)
-	@Import(Config2.class)
-	@interface MetaImport2 {
-	}
-
 
 	@Configuration
 	static class Config1 {

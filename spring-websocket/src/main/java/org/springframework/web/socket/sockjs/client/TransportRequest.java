@@ -16,12 +16,12 @@
 
 package org.springframework.web.socket.sockjs.client;
 
-import java.net.URI;
-import java.security.Principal;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.Nullable;
 import org.springframework.web.socket.sockjs.frame.SockJsMessageCodec;
+
+import java.net.URI;
+import java.security.Principal;
 
 /**
  * Exposes information, typically to {@link Transport} and
@@ -50,6 +50,7 @@ public interface TransportRequest {
 	/**
 	 * Return the headers to add to all other HTTP requests besides the handshake
 	 * request such as XHR receive and send requests.
+	 *
 	 * @since 4.2
 	 */
 	HttpHeaders getHttpRequestHeaders();

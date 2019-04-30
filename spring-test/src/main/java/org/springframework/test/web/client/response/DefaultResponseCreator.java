@@ -16,11 +16,6 @@
 
 package org.springframework.test.web.client.response;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -32,6 +27,11 @@ import org.springframework.mock.http.client.MockClientHttpResponse;
 import org.springframework.test.web.client.ResponseCreator;
 import org.springframework.util.Assert;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+
 /**
  * A {@code ResponseCreator} with builder-style methods for adding response details.
  *
@@ -40,14 +40,11 @@ import org.springframework.util.Assert;
  */
 public class DefaultResponseCreator implements ResponseCreator {
 
+	private final HttpHeaders headers = new HttpHeaders();
 	private HttpStatus statusCode;
-
 	private byte[] content = new byte[0];
-
 	@Nullable
 	private Resource contentResource;
-
-	private final HttpHeaders headers = new HttpHeaders();
 
 
 	/**
@@ -115,8 +112,7 @@ public class DefaultResponseCreator implements ResponseCreator {
 		if (this.contentResource != null) {
 			InputStream stream = this.contentResource.getInputStream();
 			response = new MockClientHttpResponse(stream, this.statusCode);
-		}
-		else {
+		} else {
 			response = new MockClientHttpResponse(this.content, this.statusCode);
 		}
 		response.getHeaders().putAll(this.headers);

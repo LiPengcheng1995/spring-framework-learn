@@ -16,21 +16,14 @@
 
 package org.springframework.jdbc.support.lob;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
-import java.sql.Clob;
-import java.sql.SQLException;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.sql.Clob;
+import java.sql.SQLException;
 
 /**
  * Simple JDBC {@link Clob} adapter that exposes a given String or character stream.
@@ -78,11 +71,9 @@ class PassThroughClob implements Clob {
 	public Reader getCharacterStream() throws SQLException {
 		if (this.content != null) {
 			return new StringReader(this.content);
-		}
-		else if (this.characterStream != null) {
+		} else if (this.characterStream != null) {
 			return this.characterStream;
-		}
-		else {
+		} else {
 			return new InputStreamReader(
 					(this.asciiStream != null ? this.asciiStream : StreamUtils.emptyInput()),
 					StandardCharsets.US_ASCII);
@@ -94,16 +85,13 @@ class PassThroughClob implements Clob {
 		try {
 			if (this.content != null) {
 				return new ByteArrayInputStream(this.content.getBytes(StandardCharsets.US_ASCII));
-			}
-			else if (this.characterStream != null) {
+			} else if (this.characterStream != null) {
 				String tempContent = FileCopyUtils.copyToString(this.characterStream);
 				return new ByteArrayInputStream(tempContent.getBytes(StandardCharsets.US_ASCII));
-			}
-			else {
+			} else {
 				return (this.asciiStream != null ? this.asciiStream : StreamUtils.emptyInput());
 			}
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			throw new SQLException("Failed to read stream content: " + ex);
 		}
 	}

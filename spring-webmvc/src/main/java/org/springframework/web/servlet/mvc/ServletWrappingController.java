@@ -16,14 +16,6 @@
 
 package org.springframework.web.servlet.mvc;
 
-import java.util.Enumeration;
-import java.util.Properties;
-import javax.servlet.Servlet;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -31,6 +23,14 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.Servlet;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Enumeration;
+import java.util.Properties;
 
 /**
  * Spring Controller implementation that wraps a servlet instance which it manages
@@ -79,8 +79,8 @@ import org.springframework.web.servlet.ModelAndView;
  * &lt;/bean&gt;</pre>
  *
  * @author Juergen Hoeller
- * @since 1.1.1
  * @see ServletForwardingController
+ * @since 1.1.1
  */
 public class ServletWrappingController extends AbstractController
 		implements BeanNameAware, InitializingBean, DisposableBean {
@@ -108,6 +108,7 @@ public class ServletWrappingController extends AbstractController
 	/**
 	 * Set the class of the servlet to wrap.
 	 * Needs to implement {@code javax.servlet.Servlet}.
+	 *
 	 * @see javax.servlet.Servlet
 	 */
 	public void setServletClass(Class<? extends Servlet> servletClass) {
@@ -138,6 +139,7 @@ public class ServletWrappingController extends AbstractController
 
 	/**
 	 * Initialize the wrapped Servlet instance.
+	 *
 	 * @see javax.servlet.Servlet#init(javax.servlet.ServletConfig)
 	 */
 	@Override
@@ -155,6 +157,7 @@ public class ServletWrappingController extends AbstractController
 
 	/**
 	 * Invoke the wrapped Servlet instance.
+	 *
 	 * @see javax.servlet.Servlet#service(javax.servlet.ServletRequest, javax.servlet.ServletResponse)
 	 */
 	@Override
@@ -169,6 +172,7 @@ public class ServletWrappingController extends AbstractController
 
 	/**
 	 * Destroy the wrapped Servlet instance.
+	 *
 	 * @see javax.servlet.Servlet#destroy()
 	 */
 	@Override
@@ -204,7 +208,7 @@ public class ServletWrappingController extends AbstractController
 		}
 
 		@Override
-		@SuppressWarnings({ "unchecked", "rawtypes" })
+		@SuppressWarnings({"unchecked", "rawtypes"})
 		public Enumeration<String> getInitParameterNames() {
 			return (Enumeration) initParameters.keys();
 		}

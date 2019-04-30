@@ -16,30 +16,9 @@
 
 package org.springframework.format.datetime.standard;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Month;
-import java.time.MonthDay;
-import java.time.Period;
-import java.time.Year;
-import java.time.YearMonth;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.convert.support.DefaultConversionService;
@@ -48,7 +27,13 @@ import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.validation.DataBinder;
 
-import static org.junit.Assert.*;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Keith Donald
@@ -127,7 +112,7 @@ public class DateTimeFormattingTests {
 	@Test
 	public void testBindLocalDateArray() {
 		MutablePropertyValues propertyValues = new MutablePropertyValues();
-		propertyValues.add("localDate", new String[] {"10/31/09"});
+		propertyValues.add("localDate", new String[]{"10/31/09"});
 		binder.bind(propertyValues);
 		assertEquals(0, binder.getBindingResult().getErrorCount());
 	}
@@ -368,8 +353,7 @@ public class DateTimeFormattingTests {
 			binder.bind(propertyValues);
 			assertEquals(0, binder.getBindingResult().getErrorCount());
 			assertTrue(binder.getBindingResult().getFieldValue("instant").toString().startsWith("2009-10-31"));
-		}
-		finally {
+		} finally {
 			TimeZone.setDefault(defaultZone);
 		}
 	}
@@ -440,48 +424,31 @@ public class DateTimeFormattingTests {
 
 	public static class DateTimeBean {
 
+		private final List<DateTimeBean> children = new ArrayList<>();
 		private LocalDate localDate;
-
 		@DateTimeFormat(style = "M-")
 		private LocalDate localDateAnnotated;
-
 		private LocalTime localTime;
-
 		@DateTimeFormat(style = "-M")
 		private LocalTime localTimeAnnotated;
-
 		private LocalDateTime localDateTime;
-
 		@DateTimeFormat(style = "MM")
 		private LocalDateTime localDateTimeAnnotated;
-
 		@DateTimeFormat(pattern = "M/d/yy h:mm a")
 		private LocalDateTime dateTimeAnnotatedPattern;
-
 		@DateTimeFormat(iso = ISO.DATE)
 		private LocalDate isoDate;
-
 		@DateTimeFormat(iso = ISO.TIME)
 		private LocalTime isoTime;
-
 		@DateTimeFormat(iso = ISO.DATE_TIME)
 		private LocalDateTime isoDateTime;
-
 		private Instant instant;
-
 		private Period period;
-
 		private Duration duration;
-
 		private Year year;
-
 		private Month month;
-
 		private YearMonth yearMonth;
-
 		private MonthDay monthDay;
-
-		private final List<DateTimeBean> children = new ArrayList<>();
 
 		public LocalDate getLocalDate() {
 			return localDate;

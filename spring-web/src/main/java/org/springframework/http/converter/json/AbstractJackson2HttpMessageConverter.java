@@ -16,6 +16,25 @@
 
 package org.springframework.http.converter.json;
 
+import com.fasterxml.jackson.core.JsonEncoding;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.PrettyPrinter;
+import com.fasterxml.jackson.core.util.DefaultIndenter;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.exc.InvalidDefinitionException;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import org.springframework.core.GenericTypeResolver;
+import org.springframework.http.HttpInputMessage;
+import org.springframework.http.HttpOutputMessage;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.*;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+import org.springframework.util.TypeUtils;
+
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
@@ -23,35 +42,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
-
-import com.fasterxml.jackson.core.JsonEncoding;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.PrettyPrinter;
-import com.fasterxml.jackson.core.util.DefaultIndenter;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.SerializationConfig;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.exc.InvalidDefinitionException;
-import com.fasterxml.jackson.databind.ser.FilterProvider;
-import com.fasterxml.jackson.databind.type.TypeFactory;
-
-import org.springframework.core.GenericTypeResolver;
-import org.springframework.http.HttpInputMessage;
-import org.springframework.http.HttpOutputMessage;
-import org.springframework.http.MediaType;
-import org.springframework.http.converter.AbstractGenericHttpMessageConverter;
-import org.springframework.http.converter.HttpMessageConversionException;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.http.converter.HttpMessageNotWritableException;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.TypeUtils;
 
 /**
  * Abstract base class for Jackson based and content type independent
@@ -64,8 +54,8 @@ import org.springframework.util.TypeUtils;
  * @author Rossen Stoyanchev
  * @author Juergen Hoeller
  * @author Sebastien Deleuze
- * @since 4.1
  * @see MappingJackson2HttpMessageConverter
+ * @since 4.1
  */
 public abstract class AbstractJackson2HttpMessageConverter extends AbstractGenericHttpMessageConverter<Object> {
 
@@ -99,6 +89,12 @@ public abstract class AbstractJackson2HttpMessageConverter extends AbstractGener
 		setSupportedMediaTypes(Arrays.asList(supportedMediaTypes));
 	}
 
+	/**
+	 * Return the underlying {@code ObjectMapper} for this view.
+	 */
+	public ObjectMapper getObjectMapper() {
+		return this.objectMapper;
+	}
 
 	/**
 	 * Set the {@code ObjectMapper} for this view.
@@ -115,13 +111,6 @@ public abstract class AbstractJackson2HttpMessageConverter extends AbstractGener
 		Assert.notNull(objectMapper, "ObjectMapper must not be null");
 		this.objectMapper = objectMapper;
 		configurePrettyPrint();
-	}
-
-	/**
-	 * Return the underlying {@code ObjectMapper} for this view.
-	 */
-	public ObjectMapper getObjectMapper() {
-		return this.objectMapper;
 	}
 
 	/**
@@ -180,9 +169,10 @@ public abstract class AbstractJackson2HttpMessageConverter extends AbstractGener
 	/**
 	 * Determine whether to log the given exception coming from a
 	 * {@link ObjectMapper#canDeserialize} / {@link ObjectMapper#canSerialize} check.
-	 * @param type the class that Jackson tested for (de-)serializability
+	 *
+	 * @param type  the class that Jackson tested for (de-)serializability
 	 * @param cause the Jackson-thrown exception to evaluate
-	 * (typically a {@link JsonMappingException})
+	 *              (typically a {@link JsonMappingException})
 	 * @since 4.3
 	 */
 	protected void logWarningIfNecessary(Type type, @Nullable Throwable cause) {
@@ -199,11 +189,9 @@ public abstract class AbstractJackson2HttpMessageConverter extends AbstractGener
 					"serialization for type [" + type + "]";
 			if (debugLevel) {
 				logger.debug(msg, cause);
-			}
-			else if (logger.isDebugEnabled()) {
+			} else if (logger.isDebugEnabled()) {
 				logger.warn(msg, cause);
-			}
-			else {
+			} else {
 				logger.warn(msg + ": " + cause);
 			}
 		}
@@ -235,11 +223,9 @@ public abstract class AbstractJackson2HttpMessageConverter extends AbstractGener
 				}
 			}
 			return this.objectMapper.readValue(inputMessage.getBody(), javaType);
-		}
-		catch (InvalidDefinitionException ex) {
+		} catch (InvalidDefinitionException ex) {
 			throw new HttpMessageConversionException("Type definition error: " + ex.getType(), ex);
-		}
-		catch (JsonProcessingException ex) {
+		} catch (JsonProcessingException ex) {
 			throw new HttpMessageNotReadableException("JSON parse error: " + ex.getOriginalMessage(), ex);
 		}
 	}
@@ -286,36 +272,37 @@ public abstract class AbstractJackson2HttpMessageConverter extends AbstractGener
 
 			writeSuffix(generator, object);
 			generator.flush();
-		}
-		catch (InvalidDefinitionException ex) {
+		} catch (InvalidDefinitionException ex) {
 			throw new HttpMessageConversionException("Type definition error: " + ex.getType(), ex);
-		}
-		catch (JsonProcessingException ex) {
+		} catch (JsonProcessingException ex) {
 			throw new HttpMessageNotWritableException("Could not write JSON: " + ex.getOriginalMessage(), ex);
 		}
 	}
 
 	/**
 	 * Write a prefix before the main content.
+	 *
 	 * @param generator the generator to use for writing content.
-	 * @param object the object to write to the output message.
+	 * @param object    the object to write to the output message.
 	 */
 	protected void writePrefix(JsonGenerator generator, Object object) throws IOException {
 	}
 
 	/**
 	 * Write a suffix after the main content.
+	 *
 	 * @param generator the generator to use for writing content.
-	 * @param object the object to write to the output message.
+	 * @param object    the object to write to the output message.
 	 */
 	protected void writeSuffix(JsonGenerator generator, Object object) throws IOException {
 	}
 
 	/**
 	 * Return the Jackson {@link JavaType} for the specified type and context class.
-	 * @param type the generic type to return the Jackson JavaType for
+	 *
+	 * @param type         the generic type to return the Jackson JavaType for
 	 * @param contextClass a context class for the target type, for example a class
-	 * in which the target type appears in a method signature (can be {@code null})
+	 *                     in which the target type appears in a method signature (can be {@code null})
 	 * @return the Jackson JavaType
 	 */
 	protected JavaType getJavaType(Type type, @Nullable Class<?> contextClass) {
@@ -325,6 +312,7 @@ public abstract class AbstractJackson2HttpMessageConverter extends AbstractGener
 
 	/**
 	 * Determine the JSON encoding to use for the given content type.
+	 *
 	 * @param contentType the media type as requested by the caller
 	 * @return the JSON encoding to use (never {@code null})
 	 */

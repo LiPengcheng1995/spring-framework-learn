@@ -16,13 +16,13 @@
 
 package org.springframework.core.convert.support;
 
-import java.io.StringWriter;
-import java.util.Collections;
-import java.util.Set;
-
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.ConditionalGenericConverter;
 import org.springframework.lang.Nullable;
+
+import java.io.StringWriter;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Simply calls {@link Object#toString()} to convert any supported object
@@ -38,8 +38,8 @@ import org.springframework.lang.Nullable;
  * @author Keith Donald
  * @author Juergen Hoeller
  * @author Sam Brannen
- * @since 3.0
  * @see ObjectToObjectConverter
+ * @since 3.0
  */
 final class FallbackObjectToStringConverter implements ConditionalGenericConverter {
 

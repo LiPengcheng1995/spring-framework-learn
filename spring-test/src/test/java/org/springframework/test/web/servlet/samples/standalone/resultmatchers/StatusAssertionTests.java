@@ -16,11 +16,7 @@
 
 package org.springframework.test.web.servlet.samples.standalone.resultmatchers;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 import org.junit.Test;
-
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -29,11 +25,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import static org.hamcrest.Matchers.*;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.HttpStatus.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
 /**
  * Examples of expectations on the status and the status reason found in the response.
@@ -95,21 +95,25 @@ public class StatusAssertionTests {
 
 		@RequestMapping("/created")
 		@ResponseStatus(CREATED)
-		public @ResponseBody void created(){
+		public @ResponseBody
+		void created() {
 		}
 
 		@Get(path = "/createdWithComposedAnnotation", status = CREATED)
-		public @ResponseBody void createdWithComposedAnnotation() {
+		public @ResponseBody
+		void createdWithComposedAnnotation() {
 		}
 
 		@RequestMapping("/badRequest")
 		@ResponseStatus(code = BAD_REQUEST, reason = "Expired token")
-		public @ResponseBody void badRequest(){
+		public @ResponseBody
+		void badRequest() {
 		}
 
 		@RequestMapping("/notImplemented")
 		@ResponseStatus(NOT_IMPLEMENTED)
-		public @ResponseBody void notImplemented(){
+		public @ResponseBody
+		void notImplemented() {
 		}
 	}
 

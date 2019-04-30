@@ -16,19 +16,19 @@
 
 package org.springframework.format.datetime.standard;
 
+import org.springframework.format.Formatter;
+
 import java.text.ParseException;
 import java.time.Month;
 import java.util.Locale;
-
-import org.springframework.format.Formatter;
 
 /**
  * {@link Formatter} implementation for a JSR-310 {@link Month},
  * resolving a given String against the Month enum values (ignoring case).
  *
  * @author Juergen Hoeller
- * @since 5.0.4
  * @see Month#valueOf
+ * @since 5.0.4
  */
 class MonthFormatter implements Formatter<Month> {
 

@@ -16,12 +16,8 @@
 
 package org.springframework.core.type.classreading;
 
-import java.lang.reflect.Field;
-import java.security.AccessControlException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.asm.AnnotationVisitor;
 import org.springframework.asm.SpringAsmInfo;
 import org.springframework.asm.Type;
@@ -29,6 +25,9 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.Field;
+import java.security.AccessControlException;
 
 /**
  * {@link AnnotationVisitor} to recursively visit annotations.
@@ -89,11 +88,9 @@ abstract class AbstractRecursiveAnnotationVisitor extends AnnotationVisitor {
 				ReflectionUtils.makeAccessible(enumConstant);
 				valueToUse = enumConstant.get(null);
 			}
-		}
-		catch (ClassNotFoundException | NoClassDefFoundError ex) {
+		} catch (ClassNotFoundException | NoClassDefFoundError ex) {
 			logger.debug("Failed to classload enum type while reading annotation metadata", ex);
-		}
-		catch (IllegalAccessException | AccessControlException ex) {
+		} catch (IllegalAccessException | AccessControlException ex) {
 			logger.debug("Could not access enum value while reading annotation metadata", ex);
 		}
 		return valueToUse;

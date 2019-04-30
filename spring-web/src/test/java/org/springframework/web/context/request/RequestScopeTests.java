@@ -19,7 +19,6 @@ package org.springframework.web.context.request;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanCurrentlyInCreationException;
 import org.springframework.beans.factory.FactoryBean;
@@ -116,8 +115,7 @@ public class RequestScopeTests {
 
 			this.beanFactory.getBean(name);
 			fail("Should have thrown BeanCreationException");
-		}
-		catch (BeanCreationException ex) {
+		} catch (BeanCreationException ex) {
 			assertTrue(ex.contains(BeanCurrentlyInCreationException.class));
 		}
 	}

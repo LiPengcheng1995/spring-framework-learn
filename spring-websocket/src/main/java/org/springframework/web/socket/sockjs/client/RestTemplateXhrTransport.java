@@ -16,11 +16,6 @@
 
 package org.springframework.web.socket.sockjs.client;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.HttpHeaders;
@@ -33,17 +28,17 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.concurrent.SettableListenableFuture;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RequestCallback;
-import org.springframework.web.client.ResponseExtractor;
-import org.springframework.web.client.RestOperations;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.client.UnknownHttpStatusCodeException;
+import org.springframework.web.client.*;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.sockjs.frame.SockJsFrame;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 
 /**
  * An {@code XhrTransport} implementation that uses a
@@ -54,26 +49,44 @@ import org.springframework.web.socket.sockjs.frame.SockJsFrame;
  */
 public class RestTemplateXhrTransport extends AbstractXhrTransport {
 
+	/**
+	 * A simple ResponseExtractor that reads the body into a String.
+	 */
+	private static final ResponseExtractor<ResponseEntity<String>> textResponseExtractor =
+			response -> {
+				String body = StreamUtils.copyToString(response.getBody(), SockJsFrame.CHARSET);
+				return ResponseEntity.status(response.getRawStatusCode()).headers(response.getHeaders()).body(body);
+			};
 	private final RestOperations restTemplate;
-
 	private TaskExecutor taskExecutor = new SimpleAsyncTaskExecutor();
-
 
 	public RestTemplateXhrTransport() {
 		this(new RestTemplate());
 	}
+
 
 	public RestTemplateXhrTransport(RestOperations restTemplate) {
 		Assert.notNull(restTemplate, "'restTemplate' is required");
 		this.restTemplate = restTemplate;
 	}
 
+	private static <T> T nonNull(@Nullable T result) {
+		Assert.state(result != null, "No result");
+		return result;
+	}
 
 	/**
 	 * Return the configured {@code RestTemplate}.
 	 */
 	public RestOperations getRestTemplate() {
 		return this.restTemplate;
+	}
+
+	/**
+	 * Return the configured {@code TaskExecutor}.
+	 */
+	public TaskExecutor getTaskExecutor() {
+		return this.taskExecutor;
 	}
 
 	/**
@@ -87,18 +100,10 @@ public class RestTemplateXhrTransport extends AbstractXhrTransport {
 		this.taskExecutor = taskExecutor;
 	}
 
-	/**
-	 * Return the configured {@code TaskExecutor}.
-	 */
-	public TaskExecutor getTaskExecutor() {
-		return this.taskExecutor;
-	}
-
-
 	@Override
 	protected void connectInternal(final TransportRequest transportRequest, final WebSocketHandler handler,
-			final URI receiveUrl, final HttpHeaders handshakeHeaders, final XhrClientSockJsSession session,
-			final SettableListenableFuture<WebSocketSession> connectFuture) {
+								   final URI receiveUrl, final HttpHeaders handshakeHeaders, final XhrClientSockJsSession session,
+								   final SettableListenableFuture<WebSocketSession> connectFuture) {
 
 		getTaskExecutor().execute(() -> {
 			HttpHeaders httpHeaders = transportRequest.getHttpRequestHeaders();
@@ -116,12 +121,10 @@ public class RestTemplateXhrTransport extends AbstractXhrTransport {
 					}
 					getRestTemplate().execute(receiveUrl, HttpMethod.POST, requestCallback, responseExtractor);
 					requestCallback = requestCallbackAfterHandshake;
-				}
-				catch (Throwable ex) {
+				} catch (Throwable ex) {
 					if (!connectFuture.isDone()) {
 						connectFuture.setException(ex);
-					}
-					else {
+					} else {
 						session.handleTransportError(ex);
 						session.afterTransportClosed(new CloseStatus(1006, ex.getMessage()));
 					}
@@ -142,22 +145,6 @@ public class RestTemplateXhrTransport extends AbstractXhrTransport {
 		RequestCallback requestCallback = new XhrRequestCallback(headers, message.getPayload());
 		return nonNull(this.restTemplate.execute(url, HttpMethod.POST, requestCallback, textResponseExtractor));
 	}
-
-	private static <T> T nonNull(@Nullable T result) {
-		Assert.state(result != null, "No result");
-		return result;
-	}
-
-
-	/**
-	 * A simple ResponseExtractor that reads the body into a String.
-	 */
-	private static final ResponseExtractor<ResponseEntity<String>> textResponseExtractor =
-			response -> {
-				String body = StreamUtils.copyToString(response.getBody(), SockJsFrame.CHARSET);
-				return ResponseEntity.status(response.getRawStatusCode()).headers(response.getHeaders()).body(body);
-			};
-
 
 	/**
 	 * A RequestCallback to add the headers and (optionally) String content.
@@ -237,8 +224,7 @@ public class RestTemplateXhrTransport extends AbstractXhrTransport {
 				}
 				if (b == '\n') {
 					handleFrame(os);
-				}
-				else {
+				} else {
 					os.write(b);
 				}
 			}

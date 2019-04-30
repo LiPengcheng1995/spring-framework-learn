@@ -16,25 +16,26 @@
 
 package org.springframework.http.server.reactive;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import reactor.core.publisher.Mono;
-
 import org.springframework.http.HttpCookie;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+import reactor.core.publisher.Mono;
+
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalToIgnoringCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Rossen Stoyanchev
@@ -83,7 +84,7 @@ public class CookieIntegrationTests extends AbstractHttpHandlerIntegrationTests 
 	// No client side HttpCookie support yet
 	private List<String> splitCookie(String value) {
 		List<String> list = new ArrayList<>();
-		for (String s : value.split(";")){
+		for (String s : value.split(";")) {
 			list.add(s.trim());
 		}
 		return list;

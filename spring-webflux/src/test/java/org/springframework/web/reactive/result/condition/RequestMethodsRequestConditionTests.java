@@ -16,18 +16,17 @@
 
 package org.springframework.web.reactive.result.condition;
 
-import java.net.URISyntaxException;
-import java.util.Collections;
-
 import org.junit.Ignore;
 import org.junit.Test;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.mock.web.test.server.MockServerWebExchange;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.server.ServerWebExchange;
+
+import java.net.URISyntaxException;
+import java.util.Collections;
 
 import static org.junit.Assert.*;
 import static org.springframework.web.bind.annotation.RequestMethod.*;

@@ -16,21 +16,10 @@
 
 package org.springframework.web.servlet.view.json;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
-
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.lang.Nullable;
@@ -38,6 +27,12 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.View;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * Spring MVC {@link View} that renders JSON content by serializing the model for the current request
@@ -69,6 +64,7 @@ public class MappingJackson2JsonView extends AbstractJackson2View {
 
 	/**
 	 * Default content type for JSONP: "application/javascript".
+	 *
 	 * @deprecated Will be removed as of Spring Framework 5.1, use
 	 * <a href="https://docs.spring.io/spring/docs/5.0.x/spring-framework-reference/web.html#mvc-cors">CORS</a> instead.
 	 */
@@ -105,6 +101,7 @@ public class MappingJackson2JsonView extends AbstractJackson2View {
 	/**
 	 * Construct a new {@code MappingJackson2JsonView} using the provided
 	 * {@link ObjectMapper} and setting the content type to {@code application/json}.
+	 *
 	 * @since 4.2.1
 	 */
 	public MappingJackson2JsonView(ObjectMapper objectMapper) {
@@ -115,6 +112,7 @@ public class MappingJackson2JsonView extends AbstractJackson2View {
 	/**
 	 * Specify a custom prefix to use for this view's JSON output.
 	 * Default is none.
+	 *
 	 * @see #setPrefixJson
 	 */
 	public void setJsonPrefix(String jsonPrefix) {
@@ -127,6 +125,7 @@ public class MappingJackson2JsonView extends AbstractJackson2View {
 	 * <p>Prefixing the JSON string in this manner is used to help prevent JSON Hijacking.
 	 * The prefix renders the string syntactically invalid as a script so that it cannot be hijacked.
 	 * This prefix should be stripped before parsing the string as JSON.
+	 *
 	 * @see #setJsonPrefix
 	 */
 	public void setPrefixJson(boolean prefixJson) {
@@ -142,19 +141,19 @@ public class MappingJackson2JsonView extends AbstractJackson2View {
 	}
 
 	/**
-	 * Set the attributes in the model that should be rendered by this view.
-	 * When set, all other model attributes will be ignored.
-	 */
-	public void setModelKeys(@Nullable Set<String> modelKeys) {
-		this.modelKeys = modelKeys;
-	}
-
-	/**
 	 * Return the attributes in the model that should be rendered by this view.
 	 */
 	@Nullable
 	public final Set<String> getModelKeys() {
 		return this.modelKeys;
+	}
+
+	/**
+	 * Set the attributes in the model that should be rendered by this view.
+	 * When set, all other model attributes will be ignored.
+	 */
+	public void setModelKeys(@Nullable Set<String> modelKeys) {
+		this.modelKeys = modelKeys;
 	}
 
 	/**
@@ -175,8 +174,9 @@ public class MappingJackson2JsonView extends AbstractJackson2View {
 	 * specified by the JSONP request parameter value.
 	 * <p>As of Spring Framework 5.0.7, there is no parameter name configured
 	 * by default.
-	 * @since 4.1
+	 *
 	 * @see <a href="https://en.wikipedia.org/wiki/JSONP">JSONP Wikipedia article</a>
+	 * @since 4.1
 	 * @deprecated Will be removed as of Spring Framework 5.1, use
 	 * <a href="https://docs.spring.io/spring/docs/5.0.x/spring-framework-reference/web.html#mvc-cors">CORS</a> instead.
 	 */
@@ -209,6 +209,7 @@ public class MappingJackson2JsonView extends AbstractJackson2View {
 	 * Validate the jsonp query parameter value. The default implementation
 	 * returns true if it consists of digits, letters, or "_" and ".".
 	 * Invalid parameter values are ignored.
+	 *
 	 * @param value the query param value, never {@code null}
 	 * @since 4.1.8
 	 * @deprecated Will be removed as of Spring Framework 5.1, use
@@ -224,6 +225,7 @@ public class MappingJackson2JsonView extends AbstractJackson2View {
 	 * The return value can be either another {@link Map} or a single value object.
 	 * <p>The default implementation removes {@link BindingResult} instances and entries
 	 * not included in the {@link #setModelKeys modelKeys} property.
+	 *
 	 * @param model the model, as passed on to {@link #renderMergedOutputModel}
 	 * @return the value to be rendered
 	 */
@@ -248,8 +250,7 @@ public class MappingJackson2JsonView extends AbstractJackson2View {
 		if (jsonpParameterValue != null) {
 			if (value instanceof MappingJacksonValue) {
 				((MappingJacksonValue) value).setJsonpFunction(jsonpParameterValue);
-			}
-			else {
+			} else {
 				MappingJacksonValue container = new MappingJacksonValue(value);
 				container.setJsonpFunction(jsonpParameterValue);
 				value = container;
@@ -289,8 +290,7 @@ public class MappingJackson2JsonView extends AbstractJackson2View {
 	protected void setResponseContentType(HttpServletRequest request, HttpServletResponse response) {
 		if (getJsonpParameterValue(request) != null) {
 			response.setContentType(DEFAULT_JSONP_CONTENT_TYPE);
-		}
-		else {
+		} else {
 			super.setResponseContentType(request, response);
 		}
 	}

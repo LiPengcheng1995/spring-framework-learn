@@ -16,16 +16,8 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-import rx.Completable;
-import rx.Single;
-
 import org.springframework.core.codec.ByteBufferEncoder;
 import org.springframework.core.codec.CharSequenceEncoder;
 import org.springframework.http.codec.EncoderHttpMessageWriter;
@@ -40,18 +32,23 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.reactive.HandlerResult;
 import org.springframework.web.reactive.accept.RequestedContentTypeResolver;
 import org.springframework.web.reactive.accept.RequestedContentTypeResolverBuilder;
+import reactor.core.publisher.Mono;
+import rx.Completable;
+import rx.Single;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.*;
 import static org.springframework.web.method.ResolvableMethod.on;
 
 /**
  * Unit tests for {@link ResponseBodyResultHandler}.When adding a test also
  * consider whether the logic under test is in a parent class, then see:
  * <ul>
- * 	<li>{@code MessageWriterResultHandlerTests},
- *  <li>{@code ContentNegotiatingResultHandlerSupportTests}
+ * <li>{@code MessageWriterResultHandlerTests},
+ * <li>{@code ContentNegotiatingResultHandlerSupportTests}
  * </ul>
  *
  * @author Sebastien Deleuze
@@ -122,12 +119,13 @@ public class ResponseBodyResultHandlerTests {
 	}
 
 
-
 	@RestController
 	@SuppressWarnings("unused")
 	private static class TestRestController {
 
-		public Mono<Void> handleToMonoVoid() { return null;}
+		public Mono<Void> handleToMonoVoid() {
+			return null;
+		}
 
 		public String handleToString() {
 			return null;

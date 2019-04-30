@@ -16,17 +16,7 @@
 
 package org.springframework.web.reactive.result.view;
 
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.junit.Test;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.codec.CharSequenceEncoder;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.support.DataBufferTestUtils;
@@ -37,6 +27,11 @@ import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.mock.web.test.server.MockServerWebExchange;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.ui.ModelMap;
+import reactor.test.StepVerifier;
+
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.*;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
@@ -45,16 +40,14 @@ import static org.junit.Assert.fail;
 
 /**
  * Unit tests for {@link HttpMessageWriterView}.
+ *
  * @author Rossen Stoyanchev
  */
 public class HttpMessageWriterViewTests {
 
-	private HttpMessageWriterView view = new HttpMessageWriterView(new Jackson2JsonEncoder());
-
 	private final ModelMap model = new ExtendedModelMap();
-
 	private final MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/"));
-
+	private HttpMessageWriterView view = new HttpMessageWriterView(new Jackson2JsonEncoder());
 
 	@Test
 	public void supportedMediaTypes() throws Exception {
@@ -111,8 +104,7 @@ public class HttpMessageWriterViewTests {
 		try {
 			doRender();
 			fail();
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			String message = ex.getMessage();
 			assertTrue(message, message.contains("Map rendering is not supported"));
 		}
@@ -142,7 +134,6 @@ public class HttpMessageWriterViewTests {
 		this.view.render(this.model, MediaType.APPLICATION_JSON, this.exchange).block(Duration.ZERO);
 		return this.exchange.getResponse().getBodyAsString().block(Duration.ZERO);
 	}
-
 
 
 	@SuppressWarnings("unused")

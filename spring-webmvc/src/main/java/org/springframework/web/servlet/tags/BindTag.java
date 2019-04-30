@@ -16,14 +16,14 @@
 
 package org.springframework.web.servlet.tags;
 
-import java.beans.PropertyEditor;
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.PageContext;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.validation.Errors;
 import org.springframework.web.servlet.support.BindStatus;
+
+import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.PageContext;
+import java.beans.PropertyEditor;
 
 /**
  * The {@code <bind>} tag supports evaluation of binding errors for a certain
@@ -78,7 +78,7 @@ import org.springframework.web.servlet.support.BindStatus;
  * </tr>
  * </tbody>
  * </table>
- * 
+ *
  * @author Rod Johnson
  * @author Juergen Hoeller
  * @see #setPath
@@ -105,20 +105,6 @@ public class BindTag extends HtmlEscapingAwareTag implements EditorAwareTag {
 	@Nullable
 	private Object previousRequestStatus;
 
-
-	/**
-	 * Set the path that this tag should apply. Can be a bean (e.g. "person")
-	 * to get global errors, or a bean property (e.g. "person.name") to get
-	 * field errors (also supporting nested fields and "person.na*" mappings).
-	 * "person.*" will return all errors for the specified bean, both global
-	 * and field errors.
-	 * @see org.springframework.validation.Errors#getGlobalErrors
-	 * @see org.springframework.validation.Errors#getFieldErrors
-	 */
-	public void setPath(String path) {
-		this.path = path;
-	}
-
 	/**
 	 * Return the path that this tag applies to.
 	 */
@@ -127,20 +113,33 @@ public class BindTag extends HtmlEscapingAwareTag implements EditorAwareTag {
 	}
 
 	/**
-	 * Set whether to ignore a nested path, if any.
-	 * Default is to not ignore.
+	 * Set the path that this tag should apply. Can be a bean (e.g. "person")
+	 * to get global errors, or a bean property (e.g. "person.name") to get
+	 * field errors (also supporting nested fields and "person.na*" mappings).
+	 * "person.*" will return all errors for the specified bean, both global
+	 * and field errors.
+	 *
+	 * @see org.springframework.validation.Errors#getGlobalErrors
+	 * @see org.springframework.validation.Errors#getFieldErrors
 	 */
-	public void setIgnoreNestedPath(boolean ignoreNestedPath) {
-	  this.ignoreNestedPath = ignoreNestedPath;
+	public void setPath(String path) {
+		this.path = path;
 	}
 
 	/**
 	 * Return whether to ignore a nested path, if any.
 	 */
 	public boolean isIgnoreNestedPath() {
-	  return this.ignoreNestedPath;
+		return this.ignoreNestedPath;
 	}
 
+	/**
+	 * Set whether to ignore a nested path, if any.
+	 * Default is to not ignore.
+	 */
+	public void setIgnoreNestedPath(boolean ignoreNestedPath) {
+		this.ignoreNestedPath = ignoreNestedPath;
+	}
 
 	@Override
 	protected final int doStartTagInternal() throws Exception {
@@ -157,8 +156,7 @@ public class BindTag extends HtmlEscapingAwareTag implements EditorAwareTag {
 
 		try {
 			this.status = new BindStatus(getRequestContext(), resolvedPath, isHtmlEscape());
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			throw new JspTagException(ex.getMessage());
 		}
 
@@ -182,8 +180,7 @@ public class BindTag extends HtmlEscapingAwareTag implements EditorAwareTag {
 		}
 		if (this.previousRequestStatus != null) {
 			pageContext.setAttribute(STATUS_VARIABLE_NAME, this.previousRequestStatus, PageContext.REQUEST_SCOPE);
-		}
-		else {
+		} else {
 			pageContext.removeAttribute(STATUS_VARIABLE_NAME, PageContext.REQUEST_SCOPE);
 		}
 		return EVAL_PAGE;
@@ -202,6 +199,7 @@ public class BindTag extends HtmlEscapingAwareTag implements EditorAwareTag {
 	 * Retrieve the property that this tag is currently bound to,
 	 * or {@code null} if bound to an object rather than a specific property.
 	 * Intended for cooperating nesting tags.
+	 *
 	 * @return the property that this tag is currently bound to,
 	 * or {@code null} if none
 	 */
@@ -213,6 +211,7 @@ public class BindTag extends HtmlEscapingAwareTag implements EditorAwareTag {
 	/**
 	 * Retrieve the Errors instance that this tag is currently bound to.
 	 * Intended for cooperating nesting tags.
+	 *
 	 * @return the current Errors instance, or {@code null} if none
 	 */
 	@Nullable

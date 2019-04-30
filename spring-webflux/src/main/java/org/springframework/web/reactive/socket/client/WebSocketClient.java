@@ -15,12 +15,11 @@
  */
 package org.springframework.web.reactive.socket.client;
 
-import java.net.URI;
-
-import reactor.core.publisher.Mono;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.socket.WebSocketHandler;
+import reactor.core.publisher.Mono;
+
+import java.net.URI;
 
 /**
  * Contract for reactive-style handling of a WebSocket session.
@@ -33,7 +32,8 @@ public interface WebSocketClient {
 	/**
 	 * Execute a handshake request to the given url and handle the resulting
 	 * WebSocket session with the given handler.
-	 * @param url the handshake url
+	 *
+	 * @param url     the handshake url
 	 * @param handler the handler of the WebSocket session
 	 * @return completion {@code Mono<Void>} to indicate the outcome of the
 	 * WebSocket session handling.
@@ -42,7 +42,8 @@ public interface WebSocketClient {
 
 	/**
 	 * A variant of {@link #execute(URI, WebSocketHandler)} with custom headers.
-	 * @param url the handshake url
+	 *
+	 * @param url     the handshake url
 	 * @param headers custom headers for the handshake request
 	 * @param handler the handler of the WebSocket session
 	 * @return completion {@code Mono<Void>} to indicate the outcome of the

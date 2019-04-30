@@ -16,16 +16,7 @@
 
 package org.springframework.web.servlet.tags.form;
 
-import java.beans.PropertyEditor;
-import java.beans.PropertyEditorSupport;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import javax.servlet.jsp.tagext.BodyTag;
-import javax.servlet.jsp.tagext.Tag;
-
 import org.junit.Test;
-
 import org.springframework.beans.propertyeditors.StringArrayPropertyEditor;
 import org.springframework.mock.web.test.MockBodyContent;
 import org.springframework.mock.web.test.MockHttpServletRequest;
@@ -35,6 +26,14 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.support.BindStatus;
 
+import javax.servlet.jsp.tagext.BodyTag;
+import javax.servlet.jsp.tagext.Tag;
+import java.beans.PropertyEditor;
+import java.beans.PropertyEditorSupport;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 /**
@@ -43,7 +42,7 @@ import static org.junit.Assert.*;
  * @author Rick Evans
  * @author Jeremy Grelle
  */
-@SuppressWarnings({ "rawtypes", "unchecked" })
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class OptionTagTests extends AbstractHtmlElementTagTests {
 
 	private static final String ARRAY_SOURCE = "abc,123,def";
@@ -200,8 +199,7 @@ public class OptionTagTests extends AbstractHtmlElementTagTests {
 		try {
 			tag.doStartTag();
 			fail("Must not be able to use <option> tag without exposed context.");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			// expected
 		}
 	}
@@ -472,8 +470,7 @@ public class OptionTagTests extends AbstractHtmlElementTagTests {
 			tag.setValue("foo");
 			tag.doStartTag();
 			fail("Must throw an IllegalStateException when not nested within a <select/> tag.");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			// expected
 		}
 	}
@@ -508,13 +505,13 @@ public class OptionTagTests extends AbstractHtmlElementTagTests {
 	private static class TestBeanPropertyEditor extends PropertyEditorSupport {
 
 		@Override
-		public void setAsText(String text) throws IllegalArgumentException {
-			setValue(new TestBean(text + "k", 123));
+		public String getAsText() {
+			return ((TestBean) getValue()).getName();
 		}
 
 		@Override
-		public String getAsText() {
-			return ((TestBean) getValue()).getName();
+		public void setAsText(String text) throws IllegalArgumentException {
+			setValue(new TestBean(text + "k", 123));
 		}
 	}
 
@@ -531,36 +528,35 @@ public class OptionTagTests extends AbstractHtmlElementTagTests {
 			this.setVariant(variant);
 		}
 
-		private void setRules(String rules) {
-			this.rules = rules;
+		public static RulesVariant fromId(String id) {
+			String[] s = id.split("-", 2);
+			String rules = s[0];
+			String variant = s.length > 1 ? s[1] : null;
+			return new RulesVariant(rules, variant);
 		}
 
 		public String getRules() {
 			return rules;
 		}
 
-		private void setVariant(String variant) {
-			this.variant = variant;
+		private void setRules(String rules) {
+			this.rules = rules;
 		}
 
 		public String getVariant() {
 			return variant;
 		}
 
+		private void setVariant(String variant) {
+			this.variant = variant;
+		}
+
 		public String toId() {
 			if (this.variant != null) {
 				return this.rules + "-" + this.variant;
-			}
-			else {
+			} else {
 				return rules;
 			}
-		}
-
-		public static RulesVariant fromId(String id) {
-			String[] s = id.split("-", 2);
-			String rules = s[0];
-			String variant = s.length > 1 ? s[1] : null;
-			return new RulesVariant(rules, variant);
 		}
 
 		@Override
@@ -578,33 +574,30 @@ public class OptionTagTests extends AbstractHtmlElementTagTests {
 		}
 	}
 
+	private static class FriendEditor extends PropertyEditorSupport {
 
-	public class RulesVariantEditor extends PropertyEditorSupport {
+		@Override
+		public String getAsText() {
+			return ((TestBean) getValue()).getName();
+		}
 
 		@Override
 		public void setAsText(String text) throws IllegalArgumentException {
-			setValue(RulesVariant.fromId(text));
+			setValue(new TestBean(text));
 		}
+	}
+
+	public class RulesVariantEditor extends PropertyEditorSupport {
 
 		@Override
 		public String getAsText() {
 			RulesVariant rulesVariant = (RulesVariant) getValue();
 			return rulesVariant.toId();
 		}
-	}
-
-
-	private static class FriendEditor extends PropertyEditorSupport {
 
 		@Override
 		public void setAsText(String text) throws IllegalArgumentException {
-			setValue(new TestBean(text));
-		}
-
-
-		@Override
-		public String getAsText() {
-			return ((TestBean) getValue()).getName();
+			setValue(RulesVariant.fromId(text));
 		}
 	}
 

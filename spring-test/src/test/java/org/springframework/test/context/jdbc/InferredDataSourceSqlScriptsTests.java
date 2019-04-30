@@ -16,14 +16,8 @@
 
 package org.springframework.test.context.jdbc;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import javax.sql.DataSource;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,16 +29,21 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import static org.junit.Assert.*;
-import static org.springframework.test.transaction.TransactionTestUtils.*;
+import javax.sql.DataSource;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.springframework.test.transaction.TransactionTestUtils.assertInTransaction;
 
 /**
  * Integration tests for {@link Sql @Sql} that verify support for inferring
  * {@link DataSource}s from {@link PlatformTransactionManager}s.
  *
  * @author Sam Brannen
- * @since 4.1
  * @see InferredDataSourceTransactionalSqlScriptsTests
+ * @since 4.1
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
@@ -97,19 +96,19 @@ public class InferredDataSourceSqlScriptsTests {
 		@Bean
 		public DataSource dataSource1() {
 			return new EmbeddedDatabaseBuilder()//
-			.setName("database1")//
-			.addScript("classpath:/org/springframework/test/context/jdbc/schema.sql")//
-			.addScript("classpath:/org/springframework/test/context/jdbc/data.sql")//
-			.build();
+					.setName("database1")//
+					.addScript("classpath:/org/springframework/test/context/jdbc/schema.sql")//
+					.addScript("classpath:/org/springframework/test/context/jdbc/data.sql")//
+					.build();
 		}
 
 		@Bean
 		public DataSource dataSource2() {
 			return new EmbeddedDatabaseBuilder()//
-			.setName("database2")//
-			.addScript("classpath:/org/springframework/test/context/jdbc/schema.sql")//
-			.addScript("classpath:/org/springframework/test/context/jdbc/data.sql")//
-			.build();
+					.setName("database2")//
+					.addScript("classpath:/org/springframework/test/context/jdbc/schema.sql")//
+					.addScript("classpath:/org/springframework/test/context/jdbc/data.sql")//
+					.build();
 		}
 	}
 

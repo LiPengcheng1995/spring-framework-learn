@@ -39,15 +39,9 @@ public final class MockServerWebExchange extends DefaultServerWebExchange {
 				ServerCodecConfigurer.create(), new AcceptHeaderLocaleContextResolver());
 	}
 
-
-	@Override
-	public MockServerHttpResponse getResponse() {
-		return (MockServerHttpResponse) super.getResponse();
-	}
-
-
 	/**
 	 * Create a {@link MockServerWebExchange} from the given request.
+	 *
 	 * @param request the request to use.
 	 * @return the exchange
 	 */
@@ -58,11 +52,17 @@ public final class MockServerWebExchange extends DefaultServerWebExchange {
 	/**
 	 * A variant of {@link #from(MockServerHttpRequest)} that accepts a request
 	 * builder. Internally invokes the {@code build()} to build the request.
+	 *
 	 * @param requestBuilder the builder for the request.
 	 * @return the exchange
 	 */
 	public static MockServerWebExchange from(MockServerHttpRequest.BaseBuilder<?> requestBuilder) {
 		return new MockServerWebExchange(requestBuilder.build());
+	}
+
+	@Override
+	public MockServerHttpResponse getResponse() {
+		return (MockServerHttpResponse) super.getResponse();
 	}
 
 }

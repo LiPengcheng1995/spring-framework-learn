@@ -18,7 +18,6 @@ package org.springframework.web.context.request;
 
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -69,8 +68,7 @@ public class RequestScopedProxyTests {
 			assertEquals("scoped", target.getName());
 			assertSame(bean, this.beanFactory.getBean(name));
 			assertEquals(bean.toString(), target.toString());
-		}
-		finally {
+		} finally {
 			RequestContextHolder.setRequestAttributes(null);
 		}
 	}
@@ -94,8 +92,7 @@ public class RequestScopedProxyTests {
 			assertEquals("scoped", target.getName());
 			assertSame(bean, this.beanFactory.getBean(name));
 			assertEquals(bean.toString(), target.toString());
-		}
-		finally {
+		} finally {
 			RequestContextHolder.setRequestAttributes(null);
 		}
 	}
@@ -120,8 +117,7 @@ public class RequestScopedProxyTests {
 
 			requestAttributes.requestCompleted();
 			assertTrue(((TestBean) request.getAttribute("scopedTarget." + name)).wasDestroyed());
-		}
-		finally {
+		} finally {
 			RequestContextHolder.setRequestAttributes(null);
 		}
 	}
@@ -142,8 +138,7 @@ public class RequestScopedProxyTests {
 			assertNotNull(request.getAttribute("scopedTarget." + name));
 			assertEquals(DummyFactory.class, request.getAttribute("scopedTarget." + name).getClass());
 			assertSame(bean, this.beanFactory.getBean(name));
-		}
-		finally {
+		} finally {
 			RequestContextHolder.setRequestAttributes(null);
 		}
 	}
@@ -166,8 +161,7 @@ public class RequestScopedProxyTests {
 			assertNotNull(request.getAttribute("scopedTarget." + name));
 			assertEquals(TestBean.class, request.getAttribute("scopedTarget." + name).getClass());
 			assertEquals("scoped", ((TestBean) request.getAttribute("scopedTarget." + name)).getName());
-		}
-		finally {
+		} finally {
 			RequestContextHolder.setRequestAttributes(null);
 		}
 	}
@@ -193,8 +187,7 @@ public class RequestScopedProxyTests {
 			assertNotNull(request.getAttribute("scopedTarget." + name));
 			assertEquals(TestBean.class, request.getAttribute("scopedTarget." + name).getClass());
 			assertEquals("scoped", ((TestBean) request.getAttribute("scopedTarget." + name)).getName());
-		}
-		finally {
+		} finally {
 			RequestContextHolder.setRequestAttributes(null);
 		}
 	}

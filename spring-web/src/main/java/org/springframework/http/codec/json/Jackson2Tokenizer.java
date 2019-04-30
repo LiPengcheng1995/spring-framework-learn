@@ -16,22 +16,21 @@
 
 package org.springframework.http.codec.json;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
-
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.async.ByteArrayFeeder;
 import com.fasterxml.jackson.databind.util.TokenBuffer;
-import reactor.core.publisher.Flux;
-
 import org.springframework.core.codec.DecodingException;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
+import reactor.core.publisher.Flux;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
 
 /**
  * {@link Function} to transform a JSON stream of arbitrary size, byte array
@@ -47,16 +46,12 @@ class Jackson2Tokenizer {
 	private final JsonParser parser;
 
 	private final boolean tokenizeArrayElements;
-
-	private TokenBuffer tokenBuffer;
-
-	private int objectDepth;
-
-	private int arrayDepth;
-
 	// TODO: change to ByteBufferFeeder when supported by Jackson
 	// See https://github.com/FasterXML/jackson-core/issues/478
 	private final ByteArrayFeeder inputFeeder;
+	private TokenBuffer tokenBuffer;
+	private int objectDepth;
+	private int arrayDepth;
 
 
 	private Jackson2Tokenizer(JsonParser parser, boolean tokenizeArrayElements) {
@@ -66,6 +61,26 @@ class Jackson2Tokenizer {
 		this.inputFeeder = (ByteArrayFeeder) this.parser.getNonBlockingInputFeeder();
 	}
 
+	/**
+	 * Tokenize the given {@code Flux<DataBuffer>} into {@code Flux<TokenBuffer>}.
+	 *
+	 * @param dataBuffers           the source data buffers
+	 * @param jsonFactory           the factory to use
+	 * @param tokenizeArrayElements if {@code true} and the "top level" JSON object is
+	 *                              an array, each element is returned individually immediately after it is received
+	 * @return the resulting token buffers
+	 */
+	public static Flux<TokenBuffer> tokenize(
+			Flux<DataBuffer> dataBuffers, JsonFactory jsonFactory, boolean tokenizeArrayElements) {
+
+		try {
+			JsonParser parser = jsonFactory.createNonBlockingByteArrayParser();
+			Jackson2Tokenizer tokenizer = new Jackson2Tokenizer(parser, tokenizeArrayElements);
+			return dataBuffers.flatMap(tokenizer::tokenize, Flux::error, tokenizer::endOfInput);
+		} catch (IOException ex) {
+			return Flux.error(ex);
+		}
+	}
 
 	private Flux<TokenBuffer> tokenize(DataBuffer dataBuffer) {
 		byte[] bytes = new byte[dataBuffer.readableByteCount()];
@@ -75,11 +90,9 @@ class Jackson2Tokenizer {
 		try {
 			this.inputFeeder.feedInput(bytes, 0, bytes.length);
 			return parseTokenBufferFlux();
-		}
-		catch (JsonProcessingException ex) {
+		} catch (JsonProcessingException ex) {
 			return Flux.error(new DecodingException("JSON decoding error: " + ex.getOriginalMessage(), ex));
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			return Flux.error(ex);
 		}
 	}
@@ -88,11 +101,9 @@ class Jackson2Tokenizer {
 		this.inputFeeder.endOfInput();
 		try {
 			return parseTokenBufferFlux();
-		}
-		catch (JsonProcessingException ex) {
+		} catch (JsonProcessingException ex) {
 			return Flux.error(new DecodingException("JSON decoding error: " + ex.getOriginalMessage(), ex));
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			return Flux.error(ex);
 		}
 	}
@@ -110,8 +121,7 @@ class Jackson2Tokenizer {
 			updateDepth(token);
 			if (!this.tokenizeArrayElements) {
 				processTokenNormal(token, result);
-			}
-			else {
+			} else {
 				processTokenArray(token, result);
 			}
 		}
@@ -160,28 +170,6 @@ class Jackson2Tokenizer {
 	private boolean isTopLevelArrayToken(JsonToken token) {
 		return this.objectDepth == 0 && ((token == JsonToken.START_ARRAY && this.arrayDepth == 1) ||
 				(token == JsonToken.END_ARRAY && this.arrayDepth == 0));
-	}
-
-
-	/**
-	 * Tokenize the given {@code Flux<DataBuffer>} into {@code Flux<TokenBuffer>}.
-	 * @param dataBuffers the source data buffers
-	 * @param jsonFactory the factory to use
-	 * @param tokenizeArrayElements if {@code true} and the "top level" JSON object is
-	 * an array, each element is returned individually immediately after it is received
-	 * @return the resulting token buffers
-	 */
-	public static Flux<TokenBuffer> tokenize(
-			Flux<DataBuffer> dataBuffers, JsonFactory jsonFactory, boolean tokenizeArrayElements) {
-
-		try {
-			JsonParser parser = jsonFactory.createNonBlockingByteArrayParser();
-			Jackson2Tokenizer tokenizer = new Jackson2Tokenizer(parser, tokenizeArrayElements);
-			return dataBuffers.flatMap(tokenizer::tokenize, Flux::error, tokenizer::endOfInput);
-		}
-		catch (IOException ex) {
-			return Flux.error(ex);
-		}
 	}
 
 }

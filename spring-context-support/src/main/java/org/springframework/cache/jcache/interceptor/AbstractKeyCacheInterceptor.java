@@ -16,12 +16,12 @@
 
 package org.springframework.cache.jcache.interceptor;
 
-import java.lang.annotation.Annotation;
-import javax.cache.annotation.CacheKeyInvocationContext;
-
 import org.springframework.cache.interceptor.CacheErrorHandler;
 import org.springframework.cache.interceptor.CacheOperationInvocationContext;
 import org.springframework.cache.interceptor.KeyGenerator;
+
+import javax.cache.annotation.CacheKeyInvocationContext;
+import java.lang.annotation.Annotation;
 
 /**
  * A base interceptor for JSR-107 key-based cache annotations.
@@ -40,6 +40,7 @@ abstract class AbstractKeyCacheInterceptor<O extends AbstractJCacheKeyOperation<
 
 	/**
 	 * Generate a key for the specified invocation.
+	 *
 	 * @param context the context of the invocation
 	 * @return the key to use
 	 */
@@ -54,6 +55,7 @@ abstract class AbstractKeyCacheInterceptor<O extends AbstractJCacheKeyOperation<
 
 	/**
 	 * Create a {@link CacheKeyInvocationContext} based on the specified invocation.
+	 *
 	 * @param context the context of the invocation.
 	 * @return the related {@code CacheKeyInvocationContext}
 	 */

@@ -16,20 +16,19 @@
 
 package org.springframework.web.reactive.resource;
 
-import java.time.Duration;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.mock.web.test.server.MockServerWebExchange;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -116,7 +115,7 @@ public class ResourceTransformerSupportTests {
 
 		@Override
 		public Mono<Resource> transform(ServerWebExchange exchange, Resource resource,
-				ResourceTransformerChain chain) {
+										ResourceTransformerChain chain) {
 
 			return Mono.error(new IllegalStateException("Should never be called"));
 		}

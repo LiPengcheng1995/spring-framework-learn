@@ -16,11 +16,11 @@
 
 package org.springframework.jdbc.core.metadata;
 
+import org.springframework.lang.Nullable;
+
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.List;
-
-import org.springframework.lang.Nullable;
 
 /**
  * Interface specifying the API to be implemented by a class providing table meta-data.
@@ -33,6 +33,7 @@ public interface TableMetaDataProvider {
 
 	/**
 	 * Initialize using the database meta-data provided.
+	 *
 	 * @param databaseMetaData used to retrieve database specific information
 	 * @throws SQLException in case of initialization failure
 	 */
@@ -41,14 +42,15 @@ public interface TableMetaDataProvider {
 	/**
 	 * Initialize using provided database meta-data, table and column information.
 	 * This initialization can be turned off by specifying that column meta-data should not be used.
+	 *
 	 * @param databaseMetaData used to retrieve database specific information
-	 * @param catalogName name of catalog to use (or {@code null} if none)
-	 * @param schemaName name of schema name to use (or {@code null} if none)
-	 * @param tableName name of the table
+	 * @param catalogName      name of catalog to use (or {@code null} if none)
+	 * @param schemaName       name of schema name to use (or {@code null} if none)
+	 * @param tableName        name of the table
 	 * @throws SQLException in case of initialization failure
 	 */
 	void initializeWithTableColumnMetaData(DatabaseMetaData databaseMetaData, @Nullable String catalogName,
-			@Nullable String schemaName, @Nullable String tableName) throws SQLException;
+										   @Nullable String schemaName, @Nullable String tableName) throws SQLException;
 
 	/**
 	 * Get the table name formatted based on meta-data information.
@@ -77,7 +79,7 @@ public interface TableMetaDataProvider {
 	 * This could include altering the case used or providing a base catalog if none is provided.
 	 */
 	@Nullable
-	String metaDataCatalogNameToUse(@Nullable String catalogName) ;
+	String metaDataCatalogNameToUse(@Nullable String catalogName);
 
 	/**
 	 * Provide any modification of the schema name passed in to match the meta-data currently used.
@@ -85,25 +87,26 @@ public interface TableMetaDataProvider {
 	 * This could include altering the case used or providing a base schema if none is provided.
 	 */
 	@Nullable
-	String metaDataSchemaNameToUse(@Nullable String schemaName) ;
+	String metaDataSchemaNameToUse(@Nullable String schemaName);
 
 	/**
 	 * Are we using the meta-data for the table columns?
 	 */
- 	boolean isTableColumnMetaDataUsed();
+	boolean isTableColumnMetaDataUsed();
 
 	/**
 	 * Does this database support the JDBC 3.0 feature of retrieving generated keys:
 	 * {@link java.sql.DatabaseMetaData#supportsGetGeneratedKeys()}?
 	 */
- 	boolean isGetGeneratedKeysSupported();
+	boolean isGetGeneratedKeysSupported();
 
 	/**
 	 * Does this database support a simple query to retrieve the generated key when
 	 * the JDBC 3.0 feature of retrieving generated keys is not supported?
+	 *
 	 * @see #isGetGeneratedKeysSupported()
 	 */
- 	boolean isGetGeneratedKeysSimulated();
+	boolean isGetGeneratedKeysSimulated();
 
 	/**
 	 * Get the simple query to retrieve a generated key.
@@ -115,10 +118,11 @@ public interface TableMetaDataProvider {
 	 * Does this database support a column name String array for retrieving generated keys:
 	 * {@link java.sql.Connection#createStruct(String, Object[])}?
 	 */
- 	boolean isGeneratedKeysColumnNameArraySupported();
+	boolean isGeneratedKeysColumnNameArraySupported();
 
 	/**
 	 * Get the table parameter meta-data that is currently used.
+	 *
 	 * @return List of {@link TableParameterMetaData}
 	 */
 	List<TableParameterMetaData> getTableParameterMetaData();

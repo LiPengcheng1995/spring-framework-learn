@@ -16,6 +16,19 @@
 
 package org.springframework.web.reactive.result.method;
 
+import org.springframework.core.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.lang.Nullable;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.reactive.BindingContext;
+import org.springframework.web.reactive.HandlerResult;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -27,24 +40,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
-import reactor.core.publisher.Mono;
-
-import org.springframework.core.DefaultParameterNameDiscoverer;
-import org.springframework.core.MethodParameter;
-import org.springframework.core.ParameterNameDiscoverer;
-import org.springframework.core.ReactiveAdapter;
-import org.springframework.core.ReactiveAdapterRegistry;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.server.reactive.ServerHttpResponse;
-import org.springframework.lang.Nullable;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.ReflectionUtils;
-import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.reactive.BindingContext;
-import org.springframework.web.reactive.HandlerResult;
-import org.springframework.web.server.ServerWebExchange;
 
 /**
  * Extension of {@link HandlerMethod} that invokes the underlying method with
@@ -95,6 +90,13 @@ public class InvocableHandlerMethod extends HandlerMethod {
 	}
 
 	/**
+	 * Return the configured parameter name discoverer.
+	 */
+	public ParameterNameDiscoverer getParameterNameDiscoverer() {
+		return this.parameterNameDiscoverer;
+	}
+
+	/**
 	 * Set the ParameterNameDiscoverer for resolving parameter names when needed
 	 * (e.g. default request attribute name).
 	 * <p>Default is a {@link DefaultParameterNameDiscoverer}.
@@ -104,18 +106,12 @@ public class InvocableHandlerMethod extends HandlerMethod {
 	}
 
 	/**
-	 * Return the configured parameter name discoverer.
-	 */
-	public ParameterNameDiscoverer getParameterNameDiscoverer() {
-		return this.parameterNameDiscoverer;
-	}
-
-	/**
 	 * Configure a reactive registry. This is needed for cases where the response
 	 * is fully handled within the controller in combination with an async void
 	 * return value.
 	 * <p>By default this is an instance of {@link ReactiveAdapterRegistry} with
 	 * default settings.
+	 *
 	 * @param registry the registry to use
 	 */
 	public void setReactiveAdapterRegistry(ReactiveAdapterRegistry registry) {
@@ -125,9 +121,10 @@ public class InvocableHandlerMethod extends HandlerMethod {
 
 	/**
 	 * Invoke the method for the given exchange.
-	 * @param exchange the current exchange
+	 *
+	 * @param exchange       the current exchange
 	 * @param bindingContext the binding context to use
-	 * @param providedArgs optional list of argument values to match by type
+	 * @param providedArgs   optional list of argument values to match by type
 	 * @return a Mono with a {@link HandlerResult}.
 	 */
 	public Mono<HandlerResult> invoke(
@@ -152,11 +149,9 @@ public class InvocableHandlerMethod extends HandlerMethod {
 
 				HandlerResult result = new HandlerResult(this, value, returnType, bindingContext);
 				return Mono.just(result);
-			}
-			catch (InvocationTargetException ex) {
+			} catch (InvocationTargetException ex) {
 				return Mono.error(ex.getTargetException());
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				return Mono.error(new IllegalStateException(getInvocationErrorMessage(args)));
 			}
 		});
@@ -185,8 +180,7 @@ public class InvocableHandlerMethod extends HandlerMethod {
 			// Create Mono with array of resolved values...
 			return Mono.zip(argMonos, argValues ->
 					Stream.of(argValues).map(o -> o != NO_ARG_VALUE ? o : null).toArray());
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			return Mono.error(ex);
 		}
 	}
@@ -208,7 +202,7 @@ public class InvocableHandlerMethod extends HandlerMethod {
 	}
 
 	private Mono<Object> resolveArg(HandlerMethodArgumentResolver resolver, MethodParameter parameter,
-			BindingContext bindingContext, ServerWebExchange exchange) {
+									BindingContext bindingContext, ServerWebExchange exchange) {
 
 		try {
 			return resolver.resolveArgument(parameter, bindingContext, exchange)
@@ -218,8 +212,7 @@ public class InvocableHandlerMethod extends HandlerMethod {
 							logger.debug(getDetailedErrorMessage("Failed to resolve", parameter), cause);
 						}
 					});
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw getArgumentError("Failed to resolve", parameter, ex);
 		}
 	}
@@ -259,7 +252,7 @@ public class InvocableHandlerMethod extends HandlerMethod {
 	}
 
 	private boolean isAsyncVoidReturnType(MethodParameter returnType,
-			@Nullable ReactiveAdapter reactiveAdapter) {
+										  @Nullable ReactiveAdapter reactiveAdapter) {
 
 		if (reactiveAdapter != null && reactiveAdapter.supportsEmpty()) {
 			if (reactiveAdapter.isNoValue()) {

@@ -16,30 +16,31 @@
 
 package org.springframework.web.reactive.function;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import org.springframework.http.ReactiveHttpInputMessage;
 import org.springframework.http.codec.HttpMessageReader;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 /**
  * A function that can extract data from a {@link ReactiveHttpInputMessage} body.
  *
- * @author Arjen Poutsma
- * @since 5.0
  * @param <T> the type of data to extract
  * @param <M> the type of {@link ReactiveHttpInputMessage} this extractor can be applied to
+ * @author Arjen Poutsma
  * @see BodyExtractors
+ * @since 5.0
  */
 @FunctionalInterface
 public interface BodyExtractor<T, M extends ReactiveHttpInputMessage> {
 
 	/**
 	 * Extract from the given input message.
+	 *
 	 * @param inputMessage the request to extract from
-	 * @param context the configuration to use
+	 * @param context      the configuration to use
 	 * @return the extracted data
 	 */
 	T extract(M inputMessage, Context context);
@@ -52,6 +53,7 @@ public interface BodyExtractor<T, M extends ReactiveHttpInputMessage> {
 
 		/**
 		 * Return the {@link HttpMessageReader}s to be used for body extraction.
+		 *
 		 * @return the stream of message readers
 		 */
 		List<HttpMessageReader<?>> messageReaders();

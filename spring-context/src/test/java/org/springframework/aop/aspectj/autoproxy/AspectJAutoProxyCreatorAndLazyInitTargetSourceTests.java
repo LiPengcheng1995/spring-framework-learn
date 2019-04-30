@@ -17,12 +17,12 @@
 package org.springframework.aop.aspectj.autoproxy;
 
 import org.junit.Test;
-
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.tests.sample.beans.ITestBean;
 import org.springframework.tests.sample.beans.TestBean;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Rod Johnson
@@ -34,7 +34,7 @@ public class AspectJAutoProxyCreatorAndLazyInitTargetSourceTests {
 	@Test
 	public void testAdrian() {
 		ClassPathXmlApplicationContext ctx =
-			new ClassPathXmlApplicationContext(getClass().getSimpleName() + "-context.xml", getClass());
+				new ClassPathXmlApplicationContext(getClass().getSimpleName() + "-context.xml", getClass());
 
 		ITestBean adrian = (ITestBean) ctx.getBean("adrian");
 		assertEquals(0, LazyTestBean.instantiations);

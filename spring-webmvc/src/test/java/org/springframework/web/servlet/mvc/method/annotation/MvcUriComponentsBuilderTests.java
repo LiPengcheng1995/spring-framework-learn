@@ -16,21 +16,12 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.util.Arrays;
-import java.util.List;
-
 import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
@@ -40,12 +31,7 @@ import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.mock.web.test.MockServletContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -56,8 +42,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.lang.annotation.*;
+import java.util.Arrays;
+import java.util.List;
+
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.*;
 
 /**
@@ -241,7 +232,7 @@ public class MvcUriComponentsBuilderTests {
 	@Test  // SPR-14405
 	public void fromMethodNameWithOptionalParam() {
 		UriComponents uriComponents = fromMethodName(ControllerWithMethods.class,
-				"methodWithOptionalParam", new Object[] {null}).build();
+				"methodWithOptionalParam", new Object[]{null}).build();
 
 		assertThat(uriComponents.toUriString(), is("http://localhost/something/optional-param"));
 	}
@@ -261,7 +252,7 @@ public class MvcUriComponentsBuilderTests {
 		assertThat(uriComponents.toUriString(), endsWith("/something/else"));
 	}
 
- 	@Test
+	@Test
 	public void fromMethodCallOnSubclass() {
 		UriComponents uriComponents = fromMethodCall(on(ExtendedController.class).myMethod(null)).build();
 
@@ -382,7 +373,7 @@ public class MvcUriComponentsBuilderTests {
 		String url = mvcBuilder.withMappingName("PAC#getAddressesForCountry").arg(0, "DE").buildAndExpand(123);
 		assertEquals("https://example.org:9999/base/people/123/addresses/DE", url);
 	}
-   
+
 	@Test // SPR-17027
 	public void fromMappingNameWithEncoding() {
 		initWebApplicationContext(WebConfig.class);
@@ -406,6 +397,22 @@ public class MvcUriComponentsBuilderTests {
 	}
 
 
+	@RequestMapping("/people")
+	interface PersonController {
+	}
+
+
+	@RequestMapping(method = RequestMethod.POST,
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE)
+	@Target({ElementType.METHOD, ElementType.TYPE})
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	private @interface PostJson {
+
+		String[] path() default {};
+	}
+
 	static class Person {
 
 		Long id;
@@ -415,16 +422,6 @@ public class MvcUriComponentsBuilderTests {
 		}
 	}
 
-
-	@RequestMapping("/people")
-	interface PersonController {
-	}
-
-
-	private class PersonControllerImpl implements PersonController {
-	}
-
-
 	@RequestMapping("/people/{id}/addresses")
 	private static class PersonsAddressesController {
 
@@ -433,20 +430,6 @@ public class MvcUriComponentsBuilderTests {
 			return null;
 		}
 	}
-
-
-	@RequestMapping({"/persons", "/people"})
-	private class InvalidController {
-	}
-
-
-	private class UnmappedController {
-
-		@RequestMapping
-		public void unmappedMethod() {
-		}
-	}
-
 
 	@RequestMapping("/something")
 	static class ControllerWithMethods {
@@ -469,13 +452,13 @@ public class MvcUriComponentsBuilderTests {
 
 		@RequestMapping(value = "/{id}/foo")
 		HttpEntity<Void> methodForNextPage(@PathVariable String id,
-				@RequestParam Integer offset, @RequestParam Integer limit) {
+										   @RequestParam Integer offset, @RequestParam Integer limit) {
 			return null;
 		}
 
 		@RequestMapping(value = "/{id}/foo")
 		HttpEntity<Void> methodWithMultiValueRequestParams(@PathVariable String id,
-				@RequestParam List<Integer> items, @RequestParam Integer limit) {
+														   @RequestParam List<Integer> items, @RequestParam Integer limit) {
 			return null;
 		}
 
@@ -485,12 +468,10 @@ public class MvcUriComponentsBuilderTests {
 		}
 	}
 
-
 	@RequestMapping("/extended")
 	@SuppressWarnings("WeakerAccess")
 	static class ExtendedController extends ControllerWithMethods {
 	}
-
 
 	@RequestMapping("/user/{userId}/contacts")
 	private static class UserContactController {
@@ -501,12 +482,10 @@ public class MvcUriComponentsBuilderTests {
 		}
 	}
 
-
 	static abstract class AbstractCrudController<T, ID> {
 
 		abstract T get(ID id);
 	}
-
 
 	private static class PersonCrudController extends AbstractCrudController<Person, Long> {
 
@@ -515,7 +494,6 @@ public class MvcUriComponentsBuilderTests {
 			return new Person();
 		}
 	}
-
 
 	@Controller
 	private static class MetaAnnotationController {
@@ -529,19 +507,6 @@ public class MvcUriComponentsBuilderTests {
 		}
 	}
 
-
-	@RequestMapping(method = RequestMethod.POST,
-			produces = MediaType.APPLICATION_JSON_VALUE,
-			consumes = MediaType.APPLICATION_JSON_VALUE)
-	@Target({ElementType.METHOD, ElementType.TYPE})
-	@Retention(RetentionPolicy.RUNTIME)
-	@Documented
-	private @interface PostJson {
-
-		String[] path() default {};
-	}
-
-
 	@EnableWebMvc
 	static class WebConfig implements WebMvcConfigurer {
 
@@ -550,7 +515,6 @@ public class MvcUriComponentsBuilderTests {
 			return new PersonsAddressesController();
 		}
 	}
-
 
 	@Controller
 	@RequestMapping("/hotels/{hotel}")
@@ -562,7 +526,6 @@ public class MvcUriComponentsBuilderTests {
 		}
 	}
 
-
 	@Controller
 	@RequestMapping("/hotels/{hotel}")
 	static class BookingControllerWithObject {
@@ -573,7 +536,6 @@ public class MvcUriComponentsBuilderTests {
 		}
 	}
 
-
 	@Controller
 	@RequestMapping("/hotels/{hotel}")
 	static class BookingControllerWithString {
@@ -581,6 +543,20 @@ public class MvcUriComponentsBuilderTests {
 		@GetMapping("/bookings/{booking}")
 		public String getBooking(@PathVariable Long booking) {
 			return "url";
+		}
+	}
+
+	private class PersonControllerImpl implements PersonController {
+	}
+
+	@RequestMapping({"/persons", "/people"})
+	private class InvalidController {
+	}
+
+	private class UnmappedController {
+
+		@RequestMapping
+		public void unmappedMethod() {
 		}
 	}
 

@@ -16,20 +16,8 @@
 
 package org.springframework.web.socket.sockjs.transport.session;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledFuture;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
@@ -44,6 +32,11 @@ import org.springframework.web.socket.sockjs.frame.SockJsMessageCodec;
 import org.springframework.web.socket.sockjs.transport.SockJsServiceConfig;
 import org.springframework.web.socket.sockjs.transport.SockJsSession;
 
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
+
 /**
  * An abstract base class for SockJS sessions implementing {@link SockJsSession}.
  *
@@ -52,9 +45,6 @@ import org.springframework.web.socket.sockjs.transport.SockJsSession;
  * @since 4.0
  */
 public abstract class AbstractSockJsSession implements SockJsSession {
-
-	private enum State {NEW, OPEN, CLOSED}
-
 
 	/**
 	 * Log category to use on network IO exceptions after a client has gone away.
@@ -65,11 +55,17 @@ public abstract class AbstractSockJsSession implements SockJsSession {
 	 * <p>We make a best effort to identify such network failures, on a per-server
 	 * basis, and log them under a separate log category. A simple one-line message
 	 * is logged at DEBUG level, while a full stack trace is shown at TRACE level.
+	 *
 	 * @see #disconnectedClientLogger
 	 */
 	public static final String DISCONNECTED_CLIENT_LOG_CATEGORY =
 			"org.springframework.web.socket.sockjs.DisconnectedClient";
-
+	/**
+	 * Separate logger to use on network IO failure after a client has gone away.
+	 *
+	 * @see #DISCONNECTED_CLIENT_LOG_CATEGORY
+	 */
+	protected static final Log disconnectedClientLogger = LogFactory.getLog(DISCONNECTED_CLIENT_LOG_CATEGORY);
 	/**
 	 * Tomcat: ClientAbortException or EOFException
 	 * Jetty: EofException
@@ -77,55 +73,37 @@ public abstract class AbstractSockJsSession implements SockJsSession {
 	 * <p>TODO:
 	 * This definition is currently duplicated between HttpWebHandlerAdapter
 	 * and AbstractSockJsSession. It is a candidate for a common utility class.
+	 *
 	 * @see #indicatesDisconnectedClient(Throwable)
 	 */
 	private static final Set<String> DISCONNECTED_CLIENT_EXCEPTIONS =
 			new HashSet<>(Arrays.asList("ClientAbortException", "EOFException", "EofException"));
-
-
-	/**
-	 * Separate logger to use on network IO failure after a client has gone away.
-	 * @see #DISCONNECTED_CLIENT_LOG_CATEGORY
-	 */
-	protected static final Log disconnectedClientLogger = LogFactory.getLog(DISCONNECTED_CLIENT_LOG_CATEGORY);
-
 	protected final Log logger = LogFactory.getLog(getClass());
-
 	protected final Object responseLock = new Object();
-
 	private final String id;
-
 	private final SockJsServiceConfig config;
-
 	private final WebSocketHandler handler;
-
 	private final Map<String, Object> attributes = new ConcurrentHashMap<>();
-
-	private volatile State state = State.NEW;
-
 	private final long timeCreated = System.currentTimeMillis();
-
+	private volatile State state = State.NEW;
 	private volatile long timeLastActive = this.timeCreated;
-
 	@Nullable
 	private ScheduledFuture<?> heartbeatFuture;
-
 	@Nullable
 	private HeartbeatTask heartbeatTask;
-
 	private volatile boolean heartbeatDisabled;
-
 
 	/**
 	 * Create a new instance.
-	 * @param id the session ID
-	 * @param config SockJS service configuration options
-	 * @param handler the recipient of SockJS messages
+	 *
+	 * @param id         the session ID
+	 * @param config     SockJS service configuration options
+	 * @param handler    the recipient of SockJS messages
 	 * @param attributes attributes from the HTTP handshake to associate with the WebSocket
-	 * session; the provided attributes are copied, the original map is not used.
+	 *                   session; the provided attributes are copied, the original map is not used.
 	 */
 	public AbstractSockJsSession(String id, SockJsServiceConfig config, WebSocketHandler handler,
-			@Nullable Map<String, Object> attributes) {
+								 @Nullable Map<String, Object> attributes) {
 
 		Assert.notNull(id, "Session id must not be null");
 		Assert.notNull(config, "SockJsServiceConfig must not be null");
@@ -139,7 +117,6 @@ public abstract class AbstractSockJsSession implements SockJsSession {
 			this.attributes.putAll(attributes);
 		}
 	}
-
 
 	@Override
 	public String getId() {
@@ -159,23 +136,23 @@ public abstract class AbstractSockJsSession implements SockJsSession {
 		return this.attributes;
 	}
 
-
-	// Message sending
-
 	public final void sendMessage(WebSocketMessage<?> message) throws IOException {
 		Assert.state(!isClosed(), "Cannot send a message when session is closed");
 		Assert.isInstanceOf(TextMessage.class, message, "SockJS supports text messages only");
 		sendMessageInternal(((TextMessage) message).getPayload());
 	}
 
+
+	// Message sending
+
 	protected abstract void sendMessageInternal(String message) throws IOException;
-
-
-	// Lifecycle related methods
 
 	public boolean isNew() {
 		return State.NEW.equals(this.state);
 	}
+
+
+	// Lifecycle related methods
 
 	@Override
 	public boolean isOpen() {
@@ -208,20 +185,17 @@ public abstract class AbstractSockJsSession implements SockJsSession {
 				if (isActive() && !CloseStatus.SESSION_NOT_RELIABLE.equals(status)) {
 					try {
 						writeFrameInternal(SockJsFrame.closeFrame(status.getCode(), status.getReason()));
-					}
-					catch (Throwable ex) {
+					} catch (Throwable ex) {
 						logger.debug("Failure while sending SockJS close frame", ex);
 					}
 				}
 				updateLastActiveTime();
 				cancelHeartbeat();
 				disconnect(status);
-			}
-			finally {
+			} finally {
 				try {
 					this.handler.afterConnectionClosed(this, status);
-				}
-				catch (Throwable ex) {
+				} catch (Throwable ex) {
 					logger.debug("Error from WebSocketHandler.afterConnectionClosed in " + this, ex);
 				}
 			}
@@ -232,8 +206,7 @@ public abstract class AbstractSockJsSession implements SockJsSession {
 	public long getTimeSinceLastActive() {
 		if (isNew()) {
 			return (System.currentTimeMillis() - this.timeCreated);
-		}
-		else {
+		} else {
 			return (isActive() ? 0 : System.currentTimeMillis() - this.timeLastActive);
 		}
 	}
@@ -309,9 +282,6 @@ public abstract class AbstractSockJsSession implements SockJsSession {
 	 */
 	protected abstract void disconnect(CloseStatus status) throws IOException;
 
-
-	// Frame writing
-
 	/**
 	 * For internal use within a TransportHandler and the (TransportHandler-specific)
 	 * session class.
@@ -322,25 +292,25 @@ public abstract class AbstractSockJsSession implements SockJsSession {
 		}
 		try {
 			writeFrameInternal(frame);
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			logWriteFrameFailure(ex);
 			try {
 				// Force disconnect (so we won't try to send close frame)
 				disconnect(CloseStatus.SERVER_ERROR);
-			}
-			catch (Throwable disconnectFailure) {
+			} catch (Throwable disconnectFailure) {
 				// Ignore
 			}
 			try {
 				close(CloseStatus.SERVER_ERROR);
-			}
-			catch (Throwable closeFailure) {
+			} catch (Throwable closeFailure) {
 				// Nothing of consequence, already forced disconnect
 			}
 			throw new SockJsTransportFailureException("Failed to write " + frame, getId(), ex);
 		}
 	}
+
+
+	// Frame writing
 
 	protected abstract void writeFrameInternal(SockJsFrame frame) throws IOException;
 
@@ -348,32 +318,30 @@ public abstract class AbstractSockJsSession implements SockJsSession {
 		if (indicatesDisconnectedClient(ex)) {
 			if (disconnectedClientLogger.isTraceEnabled()) {
 				disconnectedClientLogger.trace("Looks like the client has gone away", ex);
-			}
-			else if (disconnectedClientLogger.isDebugEnabled()) {
+			} else if (disconnectedClientLogger.isDebugEnabled()) {
 				disconnectedClientLogger.debug("Looks like the client has gone away: " + ex +
 						" (For a full stack trace, set the log category '" + DISCONNECTED_CLIENT_LOG_CATEGORY +
 						"' to TRACE level.)");
 			}
-		}
-		else {
+		} else {
 			logger.debug("Terminating connection after failure to send message to client", ex);
 		}
 	}
 
-	private boolean indicatesDisconnectedClient(Throwable ex)  {
+	private boolean indicatesDisconnectedClient(Throwable ex) {
 		String message = NestedExceptionUtils.getMostSpecificCause(ex).getMessage();
 		message = (message != null ? message.toLowerCase() : "");
 		String className = ex.getClass().getSimpleName();
 		return (message.contains("broken pipe") || DISCONNECTED_CLIENT_EXCEPTIONS.contains(className));
 	}
 
-
-	// Delegation methods
-
 	public void delegateConnectionEstablished() throws Exception {
 		this.state = State.OPEN;
 		this.handler.afterConnectionEstablished(this);
 	}
+
+
+	// Delegation methods
 
 	public void delegateMessages(String... messages) throws SockJsMessageDeliveryException {
 		List<String> undelivered = new ArrayList<>(Arrays.asList(messages));
@@ -381,13 +349,11 @@ public abstract class AbstractSockJsSession implements SockJsSession {
 			try {
 				if (isClosed()) {
 					throw new SockJsMessageDeliveryException(this.id, undelivered, "Session closed");
-				}
-				else {
+				} else {
 					this.handler.handleMessage(this, new TextMessage(message));
 					undelivered.remove(0);
 				}
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				throw new SockJsMessageDeliveryException(this.id, undelivered, ex);
 			}
 		}
@@ -406,8 +372,7 @@ public abstract class AbstractSockJsSession implements SockJsSession {
 					this.heartbeatFuture = null;
 					future.cancel(false);
 				}
-			}
-			finally {
+			} finally {
 				this.state = State.CLOSED;
 				this.handler.afterConnectionClosed(this, status);
 			}
@@ -423,15 +388,13 @@ public abstract class AbstractSockJsSession implements SockJsSession {
 		}
 		try {
 			delegateError(error);
-		}
-		catch (Throwable delegateException) {
+		} catch (Throwable delegateException) {
 			// Ignore
 			logger.debug("Exception from error handling delegate", delegateException);
 		}
 		try {
 			close(closeStatus);
-		}
-		catch (Throwable closeException) {
+		} catch (Throwable closeException) {
 			logger.debug("Failure while closing " + this, closeException);
 		}
 	}
@@ -440,14 +403,15 @@ public abstract class AbstractSockJsSession implements SockJsSession {
 		this.handler.handleTransportError(this, ex);
 	}
 
-
-	// Self description
-
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + "[id=" + getId() + "]";
 	}
 
+
+	// Self description
+
+	private enum State {NEW, OPEN, CLOSED}
 
 	private class HeartbeatTask implements Runnable {
 
@@ -459,11 +423,9 @@ public abstract class AbstractSockJsSession implements SockJsSession {
 				if (!this.expired && !isClosed()) {
 					try {
 						sendHeartbeat();
-					}
-					catch (Throwable ex) {
+					} catch (Throwable ex) {
 						// Ignore: already handled in writeFrame...
-					}
-					finally {
+					} finally {
 						this.expired = true;
 					}
 				}

@@ -16,31 +16,11 @@
 
 package org.springframework.http.codec.support;
 
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.Test;
-
 import org.springframework.core.ResolvableType;
-import org.springframework.core.codec.ByteArrayDecoder;
-import org.springframework.core.codec.ByteArrayEncoder;
-import org.springframework.core.codec.ByteBufferDecoder;
-import org.springframework.core.codec.ByteBufferEncoder;
-import org.springframework.core.codec.CharSequenceEncoder;
-import org.springframework.core.codec.DataBufferDecoder;
-import org.springframework.core.codec.DataBufferEncoder;
-import org.springframework.core.codec.Decoder;
-import org.springframework.core.codec.Encoder;
-import org.springframework.core.codec.ResourceDecoder;
-import org.springframework.core.codec.StringDecoder;
+import org.springframework.core.codec.*;
 import org.springframework.http.MediaType;
-import org.springframework.http.codec.CodecConfigurer;
-import org.springframework.http.codec.DecoderHttpMessageReader;
-import org.springframework.http.codec.EncoderHttpMessageWriter;
-import org.springframework.http.codec.FormHttpMessageReader;
-import org.springframework.http.codec.HttpMessageReader;
-import org.springframework.http.codec.HttpMessageWriter;
-import org.springframework.http.codec.ResourceHttpMessageWriter;
+import org.springframework.http.codec.*;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.http.codec.json.Jackson2SmileDecoder;
@@ -49,8 +29,12 @@ import org.springframework.http.codec.xml.Jaxb2XmlDecoder;
 import org.springframework.http.codec.xml.Jaxb2XmlEncoder;
 import org.springframework.util.MimeTypeUtils;
 
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.core.ResolvableType.forClass;
 
 /**
@@ -285,7 +269,6 @@ public class CodecConfigurerTests {
 		assertTrue(encoder.canEncode(forClass(String.class), MimeTypeUtils.TEXT_PLAIN));
 		assertEquals(!textOnly, encoder.canEncode(forClass(String.class), MediaType.TEXT_EVENT_STREAM));
 	}
-
 
 
 	private static class TestCodecConfigurer extends BaseCodecConfigurer {

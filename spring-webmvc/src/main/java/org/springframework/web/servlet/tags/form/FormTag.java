@@ -16,15 +16,6 @@
 
 package org.springframework.web.servlet.tags.form;
 
-import java.nio.charset.UnsupportedCharsetException;
-import java.util.Map;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.PageContext;
-
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.core.Conventions;
 import org.springframework.http.HttpMethod;
@@ -36,6 +27,15 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.support.RequestDataValueProcessor;
 import org.springframework.web.util.HtmlUtils;
 import org.springframework.web.util.UriUtils;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.PageContext;
+import java.nio.charset.UnsupportedCharsetException;
+import java.util.Map;
 
 /**
  * The {@code <form>} tag renders an HTML 'form' tag and exposes a binding path to
@@ -244,13 +244,17 @@ import org.springframework.web.util.UriUtils;
 @SuppressWarnings("serial")
 public class FormTag extends AbstractHtmlElementTag {
 
-	/** The default HTTP method using which form values are sent to the server: "post" */
-	private static final String DEFAULT_METHOD = "post";
-
-	/** The default attribute name: &quot;command&quot; */
+	/**
+	 * The default attribute name: &quot;command&quot;
+	 */
 	public static final String DEFAULT_COMMAND_NAME = "command";
-
-	/** The name of the '{@code modelAttribute}' setting */
+	/**
+	 * The default HTTP method using which form values are sent to the server: "post"
+	 */
+	private static final String DEFAULT_METHOD = "post";
+	/**
+	 * The name of the '{@code modelAttribute}' setting
+	 */
 	private static final String MODEL_ATTRIBUTE = "modelAttribute";
 
 	/**
@@ -260,7 +264,9 @@ public class FormTag extends AbstractHtmlElementTag {
 	public static final String MODEL_ATTRIBUTE_VARIABLE_NAME =
 			Conventions.getQualifiedAttributeName(AbstractFormTag.class, MODEL_ATTRIBUTE);
 
-	/** Default method parameter, i.e. {@code _method}. */
+	/**
+	 * Default method parameter, i.e. {@code _method}.
+	 */
 	private static final String DEFAULT_METHOD_PARAM = "_method";
 
 	private static final String FORM_TAG = "form";
@@ -326,10 +332,18 @@ public class FormTag extends AbstractHtmlElementTag {
 
 	private String methodParam = DEFAULT_METHOD_PARAM;
 
-	/** Caching a previous nested path, so that it may be reset. */
+	/**
+	 * Caching a previous nested path, so that it may be reset.
+	 */
 	@Nullable
 	private String previousNestedPath;
 
+	/**
+	 * Get the name of the form attribute in the model.
+	 */
+	protected String getModelAttribute() {
+		return this.modelAttribute;
+	}
 
 	/**
 	 * Set the name of the form attribute in the model.
@@ -340,10 +354,12 @@ public class FormTag extends AbstractHtmlElementTag {
 	}
 
 	/**
-	 * Get the name of the form attribute in the model.
+	 * Get the value of the '{@code name}' attribute.
 	 */
-	protected String getModelAttribute() {
-		return this.modelAttribute;
+	@Override
+	@Nullable
+	protected String getName() throws JspException {
+		return this.name;
 	}
 
 	/**
@@ -357,12 +373,11 @@ public class FormTag extends AbstractHtmlElementTag {
 	}
 
 	/**
-	 * Get the value of the '{@code name}' attribute.
+	 * Get the value of the '{@code action}' attribute.
 	 */
-	@Override
 	@Nullable
-	protected String getName() throws JspException {
-		return this.name;
+	protected String getAction() {
+		return this.action;
 	}
 
 	/**
@@ -374,17 +389,20 @@ public class FormTag extends AbstractHtmlElementTag {
 	}
 
 	/**
-	 * Get the value of the '{@code action}' attribute.
+	 * Get the servlet-relative value of the '{@code action}' attribute.
+	 *
+	 * @since 3.2.3
 	 */
 	@Nullable
-	protected String getAction() {
-		return this.action;
+	protected String getServletRelativeAction() {
+		return this.servletRelativeAction;
 	}
 
 	/**
 	 * Set the value of the '{@code action}' attribute through a value
 	 * that is to be appended to the current servlet path.
 	 * <p>May be a runtime expression.
+	 *
 	 * @since 3.2.3
 	 */
 	public void setServletRelativeAction(@Nullable String servletRelativeAction) {
@@ -392,12 +410,10 @@ public class FormTag extends AbstractHtmlElementTag {
 	}
 
 	/**
-	 * Get the servlet-relative value of the '{@code action}' attribute.
-	 * @since 3.2.3
+	 * Get the value of the '{@code method}' attribute.
 	 */
-	@Nullable
-	protected String getServletRelativeAction() {
-		return this.servletRelativeAction;
+	protected String getMethod() {
+		return this.method;
 	}
 
 	/**
@@ -409,10 +425,11 @@ public class FormTag extends AbstractHtmlElementTag {
 	}
 
 	/**
-	 * Get the value of the '{@code method}' attribute.
+	 * Get the value of the '{@code target}' attribute.
 	 */
-	protected String getMethod() {
-		return this.method;
+	@Nullable
+	public String getTarget() {
+		return this.target;
 	}
 
 	/**
@@ -424,11 +441,11 @@ public class FormTag extends AbstractHtmlElementTag {
 	}
 
 	/**
-	 * Get the value of the '{@code target}' attribute.
+	 * Get the value of the '{@code enctype}' attribute.
 	 */
 	@Nullable
-	public String getTarget() {
-		return this.target;
+	protected String getEnctype() {
+		return this.enctype;
 	}
 
 	/**
@@ -440,11 +457,11 @@ public class FormTag extends AbstractHtmlElementTag {
 	}
 
 	/**
-	 * Get the value of the '{@code enctype}' attribute.
+	 * Get the value of the '{@code acceptCharset}' attribute.
 	 */
 	@Nullable
-	protected String getEnctype() {
-		return this.enctype;
+	protected String getAcceptCharset() {
+		return this.acceptCharset;
 	}
 
 	/**
@@ -456,11 +473,11 @@ public class FormTag extends AbstractHtmlElementTag {
 	}
 
 	/**
-	 * Get the value of the '{@code acceptCharset}' attribute.
+	 * Get the value of the '{@code onsubmit}' attribute.
 	 */
 	@Nullable
-	protected String getAcceptCharset() {
-		return this.acceptCharset;
+	protected String getOnsubmit() {
+		return this.onsubmit;
 	}
 
 	/**
@@ -472,11 +489,11 @@ public class FormTag extends AbstractHtmlElementTag {
 	}
 
 	/**
-	 * Get the value of the '{@code onsubmit}' attribute.
+	 * Get the value of the '{@code onreset}' attribute.
 	 */
 	@Nullable
-	protected String getOnsubmit() {
-		return this.onsubmit;
+	protected String getOnreset() {
+		return this.onreset;
 	}
 
 	/**
@@ -488,11 +505,11 @@ public class FormTag extends AbstractHtmlElementTag {
 	}
 
 	/**
-	 * Get the value of the '{@code onreset}' attribute.
+	 * Get the value of the '{@code autocomplete}' attribute.
 	 */
 	@Nullable
-	protected String getOnreset() {
-		return this.onreset;
+	protected String getAutocomplete() {
+		return this.autocomplete;
 	}
 
 	/**
@@ -504,11 +521,12 @@ public class FormTag extends AbstractHtmlElementTag {
 	}
 
 	/**
-	 * Get the value of the '{@code autocomplete}' attribute.
+	 * Get the name of the request param for non-browser supported HTTP methods.
+	 *
+	 * @since 4.2.3
 	 */
-	@Nullable
-	protected String getAutocomplete() {
-		return this.autocomplete;
+	protected String getMethodParam() {
+		return this.methodParam;
 	}
 
 	/**
@@ -516,14 +534,6 @@ public class FormTag extends AbstractHtmlElementTag {
 	 */
 	public void setMethodParam(String methodParam) {
 		this.methodParam = methodParam;
-	}
-
-	/**
-	 * Get the name of the request param for non-browser supported HTTP methods.
-	 * @since 4.2.3
-	 */
-	protected String getMethodParam() {
-		return this.methodParam;
 	}
 
 	/**
@@ -537,6 +547,7 @@ public class FormTag extends AbstractHtmlElementTag {
 	/**
 	 * Writes the opening part of the block	'{@code form}' tag and exposes
 	 * the form object name in the {@link javax.servlet.jsp.PageContext}.
+	 *
 	 * @param tagWriter the {@link TagWriter} to which the form content is to be written
 	 * @return {@link javax.servlet.jsp.tagext.Tag#EVAL_BODY_INCLUDE}
 	 */
@@ -605,6 +616,7 @@ public class FormTag extends AbstractHtmlElementTag {
 
 	/**
 	 * {@link #evaluate Resolves} and returns the name of the form object.
+	 *
 	 * @throws IllegalArgumentException if the form object resolves to {@code null}
 	 */
 	protected String resolveModelAttribute() throws JspException {
@@ -623,6 +635,7 @@ public class FormTag extends AbstractHtmlElementTag {
 	 * with the context and servlet paths, and the result is used. Otherwise, the
 	 * {@link org.springframework.web.servlet.support.RequestContext#getRequestUri()
 	 * originating URI} is used.
+	 *
 	 * @return the value that is to be used for the '{@code action}' attribute
 	 */
 	protected String resolveAction() throws JspException {
@@ -631,8 +644,7 @@ public class FormTag extends AbstractHtmlElementTag {
 		if (StringUtils.hasText(action)) {
 			action = getDisplayString(evaluate(ACTION_ATTRIBUTE, action));
 			return processAction(action);
-		}
-		else if (StringUtils.hasText(servletRelativeAction)) {
+		} else if (StringUtils.hasText(servletRelativeAction)) {
 			String pathToServlet = getRequestContext().getPathToServlet();
 			if (servletRelativeAction.startsWith("/") &&
 					!servletRelativeAction.startsWith(getRequestContext().getContextPath())) {
@@ -640,14 +652,12 @@ public class FormTag extends AbstractHtmlElementTag {
 			}
 			servletRelativeAction = getDisplayString(evaluate(ACTION_ATTRIBUTE, servletRelativeAction));
 			return processAction(servletRelativeAction);
-		}
-		else {
+		} else {
 			String requestUri = getRequestContext().getRequestUri();
 			String encoding = this.pageContext.getResponse().getCharacterEncoding();
 			try {
 				requestUri = UriUtils.encodePath(requestUri, encoding);
-			}
-			catch (UnsupportedCharsetException ex) {
+			} catch (UnsupportedCharsetException ex) {
 				// shouldn't happen - if it does, proceed with requestUri as-is
 			}
 			ServletResponse response = this.pageContext.getResponse();
@@ -660,8 +670,7 @@ public class FormTag extends AbstractHtmlElementTag {
 			}
 			if (StringUtils.hasText(requestUri)) {
 				return processAction(requestUri);
-			}
-			else {
+			} else {
 				throw new IllegalArgumentException("Attribute 'action' is required. " +
 						"Attempted to resolve against current request URI but request URI was null.");
 			}
@@ -724,8 +733,7 @@ public class FormTag extends AbstractHtmlElementTag {
 		if (this.previousNestedPath != null) {
 			// Expose previous nestedPath value.
 			this.pageContext.setAttribute(NESTED_PATH_VARIABLE_NAME, this.previousNestedPath, PageContext.REQUEST_SCOPE);
-		}
-		else {
+		} else {
 			// Remove exposed nestedPath value.
 			this.pageContext.removeAttribute(NESTED_PATH_VARIABLE_NAME, PageContext.REQUEST_SCOPE);
 		}
@@ -744,6 +752,7 @@ public class FormTag extends AbstractHtmlElementTag {
 
 	/**
 	 * Unsupported for forms.
+	 *
 	 * @throws UnsupportedOperationException always
 	 */
 	@Override
@@ -753,6 +762,7 @@ public class FormTag extends AbstractHtmlElementTag {
 
 	/**
 	 * Unsupported for forms.
+	 *
 	 * @throws UnsupportedOperationException always
 	 */
 	@Override

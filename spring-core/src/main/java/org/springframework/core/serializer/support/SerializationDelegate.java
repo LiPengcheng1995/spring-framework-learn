@@ -16,15 +16,15 @@
 
 package org.springframework.core.serializer.support;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import org.springframework.core.serializer.DefaultDeserializer;
 import org.springframework.core.serializer.DefaultSerializer;
 import org.springframework.core.serializer.Deserializer;
 import org.springframework.core.serializer.Serializer;
 import org.springframework.util.Assert;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * A convenient delegate with pre-arranged configuration state for common
@@ -44,6 +44,7 @@ public class SerializationDelegate implements Serializer<Object>, Deserializer<O
 	/**
 	 * Create a {@code SerializationDelegate} with a default serializer/deserializer
 	 * for the given {@code ClassLoader}.
+	 *
 	 * @see DefaultDeserializer
 	 * @see DefaultDeserializer#DefaultDeserializer(ClassLoader)
 	 */
@@ -54,7 +55,8 @@ public class SerializationDelegate implements Serializer<Object>, Deserializer<O
 
 	/**
 	 * Create a {@code SerializationDelegate} with the given serializer/deserializer.
-	 * @param serializer the {@link Serializer} to use (never {@code null)}
+	 *
+	 * @param serializer   the {@link Serializer} to use (never {@code null)}
 	 * @param deserializer the {@link Deserializer} to use (never {@code null)}
 	 */
 	public SerializationDelegate(Serializer<Object> serializer, Deserializer<Object> deserializer) {

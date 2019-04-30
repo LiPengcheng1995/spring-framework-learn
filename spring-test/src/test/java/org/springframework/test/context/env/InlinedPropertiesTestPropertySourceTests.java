@@ -18,7 +18,6 @@ package org.springframework.test.context.env;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -27,9 +26,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.springframework.test.context.support.TestPropertySourceUtils.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertThat;
+import static org.springframework.test.context.support.TestPropertySourceUtils.INLINED_PROPERTIES_PROPERTY_SOURCE_NAME;
 
 /**
  * Integration tests for {@link TestPropertySource @TestPropertySource} support with
@@ -40,8 +40,8 @@ import static org.springframework.test.context.support.TestPropertySourceUtils.*
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
-@TestPropertySource(properties = { "", "foo = bar", "baz quux", "enigma: 42", "x.y.z = a=b=c",
-	"server.url = https://example.com", "key.value.1: key=value", "key.value.2 key=value", "key.value.3 key:value" })
+@TestPropertySource(properties = {"", "foo = bar", "baz quux", "enigma: 42", "x.y.z = a=b=c",
+		"server.url = https://example.com", "key.value.1: key=value", "key.value.2 key=value", "key.value.3 key:value"})
 public class InlinedPropertiesTestPropertySourceTests {
 
 	@Autowired
@@ -70,10 +70,10 @@ public class InlinedPropertiesTestPropertySourceTests {
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void propertyNameOrderingIsPreservedInEnvironment() {
-		final String[] expectedPropertyNames = new String[] { "foo", "baz", "enigma", "x.y.z", "server.url",
-			"key.value.1", "key.value.2", "key.value.3" };
+		final String[] expectedPropertyNames = new String[]{"foo", "baz", "enigma", "x.y.z", "server.url",
+				"key.value.1", "key.value.2", "key.value.3"};
 		EnumerablePropertySource eps = (EnumerablePropertySource) env.getPropertySources().get(
-			INLINED_PROPERTIES_PROPERTY_SOURCE_NAME);
+				INLINED_PROPERTIES_PROPERTY_SOURCE_NAME);
 		assertArrayEquals(expectedPropertyNames, eps.getPropertyNames());
 	}
 

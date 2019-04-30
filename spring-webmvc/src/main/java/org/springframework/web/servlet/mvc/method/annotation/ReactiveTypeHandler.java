@@ -16,21 +16,11 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.io.IOException;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapter;
 import org.springframework.core.ReactiveAdapterRegistry;
@@ -53,6 +43,15 @@ import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.context.request.async.WebAsyncUtils;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.HandlerMapping;
+
+import java.io.IOException;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Private helper class to assist with handling "reactive" return values types
@@ -79,10 +78,8 @@ class ReactiveTypeHandler {
 	private final ReactiveAdapterRegistry reactiveRegistry;
 
 	private final TaskExecutor taskExecutor;
-
-	private Boolean taskExecutorWarning;
-
 	private final ContentNegotiationManager contentNegotiationManager;
+	private Boolean taskExecutorWarning;
 
 
 	public ReactiveTypeHandler() {
@@ -111,12 +108,13 @@ class ReactiveTypeHandler {
 	/**
 	 * Process the given reactive return value and decide whether to adapt it
 	 * to a {@link ResponseBodyEmitter} or a {@link DeferredResult}.
+	 *
 	 * @return an emitter for streaming, or {@code null} if handled internally
 	 * with a {@link DeferredResult}
 	 */
 	@Nullable
 	public ResponseBodyEmitter handleValue(Object returnValue, MethodParameter returnType,
-			ModelAndViewContainer mav, NativeWebRequest request) throws Exception {
+										   ModelAndViewContainer mav, NativeWebRequest request) throws Exception {
 
 		Assert.notNull(returnValue, "Expected return value");
 		ReactiveAdapter adapter = this.reactiveRegistry.getAdapter(returnValue.getClass());
@@ -205,19 +203,13 @@ class ReactiveTypeHandler {
 		private final ResponseBodyEmitter emitter;
 
 		private final TaskExecutor taskExecutor;
-
+		private final AtomicReference<Object> elementRef = new AtomicReference<>();
+		private final AtomicLong executing = new AtomicLong();
 		@Nullable
 		private Subscription subscription;
-
-		private final AtomicReference<Object> elementRef = new AtomicReference<>();
-
 		@Nullable
 		private Throwable error;
-
 		private volatile boolean terminated;
-
-		private final AtomicLong executing = new AtomicLong();
-
 		private volatile boolean done;
 
 		protected AbstractEmitterSubscriber(ResponseBodyEmitter emitter, TaskExecutor executor) {
@@ -279,12 +271,10 @@ class ReactiveTypeHandler {
 		private void schedule() {
 			try {
 				this.taskExecutor.execute(this);
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				try {
 					terminate();
-				}
-				finally {
+				} finally {
 					this.executing.decrementAndGet();
 					this.elementRef.lazySet(null);
 				}
@@ -308,8 +298,7 @@ class ReactiveTypeHandler {
 				try {
 					send(element);
 					this.subscription.request(1);
-				}
-				catch (final Throwable ex) {
+				} catch (final Throwable ex) {
 					if (logger.isDebugEnabled()) {
 						logger.debug("Send error for " + this.emitter, ex);
 					}
@@ -317,7 +306,7 @@ class ReactiveTypeHandler {
 					return;
 				}
 			}
-			
+
 			if (isTerminated) {
 				this.done = true;
 				Throwable ex = this.error;
@@ -327,8 +316,7 @@ class ReactiveTypeHandler {
 						logger.debug("Publisher error for " + this.emitter, ex);
 					}
 					this.emitter.completeWithError(ex);
-				}
-				else {
+				} else {
 					if (logger.isDebugEnabled()) {
 						logger.debug("Publishing completed for " + this.emitter);
 					}
@@ -364,8 +352,7 @@ class ReactiveTypeHandler {
 			if (element instanceof ServerSentEvent) {
 				ServerSentEvent<?> event = (ServerSentEvent<?>) element;
 				((SseEmitter) getEmitter()).send(adapt(event));
-			}
-			else {
+			} else {
 				getEmitter().send(element, MediaType.APPLICATION_JSON);
 			}
 		}
@@ -463,11 +450,9 @@ class ReactiveTypeHandler {
 		public void onComplete() {
 			if (this.values.size() > 1 || this.multiValueSource) {
 				this.result.setResult(this.values);
-			}
-			else if (this.values.size() == 1) {
+			} else if (this.values.size() == 1) {
 				this.result.setResult(this.values.get(0));
-			}
-			else {
+			} else {
 				this.result.setResult(null);
 			}
 		}

@@ -16,14 +16,14 @@
 
 package org.springframework.core.type.classreading;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * Simple implementation of the {@link MetadataReaderFactory} interface,
@@ -46,8 +46,9 @@ public class SimpleMetadataReaderFactory implements MetadataReaderFactory {
 
 	/**
 	 * Create a new SimpleMetadataReaderFactory for the given resource loader.
+	 *
 	 * @param resourceLoader the Spring ResourceLoader to use
-	 * (also determines the ClassLoader to use)
+	 *                       (also determines the ClassLoader to use)
 	 */
 	public SimpleMetadataReaderFactory(@Nullable ResourceLoader resourceLoader) {
 		this.resourceLoader = (resourceLoader != null ? resourceLoader : new DefaultResourceLoader());
@@ -55,6 +56,7 @@ public class SimpleMetadataReaderFactory implements MetadataReaderFactory {
 
 	/**
 	 * Create a new SimpleMetadataReaderFactory for the given class loader.
+	 *
 	 * @param classLoader the ClassLoader to use
 	 */
 	public SimpleMetadataReaderFactory(@Nullable ClassLoader classLoader) {
@@ -79,8 +81,7 @@ public class SimpleMetadataReaderFactory implements MetadataReaderFactory {
 					ClassUtils.convertClassNameToResourcePath(className) + ClassUtils.CLASS_FILE_SUFFIX;
 			Resource resource = this.resourceLoader.getResource(resourcePath);
 			return getMetadataReader(resource);
-		}
-		catch (FileNotFoundException ex) {
+		} catch (FileNotFoundException ex) {
 			// Maybe an inner class name using the dot name syntax? Need to use the dollar syntax here...
 			// ClassUtils.forName has an equivalent check for resolution into Class references later on.
 			int lastDotIndex = className.lastIndexOf('.');

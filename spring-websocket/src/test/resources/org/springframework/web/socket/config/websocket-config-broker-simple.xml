@@ -1,6 +1,6 @@
-<beans xmlns="http://www.springframework.org/schema/beans"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xmlns:websocket="http://www.springframework.org/schema/websocket"
+	   xmlns="http://www.springframework.org/schema/beans"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/websocket https://www.springframework.org/schema/websocket/spring-websocket.xsd">
 
@@ -12,7 +12,7 @@
 		<!-- message-size=128*1024, send-buffer-size=1024*1024 -->
 		<websocket:transport message-size="131072" send-timeout="25000" send-buffer-size="1048576">
 			<websocket:decorator-factories>
-				<bean class="org.springframework.web.socket.config.TestWebSocketHandlerDecoratorFactory" />
+				<bean class="org.springframework.web.socket.config.TestWebSocketHandlerDecoratorFactory"/>
 			</websocket:decorator-factories>
 		</websocket:transport>
 
@@ -33,15 +33,15 @@
 			<websocket:sockjs/>
 		</websocket:stomp-endpoint>
 
-		<websocket:stomp-error-handler ref="errorHandler" />
+		<websocket:stomp-error-handler ref="errorHandler"/>
 
 		<websocket:simple-broker prefix="/topic, /queue" selector-header="my-selector"
-				heartbeat="15000,15000" scheduler="scheduler" />
+								 heartbeat="15000,15000" scheduler="scheduler"/>
 
 	</websocket:message-broker>
 
 	<bean id="pathMatcher" class="org.springframework.util.AntPathMatcher">
-		<property name="pathSeparator" value="." />
+		<property name="pathSeparator" value="."/>
 	</bean>
 
 	<bean id="urlPathHelper" class="org.springframework.web.util.UrlPathHelper">

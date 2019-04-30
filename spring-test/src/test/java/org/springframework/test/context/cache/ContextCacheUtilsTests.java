@@ -19,12 +19,12 @@ package org.springframework.test.context.cache;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.SpringProperties;
 
-import static org.junit.Assert.*;
-import static org.springframework.test.context.cache.ContextCacheUtils.*;
-import static org.springframework.test.context.cache.ContextCache.*;
+import static org.junit.Assert.assertEquals;
+import static org.springframework.test.context.cache.ContextCache.DEFAULT_MAX_CONTEXT_CACHE_SIZE;
+import static org.springframework.test.context.cache.ContextCache.MAX_CONTEXT_CACHE_SIZE_PROPERTY_NAME;
+import static org.springframework.test.context.cache.ContextCacheUtils.retrieveMaxCacheSize;
 
 /**
  * Unit tests for {@link ContextCacheUtils}.
@@ -33,6 +33,10 @@ import static org.springframework.test.context.cache.ContextCache.*;
  * @since 4.3
  */
 public class ContextCacheUtilsTests {
+
+	private static void assertDefaultValue() {
+		assertEquals(DEFAULT_MAX_CONTEXT_CACHE_SIZE, retrieveMaxCacheSize());
+	}
 
 	@Before
 	@After
@@ -80,10 +84,6 @@ public class ContextCacheUtilsTests {
 	public void retrieveMaxCacheSizeFromSpringProperty() {
 		SpringProperties.setProperty(MAX_CONTEXT_CACHE_SIZE_PROPERTY_NAME, "99");
 		assertEquals(99, retrieveMaxCacheSize());
-	}
-
-	private static void assertDefaultValue() {
-		assertEquals(DEFAULT_MAX_CONTEXT_CACHE_SIZE, retrieveMaxCacheSize());
 	}
 
 }

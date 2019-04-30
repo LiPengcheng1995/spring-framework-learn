@@ -65,7 +65,7 @@ public class StompBrokerRelayRegistration extends AbstractBrokerRegistration {
 
 
 	public StompBrokerRelayRegistration(SubscribableChannel clientInboundChannel,
-			MessageChannel clientOutboundChannel, String[] destinationPrefixes) {
+										MessageChannel clientOutboundChannel, String[] destinationPrefixes) {
 
 		super(clientInboundChannel, clientOutboundChannel, destinationPrefixes);
 	}
@@ -176,6 +176,7 @@ public class StompBrokerRelayRegistration extends AbstractBrokerRegistration {
 	 * <p><strong>Note:</strong> when this property is used, any
 	 * {@link #setRelayHost(String) host} or {@link #setRelayPort(int) port}
 	 * specified are effectively ignored.
+	 *
 	 * @since 4.3.15
 	 */
 	public void setTcpClient(TcpOperations<byte[]> tcpClient) {
@@ -192,36 +193,23 @@ public class StompBrokerRelayRegistration extends AbstractBrokerRegistration {
 		return this;
 	}
 
-	/**
-	 * Set a destination to broadcast messages to user destinations that remain
-	 * unresolved because the user appears not to be connected. In a
-	 * multi-application server scenario this gives other application servers
-	 * a chance to try.
-	 * <p>By default this is not set.
-	 * @param destination the destination to broadcast unresolved messages to,
-	 * e.g. "/topic/unresolved-user-destination"
-	 */
-	public StompBrokerRelayRegistration setUserDestinationBroadcast(String destination) {
-		this.userDestinationBroadcast = destination;
-		return this;
-	}
-
 	@Nullable
 	protected String getUserDestinationBroadcast() {
 		return this.userDestinationBroadcast;
 	}
 
 	/**
-	 * Set a destination to broadcast the content of the local user registry to
-	 * and to listen for such broadcasts from other servers. In a multi-application
-	 * server scenarios this allows each server's user registry to be aware of
-	 * users connected to other servers.
+	 * Set a destination to broadcast messages to user destinations that remain
+	 * unresolved because the user appears not to be connected. In a
+	 * multi-application server scenario this gives other application servers
+	 * a chance to try.
 	 * <p>By default this is not set.
-	 * @param destination the destination for broadcasting user registry details,
-	 * e.g. "/topic/simp-user-registry".
+	 *
+	 * @param destination the destination to broadcast unresolved messages to,
+	 *                    e.g. "/topic/unresolved-user-destination"
 	 */
-	public StompBrokerRelayRegistration setUserRegistryBroadcast(String destination) {
-		this.userRegistryBroadcast = destination;
+	public StompBrokerRelayRegistration setUserDestinationBroadcast(String destination) {
+		this.userDestinationBroadcast = destination;
 		return this;
 	}
 
@@ -230,6 +218,20 @@ public class StompBrokerRelayRegistration extends AbstractBrokerRegistration {
 		return this.userRegistryBroadcast;
 	}
 
+	/**
+	 * Set a destination to broadcast the content of the local user registry to
+	 * and to listen for such broadcasts from other servers. In a multi-application
+	 * server scenarios this allows each server's user registry to be aware of
+	 * users connected to other servers.
+	 * <p>By default this is not set.
+	 *
+	 * @param destination the destination for broadcasting user registry details,
+	 *                    e.g. "/topic/simp-user-registry".
+	 */
+	public StompBrokerRelayRegistration setUserRegistryBroadcast(String destination) {
+		this.userRegistryBroadcast = destination;
+		return this;
+	}
 
 	protected StompBrokerRelayMessageHandler getMessageHandler(SubscribableChannel brokerChannel) {
 

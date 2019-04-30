@@ -16,19 +16,14 @@
 
 package org.springframework.web.reactive.result.condition;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import org.junit.Test;
-
 import org.springframework.mock.web.test.server.MockServerWebExchange;
 import org.springframework.web.server.ServerWebExchange;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import java.util.Collection;
+import java.util.Collections;
+
+import static org.junit.Assert.*;
 import static org.springframework.mock.http.server.reactive.test.MockServerHttpRequest.get;
 
 /**
@@ -270,7 +265,7 @@ public class ProducesRequestConditionTests {
 
 	@Test
 	public void instantiateWithProducesAndHeaderConditions() throws Exception {
-		String[] produces = new String[] {"text/plain"};
+		String[] produces = new String[]{"text/plain"};
 		String[] headers = new String[]{"foo=bar", "accept=application/xml,application/pdf"};
 		ProducesRequestCondition condition = new ProducesRequestCondition(produces, headers);
 

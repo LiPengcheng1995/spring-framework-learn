@@ -16,13 +16,6 @@
 
 package org.springframework.web.socket.handler;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.security.Principal;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
@@ -30,6 +23,13 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketExtension;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.security.Principal;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Wraps another {@link org.springframework.web.socket.WebSocketSession} instance
@@ -52,6 +52,13 @@ public class WebSocketSessionDecorator implements WebSocketSession {
 		this.delegate = session;
 	}
 
+	public static WebSocketSession unwrap(WebSocketSession session) {
+		if (session instanceof WebSocketSessionDecorator) {
+			return ((WebSocketSessionDecorator) session).getLastSession();
+		} else {
+			return session;
+		}
+	}
 
 	public WebSocketSession getDelegate() {
 		return this.delegate;
@@ -63,15 +70,6 @@ public class WebSocketSessionDecorator implements WebSocketSession {
 			result = ((WebSocketSessionDecorator) result).getDelegate();
 		}
 		return result;
-	}
-
-	public static WebSocketSession unwrap(WebSocketSession session) {
-		if (session instanceof WebSocketSessionDecorator) {
-			return ((WebSocketSessionDecorator) session).getLastSession();
-		}
-		else {
-			return session;
-		}
 	}
 
 	@Override
@@ -121,23 +119,23 @@ public class WebSocketSessionDecorator implements WebSocketSession {
 	}
 
 	@Override
-	public void setTextMessageSizeLimit(int messageSizeLimit) {
-		this.delegate.setTextMessageSizeLimit(messageSizeLimit);
-	}
-
-	@Override
 	public int getTextMessageSizeLimit() {
 		return this.delegate.getTextMessageSizeLimit();
 	}
 
 	@Override
-	public void setBinaryMessageSizeLimit(int messageSizeLimit) {
-		this.delegate.setBinaryMessageSizeLimit(messageSizeLimit);
+	public void setTextMessageSizeLimit(int messageSizeLimit) {
+		this.delegate.setTextMessageSizeLimit(messageSizeLimit);
 	}
 
 	@Override
 	public int getBinaryMessageSizeLimit() {
 		return this.delegate.getBinaryMessageSizeLimit();
+	}
+
+	@Override
+	public void setBinaryMessageSizeLimit(int messageSizeLimit) {
+		this.delegate.setBinaryMessageSizeLimit(messageSizeLimit);
 	}
 
 	@Override

@@ -16,21 +16,16 @@
 
 package org.springframework.http.codec.support;
 
+import org.springframework.core.codec.Decoder;
+import org.springframework.core.codec.Encoder;
+import org.springframework.http.codec.*;
+import org.springframework.http.codec.multipart.MultipartHttpMessageWriter;
+import org.springframework.lang.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
-
-import org.springframework.core.codec.Decoder;
-import org.springframework.core.codec.Encoder;
-import org.springframework.http.codec.ClientCodecConfigurer;
-import org.springframework.http.codec.EncoderHttpMessageWriter;
-import org.springframework.http.codec.FormHttpMessageWriter;
-import org.springframework.http.codec.HttpMessageReader;
-import org.springframework.http.codec.HttpMessageWriter;
-import org.springframework.http.codec.ServerSentEventHttpMessageReader;
-import org.springframework.http.codec.multipart.MultipartHttpMessageWriter;
-import org.springframework.lang.Nullable;
 
 /**
  * Default implementation of {@link ClientCodecConfigurer.ClientDefaultCodecs}.
@@ -92,11 +87,9 @@ class ClientDefaultCodecsImpl extends BaseDefaultCodecs implements ClientCodecCo
 	private List<HttpMessageWriter<?>> getPartWriters() {
 		if (this.multipartCodecs != null) {
 			return this.multipartCodecs.getWriters();
-		}
-		else if (this.partWritersSupplier != null) {
+		} else if (this.partWritersSupplier != null) {
 			return this.partWritersSupplier.get();
-		}
-		else {
+		} else {
 			return Collections.emptyList();
 		}
 	}

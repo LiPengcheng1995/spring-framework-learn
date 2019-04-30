@@ -16,10 +16,10 @@
 
 package org.springframework.web.reactive.config;
 
+import org.springframework.web.cors.CorsConfiguration;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import org.springframework.web.cors.CorsConfiguration;
 
 /**
  * Assists with the creation of a {@link CorsConfiguration} instance for a given
@@ -27,8 +27,8 @@ import org.springframework.web.cors.CorsConfiguration;
  *
  * @author Sebastien Deleuze
  * @author Rossen Stoyanchev
- * @since 5.0
  * @see CorsRegistry
+ * @since 5.0
  */
 public class CorsRegistration {
 

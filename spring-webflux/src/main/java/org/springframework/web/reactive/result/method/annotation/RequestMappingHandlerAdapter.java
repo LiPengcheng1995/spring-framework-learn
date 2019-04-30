@@ -16,14 +16,8 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Function;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import reactor.core.publisher.Mono;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -41,6 +35,11 @@ import org.springframework.web.reactive.HandlerAdapter;
 import org.springframework.web.reactive.HandlerResult;
 import org.springframework.web.reactive.result.method.InvocableHandlerMethod;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Function;
 
 /**
  * Supports the invocation of
@@ -75,6 +74,12 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter, Application
 	@Nullable
 	private ModelInitializer modelInitializer;
 
+	/**
+	 * Return the configurer for HTTP message readers.
+	 */
+	public List<HttpMessageReader<?>> getMessageReaders() {
+		return this.messageReaders;
+	}
 
 	/**
 	 * Configure HTTP message readers to de-serialize the request body with.
@@ -86,10 +91,11 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter, Application
 	}
 
 	/**
-	 * Return the configurer for HTTP message readers.
+	 * Return the configured WebBindingInitializer, or {@code null} if none.
 	 */
-	public List<HttpMessageReader<?>> getMessageReaders() {
-		return this.messageReaders;
+	@Nullable
+	public WebBindingInitializer getWebBindingInitializer() {
+		return this.webBindingInitializer;
 	}
 
 	/**
@@ -101,11 +107,11 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter, Application
 	}
 
 	/**
-	 * Return the configured WebBindingInitializer, or {@code null} if none.
+	 * Return the configured resolvers for controller method arguments.
 	 */
 	@Nullable
-	public WebBindingInitializer getWebBindingInitializer() {
-		return this.webBindingInitializer;
+	public ArgumentResolverConfigurer getArgumentResolverConfigurer() {
+		return this.argumentResolverConfigurer;
 	}
 
 	/**
@@ -116,11 +122,11 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter, Application
 	}
 
 	/**
-	 * Return the configured resolvers for controller method arguments.
+	 * Return the configured registry for adapting reactive types.
 	 */
 	@Nullable
-	public ArgumentResolverConfigurer getArgumentResolverConfigurer() {
-		return this.argumentResolverConfigurer;
+	public ReactiveAdapterRegistry getReactiveAdapterRegistry() {
+		return this.reactiveAdapterRegistry;
 	}
 
 	/**
@@ -130,14 +136,6 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter, Application
 	 */
 	public void setReactiveAdapterRegistry(@Nullable ReactiveAdapterRegistry registry) {
 		this.reactiveAdapterRegistry = registry;
-	}
-
-	/**
-	 * Return the configured registry for adapting reactive types.
-	 */
-	@Nullable
-	public ReactiveAdapterRegistry getReactiveAdapterRegistry() {
-		return this.reactiveAdapterRegistry;
 	}
 
 	/**
@@ -202,7 +200,7 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter, Application
 	}
 
 	private Mono<HandlerResult> handleException(Throwable exception, HandlerMethod handlerMethod,
-			BindingContext bindingContext, ServerWebExchange exchange) {
+												BindingContext bindingContext, ServerWebExchange exchange) {
 
 		Assert.state(this.methodResolver != null, "Not initialized");
 
@@ -216,12 +214,10 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter, Application
 				Throwable cause = exception.getCause();
 				if (cause != null) {
 					return invocable.invoke(exchange, bindingContext, exception, cause, handlerMethod);
-				}
-				else {
+				} else {
 					return invocable.invoke(exchange, bindingContext, exception, handlerMethod);
 				}
-			}
-			catch (Throwable invocationEx) {
+			} catch (Throwable invocationEx) {
 				if (logger.isWarnEnabled()) {
 					logger.warn("Failed to invoke: " + invocable.getMethod(), invocationEx);
 				}

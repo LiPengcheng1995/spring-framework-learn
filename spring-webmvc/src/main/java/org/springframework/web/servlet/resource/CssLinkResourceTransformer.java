@@ -16,6 +16,13 @@
 
 package org.springframework.web.servlet.resource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.core.io.Resource;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
@@ -24,14 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.springframework.core.io.Resource;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * A {@link ResourceTransformer} implementation that modifies links in a CSS
@@ -106,8 +105,7 @@ public class CssLinkResourceTransformer extends ResourceTransformerSupport {
 			if (logger.isTraceEnabled()) {
 				if (newLink != null && !newLink.equals(link)) {
 					logger.trace("Link modified: " + newLink + " (original: " + link + ")");
-				}
-				else {
+				} else {
 					logger.trace("Link not modified: " + link);
 				}
 			}
@@ -138,7 +136,9 @@ public class CssLinkResourceTransformer extends ResourceTransformerSupport {
 
 	protected abstract static class AbstractLinkParser implements LinkParser {
 
-		/** Return the keyword to use to search for links, e.g. "@import", "url(" */
+		/**
+		 * Return the keyword to use to search for links, e.g. "@import", "url("
+		 */
 		protected abstract String getKeyword();
 
 		@Override
@@ -155,11 +155,9 @@ public class CssLinkResourceTransformer extends ResourceTransformerSupport {
 				}
 				if (content.charAt(position) == '\'') {
 					position = extractLink(position, "'", content, result);
-				}
-				else if (content.charAt(position) == '"') {
+				} else if (content.charAt(position) == '"') {
 					position = extractLink(position, "\"", content, result);
-				}
-				else {
+				} else {
 					position = extractLink(position, content, result);
 
 				}
@@ -178,7 +176,7 @@ public class CssLinkResourceTransformer extends ResourceTransformerSupport {
 		 * the next char is neither a single nor double quote.
 		 */
 		protected abstract int extractLink(int index, String content,
-				SortedSet<ContentChunkInfo> linksToAdd);
+										   SortedSet<ContentChunkInfo> linksToAdd);
 
 	}
 
@@ -194,8 +192,7 @@ public class CssLinkResourceTransformer extends ResourceTransformerSupport {
 		protected int extractLink(int index, String content, SortedSet<ContentChunkInfo> linksToAdd) {
 			if (content.substring(index, index + 4).equals("url(")) {
 				// Ignore, UrlLinkParser will take care
-			}
-			else if (logger.isErrorEnabled()) {
+			} else if (logger.isErrorEnabled()) {
 				logger.error("Unexpected syntax for @import link at index " + index);
 			}
 			return index;

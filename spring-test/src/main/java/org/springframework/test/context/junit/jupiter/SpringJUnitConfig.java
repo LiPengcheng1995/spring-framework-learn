@@ -16,18 +16,12 @@
 
 package org.springframework.test.context.junit.jupiter;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.junit.jupiter.api.extension.ExtendWith;
-
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.test.context.ContextConfiguration;
+
+import java.lang.annotation.*;
 
 /**
  * {@code @SpringJUnitConfig} is a <em>composed annotation</em> that combines
@@ -36,11 +30,11 @@ import org.springframework.test.context.ContextConfiguration;
  * Framework</em>.
  *
  * @author Sam Brannen
- * @since 5.0
  * @see ExtendWith
  * @see SpringExtension
  * @see ContextConfiguration
  * @see org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig
+ * @since 5.0
  */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration

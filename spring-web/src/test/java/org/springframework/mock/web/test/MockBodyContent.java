@@ -16,13 +16,13 @@
 
 package org.springframework.mock.web.test;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.tagext.BodyContent;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.jsp.JspWriter;
-import javax.servlet.jsp.tagext.BodyContent;
 
 /**
  * Mock implementation of the {@link javax.servlet.jsp.tagext.BodyContent} class.
@@ -38,7 +38,8 @@ public class MockBodyContent extends BodyContent {
 
 	/**
 	 * Create a MockBodyContent for the given response.
-	 * @param content the body content to expose
+	 *
+	 * @param content  the body content to expose
 	 * @param response the servlet response to wrap
 	 */
 	public MockBodyContent(String content, HttpServletResponse response) {
@@ -47,7 +48,8 @@ public class MockBodyContent extends BodyContent {
 
 	/**
 	 * Create a MockBodyContent for the given response.
-	 * @param content the body content to expose
+	 *
+	 * @param content      the body content to expose
 	 * @param targetWriter the target Writer to wrap
 	 */
 	public MockBodyContent(String content, Writer targetWriter) {
@@ -56,8 +58,9 @@ public class MockBodyContent extends BodyContent {
 
 	/**
 	 * Create a MockBodyContent for the given response.
-	 * @param content the body content to expose
-	 * @param response the servlet response to wrap
+	 *
+	 * @param content      the body content to expose
+	 * @param response     the servlet response to wrap
 	 * @param targetWriter the target Writer to wrap
 	 */
 	public MockBodyContent(String content, HttpServletResponse response, Writer targetWriter) {
@@ -68,8 +71,7 @@ public class MockBodyContent extends BodyContent {
 	private static JspWriter adaptJspWriter(Writer targetWriter, HttpServletResponse response) {
 		if (targetWriter instanceof JspWriter) {
 			return (JspWriter) targetWriter;
-		}
-		else {
+		} else {
 			return new MockJspWriter(response, targetWriter);
 		}
 	}

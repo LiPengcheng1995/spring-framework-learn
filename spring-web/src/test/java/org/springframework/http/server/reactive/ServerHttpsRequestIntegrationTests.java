@@ -16,8 +16,6 @@
 
 package org.springframework.http.server.reactive;
 
-import java.net.URI;
-
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
@@ -29,8 +27,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import reactor.core.publisher.Mono;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -38,21 +34,23 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.server.reactive.bootstrap.HttpServer;
 import org.springframework.http.server.reactive.bootstrap.ReactorHttpsServer;
 import org.springframework.web.client.RestTemplate;
+import reactor.core.publisher.Mono;
+
+import java.net.URI;
 
 import static org.junit.Assert.*;
 
 /**
  * HTTPS-specific integration test for {@link ServerHttpRequest}.
+ *
  * @author Arjen Poutsma
  */
 @RunWith(Parameterized.class)
 public class ServerHttpsRequestIntegrationTests {
 
-	private int port;
-
 	@Parameterized.Parameter(0)
 	public HttpServer server;
-
+	private int port;
 	private RestTemplate restTemplate;
 
 	@Parameterized.Parameters(name = "server [{0}]")

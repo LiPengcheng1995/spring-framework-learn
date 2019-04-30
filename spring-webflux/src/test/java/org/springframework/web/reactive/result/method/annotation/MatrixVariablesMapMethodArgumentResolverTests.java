@@ -15,15 +15,8 @@
  */
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.time.Duration;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
@@ -35,14 +28,18 @@ import org.springframework.web.method.ResolvableMethod;
 import org.springframework.web.reactive.BindingContext;
 import org.springframework.web.reactive.HandlerMapping;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import static org.junit.Assert.*;
 import static org.springframework.web.method.MvcAnnotationPredicates.matrixAttribute;
 
 /**
  * Unit tests for {@link MatrixVariableMapMethodArgumentResolver}.
+ *
  * @author Rossen Stoyanchev
  */
 public class MatrixVariablesMapMethodArgumentResolverTests {
@@ -187,7 +184,7 @@ public class MatrixVariablesMapMethodArgumentResolverTests {
 			String stringArg,
 			@MatrixVariable Map<String, String> map,
 			@MatrixVariable MultiValueMap<String, String> multivalueMap,
-			@MatrixVariable(pathVar="cars") MultiValueMap<String, String> mapForPathVar,
+			@MatrixVariable(pathVar = "cars") MultiValueMap<String, String> mapForPathVar,
 			@MatrixVariable("name") Map<String, String> mapWithName) {
 	}
 

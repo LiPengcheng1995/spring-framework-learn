@@ -16,11 +16,6 @@
 
 package org.springframework.test.context.testng.web;
 
-import java.io.File;
-import javax.servlet.ServletContext;
-
-import org.testng.annotations.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,6 +29,10 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.ServletWebRequest;
+import org.testng.annotations.Test;
+
+import javax.servlet.ServletContext;
+import java.io.File;
 
 import static org.junit.Assert.*;
 
@@ -48,39 +47,21 @@ import static org.junit.Assert.*;
 @WebAppConfiguration
 public class TestNGSpringContextWebTests extends AbstractTestNGSpringContextTests implements ServletContextAware {
 
-	@Configuration
-	static class Config {
-
-		@Bean
-		String foo() {
-			return "enigma";
-		}
-	}
-
-
 	ServletContext servletContext;
-
 	@Autowired
 	WebApplicationContext wac;
-
 	@Autowired
 	MockServletContext mockServletContext;
-
 	@Autowired
 	MockHttpServletRequest request;
-
 	@Autowired
 	MockHttpServletResponse response;
-
 	@Autowired
 	MockHttpSession session;
-
 	@Autowired
 	ServletWebRequest webRequest;
-
 	@Autowired
 	String foo;
-
 
 	@Override
 	public void setServletContext(ServletContext servletContext) {
@@ -107,13 +88,22 @@ public class TestNGSpringContextWebTests extends AbstractTestNGSpringContextTest
 		assertSame("ServletContext in the WAC and in the mock request", mockServletContext, request.getServletContext());
 
 		assertEquals("Getting real path for ServletContext resource.",
-			new File("src/main/webapp/index.jsp").getCanonicalPath(), mockServletContext.getRealPath("index.jsp"));
+				new File("src/main/webapp/index.jsp").getCanonicalPath(), mockServletContext.getRealPath("index.jsp"));
 
 	}
 
 	@Test
 	void fooEnigmaAutowired() {
 		assertEquals("enigma", foo);
+	}
+
+	@Configuration
+	static class Config {
+
+		@Bean
+		String foo() {
+			return "enigma";
+		}
 	}
 
 }

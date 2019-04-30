@@ -16,24 +16,23 @@
 
 package org.springframework.http.server.reactive;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
+import org.eclipse.jetty.server.HttpOutput;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferFactory;
+
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
-
-import org.eclipse.jetty.server.HttpOutput;
-
-import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.core.io.buffer.DataBufferFactory;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 
 /**
  * {@link ServletHttpHandlerAdapter} extension that uses Jetty APIs for writing
  * to the response with {@link ByteBuffer}.
  *
  * @author Violeta Georgieva
- * @since 5.0
  * @see org.springframework.web.server.adapter.AbstractReactiveWebInitializer
+ * @since 5.0
  */
 public class JettyHttpHandlerAdapter extends ServletHttpHandlerAdapter {
 
@@ -44,7 +43,7 @@ public class JettyHttpHandlerAdapter extends ServletHttpHandlerAdapter {
 
 	@Override
 	protected ServerHttpResponse createResponse(HttpServletResponse response,
-			AsyncContext context) throws IOException {
+												AsyncContext context) throws IOException {
 
 		return new JettyServerHttpResponse(response, context, getDataBufferFactory(), getBufferSize());
 	}
@@ -53,7 +52,7 @@ public class JettyHttpHandlerAdapter extends ServletHttpHandlerAdapter {
 	private static final class JettyServerHttpResponse extends ServletServerHttpResponse {
 
 		public JettyServerHttpResponse(HttpServletResponse response, AsyncContext context,
-				DataBufferFactory factory, int bufferSize) throws IOException {
+									   DataBufferFactory factory, int bufferSize) throws IOException {
 
 			super(response, context, factory, bufferSize);
 		}

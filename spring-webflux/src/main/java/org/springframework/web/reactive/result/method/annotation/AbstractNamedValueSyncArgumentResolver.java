@@ -16,8 +16,6 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import reactor.core.publisher.Mono;
-
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapterRegistry;
@@ -25,6 +23,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.BindingContext;
 import org.springframework.web.reactive.result.method.SyncHandlerMethodArgumentResolver;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
 
 /**
  * An extension of {@link AbstractNamedValueArgumentResolver} for named value
@@ -39,9 +38,9 @@ public abstract class AbstractNamedValueSyncArgumentResolver extends AbstractNam
 		implements SyncHandlerMethodArgumentResolver {
 
 	/**
-	 * @param factory a bean factory to use for resolving  ${...}
-	 * placeholder and #{...} SpEL expressions in default values;
-	 * or {@code null} if default values are not expected to have expressions
+	 * @param factory  a bean factory to use for resolving  ${...}
+	 *                 placeholder and #{...} SpEL expressions in default values;
+	 *                 or {@code null} if default values are not expected to have expressions
 	 * @param registry for checking reactive type wrappers
 	 */
 	protected AbstractNamedValueSyncArgumentResolver(

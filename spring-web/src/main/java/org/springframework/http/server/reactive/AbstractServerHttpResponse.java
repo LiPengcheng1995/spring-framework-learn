@@ -16,18 +16,9 @@
 
 package org.springframework.http.server.reactive;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.http.HttpHeaders;
@@ -38,6 +29,14 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Base class for {@link ServerHttpResponse} implementations.
@@ -50,30 +49,14 @@ import org.springframework.util.MultiValueMap;
  */
 public abstract class AbstractServerHttpResponse implements ServerHttpResponse {
 
-	/**
-	 * COMMITTING -> COMMITTED is the period after doCommit is called but before
-	 * the response status and headers have been applied to the underlying
-	 * response during which time pre-commit actions can still make changes to
-	 * the response status and headers.
-	 */
-	private enum State {NEW, COMMITTING, COMMITTED}
-
-
 	private final Log logger = LogFactory.getLog(getClass());
-
 	private final DataBufferFactory dataBufferFactory;
-
+	private final HttpHeaders headers;
+	private final MultiValueMap<String, ResponseCookie> cookies;
+	private final AtomicReference<State> state = new AtomicReference<>(State.NEW);
+	private final List<Supplier<? extends Mono<Void>>> commitActions = new ArrayList<>(4);
 	@Nullable
 	private Integer statusCode;
-
-	private final HttpHeaders headers;
-
-	private final MultiValueMap<String, ResponseCookie> cookies;
-
-	private final AtomicReference<State> state = new AtomicReference<>(State.NEW);
-
-	private final List<Supplier<? extends Mono<Void>>> commitActions = new ArrayList<>(4);
-
 
 	public AbstractServerHttpResponse(DataBufferFactory dataBufferFactory) {
 		Assert.notNull(dataBufferFactory, "DataBufferFactory must not be null");
@@ -81,7 +64,6 @@ public abstract class AbstractServerHttpResponse implements ServerHttpResponse {
 		this.headers = new HttpHeaders();
 		this.cookies = new LinkedMultiValueMap<>();
 	}
-
 
 	@Override
 	public final DataBufferFactory bufferFactory() {
@@ -96,8 +78,7 @@ public abstract class AbstractServerHttpResponse implements ServerHttpResponse {
 						"Status not set to " + (statusCode != null ? statusCode.toString() : "null"));
 			}
 			return false;
-		}
-		else {
+		} else {
 			this.statusCode = (statusCode != null ? statusCode.value() : null);
 			return true;
 		}
@@ -110,22 +91,24 @@ public abstract class AbstractServerHttpResponse implements ServerHttpResponse {
 	}
 
 	/**
-	 * Set the HTTP status code of the response.
-	 * @param statusCode the HTTP status as an integer value
-	 * @since 5.0.1
-	 */
-	public void setStatusCodeValue(@Nullable Integer statusCode) {
-		this.statusCode = statusCode;
-	}
-
-	/**
 	 * Return the HTTP status code of the response.
+	 *
 	 * @return the HTTP status as an integer value
 	 * @since 5.0.1
 	 */
 	@Nullable
 	public Integer getStatusCodeValue() {
 		return this.statusCode;
+	}
+
+	/**
+	 * Set the HTTP status code of the response.
+	 *
+	 * @param statusCode the HTTP status as an integer value
+	 * @since 5.0.1
+	 */
+	public void setStatusCodeValue(@Nullable Integer statusCode) {
+		this.statusCode = statusCode;
 	}
 
 	@Override
@@ -147,8 +130,7 @@ public abstract class AbstractServerHttpResponse implements ServerHttpResponse {
 		if (this.state.get() == State.COMMITTED) {
 			throw new IllegalStateException("Can't add the cookie " + cookie +
 					"because the HTTP response has already been committed");
-		}
-		else {
+		} else {
 			getCookies().add(cookie.getName(), cookie);
 		}
 	}
@@ -159,7 +141,6 @@ public abstract class AbstractServerHttpResponse implements ServerHttpResponse {
 	 * use such as WebSocket upgrades in the spring-webflux module.
 	 */
 	public abstract <T> T getNativeResponse();
-
 
 	@Override
 	public void beforeCommit(Supplier<? extends Mono<Void>> action) {
@@ -198,6 +179,7 @@ public abstract class AbstractServerHttpResponse implements ServerHttpResponse {
 
 	/**
 	 * A variant of {@link #doCommit(Supplier)} for a response without no body.
+	 *
 	 * @return a completion publisher
 	 */
 	protected Mono<Void> doCommit() {
@@ -207,6 +189,7 @@ public abstract class AbstractServerHttpResponse implements ServerHttpResponse {
 	/**
 	 * Apply {@link #beforeCommit(Supplier) beforeCommit} actions, apply the
 	 * response status and headers/cookies, and write the response body.
+	 *
 	 * @param writeAction the action to write the response body (may be {@code null})
 	 * @return a completion publisher
 	 */
@@ -236,15 +219,16 @@ public abstract class AbstractServerHttpResponse implements ServerHttpResponse {
 		return Flux.concat(actions).then();
 	}
 
-
 	/**
 	 * Write to the underlying the response.
+	 *
 	 * @param body the publisher to write with
 	 */
 	protected abstract Mono<Void> writeWithInternal(Publisher<? extends DataBuffer> body);
 
 	/**
 	 * Write to the underlying the response, and flush after each {@code Publisher<DataBuffer>}.
+	 *
 	 * @param body the publisher to write and flush with
 	 */
 	protected abstract Mono<Void> writeAndFlushWithInternal(Publisher<? extends Publisher<? extends DataBuffer>> body);
@@ -266,5 +250,13 @@ public abstract class AbstractServerHttpResponse implements ServerHttpResponse {
 	 * This method is called once only.
 	 */
 	protected abstract void applyCookies();
+
+	/**
+	 * COMMITTING -> COMMITTED is the period after doCommit is called but before
+	 * the response status and headers have been applied to the underlying
+	 * response during which time pre-commit actions can still make changes to
+	 * the response status and headers.
+	 */
+	private enum State {NEW, COMMITTING, COMMITTED}
 
 }

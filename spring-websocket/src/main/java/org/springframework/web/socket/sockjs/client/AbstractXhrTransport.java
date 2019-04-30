@@ -16,14 +16,8 @@
 
 package org.springframework.web.socket.sockjs.client;
 
-import java.net.URI;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +30,11 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.sockjs.frame.SockJsFrame;
 import org.springframework.web.socket.sockjs.transport.TransportType;
+
+import java.net.URI;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Abstract base class for XHR transport implementations to extend.
@@ -68,6 +67,13 @@ public abstract class AbstractXhrTransport implements XhrTransport {
 	}
 
 	/**
+	 * Whether XHR streaming is disabled or not.
+	 */
+	public boolean isXhrStreamingDisabled() {
+		return this.xhrStreamingDisabled;
+	}
+
+	/**
 	 * An {@code XhrTransport} can support both the "xhr_streaming" and "xhr"
 	 * SockJS server transports. From a client perspective there is no
 	 * implementation difference.
@@ -79,13 +85,6 @@ public abstract class AbstractXhrTransport implements XhrTransport {
 	 */
 	public void setXhrStreamingDisabled(boolean disabled) {
 		this.xhrStreamingDisabled = disabled;
-	}
-
-	/**
-	 * Whether XHR streaming is disabled or not.
-	 */
-	public boolean isXhrStreamingDisabled() {
-		return this.xhrStreamingDisabled;
 	}
 
 
@@ -111,8 +110,8 @@ public abstract class AbstractXhrTransport implements XhrTransport {
 	}
 
 	protected abstract void connectInternal(TransportRequest request, WebSocketHandler handler,
-			URI receiveUrl, HttpHeaders handshakeHeaders, XhrClientSockJsSession session,
-			SettableListenableFuture<WebSocketSession> connectFuture);
+											URI receiveUrl, HttpHeaders handshakeHeaders, XhrClientSockJsSession session,
+											SettableListenableFuture<WebSocketSession> connectFuture);
 
 
 	// InfoReceiver methods

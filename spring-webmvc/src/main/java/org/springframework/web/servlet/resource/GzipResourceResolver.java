@@ -16,18 +16,18 @@
 
 package org.springframework.web.servlet.resource;
 
+import org.springframework.core.io.AbstractResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.lang.Nullable;
+
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.core.io.AbstractResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.lang.Nullable;
 
 /**
  * A {@code ResourceResolver} that delegates to the chain to locate a resource
@@ -45,7 +45,7 @@ public class GzipResourceResolver extends AbstractResourceResolver {
 
 	@Override
 	protected Resource resolveResourceInternal(@Nullable HttpServletRequest request, String requestPath,
-			List<? extends Resource> locations, ResourceResolverChain chain) {
+											   List<? extends Resource> locations, ResourceResolverChain chain) {
 
 		Resource resource = chain.resolveResource(request, requestPath, locations);
 		if (resource == null || (request != null && !isGzipAccepted(request))) {
@@ -57,8 +57,7 @@ public class GzipResourceResolver extends AbstractResourceResolver {
 			if (gzipped.exists()) {
 				return gzipped;
 			}
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			logger.trace("No gzip resource for [" + resource.getFilename() + "]", ex);
 		}
 
@@ -72,7 +71,7 @@ public class GzipResourceResolver extends AbstractResourceResolver {
 
 	@Override
 	protected String resolveUrlPathInternal(String resourceUrlPath,
-			List<? extends Resource> locations, ResourceResolverChain chain) {
+											List<? extends Resource> locations, ResourceResolverChain chain) {
 
 		return chain.resolveUrlPath(resourceUrlPath, locations);
 	}

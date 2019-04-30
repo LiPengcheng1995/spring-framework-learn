@@ -16,14 +16,14 @@
 
 package org.springframework.web.servlet.resource;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.core.io.Resource;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A default implementation of {@link ResourceTransformerChain} for invoking
@@ -42,7 +42,7 @@ class DefaultResourceTransformerChain implements ResourceTransformerChain {
 
 
 	public DefaultResourceTransformerChain(ResourceResolverChain resolverChain,
-			@Nullable List<ResourceTransformer> transformers) {
+										   @Nullable List<ResourceTransformer> transformers) {
 
 		Assert.notNull(resolverChain, "ResourceResolverChain is required");
 		this.resolverChain = resolverChain;
@@ -66,8 +66,7 @@ class DefaultResourceTransformerChain implements ResourceTransformerChain {
 
 		try {
 			return transformer.transform(request, resource, this);
-		}
-		finally {
+		} finally {
 			this.index--;
 		}
 	}

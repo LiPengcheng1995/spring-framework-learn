@@ -16,16 +16,6 @@
 
 package org.springframework.test.web.servlet;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.servlet.AsyncContext;
-import javax.servlet.DispatcherType;
-import javax.servlet.Filter;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
-
 import org.springframework.beans.Mergeable;
 import org.springframework.lang.Nullable;
 import org.springframework.mock.web.MockFilterChain;
@@ -35,6 +25,12 @@ import org.springframework.util.Assert;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <strong>Main entry point for server-side Spring MVC test support.</strong>
@@ -83,6 +79,7 @@ public final class MockMvc {
 
 	/**
 	 * Private constructor, not for direct instantiation.
+	 *
 	 * @see org.springframework.test.web.servlet.setup.MockMvcBuilders
 	 */
 	MockMvc(TestDispatcherServlet servlet, Filter... filters) {
@@ -98,6 +95,7 @@ public final class MockMvc {
 
 	/**
 	 * A default request builder merged into every performed request.
+	 *
 	 * @see org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder#defaultRequest(RequestBuilder)
 	 */
 	void setDefaultRequest(@Nullable RequestBuilder requestBuilder) {
@@ -106,6 +104,7 @@ public final class MockMvc {
 
 	/**
 	 * Expectations to assert after every performed request.
+	 *
 	 * @see org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder#alwaysExpect(ResultMatcher)
 	 */
 	void setGlobalResultMatchers(List<ResultMatcher> resultMatchers) {
@@ -115,6 +114,7 @@ public final class MockMvc {
 
 	/**
 	 * General actions to apply after every performed request.
+	 *
 	 * @see org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder#alwaysDo(ResultHandler)
 	 */
 	void setGlobalResultHandlers(List<ResultHandler> resultHandlers) {
@@ -125,9 +125,10 @@ public final class MockMvc {
 	/**
 	 * Perform a request and return a type that allows chaining further
 	 * actions, such as asserting expectations, on the result.
+	 *
 	 * @param requestBuilder used to prepare the request to execute;
-	 * see static factory methods in
-	 * {@link org.springframework.test.web.servlet.request.MockMvcRequestBuilders}
+	 *                       see static factory methods in
+	 *                       {@link org.springframework.test.web.servlet.request.MockMvcRequestBuilders}
 	 * @return an instance of {@link ResultActions} (never {@code null})
 	 * @see org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 	 * @see org.springframework.test.web.servlet.result.MockMvcResultMatchers
@@ -145,8 +146,7 @@ public final class MockMvc {
 		if (asyncContext != null) {
 			servletResponse = (HttpServletResponse) asyncContext.getResponse();
 			mockResponse = unwrapResponseIfNecessary(servletResponse);
-		}
-		else {
+		} else {
 			mockResponse = new MockHttpServletResponse();
 			servletResponse = mockResponse;
 		}
@@ -178,11 +178,13 @@ public final class MockMvc {
 				matcher.match(mvcResult);
 				return this;
 			}
+
 			@Override
 			public ResultActions andDo(ResultHandler handler) throws Exception {
 				handler.handle(mvcResult);
 				return this;
 			}
+
 			@Override
 			public MvcResult andReturn() {
 				return mvcResult;

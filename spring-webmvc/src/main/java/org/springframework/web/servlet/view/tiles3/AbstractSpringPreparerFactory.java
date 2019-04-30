@@ -20,7 +20,6 @@ import org.apache.tiles.TilesException;
 import org.apache.tiles.preparer.ViewPreparer;
 import org.apache.tiles.preparer.factory.PreparerFactory;
 import org.apache.tiles.request.Request;
-
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -30,10 +29,10 @@ import org.springframework.web.servlet.DispatcherServlet;
  * {@link #getPreparer(String, org.springframework.web.context.WebApplicationContext)}.
  *
  * @author Juergen Hoeller
- * @since 3.2
  * @see #getPreparer(String, org.springframework.web.context.WebApplicationContext)
  * @see SimpleSpringPreparerFactory
  * @see SpringBeanPreparerFactory
+ * @since 3.2
  */
 public abstract class AbstractSpringPreparerFactory implements PreparerFactory {
 
@@ -54,7 +53,8 @@ public abstract class AbstractSpringPreparerFactory implements PreparerFactory {
 	/**
 	 * Obtain a preparer instance for the given preparer name,
 	 * based on the given Spring WebApplicationContext.
-	 * @param name the name of the preparer
+	 *
+	 * @param name    the name of the preparer
 	 * @param context the current Spring WebApplicationContext
 	 * @return the preparer instance
 	 * @throws TilesException in case of failure

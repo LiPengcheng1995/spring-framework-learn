@@ -16,11 +16,6 @@
 
 package org.springframework.web.servlet.config.annotation;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.context.ApplicationContext;
@@ -43,6 +38,11 @@ import org.springframework.web.servlet.view.script.ScriptTemplateViewResolver;
 import org.springframework.web.servlet.view.tiles3.TilesConfigurer;
 import org.springframework.web.servlet.view.tiles3.TilesViewResolver;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Assist with the configuration of a chain of
  * {@link org.springframework.web.servlet.ViewResolver ViewResolver} instances.
@@ -54,23 +54,20 @@ import org.springframework.web.servlet.view.tiles3.TilesViewResolver;
  */
 public class ViewResolverRegistry {
 
+	private final List<ViewResolver> viewResolvers = new ArrayList<>(4);
 	@Nullable
 	private ContentNegotiationManager contentNegotiationManager;
-
 	@Nullable
 	private ApplicationContext applicationContext;
-
 	@Nullable
 	private ContentNegotiatingViewResolver contentNegotiatingResolver;
-
-	private final List<ViewResolver> viewResolvers = new ArrayList<>(4);
-
 	@Nullable
 	private Integer order;
 
 
 	/**
 	 * Class constructor with {@link ContentNegotiationManager} and {@link ApplicationContext}.
+	 *
 	 * @since 4.3.12
 	 */
 	public ViewResolverRegistry(
@@ -94,6 +91,7 @@ public class ViewResolverRegistry {
 	 * media types requested by the client (e.g. in the Accept header).
 	 * <p>If invoked multiple times the provided default views will be added to
 	 * any other default views that may have been configured already.
+	 *
 	 * @see ContentNegotiatingViewResolver#setDefaultViews
 	 */
 	public void enableContentNegotiation(View... defaultViews) {
@@ -106,6 +104,7 @@ public class ViewResolverRegistry {
 	 * media types requested by the client (e.g. in the Accept header).
 	 * <p>If invoked multiple times the provided default views will be added to
 	 * any other default views that may have been configured already.
+	 *
 	 * @see ContentNegotiatingViewResolver#setDefaultViews
 	 */
 	public void enableContentNegotiation(boolean useNotAcceptableStatus, View... defaultViews) {
@@ -124,8 +123,7 @@ public class ViewResolverRegistry {
 				views.addAll(Arrays.asList(defaultViews));
 				this.contentNegotiatingResolver.setDefaultViews(views);
 			}
-		}
-		else {
+		} else {
 			this.contentNegotiatingResolver = new ContentNegotiatingViewResolver();
 			this.contentNegotiatingResolver.setDefaultViews(Arrays.asList(defaultViews));
 			this.contentNegotiatingResolver.setViewResolvers(this.viewResolvers);
@@ -217,6 +215,7 @@ public class ViewResolverRegistry {
 
 	/**
 	 * Register a script template view resolver with an empty default view name prefix and suffix.
+	 *
 	 * @since 4.2
 	 */
 	public UrlBasedViewResolverRegistration scriptTemplate() {
@@ -250,7 +249,7 @@ public class ViewResolverRegistry {
 		if (viewResolver instanceof ContentNegotiatingViewResolver) {
 			throw new BeanInitializationException(
 					"addViewResolver cannot be used to configure a ContentNegotiatingViewResolver. " +
-					"Please use the method enableContentNegotiation instead.");
+							"Please use the method enableContentNegotiation instead.");
 		}
 		this.viewResolvers.add(viewResolver);
 	}
@@ -285,8 +284,7 @@ public class ViewResolverRegistry {
 	protected List<ViewResolver> getViewResolvers() {
 		if (this.contentNegotiatingResolver != null) {
 			return Collections.<ViewResolver>singletonList(this.contentNegotiatingResolver);
-		}
-		else {
+		} else {
 			return this.viewResolvers;
 		}
 	}

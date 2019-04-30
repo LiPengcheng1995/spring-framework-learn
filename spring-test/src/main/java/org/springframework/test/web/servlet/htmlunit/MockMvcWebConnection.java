@@ -16,19 +16,9 @@
 
 package org.springframework.test.web.servlet.htmlunit;
 
-import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.gargoylesoftware.htmlunit.CookieManager;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.WebConnection;
-import com.gargoylesoftware.htmlunit.WebRequest;
-import com.gargoylesoftware.htmlunit.WebResponse;
+import com.gargoylesoftware.htmlunit.*;
 import com.gargoylesoftware.htmlunit.util.Cookie;
 import org.apache.http.impl.cookie.BasicClientCookie;
-
 import org.springframework.lang.Nullable;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
@@ -36,6 +26,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.Assert;
+
+import java.io.IOException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * {@code MockMvcWebConnection} enables {@link MockMvc} to transform a
@@ -54,8 +49,8 @@ import org.springframework.util.Assert;
  *
  * @author Rob Winch
  * @author Sam Brannen
- * @since 4.2
  * @see org.springframework.test.web.servlet.htmlunit.webdriver.WebConnectionHtmlUnitDriver
+ * @since 4.2
  */
 public final class MockMvcWebConnection implements WebConnection {
 
@@ -73,7 +68,8 @@ public final class MockMvcWebConnection implements WebConnection {
 	 * is {@code ""} (i.e., the root context).
 	 * <p>For example, the URL {@code http://localhost/test/this} would use
 	 * {@code ""} as the context path.
-	 * @param mockMvc the {@code MockMvc} instance to use; never {@code null}
+	 *
+	 * @param mockMvc   the {@code MockMvc} instance to use; never {@code null}
 	 * @param webClient the {@link WebClient} to use. never {@code null}
 	 */
 	public MockMvcWebConnection(MockMvc mockMvc, WebClient webClient) {
@@ -87,8 +83,9 @@ public final class MockMvcWebConnection implements WebConnection {
 	 * to {@link javax.servlet.http.HttpServletRequest#getContextPath()}
 	 * which states that it can be an empty string and otherwise must start
 	 * with a "/" character and not end with a "/" character.
-	 * @param mockMvc the {@code MockMvc} instance to use (never {@code null})
-	 * @param webClient the {@link WebClient} to use (never {@code null})
+	 *
+	 * @param mockMvc     the {@code MockMvc} instance to use (never {@code null})
+	 * @param webClient   the {@link WebClient} to use (never {@code null})
 	 * @param contextPath the contextPath to use
 	 */
 	public MockMvcWebConnection(MockMvc mockMvc, WebClient webClient, String contextPath) {
@@ -107,6 +104,7 @@ public final class MockMvcWebConnection implements WebConnection {
 	 * {@link javax.servlet.http.HttpServletRequest#getContextPath()} which
 	 * states that it can be an empty string and otherwise must start with
 	 * a "/" character and not end with a "/" character.
+	 *
 	 * @param contextPath the path to validate
 	 */
 	static void validateContextPath(@Nullable String contextPath) {
@@ -117,12 +115,27 @@ public final class MockMvcWebConnection implements WebConnection {
 		Assert.isTrue(!contextPath.endsWith("/"), () -> "contextPath '" + contextPath + "' must not end with '/'.");
 	}
 
+	private static com.gargoylesoftware.htmlunit.util.Cookie createCookie(javax.servlet.http.Cookie cookie) {
+		Date expires = null;
+		if (cookie.getMaxAge() > -1) {
+			expires = new Date(System.currentTimeMillis() + cookie.getMaxAge() * 1000);
+		}
+		BasicClientCookie result = new BasicClientCookie(cookie.getName(), cookie.getValue());
+		result.setDomain(cookie.getDomain());
+		result.setComment(cookie.getComment());
+		result.setExpiryDate(expires);
+		result.setPath(cookie.getPath());
+		result.setSecure(cookie.getSecure());
+		if (cookie.isHttpOnly()) {
+			result.setAttribute("httponly", "true");
+		}
+		return new com.gargoylesoftware.htmlunit.util.Cookie(result);
+	}
 
 	public void setWebClient(WebClient webClient) {
 		Assert.notNull(webClient, "WebClient must not be null");
 		this.webClient = webClient;
 	}
-
 
 	public WebResponse getResponse(WebRequest webRequest) throws IOException {
 		long startTime = System.currentTimeMillis();
@@ -145,8 +158,7 @@ public final class MockMvcWebConnection implements WebConnection {
 		ResultActions resultActions;
 		try {
 			resultActions = this.mockMvc.perform(requestBuilder);
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new IOException(ex);
 		}
 
@@ -164,28 +176,10 @@ public final class MockMvcWebConnection implements WebConnection {
 			Date expires = toManage.getExpires();
 			if (expires == null || expires.after(now)) {
 				cookieManager.addCookie(toManage);
-			}
-			else {
+			} else {
 				cookieManager.removeCookie(toManage);
 			}
 		}
-	}
-
-	private static com.gargoylesoftware.htmlunit.util.Cookie createCookie(javax.servlet.http.Cookie cookie) {
-		Date expires = null;
-		if (cookie.getMaxAge() > -1) {
-			expires = new Date(System.currentTimeMillis() + cookie.getMaxAge() * 1000);
-		}
-		BasicClientCookie result = new BasicClientCookie(cookie.getName(), cookie.getValue());
-		result.setDomain(cookie.getDomain());
-		result.setComment(cookie.getComment());
-		result.setExpiryDate(expires);
-		result.setPath(cookie.getPath());
-		result.setSecure(cookie.getSecure());
-		if (cookie.isHttpOnly()) {
-			result.setAttribute("httponly", "true");
-		}
-		return new com.gargoylesoftware.htmlunit.util.Cookie(result);
 	}
 
 	@Override

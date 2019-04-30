@@ -242,23 +242,23 @@ public class PasswordInputTag extends InputTag {
 
 	private boolean showPassword = false;
 
-
 	/**
 	 * Is the password value to be rendered?
-	 * @param showPassword {@code true} if the password value is to be rendered
-	 */
-	public void setShowPassword(boolean showPassword) {
-		this.showPassword = showPassword;
-	}
-
-	/**
-	 * Is the password value to be rendered?
+	 *
 	 * @return {@code true} if the password value to be rendered
 	 */
 	public boolean isShowPassword() {
 		return this.showPassword;
 	}
 
+	/**
+	 * Is the password value to be rendered?
+	 *
+	 * @param showPassword {@code true} if the password value is to be rendered
+	 */
+	public void setShowPassword(boolean showPassword) {
+		this.showPassword = showPassword;
+	}
 
 	/**
 	 * Flags "type" as an illegal dynamic attribute.
@@ -286,8 +286,7 @@ public class PasswordInputTag extends InputTag {
 	protected void writeValue(TagWriter tagWriter) throws JspException {
 		if (this.showPassword) {
 			super.writeValue(tagWriter);
-		}
-		else {
+		} else {
 			tagWriter.writeAttribute("value", processFieldValue(getName(), "", getType()));
 		}
 	}

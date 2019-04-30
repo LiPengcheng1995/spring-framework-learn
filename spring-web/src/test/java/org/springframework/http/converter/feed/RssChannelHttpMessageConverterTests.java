@@ -16,7 +16,15 @@
 
 package org.springframework.http.converter.feed;
 
-import static org.junit.Assert.*;
+import com.rometools.rome.feed.rss.Channel;
+import com.rometools.rome.feed.rss.Item;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.http.MediaType;
+import org.springframework.http.MockHttpInputMessage;
+import org.springframework.http.MockHttpOutputMessage;
+import org.xml.sax.SAXException;
+import org.xmlunit.matchers.CompareMatcher;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,16 +33,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.rometools.rome.feed.rss.Channel;
-import com.rometools.rome.feed.rss.Item;
-import org.junit.Before;
-import org.junit.Test;
-import org.xml.sax.SAXException;
-import org.xmlunit.matchers.CompareMatcher;
-
-import org.springframework.http.MediaType;
-import org.springframework.http.MockHttpInputMessage;
-import org.springframework.http.MockHttpOutputMessage;
+import static org.junit.Assert.*;
 
 /**
  * @author Arjen Poutsma
@@ -43,12 +42,15 @@ public class RssChannelHttpMessageConverterTests {
 
 	private RssChannelHttpMessageConverter converter;
 
+	private static CompareMatcher isSimilarTo(final String content) {
+		return CompareMatcher.isSimilarTo(content)
+				.ignoreWhitespace();
+	}
 
 	@Before
 	public void setUp() {
 		converter = new RssChannelHttpMessageConverter();
 	}
-
 
 	@Test
 	public void canRead() {
@@ -131,10 +133,5 @@ public class RssChannelHttpMessageConverterTests {
 
 		assertEquals("Invalid content-type", new MediaType("application", "rss+xml", Charset.forName(encoding)),
 				outputMessage.getHeaders().getContentType());
-	}
-
-	private static CompareMatcher isSimilarTo(final String content) {
-		return CompareMatcher.isSimilarTo(content)
-				.ignoreWhitespace();
 	}
 }

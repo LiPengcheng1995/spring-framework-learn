@@ -16,14 +16,13 @@
 
 package org.springframework.test.web.servlet.result;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.hamcrest.Matcher;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.ResultMatcher;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
@@ -62,6 +61,7 @@ public class HeaderResultMatchers {
 	/**
 	 * Assert the values of the response header with the given Hamcrest
 	 * Iterable {@link Matcher}.
+	 *
 	 * @since 4.3
 	 */
 	public <T> ResultMatcher stringValues(final String name, final Matcher<Iterable<String>> matcher) {
@@ -80,6 +80,7 @@ public class HeaderResultMatchers {
 
 	/**
 	 * Assert the values of the response header as String values.
+	 *
 	 * @since 4.3
 	 */
 	public ResultMatcher stringValues(final String name, final String... values) {
@@ -91,6 +92,7 @@ public class HeaderResultMatchers {
 
 	/**
 	 * Assert that the named response header exists.
+	 *
 	 * @since 5.0.3
 	 */
 	public ResultMatcher exists(final String name) {
@@ -100,6 +102,7 @@ public class HeaderResultMatchers {
 
 	/**
 	 * Assert that the named response header does not exist.
+	 *
 	 * @since 4.0
 	 */
 	public ResultMatcher doesNotExist(final String name) {
@@ -130,6 +133,7 @@ public class HeaderResultMatchers {
 	 * <p>The {@link ResultMatcher} returned by this method throws an
 	 * {@link AssertionError} if the response does not contain the specified
 	 * header, or if the supplied {@code value} does not match the primary value.
+	 *
 	 * @see <a href="https://tools.ietf.org/html/rfc7231#section-7.1.1.1">Section 7.1.1.1 of RFC 7231</a>
 	 * @since 4.2
 	 */

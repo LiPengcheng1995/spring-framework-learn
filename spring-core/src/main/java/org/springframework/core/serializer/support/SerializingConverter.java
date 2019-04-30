@@ -16,12 +16,12 @@
 
 package org.springframework.core.serializer.support;
 
-import java.io.ByteArrayOutputStream;
-
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.serializer.DefaultSerializer;
 import org.springframework.core.serializer.Serializer;
 import org.springframework.util.Assert;
+
+import java.io.ByteArrayOutputStream;
 
 /**
  * A {@link Converter} that delegates to a
@@ -59,11 +59,10 @@ public class SerializingConverter implements Converter<Object, byte[]> {
 	@Override
 	public byte[] convert(Object source) {
 		ByteArrayOutputStream byteStream = new ByteArrayOutputStream(1024);
-		try  {
+		try {
 			this.serializer.serialize(source, byteStream);
 			return byteStream.toByteArray();
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			throw new SerializationFailedException("Failed to serialize object using " +
 					this.serializer.getClass().getSimpleName(), ex);
 		}

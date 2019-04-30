@@ -16,23 +16,24 @@
 
 package org.springframework.cache.jcache.interceptor;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.Collection;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.springframework.cache.Cache;
+import org.springframework.cache.jcache.AbstractJCacheTests;
+
 import javax.cache.annotation.CacheInvocationContext;
 import javax.cache.annotation.CacheMethodDetails;
 import javax.cache.annotation.CacheResolver;
 import javax.cache.annotation.CacheResult;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.Collection;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import org.springframework.cache.Cache;
-import org.springframework.cache.jcache.AbstractJCacheTests;
-
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
 
 /**
  * @author Stephane Nicoll
@@ -67,8 +68,7 @@ public class CacheResolverAdapterTests extends AbstractJCacheTests {
 		javax.cache.Cache cache;
 		if (cacheName == null) {
 			cache = null;
-		}
-		else {
+		} else {
 			cache = mock(javax.cache.Cache.class);
 			given(cache.getName()).willReturn(cacheName);
 		}
@@ -83,7 +83,7 @@ public class CacheResolverAdapterTests extends AbstractJCacheTests {
 				new DefaultCacheMethodDetails<>(method, cacheAnnotation, "test");
 		CacheResultOperation operation = new CacheResultOperation(methodDetails,
 				defaultCacheResolver, defaultKeyGenerator, defaultExceptionCacheResolver);
-		return new DefaultCacheInvocationContext<>(operation, new Sample(), new Object[] {"id"});
+		return new DefaultCacheInvocationContext<>(operation, new Sample(), new Object[]{"id"});
 	}
 
 

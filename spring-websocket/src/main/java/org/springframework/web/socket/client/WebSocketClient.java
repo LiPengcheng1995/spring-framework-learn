@@ -16,13 +16,13 @@
 
 package org.springframework.web.socket.client;
 
-import java.net.URI;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.WebSocketSession;
+
+import java.net.URI;
 
 /**
  * Contract for initiating a WebSocket request. As an alternative considering using the
@@ -30,15 +30,15 @@ import org.springframework.web.socket.WebSocketSession;
  * to a pre-configured URI when the application starts.
  *
  * @author Rossen Stoyanchev
- * @since 4.0
  * @see WebSocketConnectionManager
+ * @since 4.0
  */
 public interface WebSocketClient {
 
 	ListenableFuture<WebSocketSession> doHandshake(WebSocketHandler webSocketHandler,
-			String uriTemplate, Object... uriVariables);
+												   String uriTemplate, Object... uriVariables);
 
 	ListenableFuture<WebSocketSession> doHandshake(WebSocketHandler webSocketHandler,
-			@Nullable WebSocketHttpHeaders headers, URI uri);
+												   @Nullable WebSocketHttpHeaders headers, URI uri);
 
 }

@@ -19,9 +19,7 @@ package org.springframework.web.servlet.view.feed;
 import com.rometools.rome.feed.rss.Channel;
 import com.rometools.rome.feed.rss.Description;
 import com.rometools.rome.feed.rss.Item;
-
 import org.junit.Test;
-
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.mock.web.test.MockHttpServletResponse;
 
@@ -77,7 +75,7 @@ public class RssFeedViewTests {
 
 		@Override
 		protected List<Item> buildFeedItems(Map<String, Object> model,
-				HttpServletRequest request, HttpServletResponse response) throws Exception {
+											HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 			List<Item> items = new ArrayList<>();
 			for (String name : model.keySet()) {

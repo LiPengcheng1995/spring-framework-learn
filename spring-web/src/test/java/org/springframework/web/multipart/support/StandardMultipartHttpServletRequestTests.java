@@ -17,12 +17,12 @@
 package org.springframework.web.multipart.support;
 
 import org.junit.Test;
-
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.mock.web.test.MockPart;
 import org.springframework.web.multipart.MultipartFile;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Unit tests for {@link StandardMultipartHttpServletRequest}.

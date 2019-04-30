@@ -16,17 +16,15 @@
 
 package org.springframework.web.reactive.handler;
 
-import java.time.Duration;
-
 import org.junit.Test;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.reactive.handler.WebFluxResponseStatusExceptionHandler;
 import org.springframework.web.server.handler.ResponseStatusExceptionHandler;
 import org.springframework.web.server.handler.ResponseStatusExceptionHandlerTests;
 
-import static org.junit.Assert.*;
+import java.time.Duration;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Unit tests for {@link WebFluxResponseStatusExceptionHandler}.

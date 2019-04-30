@@ -16,14 +16,16 @@
 
 package org.springframework.test.context.jdbc;
 
-import java.lang.reflect.Method;
-
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import java.lang.reflect.Method;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.springframework.jdbc.datasource.init.ScriptUtils.*;
 import static org.springframework.test.context.jdbc.SqlConfig.ErrorMode.*;
-import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.*;
+import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.INFERRED;
+import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.ISOLATED;
 
 /**
  * Unit tests for {@link MergedSqlConfig}.
@@ -32,6 +34,22 @@ import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.*;
  * @since 4.1
  */
 public class MergedSqlConfigTests {
+
+	@Sql
+	public static void localConfigMethodWithDefaults() {
+	}
+
+	@Sql(config = @SqlConfig(dataSource = "ds", transactionManager = "txMgr", transactionMode = ISOLATED, encoding = "enigma", separator = "\n", commentPrefix = "`", blockCommentStartDelimiter = "<<", blockCommentEndDelimiter = ">>", errorMode = IGNORE_FAILED_DROPS))
+	public static void localConfigMethodWithCustomValues() {
+	}
+
+	@Sql(config = @SqlConfig(errorMode = CONTINUE_ON_ERROR))
+	public static void localConfigMethodWithContinueOnError() {
+	}
+
+	@Sql(config = @SqlConfig(errorMode = IGNORE_FAILED_DROPS))
+	public static void localConfigMethodWithIgnoreFailedDrops() {
+	}
 
 	private void assertDefaults(MergedSqlConfig cfg) {
 		assertNotNull(cfg);
@@ -42,7 +60,7 @@ public class MergedSqlConfigTests {
 		assertEquals("separator", DEFAULT_STATEMENT_SEPARATOR, cfg.getSeparator());
 		assertEquals("commentPrefix", DEFAULT_COMMENT_PREFIX, cfg.getCommentPrefix());
 		assertEquals("blockCommentStartDelimiter", DEFAULT_BLOCK_COMMENT_START_DELIMITER,
-			cfg.getBlockCommentStartDelimiter());
+				cfg.getBlockCommentStartDelimiter());
 		assertEquals("blockCommentEndDelimiter", DEFAULT_BLOCK_COMMENT_END_DELIMITER, cfg.getBlockCommentEndDelimiter());
 		assertEquals("errorMode", FAIL_ON_ERROR, cfg.getErrorMode());
 	}
@@ -80,6 +98,8 @@ public class MergedSqlConfigTests {
 		assertEquals("errorMode", IGNORE_FAILED_DROPS, cfg.getErrorMode());
 	}
 
+	// -------------------------------------------------------------------------
+
 	@Test
 	public void localConfigWithContinueOnError() throws Exception {
 		Method method = getClass().getMethod("localConfigMethodWithContinueOnError");
@@ -111,7 +131,7 @@ public class MergedSqlConfigTests {
 		assertEquals("separator", "\n", cfg.getSeparator());
 		assertEquals("commentPrefix", DEFAULT_COMMENT_PREFIX, cfg.getCommentPrefix());
 		assertEquals("blockCommentStartDelimiter", DEFAULT_BLOCK_COMMENT_START_DELIMITER,
-			cfg.getBlockCommentStartDelimiter());
+				cfg.getBlockCommentStartDelimiter());
 		assertEquals("blockCommentEndDelimiter", DEFAULT_BLOCK_COMMENT_END_DELIMITER, cfg.getBlockCommentEndDelimiter());
 		assertEquals("errorMode", IGNORE_FAILED_DROPS, cfg.getErrorMode());
 	}
@@ -130,29 +150,10 @@ public class MergedSqlConfigTests {
 		assertEquals("separator", "@@", cfg.getSeparator());
 		assertEquals("commentPrefix", DEFAULT_COMMENT_PREFIX, cfg.getCommentPrefix());
 		assertEquals("blockCommentStartDelimiter", DEFAULT_BLOCK_COMMENT_START_DELIMITER,
-			cfg.getBlockCommentStartDelimiter());
+				cfg.getBlockCommentStartDelimiter());
 		assertEquals("blockCommentEndDelimiter", DEFAULT_BLOCK_COMMENT_END_DELIMITER, cfg.getBlockCommentEndDelimiter());
 		assertEquals("errorMode", CONTINUE_ON_ERROR, cfg.getErrorMode());
 	}
-
-	// -------------------------------------------------------------------------
-
-	@Sql
-	public static void localConfigMethodWithDefaults() {
-	}
-
-	@Sql(config = @SqlConfig(dataSource = "ds", transactionManager = "txMgr", transactionMode = ISOLATED, encoding = "enigma", separator = "\n", commentPrefix = "`", blockCommentStartDelimiter = "<<", blockCommentEndDelimiter = ">>", errorMode = IGNORE_FAILED_DROPS))
-	public static void localConfigMethodWithCustomValues() {
-	}
-
-	@Sql(config = @SqlConfig(errorMode = CONTINUE_ON_ERROR))
-	public static void localConfigMethodWithContinueOnError() {
-	}
-
-	@Sql(config = @SqlConfig(errorMode = IGNORE_FAILED_DROPS))
-	public static void localConfigMethodWithIgnoreFailedDrops() {
-	}
-
 
 	@SqlConfig
 	public static class GlobalConfigWithDefaultsClass {

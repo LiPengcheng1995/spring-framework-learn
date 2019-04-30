@@ -16,12 +16,11 @@
 
 package org.springframework.format.datetime.joda;
 
-import java.util.Locale;
-
 import org.joda.time.format.DateTimeFormatter;
-
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.lang.Nullable;
+
+import java.util.Locale;
 
 /**
  * A holder for a thread-local {@link JodaTimeContext}
@@ -29,8 +28,8 @@ import org.springframework.lang.Nullable;
  *
  * @author Keith Donald
  * @author Juergen Hoeller
- * @since 3.0
  * @see org.springframework.context.i18n.LocaleContextHolder
+ * @since 3.0
  */
 public final class JodaTimeContextHolder {
 
@@ -46,21 +45,8 @@ public final class JodaTimeContextHolder {
 	}
 
 	/**
-	 * Associate the given JodaTimeContext with the current thread.
-	 * @param jodaTimeContext the current JodaTimeContext,
-	 * or {@code null} to reset the thread-bound context
-	 */
-	public static void setJodaTimeContext(@Nullable JodaTimeContext jodaTimeContext) {
-		if (jodaTimeContext == null) {
-			resetJodaTimeContext();
-		}
-		else {
-			jodaTimeContextHolder.set(jodaTimeContext);
-		}
-	}
-
-	/**
 	 * Return the JodaTimeContext associated with the current thread, if any.
+	 *
 	 * @return the current JodaTimeContext, or {@code null} if none
 	 */
 	@Nullable
@@ -68,12 +54,26 @@ public final class JodaTimeContextHolder {
 		return jodaTimeContextHolder.get();
 	}
 
+	/**
+	 * Associate the given JodaTimeContext with the current thread.
+	 *
+	 * @param jodaTimeContext the current JodaTimeContext,
+	 *                        or {@code null} to reset the thread-bound context
+	 */
+	public static void setJodaTimeContext(@Nullable JodaTimeContext jodaTimeContext) {
+		if (jodaTimeContext == null) {
+			resetJodaTimeContext();
+		} else {
+			jodaTimeContextHolder.set(jodaTimeContext);
+		}
+	}
 
 	/**
 	 * Obtain a DateTimeFormatter with user-specific settings applied to the given base Formatter.
+	 *
 	 * @param formatter the base formatter that establishes default formatting rules
-	 * (generally user independent)
-	 * @param locale the current user locale (may be {@code null} if not known)
+	 *                  (generally user independent)
+	 * @param locale    the current user locale (may be {@code null} if not known)
 	 * @return the user-specific DateTimeFormatter
 	 */
 	public static DateTimeFormatter getFormatter(DateTimeFormatter formatter, @Nullable Locale locale) {

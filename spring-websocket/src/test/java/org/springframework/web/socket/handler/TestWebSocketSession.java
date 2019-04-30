@@ -16,6 +16,12 @@
 
 package org.springframework.web.socket.handler;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.WebSocketExtension;
+import org.springframework.web.socket.WebSocketMessage;
+import org.springframework.web.socket.WebSocketSession;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
@@ -25,12 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.http.HttpHeaders;
-import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.WebSocketExtension;
-import org.springframework.web.socket.WebSocketMessage;
-import org.springframework.web.socket.WebSocketSession;
-
 /**
  * A {@link WebSocketSession} for use in tests.
  *
@@ -38,26 +38,16 @@ import org.springframework.web.socket.WebSocketSession;
  */
 public class TestWebSocketSession implements WebSocketSession {
 
-	private String id;
-
-	private URI uri;
-
-	private Map<String, Object> attributes = new HashMap<>();
-
-	private Principal principal;
-
-	private InetSocketAddress localAddress;
-
-	private InetSocketAddress remoteAddress;
-
-	private String protocol;
-
-	private List<WebSocketExtension> extensions = new ArrayList<>();
-
-	private boolean open;
-
 	private final List<WebSocketMessage<?>> messages = new ArrayList<>();
-
+	private String id;
+	private URI uri;
+	private Map<String, Object> attributes = new HashMap<>();
+	private Principal principal;
+	private InetSocketAddress localAddress;
+	private InetSocketAddress remoteAddress;
+	private String protocol;
+	private List<WebSocketExtension> extensions = new ArrayList<>();
+	private boolean open;
 	private CloseStatus status;
 
 	private HttpHeaders headers;
@@ -101,13 +91,13 @@ public class TestWebSocketSession implements WebSocketSession {
 		this.headers = headers;
 	}
 
-	public void setAttributes(Map<String, Object> attributes) {
-		this.attributes = attributes;
-	}
-
 	@Override
 	public Map<String, Object> getAttributes() {
 		return this.attributes;
+	}
+
+	public void setAttributes(Map<String, Object> attributes) {
+		this.attributes = attributes;
 	}
 
 	@Override
@@ -146,21 +136,21 @@ public class TestWebSocketSession implements WebSocketSession {
 	}
 
 	@Override
-	public void setTextMessageSizeLimit(int messageSizeLimit) {
-	}
-
-	@Override
 	public int getTextMessageSizeLimit() {
 		return 0;
 	}
 
 	@Override
-	public void setBinaryMessageSizeLimit(int messageSizeLimit) {
+	public void setTextMessageSizeLimit(int messageSizeLimit) {
 	}
 
 	@Override
 	public int getBinaryMessageSizeLimit() {
 		return 0;
+	}
+
+	@Override
+	public void setBinaryMessageSizeLimit(int messageSizeLimit) {
 	}
 
 	@Override

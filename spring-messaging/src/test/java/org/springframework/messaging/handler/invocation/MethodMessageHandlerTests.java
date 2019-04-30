@@ -16,21 +16,9 @@
 
 package org.springframework.messaging.handler.invocation;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.messaging.Message;
@@ -42,6 +30,9 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 import org.springframework.util.ReflectionUtils.MethodFilter;
+
+import java.lang.reflect.Method;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -176,9 +167,11 @@ public class MethodMessageHandlerTests {
 	@SuppressWarnings("unused")
 	private static class DuplicateMappingsController {
 
-		public void handlerFoo() { }
+		public void handlerFoo() {
+		}
 
-		public void handlerFoo(String arg) { }
+		public void handlerFoo(String arg) {
+		}
 	}
 
 
@@ -268,6 +261,13 @@ public class MethodMessageHandlerTests {
 
 	private static class TestExceptionHandlerMethodResolver extends AbstractExceptionHandlerMethodResolver {
 
+		public final static MethodFilter EXCEPTION_HANDLER_METHOD_FILTER = new MethodFilter() {
+			@Override
+			public boolean matches(Method method) {
+				return method.getName().contains("Exception");
+			}
+		};
+
 		public TestExceptionHandlerMethodResolver(Class<?> handlerType) {
 			super(initExceptionMappings(handlerType));
 		}
@@ -281,13 +281,6 @@ public class MethodMessageHandlerTests {
 			}
 			return result;
 		}
-
-		public final static MethodFilter EXCEPTION_HANDLER_METHOD_FILTER = new MethodFilter() {
-			@Override
-			public boolean matches(Method method) {
-				return method.getName().contains("Exception");
-			}
-		};
 	}
 
 }

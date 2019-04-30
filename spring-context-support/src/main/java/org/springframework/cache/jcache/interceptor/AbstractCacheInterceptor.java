@@ -16,13 +16,8 @@
 
 package org.springframework.cache.jcache.interceptor;
 
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.util.Collection;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.cache.Cache;
 import org.springframework.cache.interceptor.AbstractCacheInvoker;
 import org.springframework.cache.interceptor.CacheErrorHandler;
@@ -30,6 +25,10 @@ import org.springframework.cache.interceptor.CacheOperationInvocationContext;
 import org.springframework.cache.interceptor.CacheOperationInvoker;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
+
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.util.Collection;
 
 /**
  * A base interceptor for JSR-107 cache annotations.
@@ -48,14 +47,31 @@ abstract class AbstractCacheInterceptor<O extends AbstractJCacheOperation<A>, A 
 		super(errorHandler);
 	}
 
+	/**
+	 * Convert the collection of caches in a single expected element.
+	 * <p>Throw an {@link IllegalStateException} if the collection holds more than one element
+	 *
+	 * @return the single element or {@code null} if the collection is empty
+	 */
+	@Nullable
+	static Cache extractFrom(Collection<? extends Cache> caches) {
+		if (CollectionUtils.isEmpty(caches)) {
+			return null;
+		} else if (caches.size() == 1) {
+			return caches.iterator().next();
+		} else {
+			throw new IllegalStateException("Unsupported cache resolution result " + caches +
+					": JSR-107 only supports a single cache.");
+		}
+	}
 
 	@Nullable
 	protected abstract Object invoke(CacheOperationInvocationContext<O> context, CacheOperationInvoker invoker)
 			throws Throwable;
 
-
 	/**
 	 * Resolve the cache to use.
+	 *
 	 * @param context the invocation context
 	 * @return the cache to use (never null)
 	 */
@@ -66,25 +82,6 @@ abstract class AbstractCacheInterceptor<O extends AbstractJCacheOperation<A>, A 
 			throw new IllegalStateException("Cache could not have been resolved for " + context.getOperation());
 		}
 		return cache;
-	}
-
-	/**
-	 * Convert the collection of caches in a single expected element.
-	 * <p>Throw an {@link IllegalStateException} if the collection holds more than one element
-	 * @return the single element or {@code null} if the collection is empty
-	 */
-	@Nullable
-	static Cache extractFrom(Collection<? extends Cache> caches) {
-		if (CollectionUtils.isEmpty(caches)) {
-			return null;
-		}
-		else if (caches.size() == 1) {
-			return caches.iterator().next();
-		}
-		else {
-			throw new IllegalStateException("Unsupported cache resolution result " + caches +
-					": JSR-107 only supports a single cache.");
-		}
 	}
 
 }

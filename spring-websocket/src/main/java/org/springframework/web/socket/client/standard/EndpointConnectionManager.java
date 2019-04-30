@@ -16,18 +16,6 @@
 
 package org.springframework.web.socket.client.standard;
 
-import java.util.Arrays;
-import java.util.List;
-import javax.websocket.ClientEndpointConfig;
-import javax.websocket.ClientEndpointConfig.Configurator;
-import javax.websocket.ContainerProvider;
-import javax.websocket.Decoder;
-import javax.websocket.Encoder;
-import javax.websocket.Endpoint;
-import javax.websocket.Extension;
-import javax.websocket.Session;
-import javax.websocket.WebSocketContainer;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
@@ -37,6 +25,11 @@ import org.springframework.util.Assert;
 import org.springframework.web.socket.client.ConnectionManagerSupport;
 import org.springframework.web.socket.handler.BeanCreatingHandlerProvider;
 
+import javax.websocket.*;
+import javax.websocket.ClientEndpointConfig.Configurator;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * A WebSocket connection manager that is given a URI, an {@link Endpoint}, connects to a
  * WebSocket server through the {@link #start()} and {@link #stop()} methods. If
@@ -44,8 +37,8 @@ import org.springframework.web.socket.handler.BeanCreatingHandlerProvider;
  * when the Spring ApplicationContext is refreshed.
  *
  * @author Rossen Stoyanchev
- * @since 4.0
  * @see AnnotatedEndpointConnectionManager
+ * @since 4.0
  */
 public class EndpointConnectionManager extends ConnectionManagerSupport implements BeanFactoryAware {
 
@@ -100,12 +93,12 @@ public class EndpointConnectionManager extends ConnectionManagerSupport implemen
 		this.configBuilder.configurator(configurator);
 	}
 
-	public void setWebSocketContainer(WebSocketContainer webSocketContainer) {
-		this.webSocketContainer = webSocketContainer;
-	}
-
 	public WebSocketContainer getWebSocketContainer() {
 		return this.webSocketContainer;
+	}
+
+	public void setWebSocketContainer(WebSocketContainer webSocketContainer) {
+		this.webSocketContainer = webSocketContainer;
 	}
 
 	@Override
@@ -116,6 +109,13 @@ public class EndpointConnectionManager extends ConnectionManagerSupport implemen
 	}
 
 	/**
+	 * Return the configured {@link TaskExecutor}.
+	 */
+	public TaskExecutor getTaskExecutor() {
+		return this.taskExecutor;
+	}
+
+	/**
 	 * Set a {@link TaskExecutor} to use to open connections.
 	 * By default {@link SimpleAsyncTaskExecutor} is used.
 	 */
@@ -123,14 +123,6 @@ public class EndpointConnectionManager extends ConnectionManagerSupport implemen
 		Assert.notNull(taskExecutor, "TaskExecutor must not be null");
 		this.taskExecutor = taskExecutor;
 	}
-
-	/**
-	 * Return the configured {@link TaskExecutor}.
-	 */
-	public TaskExecutor getTaskExecutor() {
-		return this.taskExecutor;
-	}
-
 
 	@Override
 	protected void openConnection() {
@@ -147,8 +139,7 @@ public class EndpointConnectionManager extends ConnectionManagerSupport implemen
 				ClientEndpointConfig endpointConfig = configBuilder.build();
 				session = getWebSocketContainer().connectToServer(endpointToUse, endpointConfig, getUri());
 				logger.info("Successfully connected to WebSocket");
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				logger.error("Failed to connect to WebSocket", ex);
 			}
 		});
@@ -161,8 +152,7 @@ public class EndpointConnectionManager extends ConnectionManagerSupport implemen
 			if (session != null && session.isOpen()) {
 				session.close();
 			}
-		}
-		finally {
+		} finally {
 			this.session = null;
 		}
 	}

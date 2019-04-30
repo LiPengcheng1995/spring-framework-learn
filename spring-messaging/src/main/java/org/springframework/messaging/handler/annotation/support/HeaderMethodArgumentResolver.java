@@ -16,12 +16,8 @@
 
 package org.springframework.messaging.handler.annotation.support;
 
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
@@ -31,6 +27,9 @@ import org.springframework.messaging.MessageHandlingException;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.support.NativeMessageHeaderAccessor;
 import org.springframework.util.Assert;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Resolves method parameters annotated with {@link Header @Header}.

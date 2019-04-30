@@ -16,16 +16,8 @@
 
 package org.springframework.web.reactive.socket.server.upgrade;
 
-import java.io.IOException;
-import java.security.Principal;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jetty.websocket.api.WebSocketPolicy;
 import org.eclipse.jetty.websocket.server.WebSocketServerFactory;
-import reactor.core.publisher.Mono;
-
 import org.springframework.context.Lifecycle;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.core.io.buffer.DataBufferFactory;
@@ -41,10 +33,17 @@ import org.springframework.web.reactive.socket.adapter.JettyWebSocketHandlerAdap
 import org.springframework.web.reactive.socket.adapter.JettyWebSocketSession;
 import org.springframework.web.reactive.socket.server.RequestUpgradeStrategy;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.security.Principal;
 
 /**
  * A {@link RequestUpgradeStrategy} for use with Jetty.
- * 
+ *
  * @author Violeta Georgieva
  * @author Rossen Stoyanchev
  * @since 5.0
@@ -53,30 +52,14 @@ public class JettyRequestUpgradeStrategy implements RequestUpgradeStrategy, Life
 
 	private static final ThreadLocal<WebSocketHandlerContainer> adapterHolder =
 			new NamedThreadLocal<>("JettyWebSocketHandlerAdapter");
-
-
+	private final Object lifecycleMonitor = new Object();
 	@Nullable
 	private WebSocketPolicy webSocketPolicy;
-
 	@Nullable
 	private WebSocketServerFactory factory;
-
 	@Nullable
 	private volatile ServletContext servletContext;
-
 	private volatile boolean running = false;
-
-	private final Object lifecycleMonitor = new Object();
-
-
-	/**
-	 * Configure a {@link WebSocketPolicy} to use to initialize
-	 * {@link WebSocketServerFactory}.
-	 * @param webSocketPolicy the WebSocket settings
-	 */
-	public void setWebSocketPolicy(WebSocketPolicy webSocketPolicy) {
-		this.webSocketPolicy = webSocketPolicy;
-	}
 
 	/**
 	 * Return the configured {@link WebSocketPolicy}, if any.
@@ -86,6 +69,15 @@ public class JettyRequestUpgradeStrategy implements RequestUpgradeStrategy, Life
 		return webSocketPolicy;
 	}
 
+	/**
+	 * Configure a {@link WebSocketPolicy} to use to initialize
+	 * {@link WebSocketServerFactory}.
+	 *
+	 * @param webSocketPolicy the WebSocket settings
+	 */
+	public void setWebSocketPolicy(WebSocketPolicy webSocketPolicy) {
+		this.webSocketPolicy = webSocketPolicy;
+	}
 
 	@Override
 	public void start() {
@@ -106,8 +98,7 @@ public class JettyRequestUpgradeStrategy implements RequestUpgradeStrategy, Life
 						return container.getAdapter();
 					});
 					this.factory.start();
-				}
-				catch (Throwable ex) {
+				} catch (Throwable ex) {
 					throw new IllegalStateException("Unable to start WebSocketServerFactory", ex);
 				}
 			}
@@ -122,8 +113,7 @@ public class JettyRequestUpgradeStrategy implements RequestUpgradeStrategy, Life
 				if (this.factory != null) {
 					try {
 						this.factory.stop();
-					}
-					catch (Throwable ex) {
+					} catch (Throwable ex) {
 						throw new IllegalStateException("Failed to stop WebSocketServerFactory", ex);
 					}
 				}
@@ -139,7 +129,7 @@ public class JettyRequestUpgradeStrategy implements RequestUpgradeStrategy, Life
 
 	@Override
 	public Mono<Void> upgrade(ServerWebExchange exchange, WebSocketHandler handler,
-			@Nullable String subProtocol) {
+							  @Nullable String subProtocol) {
 
 		ServerHttpRequest request = exchange.getRequest();
 		ServerHttpResponse response = exchange.getResponse();
@@ -163,11 +153,9 @@ public class JettyRequestUpgradeStrategy implements RequestUpgradeStrategy, Life
 		try {
 			adapterHolder.set(new WebSocketHandlerContainer(adapter, subProtocol));
 			this.factory.acceptWebSocket(servletRequest, servletResponse);
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			return Mono.error(ex);
-		}
-		finally {
+		} finally {
 			adapterHolder.remove();
 		}
 

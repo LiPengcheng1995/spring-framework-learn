@@ -16,16 +16,10 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
@@ -46,6 +40,11 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.method.support.ModelAndViewContainer;
+
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -185,7 +184,7 @@ public class HttpEntityMethodProcessorTests {
 
 	@Test  // SPR-13423
 	public void handleReturnValueCharSequence() throws Exception {
-		List<HttpMessageConverter<?>>converters = new ArrayList<>();
+		List<HttpMessageConverter<?>> converters = new ArrayList<>();
 		converters.add(new ByteArrayHttpMessageConverter());
 		converters.add(new StringHttpMessageConverter());
 
@@ -210,19 +209,6 @@ public class HttpEntityMethodProcessorTests {
 	}
 
 
-	@SuppressWarnings("unused")
-	private static abstract class MyParameterizedController<DTO extends Identifiable> {
-
-		public void handleDto(HttpEntity<DTO> dto) {
-		}
-	}
-
-
-	@SuppressWarnings("unused")
-	private static class MySimpleParameterizedController extends MyParameterizedController<SimpleBean> {
-	}
-
-
 	private interface Identifiable extends Serializable {
 
 		Long getId();
@@ -230,8 +216,18 @@ public class HttpEntityMethodProcessorTests {
 		void setId(Long id);
 	}
 
+	@SuppressWarnings("unused")
+	private static abstract class MyParameterizedController<DTO extends Identifiable> {
 
-	@SuppressWarnings({ "serial" })
+		public void handleDto(HttpEntity<DTO> dto) {
+		}
+	}
+
+	@SuppressWarnings("unused")
+	private static class MySimpleParameterizedController extends MyParameterizedController<SimpleBean> {
+	}
+
+	@SuppressWarnings({"serial"})
 	private static class SimpleBean implements Identifiable {
 
 		private Long id;
@@ -258,20 +254,6 @@ public class HttpEntityMethodProcessorTests {
 		}
 	}
 
-
-	private final class ValidatingBinderFactory implements WebDataBinderFactory {
-
-		@Override
-		public WebDataBinder createBinder(NativeWebRequest webRequest, @Nullable Object target, String objectName) {
-			LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
-			validator.afterPropertiesSet();
-			WebDataBinder dataBinder = new WebDataBinder(target, objectName);
-			dataBinder.setValidator(validator);
-			return dataBinder;
-		}
-	}
-
-
 	@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 	private static class ParentClass {
 
@@ -293,7 +275,6 @@ public class HttpEntityMethodProcessorTests {
 		}
 	}
 
-
 	@JsonTypeName("foo")
 	private static class Foo extends ParentClass {
 
@@ -304,7 +285,6 @@ public class HttpEntityMethodProcessorTests {
 			super(parentProperty);
 		}
 	}
-
 
 	@JsonTypeName("bar")
 	private static class Bar extends ParentClass {
@@ -317,7 +297,6 @@ public class HttpEntityMethodProcessorTests {
 		}
 	}
 
-
 	private static class JacksonController {
 
 		@RequestMapping
@@ -327,6 +306,18 @@ public class HttpEntityMethodProcessorTests {
 			list.add(new Foo("foo"));
 			list.add(new Bar("bar"));
 			return new HttpEntity<>(list);
+		}
+	}
+
+	private final class ValidatingBinderFactory implements WebDataBinderFactory {
+
+		@Override
+		public WebDataBinder createBinder(NativeWebRequest webRequest, @Nullable Object target, String objectName) {
+			LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+			validator.afterPropertiesSet();
+			WebDataBinder dataBinder = new WebDataBinder(target, objectName);
+			dataBinder.setValidator(validator);
+			return dataBinder;
 		}
 	}
 

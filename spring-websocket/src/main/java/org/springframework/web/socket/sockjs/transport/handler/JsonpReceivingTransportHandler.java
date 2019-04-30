@@ -16,9 +16,6 @@
 
 package org.springframework.web.socket.sockjs.transport.handler;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.FormHttpMessageConverter;
@@ -33,6 +30,9 @@ import org.springframework.web.socket.sockjs.frame.SockJsMessageCodec;
 import org.springframework.web.socket.sockjs.transport.TransportHandler;
 import org.springframework.web.socket.sockjs.transport.TransportType;
 import org.springframework.web.socket.sockjs.transport.session.AbstractHttpSockJsSession;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * A {@link TransportHandler} that receives messages over HTTP.
@@ -53,13 +53,12 @@ public class JsonpReceivingTransportHandler extends AbstractHttpReceivingTranspo
 
 	@Override
 	public void handleRequestInternal(ServerHttpRequest request, ServerHttpResponse response,
-			WebSocketHandler wsHandler, AbstractHttpSockJsSession sockJsSession) throws SockJsException {
+									  WebSocketHandler wsHandler, AbstractHttpSockJsSession sockJsSession) throws SockJsException {
 
 		super.handleRequestInternal(request, response, wsHandler, sockJsSession);
 		try {
 			response.getBody().write("ok".getBytes(StandardCharsets.UTF_8));
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			throw new SockJsException("Failed to write to the response body", sockJsSession.getId(), ex);
 		}
 	}
@@ -73,8 +72,7 @@ public class JsonpReceivingTransportHandler extends AbstractHttpReceivingTranspo
 			MultiValueMap<String, String> map = this.formConverter.read(null, request);
 			String d = map.getFirst("d");
 			return (StringUtils.hasText(d) ? messageCodec.decode(d) : null);
-		}
-		else {
+		} else {
 			return messageCodec.decodeInputStream(request.getBody());
 		}
 	}

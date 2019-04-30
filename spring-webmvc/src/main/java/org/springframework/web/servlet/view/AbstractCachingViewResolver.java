@@ -16,18 +16,17 @@
 
 package org.springframework.web.servlet.view;
 
-import java.util.LinkedHashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.lang.Nullable;
 import org.springframework.web.context.support.WebApplicationObjectSupport;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.LinkedHashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Convenient base class for {@link org.springframework.web.servlet.ViewResolver}
@@ -44,32 +43,36 @@ import org.springframework.web.servlet.ViewResolver;
  */
 public abstract class AbstractCachingViewResolver extends WebApplicationObjectSupport implements ViewResolver {
 
-	/** Default maximum number of entries for the view cache: 1024 */
+	/**
+	 * Default maximum number of entries for the view cache: 1024
+	 */
 	public static final int DEFAULT_CACHE_LIMIT = 1024;
 
-	/** Dummy marker object for unresolved views in the cache Maps */
+	/**
+	 * Dummy marker object for unresolved views in the cache Maps
+	 */
 	private static final View UNRESOLVED_VIEW = new View() {
 		@Override
 		@Nullable
 		public String getContentType() {
 			return null;
 		}
+
 		@Override
 		public void render(@Nullable Map<String, ?> model, HttpServletRequest request, HttpServletResponse response) {
 		}
 	};
-
-
-	/** The maximum number of entries in the cache */
-	private volatile int cacheLimit = DEFAULT_CACHE_LIMIT;
-
-	/** Whether we should refrain from resolving views again if unresolved once */
-	private boolean cacheUnresolved = true;
-
-	/** Fast access cache for Views, returning already cached instances without a global lock */
+	/**
+	 * Fast access cache for Views, returning already cached instances without a global lock
+	 */
 	private final Map<Object, View> viewAccessCache = new ConcurrentHashMap<>(DEFAULT_CACHE_LIMIT);
-
-	/** Map from view key to View instance, synchronized for View creation */
+	/**
+	 * The maximum number of entries in the cache
+	 */
+	private volatile int cacheLimit = DEFAULT_CACHE_LIMIT;
+	/**
+	 * Map from view key to View instance, synchronized for View creation
+	 */
 	@SuppressWarnings("serial")
 	private final Map<Object, View> viewCreationCache =
 			new LinkedHashMap<Object, View>(DEFAULT_CACHE_LIMIT, 0.75f, true) {
@@ -78,13 +81,22 @@ public abstract class AbstractCachingViewResolver extends WebApplicationObjectSu
 					if (size() > getCacheLimit()) {
 						viewAccessCache.remove(eldest.getKey());
 						return true;
-					}
-					else {
+					} else {
 						return false;
 					}
 				}
 			};
+	/**
+	 * Whether we should refrain from resolving views again if unresolved once
+	 */
+	private boolean cacheUnresolved = true;
 
+	/**
+	 * Return the maximum number of entries for the view cache.
+	 */
+	public int getCacheLimit() {
+		return this.cacheLimit;
+	}
 
 	/**
 	 * Specify the maximum number of entries for the view cache.
@@ -95,10 +107,10 @@ public abstract class AbstractCachingViewResolver extends WebApplicationObjectSu
 	}
 
 	/**
-	 * Return the maximum number of entries for the view cache.
+	 * Return if caching is enabled.
 	 */
-	public int getCacheLimit() {
-		return this.cacheLimit;
+	public boolean isCache() {
+		return (this.cacheLimit > 0);
 	}
 
 	/**
@@ -113,10 +125,10 @@ public abstract class AbstractCachingViewResolver extends WebApplicationObjectSu
 	}
 
 	/**
-	 * Return if caching is enabled.
+	 * Return if caching of unresolved views is enabled.
 	 */
-	public boolean isCache() {
-		return (this.cacheLimit > 0);
+	public boolean isCacheUnresolved() {
+		return this.cacheUnresolved;
 	}
 
 	/**
@@ -135,21 +147,12 @@ public abstract class AbstractCachingViewResolver extends WebApplicationObjectSu
 		this.cacheUnresolved = cacheUnresolved;
 	}
 
-	/**
-	 * Return if caching of unresolved views is enabled.
-	 */
-	public boolean isCacheUnresolved() {
-		return this.cacheUnresolved;
-	}
-
-
 	@Override
 	@Nullable
 	public View resolveViewName(String viewName, Locale locale) throws Exception {
 		if (!isCache()) {
 			return createView(viewName, locale);
-		}
-		else {
+		} else {
 			Object cacheKey = getCacheKey(viewName, locale);
 			View view = this.viewAccessCache.get(cacheKey);
 			if (view == null) {
@@ -191,15 +194,15 @@ public abstract class AbstractCachingViewResolver extends WebApplicationObjectSu
 	 * <p>This can be handy in case developer are able to modify views
 	 * (e.g. FreeMarker templates) at runtime after which you'd need to
 	 * clear the cache for the specified view.
+	 *
 	 * @param viewName the view name for which the cached view object
-	 * (if any) needs to be removed
-	 * @param locale the locale for which the view object should be removed
+	 *                 (if any) needs to be removed
+	 * @param locale   the locale for which the view object should be removed
 	 */
 	public void removeFromCache(String viewName, Locale locale) {
 		if (!isCache()) {
 			logger.warn("View caching is SWITCHED OFF -- removal not necessary");
-		}
-		else {
+		} else {
 			Object cacheKey = getCacheKey(viewName, locale);
 			Object cachedView;
 			synchronized (this.viewCreationCache) {
@@ -210,8 +213,7 @@ public abstract class AbstractCachingViewResolver extends WebApplicationObjectSu
 				// Some debug output might be useful...
 				if (cachedView == null) {
 					logger.debug("No cached instance for view '" + cacheKey + "' was found");
-				}
-				else {
+				} else {
 					logger.debug("Cache for view " + cacheKey + " has been cleared");
 				}
 			}
@@ -237,8 +239,9 @@ public abstract class AbstractCachingViewResolver extends WebApplicationObjectSu
 	 * This can be overridden to resolve certain view names in a special fashion,
 	 * before delegating to the actual {@code loadView} implementation
 	 * provided by the subclass.
+	 *
 	 * @param viewName the name of the view to retrieve
-	 * @param locale the Locale to retrieve the view for
+	 * @param locale   the Locale to retrieve the view for
 	 * @return the View instance, or {@code null} if not found
 	 * (optional, to allow for ViewResolver chaining)
 	 * @throws Exception if the view couldn't be resolved
@@ -255,8 +258,9 @@ public abstract class AbstractCachingViewResolver extends WebApplicationObjectSu
 	 * cached by this ViewResolver base class.
 	 * <p>Subclasses are not forced to support internationalization:
 	 * A subclass that does not may simply ignore the locale parameter.
+	 *
 	 * @param viewName the name of the view to retrieve
-	 * @param locale the Locale to retrieve the view for
+	 * @param locale   the Locale to retrieve the view for
 	 * @return the View instance, or {@code null} if not found
 	 * (optional, to allow for ViewResolver chaining)
 	 * @throws Exception if the view couldn't be resolved

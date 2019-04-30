@@ -16,19 +16,18 @@
 
 package org.springframework.core.io.support;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.util.Properties;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.core.io.Resource;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.DefaultPropertiesPersister;
 import org.springframework.util.PropertiesPersister;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.Properties;
 
 /**
  * Base class for JavaBean-style components that need to load properties
@@ -40,7 +39,9 @@ import org.springframework.util.PropertiesPersister;
  */
 public abstract class PropertiesLoaderSupport {
 
-	/** Logger available to subclasses */
+	/**
+	 * Logger available to subclasses
+	 */
 	protected final Log logger = LogFactory.getLog(getClass());
 
 	@Nullable
@@ -65,7 +66,7 @@ public abstract class PropertiesLoaderSupport {
 	 * loaded from files.
 	 */
 	public void setProperties(Properties properties) {
-		this.localProperties = new Properties[] {properties};
+		this.localProperties = new Properties[]{properties};
 	}
 
 	/**
@@ -82,7 +83,7 @@ public abstract class PropertiesLoaderSupport {
 	 * that follows JDK 1.5's properties XML format.
 	 */
 	public void setLocation(Resource location) {
-		this.locations = new Resource[] {location};
+		this.locations = new Resource[]{location};
 	}
 
 	/**
@@ -122,6 +123,7 @@ public abstract class PropertiesLoaderSupport {
 	 * <p>Default is none, using the {@code java.util.Properties}
 	 * default encoding.
 	 * <p>Only applies to classic properties files, not to XML files.
+	 *
 	 * @see org.springframework.util.PropertiesPersister#load
 	 */
 	public void setFileEncoding(String encoding) {
@@ -131,6 +133,7 @@ public abstract class PropertiesLoaderSupport {
 	/**
 	 * Set the PropertiesPersister to use for parsing properties files.
 	 * The default is DefaultPropertiesPersister.
+	 *
 	 * @see org.springframework.util.DefaultPropertiesPersister
 	 */
 	public void setPropertiesPersister(@Nullable PropertiesPersister propertiesPersister) {
@@ -167,6 +170,7 @@ public abstract class PropertiesLoaderSupport {
 
 	/**
 	 * Load properties into the given instance.
+	 *
 	 * @param props the Properties instance to load into
 	 * @throws IOException in case of I/O errors
 	 * @see #setLocations
@@ -180,14 +184,12 @@ public abstract class PropertiesLoaderSupport {
 				try {
 					PropertiesLoaderUtils.fillProperties(
 							props, new EncodedResource(location, this.fileEncoding), this.propertiesPersister);
-				}
-				catch (FileNotFoundException | UnknownHostException ex) {
+				} catch (FileNotFoundException | UnknownHostException ex) {
 					if (this.ignoreResourceNotFound) {
 						if (logger.isInfoEnabled()) {
 							logger.info("Properties resource not found: " + ex.getMessage());
 						}
-					}
-					else {
+					} else {
 						throw ex;
 					}
 				}

@@ -16,9 +16,6 @@
 
 package org.springframework.web.reactive.function.server;
 
-import java.util.List;
-import java.util.function.Consumer;
-
 import org.springframework.http.codec.HttpMessageReader;
 import org.springframework.http.codec.HttpMessageWriter;
 import org.springframework.http.codec.ServerCodecConfigurer;
@@ -26,6 +23,9 @@ import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.server.WebExceptionHandler;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.i18n.LocaleContextResolver;
+
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Defines the strategies to be used for processing {@link HandlerFunction}s. An instance of
@@ -36,52 +36,14 @@ import org.springframework.web.server.i18n.LocaleContextResolver;
  * @author Arjen Poutsma
  * @author Juergen Hoeller
  * @author Sebastien Deleuze
- * @since 5.0
  * @see RouterFunctions#toHttpHandler(RouterFunction, HandlerStrategies)
+ * @since 5.0
  */
 public interface HandlerStrategies {
 
 	/**
-	 * Return the {@link HttpMessageReader}s to be used for request body conversion.
-	 * @return the message readers
-	 */
-	List<HttpMessageReader<?>> messageReaders();
-
-	/**
-	 * Return the {@link HttpMessageWriter}s to be used for response body conversion.
-	 * @return the message writers
-	 */
-	List<HttpMessageWriter<?>> messageWriters();
-
-	/**
-	 * Return the {@link ViewResolver}s to be used for view name resolution.
-	 * @return the view resolvers
-	 */
-	List<ViewResolver> viewResolvers();
-
-	/**
-	 * Return the {@link WebFilter}s to be used for filtering the request and response.
-	 * @return the web filters
-	 */
-	List<WebFilter> webFilters();
-
-	/**
-	 * Return the {@link WebExceptionHandler}s to be used for handling exceptions.
-	 * @return the exception handlers
-	 */
-	List<WebExceptionHandler> exceptionHandlers();
-
-	/**
-	 * Return the {@link LocaleContextResolver} to be used for resolving locale context.
-	 * @return the locale context resolver
-	 */
-	LocaleContextResolver localeContextResolver();
-
-
-	// Static methods
-
-	/**
 	 * Return a new {@code HandlerStrategies} with default initialization.
+	 *
 	 * @return the new {@code HandlerStrategies}
 	 */
 	static HandlerStrategies withDefaults() {
@@ -90,6 +52,7 @@ public interface HandlerStrategies {
 
 	/**
 	 * Return a mutable builder for a {@code HandlerStrategies} with default initialization.
+	 *
 	 * @return the builder
 	 */
 	static Builder builder() {
@@ -100,11 +63,57 @@ public interface HandlerStrategies {
 
 	/**
 	 * Return a mutable, empty builder for a {@code HandlerStrategies}.
+	 *
 	 * @return the builder
 	 */
 	static Builder empty() {
 		return new DefaultHandlerStrategiesBuilder();
 	}
+
+	/**
+	 * Return the {@link HttpMessageReader}s to be used for request body conversion.
+	 *
+	 * @return the message readers
+	 */
+	List<HttpMessageReader<?>> messageReaders();
+
+	/**
+	 * Return the {@link HttpMessageWriter}s to be used for response body conversion.
+	 *
+	 * @return the message writers
+	 */
+	List<HttpMessageWriter<?>> messageWriters();
+
+	/**
+	 * Return the {@link ViewResolver}s to be used for view name resolution.
+	 *
+	 * @return the view resolvers
+	 */
+	List<ViewResolver> viewResolvers();
+
+
+	// Static methods
+
+	/**
+	 * Return the {@link WebFilter}s to be used for filtering the request and response.
+	 *
+	 * @return the web filters
+	 */
+	List<WebFilter> webFilters();
+
+	/**
+	 * Return the {@link WebExceptionHandler}s to be used for handling exceptions.
+	 *
+	 * @return the exception handlers
+	 */
+	List<WebExceptionHandler> exceptionHandlers();
+
+	/**
+	 * Return the {@link LocaleContextResolver} to be used for resolving locale context.
+	 *
+	 * @return the locale context resolver
+	 */
+	LocaleContextResolver localeContextResolver();
 
 
 	/**
@@ -114,6 +123,7 @@ public interface HandlerStrategies {
 
 		/**
 		 * Customize the list of server-side HTTP message readers and writers.
+		 *
 		 * @param consumer the consumer to customize the codecs
 		 * @return this builder
 		 */
@@ -121,6 +131,7 @@ public interface HandlerStrategies {
 
 		/**
 		 * Add the given view resolver to this builder.
+		 *
 		 * @param viewResolver the view resolver to add
 		 * @return this builder
 		 */
@@ -128,6 +139,7 @@ public interface HandlerStrategies {
 
 		/**
 		 * Add the given web filter to this builder.
+		 *
 		 * @param filter the filter to add
 		 * @return this builder
 		 */
@@ -135,6 +147,7 @@ public interface HandlerStrategies {
 
 		/**
 		 * Add the given exception handler to this builder.
+		 *
 		 * @param exceptionHandler the exception handler to add
 		 * @return this builder
 		 */
@@ -142,6 +155,7 @@ public interface HandlerStrategies {
 
 		/**
 		 * Add the given locale context resolver to this builder.
+		 *
 		 * @param localeContextResolver the locale context resolver to add
 		 * @return this builder
 		 */
@@ -149,6 +163,7 @@ public interface HandlerStrategies {
 
 		/**
 		 * Builds the {@link HandlerStrategies}.
+		 *
 		 * @return the built strategies
 		 */
 		HandlerStrategies build();

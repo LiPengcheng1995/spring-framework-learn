@@ -18,10 +18,10 @@ package org.springframework.web.servlet.view;
 
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.mock.web.test.MockHttpServletRequest;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Rick Evans
@@ -125,8 +125,7 @@ public class DefaultRequestToViewNameTranslatorTests {
 	public void testTrySetUrlPathHelperToNull() {
 		try {
 			this.translator.setUrlPathHelper(null);
-		}
-		catch (IllegalArgumentException expected) {
+		} catch (IllegalArgumentException expected) {
 		}
 	}
 

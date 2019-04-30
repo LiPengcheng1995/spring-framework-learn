@@ -16,20 +16,19 @@
 
 package org.springframework.format.datetime.joda;
 
+import org.joda.time.YearMonth;
+import org.springframework.format.Formatter;
+
 import java.text.ParseException;
 import java.util.Locale;
-
-import org.joda.time.YearMonth;
-
-import org.springframework.format.Formatter;
 
 /**
  * {@link Formatter} implementation for a Joda-Time {@link YearMonth},
  * following Joda-Time's parsing rules for a YearMonth.
  *
  * @author Juergen Hoeller
- * @since 4.2.4
  * @see YearMonth#parse
+ * @since 4.2.4
  */
 class YearMonthFormatter implements Formatter<YearMonth> {
 

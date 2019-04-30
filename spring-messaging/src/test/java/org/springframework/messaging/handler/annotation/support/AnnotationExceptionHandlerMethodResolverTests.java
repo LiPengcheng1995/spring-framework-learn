@@ -16,18 +16,18 @@
 
 package org.springframework.messaging.handler.annotation.support;
 
+import org.junit.Test;
+import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
+import org.springframework.stereotype.Controller;
+import org.springframework.util.ClassUtils;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.BindException;
 import java.net.SocketException;
 
-import org.junit.Test;
-
-import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
-import org.springframework.stereotype.Controller;
-import org.springframework.util.ClassUtils;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Test fixture for {@link AnnotationExceptionHandlerMethodResolver} tests.
@@ -107,7 +107,8 @@ public class AnnotationExceptionHandlerMethodResolverTests {
 	@SuppressWarnings("unused")
 	static class ExceptionController {
 
-		public void handle() {}
+		public void handle() {
+		}
 
 		@MessageExceptionHandler(IOException.class)
 		public void handleIOException() {
@@ -131,7 +132,7 @@ public class AnnotationExceptionHandlerMethodResolverTests {
 	static class InheritedController extends ExceptionController {
 
 		@Override
-		public void handleIOException()	{
+		public void handleIOException() {
 		}
 	}
 
@@ -139,7 +140,8 @@ public class AnnotationExceptionHandlerMethodResolverTests {
 	@Controller
 	static class AmbiguousController {
 
-		public void handle() {}
+		public void handle() {
+		}
 
 		@MessageExceptionHandler({BindException.class, IllegalArgumentException.class})
 		public String handle1(Exception ex) throws IOException {

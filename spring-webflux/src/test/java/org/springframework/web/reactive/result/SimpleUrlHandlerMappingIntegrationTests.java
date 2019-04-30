@@ -16,15 +16,7 @@
 
 package org.springframework.web.reactive.result;
 
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,8 +35,16 @@ import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.server.WebHandler;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 import org.springframework.web.server.handler.ResponseStatusExceptionHandler;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import static org.junit.Assert.*;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Integration tests with requests mapped via
@@ -53,6 +53,11 @@ import static org.junit.Assert.*;
  * @author Rossen Stoyanchev
  */
 public class SimpleUrlHandlerMappingIntegrationTests extends AbstractHttpHandlerIntegrationTests {
+
+	private static DataBuffer asDataBuffer(String text) {
+		DefaultDataBuffer buffer = new DefaultDataBufferFactory().allocateBuffer();
+		return buffer.write(text.getBytes(StandardCharsets.UTF_8));
+	}
 
 	@Override
 	protected HttpHandler createHttpHandler() {
@@ -64,7 +69,6 @@ public class SimpleUrlHandlerMappingIntegrationTests extends AbstractHttpHandler
 				.exceptionHandler(new ResponseStatusExceptionHandler())
 				.build();
 	}
-
 
 	@Test
 	public void testRequestToFooHandler() throws Exception {
@@ -102,17 +106,10 @@ public class SimpleUrlHandlerMappingIntegrationTests extends AbstractHttpHandler
 		RequestEntity<Void> request = RequestEntity.get(url).build();
 		try {
 			new RestTemplate().exchange(request, byte[].class);
-		}
-		catch (HttpClientErrorException ex) {
+		} catch (HttpClientErrorException ex) {
 			assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
 		}
 	}
-
-	private static DataBuffer asDataBuffer(String text) {
-		DefaultDataBuffer buffer = new DefaultDataBufferFactory().allocateBuffer();
-		return buffer.write(text.getBytes(StandardCharsets.UTF_8));
-	}
-
 
 	@Configuration
 	static class WebConfig {

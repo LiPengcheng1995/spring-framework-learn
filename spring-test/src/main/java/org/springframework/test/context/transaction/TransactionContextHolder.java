@@ -30,14 +30,13 @@ class TransactionContextHolder {
 	private static final ThreadLocal<TransactionContext> currentTransactionContext =
 			new NamedInheritableThreadLocal<>("Test Transaction Context");
 
-
-	static void setCurrentTransactionContext(TransactionContext transactionContext) {
-		currentTransactionContext.set(transactionContext);
-	}
-
 	@Nullable
 	static TransactionContext getCurrentTransactionContext() {
 		return currentTransactionContext.get();
+	}
+
+	static void setCurrentTransactionContext(TransactionContext transactionContext) {
+		currentTransactionContext.set(transactionContext);
 	}
 
 	@Nullable

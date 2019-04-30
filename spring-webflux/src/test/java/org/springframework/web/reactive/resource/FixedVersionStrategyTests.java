@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNull;
 
 /**
  * Unit tests for {@link FixedVersionStrategy}.
+ *
  * @author Rossen Stoyanchev
  * @author Brian Clozel
  */

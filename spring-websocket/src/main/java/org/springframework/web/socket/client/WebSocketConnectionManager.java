@@ -16,8 +16,6 @@
 
 package org.springframework.web.socket.client;
 
-import java.util.List;
-
 import org.springframework.context.Lifecycle;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.Nullable;
@@ -27,6 +25,8 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.LoggingWebSocketHandlerDecorator;
+
+import java.util.List;
 
 /**
  * A WebSocket connection manager that is given a URI, a {@link WebSocketClient}, and a
@@ -50,7 +50,7 @@ public class WebSocketConnectionManager extends ConnectionManagerSupport {
 
 
 	public WebSocketConnectionManager(WebSocketClient client,
-			WebSocketHandler webSocketHandler, String uriTemplate, Object... uriVariables) {
+									  WebSocketHandler webSocketHandler, String uriTemplate, Object... uriVariables) {
 
 		super(uriTemplate, uriVariables);
 		this.client = client;
@@ -67,16 +67,6 @@ public class WebSocketConnectionManager extends ConnectionManagerSupport {
 	}
 
 	/**
-	 * Set the sub-protocols to use. If configured, specified sub-protocols will be
-	 * requested in the handshake through the {@code Sec-WebSocket-Protocol} header. The
-	 * resulting WebSocket session will contain the protocol accepted by the server, if
-	 * any.
-	 */
-	public void setSubProtocols(List<String> protocols) {
-		this.headers.setSecWebSocketProtocol(protocols);
-	}
-
-	/**
 	 * Return the configured sub-protocols to use.
 	 */
 	public List<String> getSubProtocols() {
@@ -84,10 +74,13 @@ public class WebSocketConnectionManager extends ConnectionManagerSupport {
 	}
 
 	/**
-	 * Set the origin to use.
+	 * Set the sub-protocols to use. If configured, specified sub-protocols will be
+	 * requested in the handshake through the {@code Sec-WebSocket-Protocol} header. The
+	 * resulting WebSocket session will contain the protocol accepted by the server, if
+	 * any.
 	 */
-	public void setOrigin(@Nullable String origin) {
-		this.headers.setOrigin(origin);
+	public void setSubProtocols(List<String> protocols) {
+		this.headers.setSecWebSocketProtocol(protocols);
 	}
 
 	/**
@@ -99,11 +92,10 @@ public class WebSocketConnectionManager extends ConnectionManagerSupport {
 	}
 
 	/**
-	 * Provide default headers to add to the WebSocket handshake request.
+	 * Set the origin to use.
 	 */
-	public void setHeaders(HttpHeaders headers) {
-		this.headers.clear();
-		this.headers.putAll(headers);
+	public void setOrigin(@Nullable String origin) {
+		this.headers.setOrigin(origin);
 	}
 
 	/**
@@ -113,6 +105,13 @@ public class WebSocketConnectionManager extends ConnectionManagerSupport {
 		return this.headers;
 	}
 
+	/**
+	 * Provide default headers to add to the WebSocket handshake request.
+	 */
+	public void setHeaders(HttpHeaders headers) {
+		this.headers.clear();
+		this.headers.putAll(headers);
+	}
 
 	@Override
 	public void startInternal() {
@@ -145,6 +144,7 @@ public class WebSocketConnectionManager extends ConnectionManagerSupport {
 				webSocketSession = result;
 				logger.info("Successfully connected");
 			}
+
 			@Override
 			public void onFailure(Throwable ex) {
 				logger.error("Failed to connect", ex);

@@ -16,19 +16,19 @@
 
 package org.springframework.web.server.i18n;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Locale;
-
 import org.junit.Test;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.mock.web.test.server.MockServerWebExchange;
 import org.springframework.web.server.ServerWebExchange;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Locale;
+
 import static java.util.Locale.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Unit tests for {@link AcceptHeaderLocaleContextResolver}.

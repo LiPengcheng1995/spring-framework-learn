@@ -18,7 +18,6 @@ package org.springframework.test.context.support;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -53,9 +52,9 @@ import org.springframework.util.StringUtils;
  * @author Sam Brannen
  * @author Juergen Hoeller
  * @author Phillip Webb
- * @since 2.5
  * @see #loadContext(MergedContextConfiguration)
  * @see #loadContext(String...)
+ * @since 2.5
  */
 public abstract class AbstractGenericContextLoader extends AbstractContextLoader {
 
@@ -107,7 +106,7 @@ public abstract class AbstractGenericContextLoader extends AbstractContextLoader
 	public final ConfigurableApplicationContext loadContext(MergedContextConfiguration mergedConfig) throws Exception {
 		if (logger.isDebugEnabled()) {
 			logger.debug(String.format("Loading ApplicationContext for merged context configuration [%s].",
-				mergedConfig));
+					mergedConfig));
 		}
 
 		validateMergedContextConfiguration(mergedConfig);
@@ -135,9 +134,10 @@ public abstract class AbstractGenericContextLoader extends AbstractContextLoader
 	 * what this context loader supports.
 	 * <p>The default implementation is a <em>no-op</em> but can be overridden by
 	 * subclasses as appropriate.
+	 *
 	 * @param mergedConfig the merged configuration to validate
 	 * @throws IllegalStateException if the supplied configuration is not valid
-	 * for this context loader
+	 *                               for this context loader
 	 * @since 4.0.4
 	 */
 	protected void validateMergedContextConfiguration(MergedContextConfiguration mergedConfig) {
@@ -182,7 +182,7 @@ public abstract class AbstractGenericContextLoader extends AbstractContextLoader
 	public final ConfigurableApplicationContext loadContext(String... locations) throws Exception {
 		if (logger.isDebugEnabled()) {
 			logger.debug(String.format("Loading ApplicationContext for locations [%s].",
-				StringUtils.arrayToCommaDelimitedString(locations)));
+					StringUtils.arrayToCommaDelimitedString(locations)));
 		}
 		GenericApplicationContext context = new GenericApplicationContext();
 		prepareContext(context);
@@ -248,7 +248,7 @@ public abstract class AbstractGenericContextLoader extends AbstractContextLoader
 	 * and override this method to provide a custom strategy for loading or
 	 * registering bean definitions.
 	 *
-	 * @param context the context into which the bean definitions should be loaded
+	 * @param context      the context into which the bean definitions should be loaded
 	 * @param mergedConfig the merged context configuration
 	 * @see #loadContext(MergedContextConfiguration)
 	 * @since 3.1
@@ -262,7 +262,7 @@ public abstract class AbstractGenericContextLoader extends AbstractContextLoader
 	 * bean definitions into the supplied {@link GenericApplicationContext context}.
 	 *
 	 * @param context the context for which the {@code BeanDefinitionReader}
-	 * should be created
+	 *                should be created
 	 * @return a {@code BeanDefinitionReader} for the supplied context
 	 * @see #loadContext(String...)
 	 * @see #loadBeanDefinitions

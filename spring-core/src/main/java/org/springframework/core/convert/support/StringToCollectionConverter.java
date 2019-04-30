@@ -16,16 +16,16 @@
 
 package org.springframework.core.convert.support;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
 import org.springframework.core.CollectionFactory;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.ConditionalGenericConverter;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Converts a comma-delimited String to a Collection.
@@ -74,8 +74,7 @@ final class StringToCollectionConverter implements ConditionalGenericConverter {
 			for (String field : fields) {
 				target.add(field.trim());
 			}
-		}
-		else {
+		} else {
 			for (String field : fields) {
 				Object targetElement = this.conversionService.convert(field.trim(), sourceType, elementDesc);
 				target.add(targetElement);

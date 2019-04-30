@@ -16,37 +16,18 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aop.target.SingletonTargetSource;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpInputMessage;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.ByteArrayHttpMessageConverter;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.http.converter.ResourceHttpMessageConverter;
-import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.*;
+import org.springframework.http.converter.*;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
@@ -69,6 +50,16 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 import org.springframework.web.util.WebUtils;
+
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -295,7 +286,7 @@ public class RequestResponseBodyMethodProcessorTests {
 
 	@Test
 	public void handleReturnValueString() throws Exception {
-		List<HttpMessageConverter<?>>converters = new ArrayList<>();
+		List<HttpMessageConverter<?>> converters = new ArrayList<>();
 		converters.add(new ByteArrayHttpMessageConverter());
 		converters.add(new StringHttpMessageConverter());
 
@@ -308,7 +299,7 @@ public class RequestResponseBodyMethodProcessorTests {
 
 	@Test  // SPR-13423
 	public void handleReturnValueCharSequence() throws Exception {
-		List<HttpMessageConverter<?>>converters = new ArrayList<>();
+		List<HttpMessageConverter<?>> converters = new ArrayList<>();
 		converters.add(new ByteArrayHttpMessageConverter());
 		converters.add(new StringHttpMessageConverter());
 
@@ -549,7 +540,7 @@ public class RequestResponseBodyMethodProcessorTests {
 
 		@SuppressWarnings("unchecked")
 		HttpEntity<JacksonViewBean> result = (HttpEntity<JacksonViewBean>)
-				processor.resolveArgument( methodParameter, this.container, this.request, this.factory);
+				processor.resolveArgument(methodParameter, this.container, this.request, this.factory);
 
 		assertNotNull(result);
 		assertNotNull(result.getBody());
@@ -709,7 +700,7 @@ public class RequestResponseBodyMethodProcessorTests {
 	}
 
 	private void assertContentDisposition(RequestResponseBodyMethodProcessor processor,
-			boolean expectContentDisposition, String requestURI, String comment) throws Exception {
+										  boolean expectContentDisposition, String requestURI, String comment) throws Exception {
 
 		this.servletRequest.setRequestURI(requestURI);
 		processor.handleReturnValue("body", this.returnTypeString, this.container, this.request);
@@ -718,8 +709,7 @@ public class RequestResponseBodyMethodProcessorTests {
 		if (expectContentDisposition) {
 			assertEquals("Expected 'Content-Disposition' header. Use case: '" + comment + "'",
 					"inline;filename=f.txt", header);
-		}
-		else {
+		} else {
 			assertNull("Did not expect 'Content-Disposition' header. Use case: '" + comment + "'", header);
 		}
 
@@ -748,17 +738,6 @@ public class RequestResponseBodyMethodProcessorTests {
 	}
 
 
-	private static abstract class MyParameterizedController<DTO extends Identifiable> {
-
-		@SuppressWarnings("unused")
-		public void handleDto(@RequestBody DTO dto) {}
-	}
-
-
-	private static class MySimpleParameterizedController extends MyParameterizedController<SimpleBean> {
-	}
-
-
 	private interface Identifiable extends Serializable {
 
 		Long getId();
@@ -767,6 +746,31 @@ public class RequestResponseBodyMethodProcessorTests {
 	}
 
 
+	private interface MyJacksonView1 {
+	}
+
+
+	private interface MyJacksonView2 {
+	}
+
+
+	interface MappingInterface<A> {
+
+		default A handle(@RequestBody A arg) {
+			return arg;
+		}
+	}
+
+	private static abstract class MyParameterizedController<DTO extends Identifiable> {
+
+		@SuppressWarnings("unused")
+		public void handleDto(@RequestBody DTO dto) {
+		}
+	}
+
+	private static class MySimpleParameterizedController extends MyParameterizedController<SimpleBean> {
+	}
+
 	@SuppressWarnings("unused")
 	private static abstract class MyParameterizedControllerWithList<DTO extends Identifiable> {
 
@@ -774,13 +778,11 @@ public class RequestResponseBodyMethodProcessorTests {
 		}
 	}
 
-
 	@SuppressWarnings("unused")
 	private static class MySimpleParameterizedControllerWithList extends MyParameterizedControllerWithList<SimpleBean> {
 	}
 
-
-	@SuppressWarnings({ "serial" })
+	@SuppressWarnings({"serial"})
 	private static class SimpleBean implements Identifiable {
 
 		private Long id;
@@ -806,20 +808,6 @@ public class RequestResponseBodyMethodProcessorTests {
 		}
 	}
 
-
-	private final class ValidatingBinderFactory implements WebDataBinderFactory {
-
-		@Override
-		public WebDataBinder createBinder(NativeWebRequest request, @Nullable Object target, String objectName) {
-			LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
-			validator.afterPropertiesSet();
-			WebDataBinder dataBinder = new WebDataBinder(target, objectName);
-			dataBinder.setValidator(validator);
-			return dataBinder;
-		}
-	}
-
-
 	@ResponseBody
 	private static class ResponseBodyController {
 
@@ -834,7 +822,6 @@ public class RequestResponseBodyMethodProcessorTests {
 		}
 	}
 
-
 	@RestController
 	private static class TestRestController {
 
@@ -843,12 +830,6 @@ public class RequestResponseBodyMethodProcessorTests {
 			return "hello";
 		}
 	}
-
-
-	private interface MyJacksonView1 {}
-
-	private interface MyJacksonView2 {}
-
 
 	private static class JacksonViewBean {
 
@@ -1011,43 +992,46 @@ public class RequestResponseBodyMethodProcessorTests {
 
 		@Override
 		public boolean supports(MethodParameter methodParameter, Type targetType,
-				Class<? extends HttpMessageConverter<?>> converterType) {
+								Class<? extends HttpMessageConverter<?>> converterType) {
 
 			return StringHttpMessageConverter.class.equals(converterType);
 		}
 
 		@Override
 		public HttpInputMessage beforeBodyRead(HttpInputMessage inputMessage, MethodParameter parameter,
-				Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+											   Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
 
 			return inputMessage;
 		}
 
 		@Override
 		public Object afterBodyRead(Object body, HttpInputMessage inputMessage, MethodParameter parameter,
-				Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+									Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
 
 			return body;
 		}
 
 		@Override
 		public Object handleEmptyBody(@Nullable Object body, HttpInputMessage inputMessage, MethodParameter parameter,
-				Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+									  Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
 
 			return "default value for empty body";
 		}
 	}
 
-
-	interface MappingInterface<A> {
-
-		default A handle(@RequestBody A arg) {
-			return arg;
-		}
+	static class MyControllerImplementingInterface implements MappingInterface<String> {
 	}
 
+	private final class ValidatingBinderFactory implements WebDataBinderFactory {
 
-	static class MyControllerImplementingInterface implements MappingInterface<String> {
+		@Override
+		public WebDataBinder createBinder(NativeWebRequest request, @Nullable Object target, String objectName) {
+			LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+			validator.afterPropertiesSet();
+			WebDataBinder dataBinder = new WebDataBinder(target, objectName);
+			dataBinder.setValidator(validator);
+			return dataBinder;
+		}
 	}
 
 }

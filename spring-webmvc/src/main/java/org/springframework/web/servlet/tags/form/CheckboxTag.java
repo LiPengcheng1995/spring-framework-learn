@@ -16,10 +16,10 @@
 
 package org.springframework.web.servlet.tags.form;
 
-import java.util.Collection;
-import javax.servlet.jsp.JspException;
-
 import org.springframework.web.bind.WebDataBinder;
+
+import javax.servlet.jsp.JspException;
+import java.util.Collection;
 
 /**
  * The {@code <checkbox>} tag renders an HTML 'input' tag with type 'checkbox'.
@@ -254,9 +254,7 @@ public class CheckboxTag extends AbstractSingleCheckedElementTag {
 			}
 			Boolean booleanValue = (boundValue != null ? (Boolean) boundValue : Boolean.FALSE);
 			renderFromBoolean(booleanValue, tagWriter);
-		}
-
-		else {
+		} else {
 			Object value = getValue();
 			if (value == null) {
 				throw new IllegalArgumentException("Attribute 'value' is required when binding to non-boolean values");

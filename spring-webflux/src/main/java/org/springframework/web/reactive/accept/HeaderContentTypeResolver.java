@@ -16,13 +16,13 @@
 
 package org.springframework.web.reactive.accept;
 
-import java.util.List;
-
 import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.NotAcceptableStatusException;
 import org.springframework.web.server.ServerWebExchange;
+
+import java.util.List;
 
 /**
  * Resolver that looks at the 'Accept' header of the request.
@@ -38,8 +38,7 @@ public class HeaderContentTypeResolver implements RequestedContentTypeResolver {
 			List<MediaType> mediaTypes = exchange.getRequest().getHeaders().getAccept();
 			MediaType.sortBySpecificityAndQuality(mediaTypes);
 			return (!CollectionUtils.isEmpty(mediaTypes) ? mediaTypes : MEDIA_TYPE_ALL_LIST);
-		}
-		catch (InvalidMediaTypeException ex) {
+		} catch (InvalidMediaTypeException ex) {
 			String value = exchange.getRequest().getHeaders().getFirst("Accept");
 			throw new NotAcceptableStatusException(
 					"Could not parse 'Accept' header [" + value + "]: " + ex.getMessage());

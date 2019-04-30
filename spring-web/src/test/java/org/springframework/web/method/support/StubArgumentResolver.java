@@ -16,12 +16,12 @@
 
 package org.springframework.web.method.support;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Supports parameters of a given type and resolves them using a stub value.
@@ -53,7 +53,7 @@ public class StubArgumentResolver implements HandlerMethodArgumentResolver {
 
 	@Override
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-			NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+								  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 		this.resolvedParameters.add(parameter);
 		return this.stubValue;
 	}

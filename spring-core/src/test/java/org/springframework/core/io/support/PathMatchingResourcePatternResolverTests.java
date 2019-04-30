@@ -16,19 +16,19 @@
 
 package org.springframework.core.io.support;
 
+import org.junit.Ignore;
+import org.junit.Test;
+import org.springframework.core.io.Resource;
+import org.springframework.util.StringUtils;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Ignore;
-import org.junit.Test;
-
-import org.springframework.core.io.Resource;
-import org.springframework.util.StringUtils;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * If this test case fails, uncomment diagnostics in the
@@ -43,16 +43,16 @@ import static org.junit.Assert.*;
 public class PathMatchingResourcePatternResolverTests {
 
 	private static final String[] CLASSES_IN_CORE_IO_SUPPORT =
-			new String[] {"EncodedResource.class", "LocalizedResourceHelper.class",
+			new String[]{"EncodedResource.class", "LocalizedResourceHelper.class",
 					"PathMatchingResourcePatternResolver.class", "PropertiesLoaderSupport.class",
 					"PropertiesLoaderUtils.class", "ResourceArrayPropertyEditor.class",
 					"ResourcePatternResolver.class", "ResourcePatternUtils.class"};
 
 	private static final String[] TEST_CLASSES_IN_CORE_IO_SUPPORT =
-			new String[] {"PathMatchingResourcePatternResolverTests.class"};
+			new String[]{"PathMatchingResourcePatternResolverTests.class"};
 
 	private static final String[] CLASSES_IN_REACTIVESTREAMS =
-			new String[] {"Processor.class", "Publisher.class", "Subscriber.class", "Subscription.class"};
+			new String[]{"Processor.class", "Publisher.class", "Subscriber.class", "Subscription.class"};
 
 	private PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 

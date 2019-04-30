@@ -16,20 +16,19 @@
 
 package org.springframework.web.context.request.async;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
+import org.springframework.util.Assert;
+import org.springframework.web.context.request.ServletWebRequest;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
 import javax.servlet.AsyncListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.util.Assert;
-import org.springframework.web.context.request.ServletWebRequest;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 /**
  * A Servlet 3.0 implementation of {@link AsyncWebRequest}.
@@ -44,22 +43,18 @@ import org.springframework.web.context.request.ServletWebRequest;
  */
 public class StandardServletAsyncWebRequest extends ServletWebRequest implements AsyncWebRequest, AsyncListener {
 
-	private Long timeout;
-
-	private AsyncContext asyncContext;
-
-	private AtomicBoolean asyncCompleted = new AtomicBoolean(false);
-
 	private final List<Runnable> timeoutHandlers = new ArrayList<>();
-
 	private final List<Consumer<Throwable>> exceptionHandlers = new ArrayList<>();
-
 	private final List<Runnable> completionHandlers = new ArrayList<>();
+	private Long timeout;
+	private AsyncContext asyncContext;
+	private AtomicBoolean asyncCompleted = new AtomicBoolean(false);
 
 
 	/**
 	 * Create a new instance for the given request/response pair.
-	 * @param request current HTTP request
+	 *
+	 * @param request  current HTTP request
 	 * @param response current HTTP response
 	 */
 	public StandardServletAsyncWebRequest(HttpServletRequest request, HttpServletResponse response) {
@@ -111,9 +106,9 @@ public class StandardServletAsyncWebRequest extends ServletWebRequest implements
 	public void startAsync() {
 		Assert.state(getRequest().isAsyncSupported(),
 				"Async support must be enabled on a servlet and for all filters involved " +
-				"in async request processing. This is done in Java code using the Servlet API " +
-				"or by adding \"<async-supported>true</async-supported>\" to servlet and " +
-				"filter declarations in web.xml.");
+						"in async request processing. This is done in Java code using the Servlet API " +
+						"or by adding \"<async-supported>true</async-supported>\" to servlet and " +
+						"filter declarations in web.xml.");
 		Assert.state(!isAsyncComplete(), "Async processing has already completed");
 
 		if (isAsyncStarted()) {

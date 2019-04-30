@@ -16,17 +16,9 @@
 
 package org.springframework.web.socket.config.annotation;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.util.Assert;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
+import org.springframework.util.*;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
@@ -34,6 +26,10 @@ import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 import org.springframework.web.socket.server.support.OriginHandshakeInterceptor;
 import org.springframework.web.socket.sockjs.SockJsService;
 import org.springframework.web.socket.sockjs.transport.handler.WebSocketTransportHandler;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Base class for {@link WebSocketHandlerRegistration}s that gathers all the configuration
@@ -46,14 +42,10 @@ import org.springframework.web.socket.sockjs.transport.handler.WebSocketTranspor
 public abstract class AbstractWebSocketHandlerRegistration<M> implements WebSocketHandlerRegistration {
 
 	private final MultiValueMap<WebSocketHandler, String> handlerMap = new LinkedMultiValueMap<>();
-
+	private final List<HandshakeInterceptor> interceptors = new ArrayList<>();
+	private final List<String> allowedOrigins = new ArrayList<>();
 	@Nullable
 	private HandshakeHandler handshakeHandler;
-
-	private final List<HandshakeInterceptor> interceptors = new ArrayList<>();
-
-	private final List<String> allowedOrigins = new ArrayList<>();
-
 	@Nullable
 	private SockJsServiceRegistration sockJsServiceRegistration;
 
@@ -66,6 +58,7 @@ public abstract class AbstractWebSocketHandlerRegistration<M> implements WebSock
 
 	/**
 	 * Deprecated constructor with a TaskScheduler.
+	 *
 	 * @deprecated as of 5.0 a TaskScheduler is not provided upfront, not until
 	 * it is obvious that it is needed, see {@link #getSockJsServiceRegistration()}.
 	 */
@@ -159,8 +152,7 @@ public abstract class AbstractWebSocketHandlerRegistration<M> implements WebSock
 					addSockJsServiceMapping(mappings, sockJsService, wsHandler, pathPattern);
 				}
 			});
-		}
-		else {
+		} else {
 			HandshakeHandler handshakeHandler = getOrCreateHandshakeHandler();
 			HandshakeInterceptor[] interceptors = getInterceptors();
 			this.handlerMap.forEach((wsHandler, paths) -> {
@@ -181,9 +173,9 @@ public abstract class AbstractWebSocketHandlerRegistration<M> implements WebSock
 	protected abstract M createMappings();
 
 	protected abstract void addSockJsServiceMapping(M mappings, SockJsService sockJsService,
-			WebSocketHandler handler, String pathPattern);
+													WebSocketHandler handler, String pathPattern);
 
 	protected abstract void addWebSocketHandlerMapping(M mappings, WebSocketHandler wsHandler,
-			HandshakeHandler handshakeHandler, HandshakeInterceptor[] interceptors, String path);
+													   HandshakeHandler handshakeHandler, HandshakeInterceptor[] interceptors, String path);
 
 }

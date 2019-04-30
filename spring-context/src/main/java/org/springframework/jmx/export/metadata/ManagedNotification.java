@@ -46,13 +46,6 @@ public class ManagedNotification {
 	}
 
 	/**
-	 * Set a list of notification types.
-	 */
-	public void setNotificationTypes(@Nullable String... notificationTypes) {
-		this.notificationTypes = notificationTypes;
-	}
-
-	/**
 	 * Return the list of notification types.
 	 */
 	@Nullable
@@ -61,10 +54,10 @@ public class ManagedNotification {
 	}
 
 	/**
-	 * Set the name of this notification.
+	 * Set a list of notification types.
 	 */
-	public void setName(@Nullable String name) {
-		this.name = name;
+	public void setNotificationTypes(@Nullable String... notificationTypes) {
+		this.notificationTypes = notificationTypes;
 	}
 
 	/**
@@ -76,10 +69,10 @@ public class ManagedNotification {
 	}
 
 	/**
-	 * Set a description for this notification.
+	 * Set the name of this notification.
 	 */
-	public void setDescription(@Nullable String description) {
-		this.description = description;
+	public void setName(@Nullable String name) {
+		this.name = name;
 	}
 
 	/**
@@ -88,6 +81,13 @@ public class ManagedNotification {
 	@Nullable
 	public String getDescription() {
 		return this.description;
+	}
+
+	/**
+	 * Set a description for this notification.
+	 */
+	public void setDescription(@Nullable String description) {
+		this.description = description;
 	}
 
 }

@@ -16,18 +16,17 @@
 
 package org.springframework.test.web.servlet.result;
 
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.lang.Nullable;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultHandler;
 import org.springframework.util.CollectionUtils;
+
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 
 /**
  * Static factory methods for {@link ResultHandler}-based result actions.
@@ -49,10 +48,11 @@ public abstract class MockMvcResultHandlers {
 	 * Log {@link MvcResult} details as a {@code DEBUG} log message via
 	 * Apache Commons Logging using the log category
 	 * {@code org.springframework.test.web.servlet.result}.
-	 * @since 4.2
+	 *
 	 * @see #print()
 	 * @see #print(OutputStream)
 	 * @see #print(Writer)
+	 * @since 4.2
 	 */
 	public static ResultHandler log() {
 		return new LoggingResultHandler();
@@ -60,6 +60,7 @@ public abstract class MockMvcResultHandlers {
 
 	/**
 	 * Print {@link MvcResult} details to the "standard" output stream.
+	 *
 	 * @see System#out
 	 * @see #print(OutputStream)
 	 * @see #print(Writer)
@@ -71,10 +72,11 @@ public abstract class MockMvcResultHandlers {
 
 	/**
 	 * Print {@link MvcResult} details to the supplied {@link OutputStream}.
-	 * @since 4.2
+	 *
 	 * @see #print()
 	 * @see #print(Writer)
 	 * @see #log()
+	 * @since 4.2
 	 */
 	public static ResultHandler print(OutputStream stream) {
 		return new PrintWriterPrintingResultHandler(new PrintWriter(stream, true));
@@ -82,10 +84,11 @@ public abstract class MockMvcResultHandlers {
 
 	/**
 	 * Print {@link MvcResult} details to the supplied {@link Writer}.
-	 * @since 4.2
+	 *
 	 * @see #print()
 	 * @see #print(OutputStream)
 	 * @see #log()
+	 * @since 4.2
 	 */
 	public static ResultHandler print(Writer writer) {
 		return new PrintWriterPrintingResultHandler(new PrintWriter(writer, true));
@@ -104,6 +107,7 @@ public abstract class MockMvcResultHandlers {
 					writer.println();
 					writer.println(String.format("%s:", heading));
 				}
+
 				@Override
 				public void printValue(String label, @Nullable Object value) {
 					if (value != null && value.getClass().isArray()) {

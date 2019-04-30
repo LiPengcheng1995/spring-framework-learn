@@ -16,19 +16,19 @@
 
 package org.springframework.format.datetime.standard;
 
+import org.springframework.format.Formatter;
+
 import java.text.ParseException;
 import java.time.Period;
 import java.util.Locale;
-
-import org.springframework.format.Formatter;
 
 /**
  * {@link Formatter} implementation for a JSR-310 {@link Period},
  * following JSR-310's parsing rules for a Period.
  *
  * @author Juergen Hoeller
- * @since 4.2.4
  * @see Period#parse
+ * @since 4.2.4
  */
 class PeriodFormatter implements Formatter<Period> {
 

@@ -16,11 +16,11 @@
 
 package org.springframework.web.context.support;
 
-import javax.servlet.ServletContext;
-
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.lang.Nullable;
 import org.springframework.web.context.ServletContextAware;
+
+import javax.servlet.ServletContext;
 
 /**
  * {@link FactoryBean} that fetches a specific, existing ServletContext attribute.
@@ -38,9 +38,9 @@ import org.springframework.web.context.ServletContextAware;
  * expression to access a specific attribute by name.
  *
  * @author Juergen Hoeller
- * @since 1.1.4
  * @see org.springframework.web.context.WebApplicationContext#CONTEXT_ATTRIBUTES_BEAN_NAME
  * @see ServletContextParameterFactoryBean
+ * @since 1.1.4
  */
 public class ServletContextAttributeFactoryBean implements FactoryBean<Object>, ServletContextAware {
 

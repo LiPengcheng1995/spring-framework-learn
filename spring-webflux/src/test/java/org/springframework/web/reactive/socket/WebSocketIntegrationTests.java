@@ -16,6 +16,20 @@
 
 package org.springframework.web.reactive.socket;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hamcrest.Matchers;
+import org.junit.Test;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.reactive.HandlerMapping;
+import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.core.publisher.MonoProcessor;
+import reactor.core.publisher.ReplayProcessor;
+
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,22 +37,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.hamcrest.Matchers;
-import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.core.publisher.MonoProcessor;
-import reactor.core.publisher.ReplayProcessor;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
-import org.springframework.web.reactive.HandlerMapping;
-import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 /**
  * Integration tests with server-side {@link WebSocketHandler}s.
@@ -86,6 +86,7 @@ public class WebSocketIntegrationTests extends AbstractWebSocketIntegrationTests
 					public List<String> getSubProtocols() {
 						return Collections.singletonList(protocol);
 					}
+
 					@Override
 					public Mono<Void> handle(WebSocketSession session) {
 						infoRef.set(session.getHandshakeInfo());

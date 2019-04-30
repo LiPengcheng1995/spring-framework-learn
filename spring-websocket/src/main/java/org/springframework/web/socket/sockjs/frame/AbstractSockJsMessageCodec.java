@@ -37,9 +37,9 @@ public abstract class AbstractSockJsMessageCodec implements SockJsMessageCodec {
 			char[] quotedChars = applyJsonQuoting(messages[i]);
 			sb.append(escapeSockJsSpecialChars(quotedChars));
 			sb.append('"');
-            if (i < messages.length - 1) {
-                sb.append(',');
-            }
+			if (i < messages.length - 1) {
+				sb.append(',');
+			}
 		}
 		sb.append(']');
 		return sb.toString();
@@ -63,8 +63,7 @@ public abstract class AbstractSockJsMessageCodec implements SockJsMessageCodec {
 					result.append('0');
 				}
 				result.append(hex);
-			}
-			else {
+			} else {
 				result.append(c);
 			}
 		}

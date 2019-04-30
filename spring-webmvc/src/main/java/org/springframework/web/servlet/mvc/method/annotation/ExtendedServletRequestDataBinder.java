@@ -16,13 +16,13 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.util.Map;
-import javax.servlet.ServletRequest;
-
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.HandlerMapping;
+
+import javax.servlet.ServletRequest;
+import java.util.Map;
 
 /**
  * Subclass of {@link ServletRequestDataBinder} that adds URI template variables
@@ -35,8 +35,9 @@ public class ExtendedServletRequestDataBinder extends ServletRequestDataBinder {
 
 	/**
 	 * Create a new instance, with default object name.
+	 *
 	 * @param target the target object to bind onto (or {@code null}
-	 * if the binder is just used to convert a plain parameter value)
+	 *               if the binder is just used to convert a plain parameter value)
 	 * @see #DEFAULT_OBJECT_NAME
 	 */
 	public ExtendedServletRequestDataBinder(@Nullable Object target) {
@@ -45,8 +46,9 @@ public class ExtendedServletRequestDataBinder extends ServletRequestDataBinder {
 
 	/**
 	 * Create a new instance.
-	 * @param target the target object to bind onto (or {@code null}
-	 * if the binder is just used to convert a plain parameter value)
+	 *
+	 * @param target     the target object to bind onto (or {@code null}
+	 *                   if the binder is just used to convert a plain parameter value)
 	 * @param objectName the name of the target object
 	 * @see #DEFAULT_OBJECT_NAME
 	 */
@@ -70,8 +72,7 @@ public class ExtendedServletRequestDataBinder extends ServletRequestDataBinder {
 						logger.warn("Skipping URI variable '" + name +
 								"' since the request contains a bind value with the same name.");
 					}
-				}
-				else {
+				} else {
 					mpvs.addPropertyValue(name, value);
 				}
 			});

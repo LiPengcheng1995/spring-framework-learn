@@ -19,11 +19,11 @@ package org.springframework.test.context.support;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.test.context.MergedContextConfiguration;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Unit tests for {@link AnnotationConfigContextLoader}.
@@ -33,11 +33,9 @@ import static org.junit.Assert.*;
  */
 public class AnnotationConfigContextLoaderTests {
 
-	private final AnnotationConfigContextLoader contextLoader = new AnnotationConfigContextLoader();
-
 	private static final String[] EMPTY_STRING_ARRAY = new String[0];
 	private static final Class<?>[] EMPTY_CLASS_ARRAY = new Class<?>[0];
-
+	private final AnnotationConfigContextLoader contextLoader = new AnnotationConfigContextLoader();
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
 
@@ -51,7 +49,7 @@ public class AnnotationConfigContextLoaderTests {
 		expectedException.expectMessage(containsString("does not support resource locations"));
 
 		MergedContextConfiguration mergedConfig = new MergedContextConfiguration(getClass(),
-			new String[] { "config.xml" }, EMPTY_CLASS_ARRAY, EMPTY_STRING_ARRAY, contextLoader);
+				new String[]{"config.xml"}, EMPTY_CLASS_ARRAY, EMPTY_STRING_ARRAY, contextLoader);
 		contextLoader.loadContext(mergedConfig);
 	}
 

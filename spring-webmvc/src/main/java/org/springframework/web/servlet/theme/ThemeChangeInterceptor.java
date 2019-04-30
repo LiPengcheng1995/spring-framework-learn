@@ -16,21 +16,21 @@
 
 package org.springframework.web.servlet.theme;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.web.servlet.ThemeResolver;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.servlet.support.RequestContextUtils;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Interceptor that allows for changing the current theme on every request,
  * via a configurable request parameter (default parameter name: "theme").
  *
  * @author Juergen Hoeller
- * @since 20.06.2003
  * @see org.springframework.web.servlet.ThemeResolver
+ * @since 20.06.2003
  */
 public class ThemeChangeInterceptor extends HandlerInterceptorAdapter {
 
@@ -41,15 +41,6 @@ public class ThemeChangeInterceptor extends HandlerInterceptorAdapter {
 
 	private String paramName = DEFAULT_PARAM_NAME;
 
-
-	/**
-	 * Set the name of the parameter that contains a theme specification
-	 * in a theme change request. Default is "theme".
-	 */
-	public void setParamName(String paramName) {
-		this.paramName = paramName;
-	}
-
 	/**
 	 * Return the name of the parameter that contains a theme specification
 	 * in a theme change request.
@@ -58,6 +49,13 @@ public class ThemeChangeInterceptor extends HandlerInterceptorAdapter {
 		return this.paramName;
 	}
 
+	/**
+	 * Set the name of the parameter that contains a theme specification
+	 * in a theme change request. Default is "theme".
+	 */
+	public void setParamName(String paramName) {
+		this.paramName = paramName;
+	}
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)

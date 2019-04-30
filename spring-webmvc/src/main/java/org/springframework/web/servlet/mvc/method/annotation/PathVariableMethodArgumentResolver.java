@@ -16,10 +16,6 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.beans.PropertyEditor;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
@@ -40,6 +36,10 @@ import org.springframework.web.method.support.UriComponentsContributor;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.View;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.beans.PropertyEditor;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Resolves method arguments annotated with an @{@link PathVariable}.
@@ -104,7 +104,7 @@ public class PathVariableMethodArgumentResolver extends AbstractNamedValueMethod
 	@Override
 	@SuppressWarnings("unchecked")
 	protected void handleResolvedValue(@Nullable Object arg, String name, MethodParameter parameter,
-			@Nullable ModelAndViewContainer mavContainer, NativeWebRequest request) {
+									   @Nullable ModelAndViewContainer mavContainer, NativeWebRequest request) {
 
 		String key = View.PATH_VARIABLES;
 		int scope = RequestAttributes.SCOPE_REQUEST;
@@ -118,7 +118,7 @@ public class PathVariableMethodArgumentResolver extends AbstractNamedValueMethod
 
 	@Override
 	public void contributeMethodArgument(MethodParameter parameter, Object value,
-			UriComponentsBuilder builder, Map<String, Object> uriVariables, ConversionService conversionService) {
+										 UriComponentsBuilder builder, Map<String, Object> uriVariables, ConversionService conversionService) {
 
 		if (Map.class.isAssignableFrom(parameter.nestedIfOptional().getNestedParameterType())) {
 			return;
@@ -134,11 +134,9 @@ public class PathVariableMethodArgumentResolver extends AbstractNamedValueMethod
 	protected String formatUriValue(@Nullable ConversionService cs, @Nullable TypeDescriptor sourceType, Object value) {
 		if (value instanceof String) {
 			return (String) value;
-		}
-		else if (cs != null) {
+		} else if (cs != null) {
 			return (String) cs.convert(value, sourceType, STRING_TYPE_DESCRIPTOR);
-		}
-		else {
+		} else {
 			return value.toString();
 		}
 	}

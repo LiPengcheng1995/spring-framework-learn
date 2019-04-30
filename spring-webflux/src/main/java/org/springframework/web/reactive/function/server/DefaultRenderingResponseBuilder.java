@@ -16,19 +16,6 @@
 
 package org.springframework.web.reactive.function.server;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
-
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.Conventions;
 import org.springframework.http.HttpHeaders;
@@ -41,6 +28,12 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * Default {@link RenderingResponse.Builder} implementation.
@@ -52,14 +45,10 @@ import org.springframework.web.server.ServerWebExchange;
 final class DefaultRenderingResponseBuilder implements RenderingResponse.Builder {
 
 	private final String name;
-
-	private int status = HttpStatus.OK.value();
-
 	private final HttpHeaders headers = new HttpHeaders();
-
 	private final MultiValueMap<String, ResponseCookie> cookies = new LinkedMultiValueMap<>();
-
 	private final Map<String, Object> model = new LinkedHashMap<>();
+	private int status = HttpStatus.OK.value();
 
 
 	public DefaultRenderingResponseBuilder(RenderingResponse other) {
@@ -166,7 +155,7 @@ final class DefaultRenderingResponseBuilder implements RenderingResponse.Builder
 		private final Map<String, Object> model;
 
 		public DefaultRenderingResponse(int statusCode, HttpHeaders headers,
-				MultiValueMap<String, ResponseCookie> cookies, String name, Map<String, Object> model) {
+										MultiValueMap<String, ResponseCookie> cookies, String name, Map<String, Object> model) {
 
 			super(statusCode, headers, cookies);
 			this.name = name;

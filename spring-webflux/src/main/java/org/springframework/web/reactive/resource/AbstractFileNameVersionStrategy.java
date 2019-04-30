@@ -16,13 +16,12 @@
 
 package org.springframework.web.reactive.resource;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.util.StringUtils;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Abstract base class for filename suffix based {@link VersionStrategy}
@@ -34,10 +33,8 @@ import org.springframework.util.StringUtils;
  */
 public abstract class AbstractFileNameVersionStrategy implements VersionStrategy {
 
-	protected final Log logger = LogFactory.getLog(getClass());
-
 	private static final Pattern pattern = Pattern.compile("-(\\S*)\\.");
-
+	protected final Log logger = LogFactory.getLog(getClass());
 
 	@Override
 	public String extractVersion(String requestPath) {
@@ -45,8 +42,7 @@ public abstract class AbstractFileNameVersionStrategy implements VersionStrategy
 		if (matcher.find()) {
 			String match = matcher.group(1);
 			return (match.contains("-") ? match.substring(match.lastIndexOf('-') + 1) : match);
-		}
-		else {
+		} else {
 			return null;
 		}
 	}

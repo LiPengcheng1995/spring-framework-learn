@@ -18,14 +18,13 @@ package org.springframework.test.context.junit4.annotation.meta;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Integration tests for meta-annotation attribute override support, demonstrating
@@ -38,6 +37,14 @@ import static org.junit.Assert.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ConfigClassesAndProfilesMetaConfig(profiles = "dev")
 public class ConfigClassesAndProfilesMetaConfigTests {
+
+	@Autowired
+	private String foo;
+
+	@Test
+	public void foo() {
+		assertEquals("Local Dev Foo", foo);
+	}
 
 	@Configuration
 	@Profile("dev")
@@ -57,15 +64,5 @@ public class ConfigClassesAndProfilesMetaConfigTests {
 		public String foo() {
 			return "Local Production Foo";
 		}
-	}
-
-
-	@Autowired
-	private String foo;
-
-
-	@Test
-	public void foo() {
-		assertEquals("Local Dev Foo", foo);
 	}
 }

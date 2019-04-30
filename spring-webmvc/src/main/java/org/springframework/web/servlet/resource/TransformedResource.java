@@ -16,11 +16,11 @@
 
 package org.springframework.web.servlet.resource;
 
-import java.io.IOException;
-
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.lang.Nullable;
+
+import java.io.IOException;
 
 /**
  * An extension of {@link ByteArrayResource} that a {@link ResourceTransformer}
@@ -44,8 +44,7 @@ public class TransformedResource extends ByteArrayResource {
 		this.filename = original.getFilename();
 		try {
 			this.lastModified = original.lastModified();
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			// should never happen
 			throw new IllegalArgumentException(ex);
 		}

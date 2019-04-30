@@ -16,12 +16,8 @@
 
 package org.springframework.web.servlet.config.annotation;
 
-import java.util.Arrays;
-import java.util.Collections;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.web.accept.ContentNegotiationManager;
@@ -30,10 +26,14 @@ import org.springframework.web.accept.FixedContentNegotiationStrategy;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
 
-import static org.junit.Assert.*;
+import java.util.Arrays;
+import java.util.Collections;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test fixture for {@link ContentNegotiationConfigurer} tests.
+ *
  * @author Rossen Stoyanchev
  */
 public class ContentNegotiationConfigurerTests {

@@ -16,14 +16,14 @@
 
 package org.springframework.web.socket.messaging;
 
-import java.util.List;
-
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
+
+import java.util.List;
 
 /**
  * A contract for handling WebSocket messages as part of a higher level protocol,
@@ -48,8 +48,9 @@ public interface SubProtocolHandler {
 
 	/**
 	 * Handle the given {@link WebSocketMessage} received from a client.
-	 * @param session the client session
-	 * @param message the client message
+	 *
+	 * @param session       the client session
+	 * @param message       the client message
 	 * @param outputChannel an output channel to send messages to
 	 */
 	void handleMessageFromClient(WebSocketSession session, WebSocketMessage<?> message, MessageChannel outputChannel)
@@ -57,6 +58,7 @@ public interface SubProtocolHandler {
 
 	/**
 	 * Handle the given {@link Message} to the client associated with the given WebSocket session.
+	 *
 	 * @param session the client session
 	 * @param message the client message
 	 */
@@ -64,6 +66,7 @@ public interface SubProtocolHandler {
 
 	/**
 	 * Resolve the session id from the given message or return {@code null}.
+	 *
 	 * @param message the message to resolve the session id from
 	 */
 	@Nullable
@@ -71,15 +74,17 @@ public interface SubProtocolHandler {
 
 	/**
 	 * Invoked after a {@link WebSocketSession} has started.
-	 * @param session the client session
+	 *
+	 * @param session       the client session
 	 * @param outputChannel a channel
 	 */
 	void afterSessionStarted(WebSocketSession session, MessageChannel outputChannel) throws Exception;
 
 	/**
 	 * Invoked after a {@link WebSocketSession} has ended.
-	 * @param session the client session
-	 * @param closeStatus the reason why the session was closed
+	 *
+	 * @param session       the client session
+	 * @param closeStatus   the reason why the session was closed
 	 * @param outputChannel a channel
 	 */
 	void afterSessionEnded(WebSocketSession session, CloseStatus closeStatus, MessageChannel outputChannel)

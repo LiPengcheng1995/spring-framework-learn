@@ -16,12 +16,8 @@
 
 package org.springframework.web.servlet.view;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.mock.web.test.MockHttpServletResponse;
 import org.springframework.ui.ModelMap;
@@ -30,7 +26,10 @@ import org.springframework.web.servlet.FlashMap;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.support.SessionFlashMapManager;
 
-import static org.junit.Assert.*;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 
 public class RedirectViewUriTemplateTests {
 
@@ -74,7 +73,7 @@ public class RedirectViewUriTemplateTests {
 	public void uriTemplateAndArrayQueryParam() throws Exception {
 		Map<String, Object> model = new HashMap<>();
 		model.put("foo", "bar");
-		model.put("fooArr", new String[] { "baz", "bazz" });
+		model.put("fooArr", new String[]{"baz", "bazz"});
 
 		RedirectView redirectView = new RedirectView("/foo/{foo}");
 		redirectView.renderMergedOutputModel(model, this.request, this.response);

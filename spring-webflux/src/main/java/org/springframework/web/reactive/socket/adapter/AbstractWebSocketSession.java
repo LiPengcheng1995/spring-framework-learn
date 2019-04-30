@@ -16,19 +16,18 @@
 
 package org.springframework.web.reactive.socket.adapter;
 
-import java.nio.charset.StandardCharsets;
-import java.util.function.Function;
-
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.util.Assert;
 import org.springframework.web.reactive.socket.HandshakeInfo;
 import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.WebSocketSession;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.nio.charset.StandardCharsets;
+import java.util.function.Function;
 
 /**
  * Convenient base class for {@link WebSocketSession} implementations that
@@ -53,7 +52,7 @@ public abstract class AbstractWebSocketSession<T> implements WebSocketSession {
 	 * Create a new instance and associate the given attributes with it.
 	 */
 	protected AbstractWebSocketSession(T delegate, String id, HandshakeInfo handshakeInfo,
-			DataBufferFactory bufferFactory) {
+									   DataBufferFactory bufferFactory) {
 
 		Assert.notNull(delegate, "Native session is required.");
 		Assert.notNull(id, "Session id is required.");

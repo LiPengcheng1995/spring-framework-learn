@@ -18,7 +18,6 @@ package org.springframework.test.context.support;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.core.Conventions;
 import org.springframework.test.context.TestContext;
@@ -106,8 +105,9 @@ public class DependencyInjectionTestExecutionListener extends AbstractTestExecut
 	 * {@link #prepareTestInstance(TestContext) prepareTestInstance()}.
 	 * <p>The {@link #REINJECT_DEPENDENCIES_ATTRIBUTE} will be subsequently removed
 	 * from the test context, regardless of its value.
+	 *
 	 * @param testContext the test context for which dependency injection should
-	 * be performed (never {@code null})
+	 *                    be performed (never {@code null})
 	 * @throws Exception allows any exception to propagate
 	 * @see #prepareTestInstance(TestContext)
 	 * @see #beforeTestMethod(TestContext)

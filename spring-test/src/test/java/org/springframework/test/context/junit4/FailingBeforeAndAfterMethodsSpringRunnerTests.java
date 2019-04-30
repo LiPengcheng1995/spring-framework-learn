@@ -22,7 +22,6 @@ import org.junit.runner.RunWith;
 import org.junit.runner.Runner;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
@@ -32,8 +31,8 @@ import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ClassUtils;
 
-import static org.junit.Assert.*;
-import static org.springframework.test.context.junit4.JUnitTestingUtils.*;
+import static org.junit.Assert.fail;
+import static org.springframework.test.context.junit4.JUnitTestingUtils.runTestsAndAssertCounters;
 
 /**
  * Integration tests which verify that '<i>before</i>' and '<i>after</i>'
@@ -55,23 +54,23 @@ public class FailingBeforeAndAfterMethodsSpringRunnerTests {
 	protected final Class<?> clazz;
 
 
-	@Parameters(name = "{0}")
-	public static Object[] testCases() {
-		return new Object[] {//
-			AlwaysFailingBeforeTestClassTestCase.class.getSimpleName(),//
-			AlwaysFailingAfterTestClassTestCase.class.getSimpleName(),//
-			AlwaysFailingPrepareTestInstanceTestCase.class.getSimpleName(),//
-			AlwaysFailingBeforeTestMethodTestCase.class.getSimpleName(),//
-			AlwaysFailingBeforeTestExecutionTestCase.class.getSimpleName(), //
-			AlwaysFailingAfterTestExecutionTestCase.class.getSimpleName(), //
-			AlwaysFailingAfterTestMethodTestCase.class.getSimpleName(),//
-			FailingBeforeTransactionTestCase.class.getSimpleName(),//
-			FailingAfterTransactionTestCase.class.getSimpleName() //
-		};
-	}
-
 	public FailingBeforeAndAfterMethodsSpringRunnerTests(String testClassName) throws Exception {
 		this.clazz = ClassUtils.forName(getClass().getName() + "." + testClassName, getClass().getClassLoader());
+	}
+
+	@Parameters(name = "{0}")
+	public static Object[] testCases() {
+		return new Object[]{//
+				AlwaysFailingBeforeTestClassTestCase.class.getSimpleName(),//
+				AlwaysFailingAfterTestClassTestCase.class.getSimpleName(),//
+				AlwaysFailingPrepareTestInstanceTestCase.class.getSimpleName(),//
+				AlwaysFailingBeforeTestMethodTestCase.class.getSimpleName(),//
+				AlwaysFailingBeforeTestExecutionTestCase.class.getSimpleName(), //
+				AlwaysFailingAfterTestExecutionTestCase.class.getSimpleName(), //
+				AlwaysFailingAfterTestMethodTestCase.class.getSimpleName(),//
+				FailingBeforeTransactionTestCase.class.getSimpleName(),//
+				FailingAfterTransactionTestCase.class.getSimpleName() //
+		};
 	}
 
 	protected Class<? extends Runner> getRunnerClass() {

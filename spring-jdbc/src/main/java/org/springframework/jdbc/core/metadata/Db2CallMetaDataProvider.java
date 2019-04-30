@@ -16,10 +16,10 @@
 
 package org.springframework.jdbc.core.metadata;
 
+import org.springframework.lang.Nullable;
+
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-
-import org.springframework.lang.Nullable;
 
 /**
  * DB2 specific implementation for the {@link CallMetaDataProvider} interface.
@@ -40,26 +40,22 @@ public class Db2CallMetaDataProvider extends GenericCallMetaDataProvider {
 	public void initializeWithMetaData(DatabaseMetaData databaseMetaData) throws SQLException {
 		try {
 			setSupportsCatalogsInProcedureCalls(databaseMetaData.supportsCatalogsInProcedureCalls());
-		}
-		catch (SQLException ex) {
+		} catch (SQLException ex) {
 			logger.debug("Error retrieving 'DatabaseMetaData.supportsCatalogsInProcedureCalls' - " + ex.getMessage());
 		}
 		try {
 			setSupportsSchemasInProcedureCalls(databaseMetaData.supportsSchemasInProcedureCalls());
-		}
-		catch (SQLException ex) {
+		} catch (SQLException ex) {
 			logger.debug("Error retrieving 'DatabaseMetaData.supportsSchemasInProcedureCalls' - " + ex.getMessage());
 		}
 		try {
 			setStoresUpperCaseIdentifiers(databaseMetaData.storesUpperCaseIdentifiers());
-		}
-		catch (SQLException ex) {
+		} catch (SQLException ex) {
 			logger.debug("Error retrieving 'DatabaseMetaData.storesUpperCaseIdentifiers' - " + ex.getMessage());
 		}
 		try {
 			setStoresLowerCaseIdentifiers(databaseMetaData.storesLowerCaseIdentifiers());
-		}
-		catch (SQLException ex) {
+		} catch (SQLException ex) {
 			logger.debug("Error retrieving 'DatabaseMetaData.storesLowerCaseIdentifiers' - " + ex.getMessage());
 		}
 	}

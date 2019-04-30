@@ -15,13 +15,6 @@
  */
 package org.springframework.jdbc.core.support;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Types;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,31 +22,38 @@ import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
-
 import org.springframework.jdbc.support.lob.LobCreator;
 import org.springframework.jdbc.support.lob.LobHandler;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.*;
 
 /**
  * Test cases for the sql lob value:
- *
+ * <p>
  * BLOB:
- *   1. Types.BLOB: setBlobAsBytes (byte[])
- *   2. String: setBlobAsBytes (byte[])
- *   3. else: IllegalArgumentException
- *
+ * 1. Types.BLOB: setBlobAsBytes (byte[])
+ * 2. String: setBlobAsBytes (byte[])
+ * 3. else: IllegalArgumentException
+ * <p>
  * CLOB:
- *   4. String or NULL: setClobAsString (String)
- *   5. InputStream: setClobAsAsciiStream (InputStream)
- *   6. Reader: setClobAsCharacterStream (Reader)
- *   7. else: IllegalArgumentException
+ * 4. String or NULL: setClobAsString (String)
+ * 5. InputStream: setClobAsAsciiStream (InputStream)
+ * 6. Reader: setClobAsCharacterStream (Reader)
+ * 7. else: IllegalArgumentException
  *
  * @author Alef Arendsen
  */
-public class SqlLobValueTests  {
+public class SqlLobValueTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -144,8 +144,7 @@ public class SqlLobValueTests  {
 			lob = new SqlLobValue("bla".getBytes());
 			lob.setTypeValue(preparedStatement, 1, Types.CLOB, "test");
 			fail("IllegalArgumentException should have been thrown");
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			// expected
 		}
 
@@ -172,8 +171,7 @@ public class SqlLobValueTests  {
 		try {
 			lob.setTypeValue(preparedStatement, 1, Types.BLOB, "test");
 			fail("IllegalArgumentException should have been thrown");
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			// expected
 		}
 	}

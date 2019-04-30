@@ -16,10 +16,7 @@
 
 package org.springframework.test.web.servlet.result;
 
-import java.lang.reflect.Method;
-
 import org.hamcrest.Matcher;
-
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.util.ClassUtils;
@@ -29,7 +26,9 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import static org.hamcrest.MatcherAssert.*;
+import java.lang.reflect.Method;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.springframework.test.util.AssertionErrors.*;
 
 /**
@@ -56,6 +55,14 @@ public class HandlerResultMatchers {
 	protected HandlerResultMatchers() {
 	}
 
+	private static HandlerMethod getHandlerMethod(MvcResult result) {
+		Object handler = result.getHandler();
+		assertTrue("No handler", handler != null);
+		if (!(handler instanceof HandlerMethod)) {
+			fail("Not a HandlerMethod: " + handler);
+		}
+		return (HandlerMethod) handler;
+	}
 
 	/**
 	 * Assert the type of the handler that processed the request.
@@ -95,14 +102,15 @@ public class HandlerResultMatchers {
 	 * mockMvc.perform(get("/"))
 	 *     .andExpect(handler().methodCall(on(SimpleController.class).handle()));
 	 * </pre>
+	 *
 	 * @param obj either the value returned from a "mock" controller invocation
-	 * or the "mock" controller itself after an invocation
+	 *            or the "mock" controller itself after an invocation
 	 */
 	public ResultMatcher methodCall(final Object obj) {
 		return result -> {
 			if (!(obj instanceof MethodInvocationInfo)) {
 				fail(String.format("The supplied object [%s] is not an instance of %s. " +
-						"Ensure that you invoke the handler method via MvcUriComponentsBuilder.on().",
+								"Ensure that you invoke the handler method via MvcUriComponentsBuilder.on().",
 						obj, MethodInvocationInfo.class.getName()));
 			}
 			MethodInvocationInfo invocationInfo = (MethodInvocationInfo) obj;
@@ -141,16 +149,6 @@ public class HandlerResultMatchers {
 			HandlerMethod handlerMethod = getHandlerMethod(result);
 			assertEquals("Handler method", method, handlerMethod.getMethod());
 		};
-	}
-
-
-	private static HandlerMethod getHandlerMethod(MvcResult result) {
-		Object handler = result.getHandler();
-		assertTrue("No handler", handler != null);
-		if (!(handler instanceof HandlerMethod)) {
-			fail("Not a HandlerMethod: " + handler);
-		}
-		return (HandlerMethod) handler;
 	}
 
 }

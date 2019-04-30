@@ -16,13 +16,8 @@
 
 package org.springframework.web.reactive.socket.server.support;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import reactor.core.publisher.Mono;
-
 import org.springframework.context.Lifecycle;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -38,6 +33,10 @@ import org.springframework.web.reactive.socket.server.WebSocketService;
 import org.springframework.web.server.MethodNotAllowedException;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.ServerWebInputException;
+import reactor.core.publisher.Mono;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * {@code WebSocketService} implementation that handles a WebSocket HTTP
@@ -50,31 +49,21 @@ import org.springframework.web.server.ServerWebInputException;
  */
 public class HandshakeWebSocketService implements WebSocketService, Lifecycle {
 
+	protected static final Log logger = LogFactory.getLog(HandshakeWebSocketService.class);
 	private static final String SEC_WEBSOCKET_KEY = "Sec-WebSocket-Key";
-
 	private static final String SEC_WEBSOCKET_PROTOCOL = "Sec-WebSocket-Protocol";
-
-
 	private static final boolean tomcatPresent = ClassUtils.isPresent(
 			"org.apache.tomcat.websocket.server.WsHttpUpgradeHandler",
 			HandshakeWebSocketService.class.getClassLoader());
-
 	private static final boolean jettyPresent = ClassUtils.isPresent(
 			"org.eclipse.jetty.websocket.server.WebSocketServerFactory",
 			HandshakeWebSocketService.class.getClassLoader());
-
 	private static final boolean undertowPresent = ClassUtils.isPresent(
 			"io.undertow.websockets.WebSocketProtocolHandshakeHandler",
 			HandshakeWebSocketService.class.getClassLoader());
-
 	private static final boolean reactorNettyPresent = ClassUtils.isPresent(
 			"reactor.ipc.netty.http.server.HttpServerResponse",
 			HandshakeWebSocketService.class.getClassLoader());
-
-
-	protected static final Log logger = LogFactory.getLog(HandshakeWebSocketService.class);
-
-
 	private final RequestUpgradeStrategy upgradeStrategy;
 
 	private volatile boolean running = false;
@@ -90,6 +79,7 @@ public class HandshakeWebSocketService implements WebSocketService, Lifecycle {
 
 	/**
 	 * Alternative constructor with the {@link RequestUpgradeStrategy} to use.
+	 *
 	 * @param upgradeStrategy the strategy to use
 	 */
 	public HandshakeWebSocketService(RequestUpgradeStrategy upgradeStrategy) {
@@ -101,18 +91,14 @@ public class HandshakeWebSocketService implements WebSocketService, Lifecycle {
 		String className;
 		if (tomcatPresent) {
 			className = "TomcatRequestUpgradeStrategy";
-		}
-		else if (jettyPresent) {
+		} else if (jettyPresent) {
 			className = "JettyRequestUpgradeStrategy";
-		}
-		else if (undertowPresent) {
+		} else if (undertowPresent) {
 			className = "UndertowRequestUpgradeStrategy";
-		}
-		else if (reactorNettyPresent) {
+		} else if (reactorNettyPresent) {
 			// As late as possible (Reactor Netty commonly used for WebClient)
 			className = "ReactorNettyRequestUpgradeStrategy";
-		}
-		else {
+		} else {
 			throw new IllegalStateException("No suitable default RequestUpgradeStrategy found");
 		}
 
@@ -120,8 +106,7 @@ public class HandshakeWebSocketService implements WebSocketService, Lifecycle {
 			className = "org.springframework.web.reactive.socket.server.upgrade." + className;
 			Class<?> clazz = ClassUtils.forName(className, HandshakeWebSocketService.class.getClassLoader());
 			return (RequestUpgradeStrategy) ReflectionUtils.accessibleConstructor(clazz).newInstance();
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			throw new IllegalStateException(
 					"Failed to instantiate RequestUpgradeStrategy: " + className, ex);
 		}

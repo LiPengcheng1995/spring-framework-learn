@@ -16,13 +16,12 @@
 
 package org.springframework.web.servlet.mvc.condition;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import org.junit.Test;
-
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.web.servlet.mvc.condition.ProducesRequestCondition.ProduceMediaTypeExpression;
+
+import java.util.Collection;
+import java.util.Collections;
 
 import static org.junit.Assert.*;
 
@@ -121,7 +120,7 @@ public class ProducesRequestConditionTests {
 
 	@Test
 	public void matchByRequestParameter() {
-		ProducesRequestCondition condition = new ProducesRequestCondition(new String[] {"text/plain"}, new String[] {});
+		ProducesRequestCondition condition = new ProducesRequestCondition(new String[]{"text/plain"}, new String[]{});
 
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo.txt");
 
@@ -304,7 +303,7 @@ public class ProducesRequestConditionTests {
 
 	@Test
 	public void instantiateWithProducesAndHeaderConditions() {
-		String[] produces = new String[] {"text/plain"};
+		String[] produces = new String[]{"text/plain"};
 		String[] headers = new String[]{"foo=bar", "accept=application/xml,application/pdf"};
 		ProducesRequestCondition condition = new ProducesRequestCondition(produces, headers);
 

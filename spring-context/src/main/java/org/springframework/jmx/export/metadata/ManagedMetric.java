@@ -26,8 +26,8 @@ import org.springframework.util.Assert;
  * metric. Only valid when used on a JavaBean getter.
  *
  * @author Jennifer Hickey
- * @since 3.0
  * @see org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler
+ * @since 3.0
  */
 public class ManagedMetric extends AbstractJmxAttribute {
 
@@ -47,14 +47,6 @@ public class ManagedMetric extends AbstractJmxAttribute {
 	@Nullable
 	private String unit;
 
-
-	/**
-	 * The category of this metric (ex. throughput, performance, utilization).
-	 */
-	public void setCategory(@Nullable String category) {
-		this.category = category;
-	}
-
 	/**
 	 * The category of this metric (ex. throughput, performance, utilization).
 	 */
@@ -64,10 +56,10 @@ public class ManagedMetric extends AbstractJmxAttribute {
 	}
 
 	/**
-	 * A display name for this metric.
+	 * The category of this metric (ex. throughput, performance, utilization).
 	 */
-	public void setDisplayName(@Nullable String displayName) {
-		this.displayName = displayName;
+	public void setCategory(@Nullable String category) {
+		this.category = category;
 	}
 
 	/**
@@ -79,11 +71,10 @@ public class ManagedMetric extends AbstractJmxAttribute {
 	}
 
 	/**
-	 * A description of how this metric's values change over time.
+	 * A display name for this metric.
 	 */
-	public void setMetricType(MetricType metricType) {
-		Assert.notNull(metricType, "MetricType must not be null");
-		this.metricType = metricType;
+	public void setDisplayName(@Nullable String displayName) {
+		this.displayName = displayName;
 	}
 
 	/**
@@ -94,10 +85,11 @@ public class ManagedMetric extends AbstractJmxAttribute {
 	}
 
 	/**
-	 * The persist period for this metric.
+	 * A description of how this metric's values change over time.
 	 */
-	public void setPersistPeriod(int persistPeriod) {
-		this.persistPeriod = persistPeriod;
+	public void setMetricType(MetricType metricType) {
+		Assert.notNull(metricType, "MetricType must not be null");
+		this.metricType = metricType;
 	}
 
 	/**
@@ -108,10 +100,10 @@ public class ManagedMetric extends AbstractJmxAttribute {
 	}
 
 	/**
-	 * The persist policy for this metric.
+	 * The persist period for this metric.
 	 */
-	public void setPersistPolicy(@Nullable String persistPolicy) {
-		this.persistPolicy = persistPolicy;
+	public void setPersistPeriod(int persistPeriod) {
+		this.persistPeriod = persistPeriod;
 	}
 
 	/**
@@ -123,10 +115,10 @@ public class ManagedMetric extends AbstractJmxAttribute {
 	}
 
 	/**
-	 * The expected unit of measurement values.
+	 * The persist policy for this metric.
 	 */
-	public void setUnit(@Nullable String unit) {
-		this.unit = unit;
+	public void setPersistPolicy(@Nullable String persistPolicy) {
+		this.persistPolicy = persistPolicy;
 	}
 
 	/**
@@ -135,6 +127,13 @@ public class ManagedMetric extends AbstractJmxAttribute {
 	@Nullable
 	public String getUnit() {
 		return this.unit;
+	}
+
+	/**
+	 * The expected unit of measurement values.
+	 */
+	public void setUnit(@Nullable String unit) {
+		this.unit = unit;
 	}
 
 }

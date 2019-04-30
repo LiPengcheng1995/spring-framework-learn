@@ -16,9 +16,6 @@
 
 package org.springframework.messaging.simp.config;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.SubscribableChannel;
@@ -26,6 +23,9 @@ import org.springframework.messaging.simp.broker.SimpleBrokerMessageHandler;
 import org.springframework.messaging.simp.stomp.StompBrokerRelayMessageHandler;
 import org.springframework.util.Assert;
 import org.springframework.util.PathMatcher;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * A registry for configuring message broker options.
@@ -39,15 +39,11 @@ public class MessageBrokerRegistry {
 	private final SubscribableChannel clientInboundChannel;
 
 	private final MessageChannel clientOutboundChannel;
-
+	private final ChannelRegistration brokerChannelRegistration = new ChannelRegistration();
 	@Nullable
 	private SimpleBrokerRegistration simpleBrokerRegistration;
-
 	@Nullable
 	private StompBrokerRelayRegistration brokerRelayRegistration;
-
-	private final ChannelRegistration brokerChannelRegistration = new ChannelRegistration();
-
 	@Nullable
 	private String[] applicationDestinationPrefixes;
 
@@ -117,6 +113,12 @@ public class MessageBrokerRegistry {
 				this.brokerRelayRegistration.getUserRegistryBroadcast() : null);
 	}
 
+	@Nullable
+	protected Collection<String> getApplicationDestinationPrefixes() {
+		return (this.applicationDestinationPrefixes != null ?
+				Arrays.asList(this.applicationDestinationPrefixes) : null);
+	}
+
 	/**
 	 * Configure one or more prefixes to filter destinations targeting application
 	 * annotated methods. For example destinations prefixed with "/app" may be
@@ -133,9 +135,8 @@ public class MessageBrokerRegistry {
 	}
 
 	@Nullable
-	protected Collection<String> getApplicationDestinationPrefixes() {
-		return (this.applicationDestinationPrefixes != null ?
-				Arrays.asList(this.applicationDestinationPrefixes) : null);
+	protected String getUserDestinationPrefix() {
+		return this.userDestinationPrefix;
 	}
 
 	/**
@@ -156,8 +157,8 @@ public class MessageBrokerRegistry {
 	}
 
 	@Nullable
-	protected String getUserDestinationPrefix() {
-		return this.userDestinationPrefix;
+	protected PathMatcher getPathMatcher() {
+		return this.pathMatcher;
 	}
 
 	/**
@@ -174,25 +175,22 @@ public class MessageBrokerRegistry {
 	 * as its type and method-level mappings respectively.
 	 * <p>When the simple broker is enabled, the PathMatcher configured here is
 	 * also used to match message destinations when brokering messages.
-	 * @since 4.1
+	 *
 	 * @see org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry#setPathMatcher
+	 * @since 4.1
 	 */
 	public MessageBrokerRegistry setPathMatcher(PathMatcher pathMatcher) {
 		this.pathMatcher = pathMatcher;
 		return this;
 	}
 
-	@Nullable
-	protected PathMatcher getPathMatcher() {
-		return this.pathMatcher;
-	}
-
 	/**
 	 * Configure the cache limit to apply for registrations with the broker.
 	 * <p>This is currently only applied for the destination cache in the
 	 * subscription registry. The default cache limit there is 1024.
-	 * @since 4.3.2
+	 *
 	 * @see org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry#setCacheLimit
+	 * @since 4.3.2
 	 */
 	public MessageBrokerRegistry setCacheLimit(int cacheLimit) {
 		this.cacheLimit = cacheLimit;

@@ -16,11 +16,6 @@
 
 package org.springframework.web.reactive.result.view;
 
-import java.util.Locale;
-import java.util.function.Function;
-
-import reactor.core.publisher.Mono;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -28,6 +23,10 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.PatternMatchUtils;
+import reactor.core.publisher.Mono;
+
+import java.util.Locale;
+import java.util.function.Function;
 
 /**
  * A {@link ViewResolver} that allow direct resolution of symbolic view names
@@ -91,11 +90,19 @@ public class UrlBasedViewResolver extends ViewResolverSupport
 	@Nullable
 	private ApplicationContext applicationContext;
 
+	/**
+	 * Return the view class to be used to create views.
+	 */
+	@Nullable
+	protected Class<?> getViewClass() {
+		return this.viewClass;
+	}
 
 	/**
 	 * Set the view class to instantiate through {@link #createView(String)}.
+	 *
 	 * @param viewClass a class that is assignable to the required view class
-	 * which by default is AbstractUrlBasedView
+	 *                  which by default is AbstractUrlBasedView
 	 */
 	public void setViewClass(@Nullable Class<?> viewClass) {
 		if (viewClass != null && !requiredViewClass().isAssignableFrom(viewClass)) {
@@ -107,27 +114,13 @@ public class UrlBasedViewResolver extends ViewResolverSupport
 	}
 
 	/**
-	 * Return the view class to be used to create views.
-	 */
-	@Nullable
-	protected Class<?> getViewClass() {
-		return this.viewClass;
-	}
-
-	/**
 	 * Return the required type of view for this resolver.
 	 * This implementation returns {@link AbstractUrlBasedView}.
+	 *
 	 * @see AbstractUrlBasedView
 	 */
 	protected Class<?> requiredViewClass() {
 		return AbstractUrlBasedView.class;
-	}
-
-	/**
-	 * Set the prefix that gets prepended to view names when building a URL.
-	 */
-	public void setPrefix(@Nullable String prefix) {
-		this.prefix = (prefix != null ? prefix : "");
 	}
 
 	/**
@@ -138,10 +131,10 @@ public class UrlBasedViewResolver extends ViewResolverSupport
 	}
 
 	/**
-	 * Set the suffix that gets appended to view names when building a URL.
+	 * Set the prefix that gets prepended to view names when building a URL.
 	 */
-	public void setSuffix(@Nullable String suffix) {
-		this.suffix = (suffix != null ? suffix : "");
+	public void setPrefix(@Nullable String prefix) {
+		this.prefix = (prefix != null ? prefix : "");
 	}
 
 	/**
@@ -152,13 +145,10 @@ public class UrlBasedViewResolver extends ViewResolverSupport
 	}
 
 	/**
-	 * Set the view names (or name patterns) that can be handled by this
-	 * {@link ViewResolver}. View names can contain simple wildcards such that
-	 * 'my*', '*Report' and '*Repo*' will all match the view name 'myReport'.
-	 * @see #canHandle
+	 * Set the suffix that gets appended to view names when building a URL.
 	 */
-	public void setViewNames(@Nullable String... viewNames) {
-		this.viewNames = viewNames;
+	public void setSuffix(@Nullable String suffix) {
+		this.suffix = (suffix != null ? suffix : "");
 	}
 
 	/**
@@ -171,20 +161,22 @@ public class UrlBasedViewResolver extends ViewResolverSupport
 	}
 
 	/**
+	 * Set the view names (or name patterns) that can be handled by this
+	 * {@link ViewResolver}. View names can contain simple wildcards such that
+	 * 'my*', '*Report' and '*Repo*' will all match the view name 'myReport'.
+	 *
+	 * @see #canHandle
+	 */
+	public void setViewNames(@Nullable String... viewNames) {
+		this.viewNames = viewNames;
+	}
+
+	/**
 	 * URL based {@link RedirectView} provider which can be used to provide, for example,
 	 * redirect views with a custom default status code.
 	 */
 	public void setRedirectViewProvider(Function<String, RedirectView> redirectViewProvider) {
 		this.redirectViewProvider = redirectViewProvider;
-	}
-
-	/**
-	 * Set the name of the {@link RequestContext} attribute for all views.
-	 * @param requestContextAttribute name of the RequestContext attribute
-	 * @see AbstractView#setRequestContextAttribute
-	 */
-	public void setRequestContextAttribute(@Nullable String requestContextAttribute) {
-		this.requestContextAttribute = requestContextAttribute;
 	}
 
 	/**
@@ -196,9 +188,30 @@ public class UrlBasedViewResolver extends ViewResolverSupport
 	}
 
 	/**
+	 * Set the name of the {@link RequestContext} attribute for all views.
+	 *
+	 * @param requestContextAttribute name of the RequestContext attribute
+	 * @see AbstractView#setRequestContextAttribute
+	 */
+	public void setRequestContextAttribute(@Nullable String requestContextAttribute) {
+		this.requestContextAttribute = requestContextAttribute;
+	}
+
+	/**
+	 * Return the containing {@code ApplicationContext}, if any.
+	 *
+	 * @see #setApplicationContext
+	 */
+	@Nullable
+	public ApplicationContext getApplicationContext() {
+		return this.applicationContext;
+	}
+
+	/**
 	 * Accept the containing {@code ApplicationContext}, if any.
 	 * <p>To be used for the initialization of newly created {@link View} instances,
 	 * applying lifecycle callbacks and providing access to the containing environment.
+	 *
 	 * @see #setViewClass
 	 * @see #createView
 	 * @see #applyLifecycleMethods
@@ -207,16 +220,6 @@ public class UrlBasedViewResolver extends ViewResolverSupport
 	public void setApplicationContext(@Nullable ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
 	}
-
-	/**
-	 * Return the containing {@code ApplicationContext}, if any.
-	 * @see #setApplicationContext
-	 */
-	@Nullable
-	public ApplicationContext getApplicationContext() {
-		return this.applicationContext;
-	}
-
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -236,16 +239,14 @@ public class UrlBasedViewResolver extends ViewResolverSupport
 		if (viewName.startsWith(REDIRECT_URL_PREFIX)) {
 			String redirectUrl = viewName.substring(REDIRECT_URL_PREFIX.length());
 			urlBasedView = this.redirectViewProvider.apply(redirectUrl);
-		}
-		else {
+		} else {
 			urlBasedView = createView(viewName);
 		}
 
 		View view = applyLifecycleMethods(viewName, urlBasedView);
 		try {
 			return (urlBasedView.checkResourceExists(locale) ? Mono.just(view) : Mono.empty());
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			return Mono.error(ex);
 		}
 	}
@@ -254,8 +255,9 @@ public class UrlBasedViewResolver extends ViewResolverSupport
 	 * Indicates whether or not this {@link ViewResolver} can handle the supplied
 	 * view name. If not, an empty result is returned. The default implementation
 	 * checks against the configured {@link #setViewNames view names}.
+	 *
 	 * @param viewName the name of the view to retrieve
-	 * @param locale the Locale to retrieve the view for
+	 * @param locale   the Locale to retrieve the view for
 	 * @return whether this resolver applies to the specified view
 	 * @see org.springframework.util.PatternMatchUtils#simpleMatch(String, String)
 	 */
@@ -270,6 +272,7 @@ public class UrlBasedViewResolver extends ViewResolverSupport
 	 * <p>Spring lifecycle methods as defined by the bean container do not have to
 	 * be called here: They will be automatically applied afterwards, provided
 	 * that an {@link #setApplicationContext ApplicationContext} is available.
+	 *
 	 * @param viewName the name of the view to build
 	 * @return the View instance
 	 * @see #getViewClass()
@@ -291,9 +294,10 @@ public class UrlBasedViewResolver extends ViewResolverSupport
 	/**
 	 * Apply the containing {@link ApplicationContext}'s lifecycle methods
 	 * to the given {@link View} instance, if such a context is available.
+	 *
 	 * @param viewName the name of the view
-	 * @param view the freshly created View instance, pre-configured with
-	 * {@link AbstractUrlBasedView}'s properties
+	 * @param view     the freshly created View instance, pre-configured with
+	 *                 {@link AbstractUrlBasedView}'s properties
 	 * @return the {@link View} instance to use (either the original one
 	 * or a decorated variant)
 	 * @see #getApplicationContext()

@@ -16,14 +16,14 @@
 
 package org.springframework.web.servlet.resource;
 
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.core.io.Resource;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * A {@link org.springframework.web.servlet.resource.ResourceResolver} that
@@ -68,7 +68,7 @@ public class CachingResourceResolver extends AbstractResourceResolver {
 
 	@Override
 	protected Resource resolveResourceInternal(@Nullable HttpServletRequest request, String requestPath,
-			List<? extends Resource> locations, ResourceResolverChain chain) {
+											   List<? extends Resource> locations, ResourceResolverChain chain) {
 
 		String key = computeKey(request, requestPath);
 		Resource resource = this.cache.get(key, Resource.class);
@@ -105,7 +105,7 @@ public class CachingResourceResolver extends AbstractResourceResolver {
 
 	@Override
 	protected String resolveUrlPathInternal(String resourceUrlPath,
-			List<? extends Resource> locations, ResourceResolverChain chain) {
+											List<? extends Resource> locations, ResourceResolverChain chain) {
 
 		String key = RESOLVED_URL_PATH_CACHE_KEY_PREFIX + resourceUrlPath;
 		String resolvedUrlPath = this.cache.get(key, String.class);

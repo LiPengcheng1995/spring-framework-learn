@@ -16,13 +16,8 @@
 
 package org.springframework.messaging.simp.broker;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.SmartLifecycle;
@@ -37,6 +32,10 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.InterceptableChannel;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Abstract base class for a {@link MessageHandler} that broker messages to
@@ -57,46 +56,40 @@ public abstract class AbstractBrokerMessageHandler
 	private final SubscribableChannel brokerChannel;
 
 	private final Collection<String> destinationPrefixes;
-
+	private final BrokerAvailabilityEvent availableEvent = new BrokerAvailabilityEvent(true, this);
+	private final BrokerAvailabilityEvent notAvailableEvent = new BrokerAvailabilityEvent(false, this);
+	private final Object lifecycleMonitor = new Object();
+	private final ChannelInterceptor unsentDisconnectInterceptor = new UnsentDisconnectChannelInterceptor();
 	@Nullable
 	private ApplicationEventPublisher eventPublisher;
-
 	private AtomicBoolean brokerAvailable = new AtomicBoolean(false);
-
-	private final BrokerAvailabilityEvent availableEvent = new BrokerAvailabilityEvent(true, this);
-
-	private final BrokerAvailabilityEvent notAvailableEvent = new BrokerAvailabilityEvent(false, this);
-
 	private boolean autoStartup = true;
-
 	private volatile boolean running = false;
-
-	private final Object lifecycleMonitor = new Object();
-
-	private final ChannelInterceptor unsentDisconnectInterceptor = new UnsentDisconnectChannelInterceptor();
 
 
 	/**
 	 * Constructor with no destination prefixes (matches all destinations).
-	 * @param inboundChannel the channel for receiving messages from clients (e.g. WebSocket clients)
+	 *
+	 * @param inboundChannel  the channel for receiving messages from clients (e.g. WebSocket clients)
 	 * @param outboundChannel the channel for sending messages to clients (e.g. WebSocket clients)
-	 * @param brokerChannel the channel for the application to send messages to the broker
+	 * @param brokerChannel   the channel for the application to send messages to the broker
 	 */
 	public AbstractBrokerMessageHandler(SubscribableChannel inboundChannel, MessageChannel outboundChannel,
-			SubscribableChannel brokerChannel) {
+										SubscribableChannel brokerChannel) {
 
 		this(inboundChannel, outboundChannel, brokerChannel, Collections.emptyList());
 	}
 
 	/**
 	 * Constructor with destination prefixes to match to destinations of messages.
-	 * @param inboundChannel the channel for receiving messages from clients (e.g. WebSocket clients)
-	 * @param outboundChannel the channel for sending messages to clients (e.g. WebSocket clients)
-	 * @param brokerChannel the channel for the application to send messages to the broker
+	 *
+	 * @param inboundChannel      the channel for receiving messages from clients (e.g. WebSocket clients)
+	 * @param outboundChannel     the channel for sending messages to clients (e.g. WebSocket clients)
+	 * @param brokerChannel       the channel for the application to send messages to the broker
 	 * @param destinationPrefixes prefixes to use to filter out messages
 	 */
 	public AbstractBrokerMessageHandler(SubscribableChannel inboundChannel, MessageChannel outboundChannel,
-			SubscribableChannel brokerChannel, @Nullable Collection<String> destinationPrefixes) {
+										SubscribableChannel brokerChannel, @Nullable Collection<String> destinationPrefixes) {
 
 		Assert.notNull(inboundChannel, "'inboundChannel' must not be null");
 		Assert.notNull(outboundChannel, "'outboundChannel' must not be null");
@@ -127,23 +120,23 @@ public abstract class AbstractBrokerMessageHandler
 		return this.destinationPrefixes;
 	}
 
-	@Override
-	public void setApplicationEventPublisher(@Nullable ApplicationEventPublisher publisher) {
-		this.eventPublisher = publisher;
-	}
-
 	@Nullable
 	public ApplicationEventPublisher getApplicationEventPublisher() {
 		return this.eventPublisher;
 	}
 
-	public void setAutoStartup(boolean autoStartup) {
-		this.autoStartup = autoStartup;
+	@Override
+	public void setApplicationEventPublisher(@Nullable ApplicationEventPublisher publisher) {
+		this.eventPublisher = publisher;
 	}
 
 	@Override
 	public boolean isAutoStartup() {
 		return this.autoStartup;
+	}
+
+	public void setAutoStartup(boolean autoStartup) {
+		this.autoStartup = autoStartup;
 	}
 
 	@Override

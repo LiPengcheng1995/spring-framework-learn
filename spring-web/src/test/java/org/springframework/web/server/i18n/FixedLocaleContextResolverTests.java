@@ -16,20 +16,19 @@
 
 package org.springframework.web.server.i18n;
 
-import java.time.ZoneId;
-import java.util.Locale;
-import java.util.TimeZone;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.context.i18n.TimeZoneAwareLocaleContext;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.mock.web.test.server.MockServerWebExchange;
 import org.springframework.web.server.ServerWebExchange;
 
+import java.time.ZoneId;
+import java.util.Locale;
+import java.util.TimeZone;
+
 import static java.util.Locale.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Unit tests for {@link FixedLocaleContextResolver}.

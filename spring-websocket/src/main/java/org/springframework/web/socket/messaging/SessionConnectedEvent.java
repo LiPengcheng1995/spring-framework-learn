@@ -16,10 +16,10 @@
 
 package org.springframework.web.socket.messaging;
 
-import java.security.Principal;
-
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
+
+import java.security.Principal;
 
 /**
  * A connected event represents the server response to a client's connect request.
@@ -33,7 +33,8 @@ public class SessionConnectedEvent extends AbstractSubProtocolEvent {
 
 	/**
 	 * Create a new SessionConnectedEvent.
-	 * @param source the component that published the event (never {@code null})
+	 *
+	 * @param source  the component that published the event (never {@code null})
 	 * @param message the connected message (never {@code null})
 	 */
 	public SessionConnectedEvent(Object source, Message<byte[]> message) {

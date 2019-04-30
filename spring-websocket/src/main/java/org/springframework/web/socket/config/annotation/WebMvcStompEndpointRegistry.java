@@ -16,11 +16,6 @@
 
 package org.springframework.web.socket.config.annotation;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.TaskScheduler;
@@ -36,6 +31,11 @@ import org.springframework.web.socket.messaging.SubProtocolWebSocketHandler;
 import org.springframework.web.socket.server.support.WebSocketHandlerMapping;
 import org.springframework.web.util.UrlPathHelper;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * A registry for STOMP over WebSocket endpoints that maps the endpoints with a
  * {@link org.springframework.web.servlet.HandlerMapping} for use in Spring MVC.
@@ -49,21 +49,16 @@ public class WebMvcStompEndpointRegistry implements StompEndpointRegistry {
 	private final WebSocketHandler webSocketHandler;
 
 	private final TaskScheduler sockJsScheduler;
-
+	private final SubProtocolWebSocketHandler subProtocolWebSocketHandler;
+	private final StompSubProtocolHandler stompHandler;
+	private final List<WebMvcStompWebSocketEndpointRegistration> registrations = new ArrayList<>();
 	private int order = 1;
-
 	@Nullable
 	private UrlPathHelper urlPathHelper;
 
-	private final SubProtocolWebSocketHandler subProtocolWebSocketHandler;
-
-	private final StompSubProtocolHandler stompHandler;
-
-	private final List<WebMvcStompWebSocketEndpointRegistration> registrations = new ArrayList<>();
-
 
 	public WebMvcStompEndpointRegistry(WebSocketHandler webSocketHandler,
-			WebSocketTransportRegistration transportRegistration, TaskScheduler defaultSockJsTaskScheduler) {
+									   WebSocketTransportRegistration transportRegistration, TaskScheduler defaultSockJsTaskScheduler) {
 
 		Assert.notNull(webSocketHandler, "WebSocketHandler is required ");
 		Assert.notNull(transportRegistration, "WebSocketTransportRegistration is required");
@@ -104,6 +99,10 @@ public class WebMvcStompEndpointRegistry implements StompEndpointRegistry {
 		return registration;
 	}
 
+	protected int getOrder() {
+		return this.order;
+	}
+
 	/**
 	 * Set the order for the resulting
 	 * {@link org.springframework.web.servlet.HandlerMapping}
@@ -115,8 +114,9 @@ public class WebMvcStompEndpointRegistry implements StompEndpointRegistry {
 		this.order = order;
 	}
 
-	protected int getOrder() {
-		return this.order;
+	@Nullable
+	protected UrlPathHelper getUrlPathHelper() {
+		return this.urlPathHelper;
 	}
 
 	/**
@@ -126,11 +126,6 @@ public class WebMvcStompEndpointRegistry implements StompEndpointRegistry {
 	@Override
 	public void setUrlPathHelper(@Nullable UrlPathHelper urlPathHelper) {
 		this.urlPathHelper = urlPathHelper;
-	}
-
-	@Nullable
-	protected UrlPathHelper getUrlPathHelper() {
-		return this.urlPathHelper;
 	}
 
 	@Override

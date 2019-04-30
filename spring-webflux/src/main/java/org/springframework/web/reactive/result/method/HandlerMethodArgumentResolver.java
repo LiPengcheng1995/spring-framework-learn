@@ -16,11 +16,10 @@
 
 package org.springframework.web.reactive.result.method;
 
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.web.reactive.BindingContext;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
 
 /**
  * Strategy to resolve the argument value for a method parameter in the context
@@ -33,15 +32,17 @@ public interface HandlerMethodArgumentResolver {
 
 	/**
 	 * Whether this resolver supports the given method parameter.
+	 *
 	 * @param parameter the method parameter
 	 */
 	boolean supportsParameter(MethodParameter parameter);
 
 	/**
 	 * Resolve the value for the method parameter.
-	 * @param parameter the method parameter
+	 *
+	 * @param parameter      the method parameter
 	 * @param bindingContext the binding context to use
-	 * @param exchange the current exchange
+	 * @param exchange       the current exchange
 	 * @return {@code Mono} for the argument value, possibly empty
 	 */
 	Mono<Object> resolveArgument(

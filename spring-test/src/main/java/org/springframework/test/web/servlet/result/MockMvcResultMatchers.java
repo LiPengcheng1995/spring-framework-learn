@@ -16,17 +16,17 @@
 
 package org.springframework.test.web.servlet.result;
 
-import java.util.Map;
-import javax.xml.xpath.XPathExpressionException;
-
 import org.hamcrest.Matcher;
-
 import org.springframework.lang.Nullable;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import static org.springframework.test.util.AssertionErrors.*;
+import javax.xml.xpath.XPathExpressionException;
+import java.util.Map;
+
+import static org.springframework.test.util.AssertionErrors.assertEquals;
+import static org.springframework.test.util.AssertionErrors.assertTrue;
 
 /**
  * Static factory methods for {@link ResultMatcher}-based result actions.
@@ -83,6 +83,7 @@ public abstract class MockMvcResultMatchers {
 	/**
 	 * Asserts the request was forwarded to the given URL.
 	 * <p>This method accepts only exact matches.
+	 *
 	 * @param expectedUrl the exact URL expected
 	 */
 	public static ResultMatcher forwardedUrl(@Nullable String expectedUrl) {
@@ -92,8 +93,9 @@ public abstract class MockMvcResultMatchers {
 	/**
 	 * Asserts the request was forwarded to the given URL template.
 	 * <p>This method accepts exact matches against the expanded and encoded URL template.
+	 *
 	 * @param urlTemplate a URL template; the expanded URL will be encoded
-	 * @param uriVars zero or more URI variables to populate the template
+	 * @param uriVars     zero or more URI variables to populate the template
 	 * @see UriComponentsBuilder#fromUriString(String)
 	 */
 	public static ResultMatcher forwardedUrlTemplate(String urlTemplate, Object... uriVars) {
@@ -105,9 +107,10 @@ public abstract class MockMvcResultMatchers {
 	 * Asserts the request was forwarded to the given URL.
 	 * <p>This method accepts {@link org.springframework.util.AntPathMatcher}
 	 * patterns.
+	 *
 	 * @param urlPattern an AntPath pattern to match against
-	 * @since 4.0
 	 * @see org.springframework.util.AntPathMatcher
+	 * @since 4.0
 	 */
 	public static ResultMatcher forwardedUrlPattern(String urlPattern) {
 		return result -> {
@@ -121,6 +124,7 @@ public abstract class MockMvcResultMatchers {
 	/**
 	 * Asserts the request was redirected to the given URL.
 	 * <p>This method accepts only exact matches.
+	 *
 	 * @param expectedUrl the exact URL expected
 	 */
 	public static ResultMatcher redirectedUrl(String expectedUrl) {
@@ -130,8 +134,9 @@ public abstract class MockMvcResultMatchers {
 	/**
 	 * Asserts the request was redirected to the given URL template.
 	 * <p>This method accepts exact matches against the expanded and encoded URL template.
+	 *
 	 * @param urlTemplate a URL template; the expanded URL will be encoded
-	 * @param uriVars zero or more URI variables to populate the template
+	 * @param uriVars     zero or more URI variables to populate the template
 	 * @see UriComponentsBuilder#fromUriString(String)
 	 */
 	public static ResultMatcher redirectedUrlTemplate(String urlTemplate, Object... uriVars) {
@@ -143,9 +148,10 @@ public abstract class MockMvcResultMatchers {
 	 * Asserts the request was redirected to the given URL.
 	 * <p>This method accepts {@link org.springframework.util.AntPathMatcher}
 	 * patterns.
+	 *
 	 * @param urlPattern an AntPath pattern to match against
-	 * @since 4.0
 	 * @see org.springframework.util.AntPathMatcher
+	 * @since 4.0
 	 */
 	public static ResultMatcher redirectedUrlPattern(String urlPattern) {
 		return result -> {
@@ -184,8 +190,9 @@ public abstract class MockMvcResultMatchers {
 	 * <p>The JSON path expression can be a parameterized string using
 	 * formatting specifiers as defined in
 	 * {@link String#format(String, Object...)}.
+	 *
 	 * @param expression the JSON path expression, optionally parameterized with arguments
-	 * @param args arguments to parameterize the JSON path expression with
+	 * @param args       arguments to parameterize the JSON path expression with
 	 */
 	public static JsonPathResultMatchers jsonPath(String expression, Object... args) {
 		return new JsonPathResultMatchers(expression, args);
@@ -196,8 +203,9 @@ public abstract class MockMvcResultMatchers {
 	 * <a href="https://github.com/jayway/JsonPath">JsonPath</a> expression
 	 * to inspect a specific subset of the body and a Hamcrest matcher for
 	 * asserting the value found at the JSON path.
+	 *
 	 * @param expression the JSON path expression
-	 * @param matcher a matcher for the value expected at the JSON path
+	 * @param matcher    a matcher for the value expected at the JSON path
 	 */
 	public static <T> ResultMatcher jsonPath(String expression, Matcher<T> matcher) {
 		return new JsonPathResultMatchers(expression).value(matcher);
@@ -208,8 +216,9 @@ public abstract class MockMvcResultMatchers {
 	 * inspect a specific subset of the body.
 	 * <p>The XPath expression can be a parameterized string using formatting
 	 * specifiers as defined in {@link String#format(String, Object...)}.
+	 *
 	 * @param expression the XPath expression, optionally parameterized with arguments
-	 * @param args arguments to parameterize the XPath expression with
+	 * @param args       arguments to parameterize the XPath expression with
 	 */
 	public static XpathResultMatchers xpath(String expression, Object... args) throws XPathExpressionException {
 		return new XpathResultMatchers(expression, null, args);
@@ -220,9 +229,10 @@ public abstract class MockMvcResultMatchers {
 	 * inspect a specific subset of the body.
 	 * <p>The XPath expression can be a parameterized string using formatting
 	 * specifiers as defined in {@link String#format(String, Object...)}.
+	 *
 	 * @param expression the XPath expression, optionally parameterized with arguments
 	 * @param namespaces namespaces referenced in the XPath expression
-	 * @param args arguments to parameterize the XPath expression with
+	 * @param args       arguments to parameterize the XPath expression with
 	 */
 	public static XpathResultMatchers xpath(String expression, Map<String, String> namespaces, Object... args)
 			throws XPathExpressionException {

@@ -15,19 +15,9 @@
  */
 package org.springframework.messaging.simp.stomp;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Callable;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.MessageHeaders;
@@ -44,6 +34,16 @@ import org.springframework.messaging.tcp.TcpOperations;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureTask;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Callable;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 /**
  * Unit tests for StompBrokerRelayMessageHandler.
  *
@@ -57,6 +57,27 @@ public class StompBrokerRelayMessageHandlerTests {
 
 	private StubTcpOperations tcpClient;
 
+	private static ListenableFutureTask<Void> getVoidFuture() {
+		ListenableFutureTask<Void> futureTask = new ListenableFutureTask<>(new Callable<Void>() {
+			@Override
+			public Void call() throws Exception {
+				return null;
+			}
+		});
+		futureTask.run();
+		return futureTask;
+	}
+
+	private static ListenableFutureTask<Boolean> getBooleanFuture() {
+		ListenableFutureTask<Boolean> futureTask = new ListenableFutureTask<>(new Callable<Boolean>() {
+			@Override
+			public Boolean call() throws Exception {
+				return null;
+			}
+		});
+		futureTask.run();
+		return futureTask;
+	}
 
 	@Before
 	public void setup() {
@@ -76,7 +97,6 @@ public class StompBrokerRelayMessageHandlerTests {
 		this.tcpClient = new StubTcpOperations();
 		this.brokerRelay.setTcpClient(this.tcpClient);
 	}
-
 
 	@Test
 	public void virtualHost() throws Exception {
@@ -123,6 +143,8 @@ public class StompBrokerRelayMessageHandlerTests {
 		assertEquals("clientpasscode", headers2.getPasscode());
 	}
 
+	// SPR-12820
+
 	@Test
 	public void destinationExcluded() throws Exception {
 
@@ -156,8 +178,6 @@ public class StompBrokerRelayMessageHandlerTests {
 		assertEquals("sess1", accessor.getSessionId());
 		assertEquals("joe", accessor.getUser().getName());
 	}
-
-	// SPR-12820
 
 	@Test
 	public void connectWhenBrokerNotAvailable() throws Exception {
@@ -241,30 +261,6 @@ public class StompBrokerRelayMessageHandlerTests {
 		accessor.setLeaveMutable(true);
 		return MessageBuilder.createMessage(new byte[0], accessor.getMessageHeaders());
 	}
-
-
-	private static ListenableFutureTask<Void> getVoidFuture() {
-		ListenableFutureTask<Void> futureTask = new ListenableFutureTask<>(new Callable<Void>() {
-			@Override
-			public Void call() throws Exception {
-				return null;
-			}
-		});
-		futureTask.run();
-		return futureTask;
-	}
-
-	private static ListenableFutureTask<Boolean> getBooleanFuture() {
-		ListenableFutureTask<Boolean> futureTask = new ListenableFutureTask<>(new Callable<Boolean>() {
-			@Override
-			public Boolean call() throws Exception {
-				return null;
-			}
-		});
-		futureTask.run();
-		return futureTask;
-	}
-
 
 	private static class StubTcpOperations implements TcpOperations<byte[]> {
 

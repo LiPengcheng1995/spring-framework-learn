@@ -16,12 +16,12 @@
 
 package org.springframework.web.servlet.tags;
 
+import org.springframework.lang.Nullable;
+import org.springframework.validation.Errors;
+
 import javax.servlet.ServletException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
-
-import org.springframework.lang.Nullable;
-import org.springframework.validation.Errors;
 
 /**
  * This {@code <hasBindErrors>} tag provides an {@link Errors} instance in case of
@@ -74,6 +74,12 @@ public class BindErrorsTag extends HtmlEscapingAwareTag {
 	@Nullable
 	private Errors errors;
 
+	/**
+	 * Return the name of the bean that this tag checks.
+	 */
+	public String getName() {
+		return this.name;
+	}
 
 	/**
 	 * Set the name of the bean that this tag should check.
@@ -82,22 +88,13 @@ public class BindErrorsTag extends HtmlEscapingAwareTag {
 		this.name = name;
 	}
 
-	/**
-	 * Return the name of the bean that this tag checks.
-	 */
-	public String getName() {
-		return this.name;
-	}
-
-
 	@Override
 	protected final int doStartTagInternal() throws ServletException, JspException {
 		this.errors = getRequestContext().getErrors(this.name, isHtmlEscape());
 		if (this.errors != null && this.errors.hasErrors()) {
 			this.pageContext.setAttribute(ERRORS_VARIABLE_NAME, this.errors, PageContext.REQUEST_SCOPE);
 			return EVAL_BODY_INCLUDE;
-		}
-		else {
+		} else {
 			return SKIP_BODY;
 		}
 	}

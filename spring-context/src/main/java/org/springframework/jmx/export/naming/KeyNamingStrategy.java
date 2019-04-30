@@ -16,14 +16,8 @@
 
 package org.springframework.jmx.export.naming;
 
-import java.io.IOException;
-import java.util.Properties;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
@@ -31,6 +25,11 @@ import org.springframework.jmx.support.ObjectNameManager;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import java.io.IOException;
+import java.util.Properties;
 
 /**
  * {@code ObjectNamingStrategy} implementation that builds
@@ -45,11 +44,11 @@ import org.springframework.util.CollectionUtils;
  *
  * @author Rob Harrop
  * @author Juergen Hoeller
- * @since 1.2
  * @see #setMappings
  * @see #setMappingLocation
  * @see #setMappingLocations
  * @see org.springframework.jmx.export.MBeanExporter#setBeans
+ * @since 1.2
  */
 public class KeyNamingStrategy implements ObjectNamingStrategy, InitializingBean {
 
@@ -94,7 +93,7 @@ public class KeyNamingStrategy implements ObjectNamingStrategy, InitializingBean
 	 * containing object name mappings.
 	 */
 	public void setMappingLocation(Resource location) {
-		this.mappingLocations = new Resource[] {location};
+		this.mappingLocations = new Resource[]{location};
 	}
 
 	/**

@@ -16,26 +16,26 @@
 
 package org.springframework.web.reactive.function.client;
 
-import java.time.Duration;
-import java.util.Collections;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import java.time.Duration;
+import java.util.Collections;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link DefaultWebClient}.
+ *
  * @author Rossen Stoyanchev
  */
 public class DefaultWebClientTests {
@@ -89,7 +89,7 @@ public class DefaultWebClientTests {
 	public void requestHeaderAndCookie() throws Exception {
 		WebClient client = builder().build();
 		client.get().uri("/path").accept(MediaType.APPLICATION_JSON)
-				.cookies(cookies -> cookies.add("id", "123"))	// SPR-16178
+				.cookies(cookies -> cookies.add("id", "123"))    // SPR-16178
 				.exchange();
 
 		ClientRequest request = verifyExchange();

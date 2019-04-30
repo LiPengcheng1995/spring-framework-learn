@@ -16,36 +16,10 @@
 
 package org.springframework.web.socket.sockjs.client;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.TestName;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -68,10 +42,19 @@ import org.springframework.web.socket.server.HandshakeHandler;
 import org.springframework.web.socket.server.RequestUpgradeStrategy;
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URI;
+import java.util.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
+
+import static org.junit.Assert.*;
 
 /**
  * Abstract base class for integration tests using the
@@ -105,6 +88,20 @@ public abstract class AbstractSockJsIntegrationTests {
 		Assume.group(TestGroup.PERFORMANCE);
 	}
 
+	private static void awaitEvent(BooleanSupplier condition, long timeToWait, String description) {
+		long timeToSleep = 200;
+		for (int i = 0; i < Math.floor(timeToWait / timeToSleep); i++) {
+			if (condition.getAsBoolean()) {
+				return;
+			}
+			try {
+				Thread.sleep(timeToSleep);
+			} catch (InterruptedException e) {
+				throw new IllegalStateException("Interrupted while waiting for " + description, e);
+			}
+		}
+		throw new IllegalStateException("Timed out waiting for " + description);
+	}
 
 	@Before
 	public void setup() throws Exception {
@@ -129,26 +126,22 @@ public abstract class AbstractSockJsIntegrationTests {
 	public void teardown() throws Exception {
 		try {
 			this.sockJsClient.stop();
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			logger.error("Failed to stop SockJsClient", ex);
 		}
 		try {
 			this.server.undeployConfig();
-		}
-		catch (Throwable t) {
+		} catch (Throwable t) {
 			logger.error("Failed to undeploy application config", t);
 		}
 		try {
 			this.server.stop();
-		}
-		catch (Throwable t) {
+		} catch (Throwable t) {
 			logger.error("Failed to stop server", t);
 		}
 		try {
 			this.wac.close();
-		}
-		catch (Throwable t) {
+		} catch (Throwable t) {
 			logger.error("Failed to close WebApplicationContext", t);
 		}
 	}
@@ -176,14 +169,14 @@ public abstract class AbstractSockJsIntegrationTests {
 		testEcho(100, createXhrTransport(), null);
 	}
 
+	// SPR-13254
+
 	@Test
 	public void echoXhr() throws Exception {
 		AbstractXhrTransport xhrTransport = createXhrTransport();
 		xhrTransport.setXhrStreamingDisabled(true);
 		testEcho(100, xhrTransport, null);
 	}
-
-	// SPR-13254
 
 	@Test
 	public void echoXhrWithHeaders() throws Exception {
@@ -266,7 +259,6 @@ public abstract class AbstractSockJsIntegrationTests {
 		clientSession.close();
 	}
 
-
 	private void testEcho(int messageCount, Transport transport, WebSocketHttpHeaders headers) throws Exception {
 		List<TextMessage> messages = new ArrayList<>();
 		for (int i = 0; i < messageCount; i++) {
@@ -302,23 +294,6 @@ public abstract class AbstractSockJsIntegrationTests {
 		serverHandler.session.sendMessage(message);
 		clientHandler.awaitMessage(message, 5000);
 	}
-
-	private static void awaitEvent(BooleanSupplier condition, long timeToWait, String description) {
-		long timeToSleep = 200;
-		for (int i = 0 ; i < Math.floor(timeToWait / timeToSleep); i++) {
-			if (condition.getAsBoolean()) {
-				return;
-			}
-			try {
-				Thread.sleep(timeToSleep);
-			}
-			catch (InterruptedException e) {
-				throw new IllegalStateException("Interrupted while waiting for " + description, e);
-			}
-		}
-		throw new IllegalStateException("Timed out waiting for " + description);
-	}
-
 
 	@Configuration
 	@EnableWebSocket
@@ -373,11 +348,9 @@ public abstract class AbstractSockJsIntegrationTests {
 			TextMessage actual = this.receivedMessages.poll(timeToWait, TimeUnit.MILLISECONDS);
 			if (actual != null) {
 				assertEquals(expected, actual);
-			}
-			else if (this.transportError != null) {
+			} else if (this.transportError != null) {
 				throw new AssertionError("Transport error", this.transportError);
-			}
-			else {
+			} else {
 				fail("Timed out waiting for [" + expected + "]");
 			}
 		}
@@ -429,8 +402,7 @@ public abstract class AbstractSockJsIntegrationTests {
 					try {
 						Thread.sleep(this.sleepDelayMap.get(suffix));
 						break;
-					}
-					catch (InterruptedException e) {
+					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 				}

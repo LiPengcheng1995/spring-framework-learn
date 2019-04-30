@@ -16,30 +16,24 @@
 
 package org.springframework.jdbc.core.simple;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
-import javax.sql.DataSource;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import javax.sql.DataSource;
+import java.sql.*;
+
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.*;
-import static org.springframework.tests.Matchers.*;
+import static org.springframework.tests.Matchers.exceptionCause;
 
 /**
  * Tests for {@link SimpleJdbcCall}.
@@ -49,17 +43,12 @@ import static org.springframework.tests.Matchers.*;
  */
 public class SimpleJdbcCallTests {
 
-	private Connection connection;
-
-	private DatabaseMetaData databaseMetaData;
-
-	private DataSource dataSource;
-
-	private CallableStatement callableStatement;
-
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
-
+	private Connection connection;
+	private DatabaseMetaData databaseMetaData;
+	private DataSource dataSource;
+	private CallableStatement callableStatement;
 
 	@Before
 	public void setUp() throws Exception {
@@ -87,8 +76,7 @@ public class SimpleJdbcCallTests {
 		thrown.expect(exceptionCause(sameInstance(sqlException)));
 		try {
 			sproc.execute();
-		}
-		finally {
+		} finally {
 			verify(callableStatement).close();
 			verify(connection, atLeastOnce()).close();
 		}
@@ -247,12 +235,11 @@ public class SimpleJdbcCallTests {
 		if (isFunction) {
 			given(callableStatement.getObject(1)).willReturn(4L);
 			given(connection.prepareCall("{? = call add_invoice(?, ?)}")
-					).willReturn(callableStatement);
-		}
-		else {
+			).willReturn(callableStatement);
+		} else {
 			given(callableStatement.getObject(3)).willReturn(4L);
 			given(connection.prepareCall("{call add_invoice(?, ?, ?)}")
-					).willReturn(callableStatement);
+			).willReturn(callableStatement);
 		}
 	}
 
@@ -261,8 +248,7 @@ public class SimpleJdbcCallTests {
 			verify(callableStatement).registerOutParameter(1, 4);
 			verify(callableStatement).setObject(2, 1103, 4);
 			verify(callableStatement).setObject(3, 3, 4);
-		}
-		else {
+		} else {
 			verify(callableStatement).setObject(1, 1103, 4);
 			verify(callableStatement).setObject(2, 3, 4);
 			verify(callableStatement).registerOutParameter(3, 4);
@@ -285,12 +271,11 @@ public class SimpleJdbcCallTests {
 		given(procedureColumnsResultSet.next()).willReturn(true, true, true, false);
 		given(procedureColumnsResultSet.getInt("DATA_TYPE")).willReturn(4);
 		if (isFunction) {
-			given(procedureColumnsResultSet.getString("COLUMN_NAME")).willReturn(null,"amount", "custid");
+			given(procedureColumnsResultSet.getString("COLUMN_NAME")).willReturn(null, "amount", "custid");
 			given(procedureColumnsResultSet.getInt("COLUMN_TYPE")).willReturn(5, 1, 1);
 			given(connection.prepareCall("{? = call ADD_INVOICE(?, ?)}")).willReturn(callableStatement);
 			given(callableStatement.getObject(1)).willReturn(4L);
-		}
-		else {
+		} else {
 			given(procedureColumnsResultSet.getString("COLUMN_NAME")).willReturn("amount", "custid", "newid");
 			given(procedureColumnsResultSet.getInt("COLUMN_TYPE")).willReturn(1, 1, 4);
 			given(connection.prepareCall("{call ADD_INVOICE(?, ?, ?)}")).willReturn(callableStatement);
@@ -306,8 +291,7 @@ public class SimpleJdbcCallTests {
 			verify(callableStatement).registerOutParameter(1, 4);
 			verify(callableStatement).setObject(2, 1103, 4);
 			verify(callableStatement).setObject(3, 3, 4);
-		}
-		else {
+		} else {
 			verify(callableStatement).setObject(1, 1103, 4);
 			verify(callableStatement).setObject(2, 3, 4);
 			verify(callableStatement).registerOutParameter(3, 4);

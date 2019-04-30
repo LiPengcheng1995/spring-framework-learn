@@ -16,18 +16,14 @@
 
 package org.springframework.http.server.reactive;
 
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.util.function.Consumer;
-
-import org.springframework.http.HttpCookie;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.ReactiveHttpInputMessage;
+import org.springframework.http.*;
 import org.springframework.http.server.RequestPath;
 import org.springframework.lang.Nullable;
 import org.springframework.util.MultiValueMap;
+
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.util.function.Consumer;
 
 /**
  * Represents a reactive server-side HTTP request
@@ -66,6 +62,7 @@ public interface ServerHttpRequest extends HttpRequest, ReactiveHttpInputMessage
 	/**
 	 * Return the SSL session information if the request has been transmitted
 	 * over a secure protocol including SSL certificates, if available.
+	 *
 	 * @return the session information, or {@code null} if none available
 	 * @since 5.0.2
 	 */
@@ -146,6 +143,7 @@ public interface ServerHttpRequest extends HttpRequest, ReactiveHttpInputMessage
 		 * Set the SSL session information. This may be useful in environments
 		 * where TLS termination is done at the router, but SSL information is
 		 * made available in some other way such as through a header.
+		 *
 		 * @since 5.0.7
 		 */
 		Builder sslInfo(SslInfo sslInfo);

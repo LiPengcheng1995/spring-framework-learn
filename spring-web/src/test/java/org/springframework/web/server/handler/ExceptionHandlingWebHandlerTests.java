@@ -16,12 +16,7 @@
 
 package org.springframework.web.server.handler;
 
-import java.util.Arrays;
-
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.mock.web.test.server.MockServerWebExchange;
@@ -29,12 +24,17 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebExceptionHandler;
 import org.springframework.web.server.WebHandler;
 import org.springframework.web.server.adapter.HttpWebHandlerAdapter;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
+import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 /**
  * Unit tests for {@link ExceptionHandlingWebHandler}.
+ *
  * @author Rossen Stoyanchev
  */
 public class ExceptionHandlingWebHandlerTests {
@@ -125,7 +125,9 @@ public class ExceptionHandlingWebHandlerTests {
 		}
 	}
 
-	/** Leave the exception unresolved. */
+	/**
+	 * Leave the exception unresolved.
+	 */
 	private static class UnresolvedExceptionHandler implements WebExceptionHandler {
 
 		@Override

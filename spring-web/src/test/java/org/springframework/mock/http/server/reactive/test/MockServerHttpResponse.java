@@ -16,16 +16,7 @@
 
 package org.springframework.mock.http.server.reactive.test;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.function.Function;
-
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
@@ -33,6 +24,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.AbstractServerHttpResponse;
 import org.springframework.util.Assert;
 import org.springframework.util.MimeType;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * Mock extension of {@link AbstractServerHttpResponse} for use in tests without
@@ -61,14 +60,21 @@ public class MockServerHttpResponse extends AbstractServerHttpResponse {
 		};
 	}
 
+	private static String bufferToString(DataBuffer buffer, Charset charset) {
+		Assert.notNull(charset, "'charset' must not be null");
+		byte[] bytes = new byte[buffer.readableByteCount()];
+		buffer.read(bytes);
+		return new String(bytes, charset);
+	}
 
 	/**
 	 * Configure a custom handler to consume the response body.
 	 * <p>By default, response body content is consumed in full and cached for
 	 * subsequent access in tests. Use this option to take control over how the
 	 * response body is consumed.
+	 *
 	 * @param writeHandler the write handler to use returning {@code Mono<Void>}
-	 * when the body has been "written" (i.e. consumed).
+	 *                     when the body has been "written" (i.e. consumed).
 	 */
 	public void setWriteHandler(Function<Flux<DataBuffer>, Mono<Void>> writeHandler) {
 		Assert.notNull(writeHandler, "'writeHandler' is required");
@@ -80,7 +86,6 @@ public class MockServerHttpResponse extends AbstractServerHttpResponse {
 	public <T> T getNativeResponse() {
 		throw new IllegalStateException("This is a mock. No running server, no native response.");
 	}
-
 
 	@Override
 	protected void applyStatusCode() {
@@ -136,13 +141,6 @@ public class MockServerHttpResponse extends AbstractServerHttpResponse {
 					return previous;
 				})
 				.map(buffer -> bufferToString(buffer, charset));
-	}
-
-	private static String bufferToString(DataBuffer buffer, Charset charset) {
-		Assert.notNull(charset, "'charset' must not be null");
-		byte[] bytes = new byte[buffer.readableByteCount()];
-		buffer.read(bytes);
-		return new String(bytes, charset);
 	}
 
 }

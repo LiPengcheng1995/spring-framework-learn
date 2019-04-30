@@ -16,20 +16,19 @@
 
 package org.springframework.format.datetime.joda;
 
+import org.joda.time.MonthDay;
+import org.springframework.format.Formatter;
+
 import java.text.ParseException;
 import java.util.Locale;
-
-import org.joda.time.MonthDay;
-
-import org.springframework.format.Formatter;
 
 /**
  * {@link Formatter} implementation for a Joda-Time {@link MonthDay},
  * following Joda-Time's parsing rules for a MonthDay.
  *
  * @author Juergen Hoeller
- * @since 4.2.4
  * @see MonthDay#parse
+ * @since 4.2.4
  */
 class MonthDayFormatter implements Formatter<MonthDay> {
 

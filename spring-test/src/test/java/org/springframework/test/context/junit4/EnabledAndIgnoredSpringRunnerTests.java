@@ -21,13 +21,13 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.test.annotation.IfProfileValue;
 import org.springframework.test.annotation.ProfileValueSource;
 import org.springframework.test.annotation.ProfileValueSourceConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * Verifies proper handling of JUnit's {@link Ignore &#064;Ignore} and Spring's
@@ -41,11 +41,11 @@ import static org.junit.Assert.*;
  * listeners.
  *
  * @author Sam Brannen
- * @since 2.5
  * @see HardCodedProfileValueSourceSpringRunnerTests
+ * @since 2.5
  */
 @RunWith(SpringRunner.class)
-@TestExecutionListeners( {})
+@TestExecutionListeners({})
 public class EnabledAndIgnoredSpringRunnerTests {
 
 	protected static final String NAME = "EnabledAndIgnoredSpringRunnerTests.profile_value.name";
@@ -80,7 +80,7 @@ public class EnabledAndIgnoredSpringRunnerTests {
 	}
 
 	@Test
-	@IfProfileValue(name = NAME, values = { "foo", VALUE, "bar" })
+	@IfProfileValue(name = NAME, values = {"foo", VALUE, "bar"})
 	public void testIfProfileValueEnabledViaMultipleValues() {
 		numTestsExecuted++;
 	}

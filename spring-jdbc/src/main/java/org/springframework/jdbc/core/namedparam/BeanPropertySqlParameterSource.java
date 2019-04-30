@@ -16,10 +16,6 @@
 
 package org.springframework.jdbc.core.namedparam;
 
-import java.beans.PropertyDescriptor;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.NotReadablePropertyException;
 import org.springframework.beans.PropertyAccessor;
@@ -27,6 +23,10 @@ import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.jdbc.core.StatementCreatorUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
+
+import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * {@link SqlParameterSource} implementation that obtains parameter values
@@ -37,9 +37,9 @@ import org.springframework.util.StringUtils;
  *
  * @author Thomas Risberg
  * @author Juergen Hoeller
- * @since 2.0
  * @see NamedParameterJdbcTemplate
  * @see org.springframework.beans.BeanWrapper
+ * @since 2.0
  */
 public class BeanPropertySqlParameterSource extends AbstractSqlParameterSource {
 
@@ -51,6 +51,7 @@ public class BeanPropertySqlParameterSource extends AbstractSqlParameterSource {
 
 	/**
 	 * Create a new BeanPropertySqlParameterSource for the given bean.
+	 *
 	 * @param object the bean instance to wrap
 	 */
 	public BeanPropertySqlParameterSource(Object object) {
@@ -68,14 +69,14 @@ public class BeanPropertySqlParameterSource extends AbstractSqlParameterSource {
 	public Object getValue(String paramName) throws IllegalArgumentException {
 		try {
 			return this.beanWrapper.getPropertyValue(paramName);
-		}
-		catch (NotReadablePropertyException ex) {
+		} catch (NotReadablePropertyException ex) {
 			throw new IllegalArgumentException(ex.getMessage());
 		}
 	}
 
 	/**
 	 * Derives a default SQL type from the corresponding property type.
+	 *
 	 * @see org.springframework.jdbc.core.StatementCreatorUtils#javaTypeToSqlParameterType
 	 */
 	@Override
@@ -97,6 +98,7 @@ public class BeanPropertySqlParameterSource extends AbstractSqlParameterSource {
 	/**
 	 * Provide access to the property names of the wrapped bean.
 	 * Uses support provided in the {@link PropertyAccessor} interface.
+	 *
 	 * @return an array containing all the known property names
 	 */
 	public String[] getReadablePropertyNames() {

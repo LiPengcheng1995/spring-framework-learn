@@ -16,19 +16,15 @@
 
 package org.springframework.web.socket.sockjs.client;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.List;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.concurrent.SettableListenableFuture;
-import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketExtension;
-import org.springframework.web.socket.WebSocketHandler;
-import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.*;
 import org.springframework.web.socket.adapter.NativeWebSocketSession;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.List;
 
 /**
  * An extension of {@link AbstractClientSockJsSession} wrapping and delegating
@@ -44,7 +40,7 @@ public class WebSocketClientSockJsSession extends AbstractClientSockJsSession im
 
 
 	public WebSocketClientSockJsSession(TransportRequest request, WebSocketHandler handler,
-			SettableListenableFuture<WebSocketSession> connectFuture) {
+										SettableListenableFuture<WebSocketSession> connectFuture) {
 
 		super(request, handler, connectFuture);
 	}
@@ -82,27 +78,27 @@ public class WebSocketClientSockJsSession extends AbstractClientSockJsSession im
 	}
 
 	@Override
-	public void setTextMessageSizeLimit(int messageSizeLimit) {
-		Assert.state(this.webSocketSession != null, "WebSocketSession not yet initialized");
-		this.webSocketSession.setTextMessageSizeLimit(messageSizeLimit);
-	}
-
-	@Override
 	public int getTextMessageSizeLimit() {
 		Assert.state(this.webSocketSession != null, "WebSocketSession not yet initialized");
 		return this.webSocketSession.getTextMessageSizeLimit();
 	}
 
 	@Override
-	public void setBinaryMessageSizeLimit(int messageSizeLimit) {
+	public void setTextMessageSizeLimit(int messageSizeLimit) {
 		Assert.state(this.webSocketSession != null, "WebSocketSession not yet initialized");
-		this.webSocketSession.setBinaryMessageSizeLimit(messageSizeLimit);
+		this.webSocketSession.setTextMessageSizeLimit(messageSizeLimit);
 	}
 
 	@Override
 	public int getBinaryMessageSizeLimit() {
 		Assert.state(this.webSocketSession != null, "WebSocketSession not yet initialized");
 		return this.webSocketSession.getBinaryMessageSizeLimit();
+	}
+
+	@Override
+	public void setBinaryMessageSizeLimit(int messageSizeLimit) {
+		Assert.state(this.webSocketSession != null, "WebSocketSession not yet initialized");
+		this.webSocketSession.setBinaryMessageSizeLimit(messageSizeLimit);
 	}
 
 	@Override

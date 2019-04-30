@@ -16,23 +16,22 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.security.Principal;
-
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapter;
 import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.web.reactive.BindingContext;
 import org.springframework.web.reactive.result.method.HandlerMethodArgumentResolverSupport;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+import java.security.Principal;
 
 /**
  * Resolves method argument value of type {@link java.security.Principal}.
  *
  * @author Rossen Stoyanchev
- * @since 5.0
  * @see ServerWebExchangeArgumentResolver
+ * @since 5.0
  */
 public class PrincipalArgumentResolver extends HandlerMethodArgumentResolverSupport {
 

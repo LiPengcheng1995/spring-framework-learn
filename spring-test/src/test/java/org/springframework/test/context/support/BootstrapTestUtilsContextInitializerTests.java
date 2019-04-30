@@ -16,18 +16,17 @@
 
 package org.springframework.test.context.support;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.junit.Test;
-
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.test.context.BootstrapTestUtils;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.web.context.support.GenericWebApplicationContext;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Unit tests for {@link BootstrapTestUtils} involving {@link ApplicationContextInitializer}s.
@@ -44,7 +43,7 @@ public class BootstrapTestUtilsContextInitializerTests extends AbstractContextCo
 		MergedContextConfiguration mergedConfig = buildMergedContextConfiguration(testClass);
 
 		assertMergedConfig(mergedConfig, testClass, EMPTY_STRING_ARRAY, EMPTY_CLASS_ARRAY,
-			initializers(FooInitializer.class), DelegatingSmartContextLoader.class);
+				initializers(FooInitializer.class), DelegatingSmartContextLoader.class);
 	}
 
 	@Test
@@ -53,7 +52,7 @@ public class BootstrapTestUtilsContextInitializerTests extends AbstractContextCo
 		MergedContextConfiguration mergedConfig = buildMergedContextConfiguration(testClass);
 
 		assertMergedConfig(mergedConfig, testClass, EMPTY_STRING_ARRAY, classes(FooConfig.class),
-			initializers(FooInitializer.class), DelegatingSmartContextLoader.class);
+				initializers(FooInitializer.class), DelegatingSmartContextLoader.class);
 	}
 
 	@Test
@@ -62,7 +61,7 @@ public class BootstrapTestUtilsContextInitializerTests extends AbstractContextCo
 		MergedContextConfiguration mergedConfig = buildMergedContextConfiguration(testClass);
 
 		assertMergedConfig(mergedConfig, testClass, EMPTY_STRING_ARRAY, classes(FooConfig.class, BarConfig.class),
-			initializers(FooInitializer.class, BarInitializer.class), DelegatingSmartContextLoader.class);
+				initializers(FooInitializer.class, BarInitializer.class), DelegatingSmartContextLoader.class);
 	}
 
 	@Test
@@ -71,7 +70,7 @@ public class BootstrapTestUtilsContextInitializerTests extends AbstractContextCo
 		MergedContextConfiguration mergedConfig = buildMergedContextConfiguration(testClass);
 
 		assertMergedConfig(mergedConfig, testClass, EMPTY_STRING_ARRAY, classes(FooConfig.class, BarConfig.class),
-			initializers(BarInitializer.class), DelegatingSmartContextLoader.class);
+				initializers(BarInitializer.class), DelegatingSmartContextLoader.class);
 	}
 
 	@Test
@@ -80,7 +79,7 @@ public class BootstrapTestUtilsContextInitializerTests extends AbstractContextCo
 		MergedContextConfiguration mergedConfig = buildMergedContextConfiguration(testClass);
 
 		assertMergedConfig(mergedConfig, testClass, EMPTY_STRING_ARRAY, classes(BarConfig.class),
-			initializers(BarInitializer.class), DelegatingSmartContextLoader.class);
+				initializers(BarInitializer.class), DelegatingSmartContextLoader.class);
 	}
 
 	private Set<Class<? extends ApplicationContextInitializer<?>>> initializers(

@@ -16,27 +16,38 @@
 
 package org.springframework.beans.factory.xml;
 
-import java.beans.ConstructorProperties;
-import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.BeanNameAware;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.*;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.MethodReplacer;
 import org.springframework.tests.sample.beans.ITestBean;
 import org.springframework.tests.sample.beans.IndexedTestBean;
 import org.springframework.tests.sample.beans.TestBean;
 import org.springframework.tests.sample.beans.factory.DummyFactory;
+
+import java.beans.ConstructorProperties;
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.*;
+
+/**
+ * @author Rod Johnson
+ */
+interface DummyBo {
+
+	void something();
+}
+
+
+/**
+ * @author Juergen Hoeller
+ */
+interface OverrideInterface {
+
+	TestBean getPrototypeDependency();
+
+	TestBean getPrototypeDependency(Object someParam);
+}
 
 /**
  * Types used by {@link XmlBeanFactoryTests} and its attendant XML config files.
@@ -45,7 +56,6 @@ import org.springframework.tests.sample.beans.factory.DummyFactory;
  */
 final class XmlBeanFactoryTestTypes {
 }
-
 
 /**
  * Simple bean used to check constructor dependency checking.
@@ -100,8 +110,16 @@ class ConstructorDependenciesBean implements Serializable {
 		return age;
 	}
 
+	public void setAge(int age) {
+		this.age = age;
+	}
+
 	public String getName() {
 		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public TestBean getSpouse1() {
@@ -115,16 +133,7 @@ class ConstructorDependenciesBean implements Serializable {
 	public IndexedTestBean getOther() {
 		return other;
 	}
-
-	public void setAge(int age) {
-		this.age = age;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
 }
-
 
 class SimpleConstructorArgBean {
 
@@ -151,7 +160,6 @@ class SimpleConstructorArgBean {
 		return name;
 	}
 }
-
 
 /**
  * Bean testing the ability to use both lookup method overrides
@@ -186,14 +194,13 @@ abstract class ConstructorInjectedOverrides {
 	}
 }
 
-
 /**
  * Simple bean used to check constructor dependency checking.
  *
  * @author Juergen Hoeller
  * @since 09.11.2003
  */
-@SuppressWarnings({ "serial", "unused" })
+@SuppressWarnings({"serial", "unused"})
 class DerivedConstructorDependenciesBean extends ConstructorDependenciesBean {
 
 	boolean initialized;
@@ -226,16 +233,6 @@ class DerivedConstructorDependenciesBean extends ConstructorDependenciesBean {
 	}
 }
 
-
-/**
- * @author Rod Johnson
- */
-interface DummyBo {
-
-	void something();
-}
-
-
 /**
  * @author Rod Johnson
  */
@@ -252,13 +249,11 @@ class DummyBoImpl implements DummyBo {
 	}
 }
 
-
 /**
  * @author Rod Johnson
  */
 class DummyDao {
 }
-
 
 /**
  * @author Juergen Hoeller
@@ -279,31 +274,30 @@ class DummyReferencer {
 		this.dummyFactory = dummyFactory;
 	}
 
-	public void setDummyFactory(DummyFactory dummyFactory) {
-		this.dummyFactory = dummyFactory;
-	}
-
 	public DummyFactory getDummyFactory() {
 		return dummyFactory;
 	}
 
-	public void setTestBean1(TestBean testBean1) {
-		this.testBean1 = testBean1;
+	public void setDummyFactory(DummyFactory dummyFactory) {
+		this.dummyFactory = dummyFactory;
 	}
 
 	public TestBean getTestBean1() {
 		return testBean1;
 	}
 
-	public void setTestBean2(TestBean testBean2) {
-		this.testBean2 = testBean2;
+	public void setTestBean1(TestBean testBean1) {
+		this.testBean1 = testBean1;
 	}
 
 	public TestBean getTestBean2() {
 		return testBean2;
 	}
-}
 
+	public void setTestBean2(TestBean testBean2) {
+		this.testBean2 = testBean2;
+	}
+}
 
 /**
  * Test class for Spring's ability to create objects using static
@@ -314,6 +308,21 @@ class DummyReferencer {
  */
 @SuppressWarnings("unused")
 class FactoryMethods {
+
+	private int num = 0;
+	private String name = "default";
+	private TestBean tb;
+	private String stringValue;
+
+	/**
+	 * Constructor is private: not for use outside this class,
+	 * even by IoC container.
+	 */
+	private FactoryMethods(TestBean tb, String name, int num) {
+		this.tb = tb;
+		this.name = name;
+		this.num = num;
+	}
 
 	public static FactoryMethods nullInstance() {
 		return null;
@@ -350,27 +359,12 @@ class FactoryMethods {
 		return Collections.EMPTY_LIST;
 	}
 
-	private int num = 0;
-	private String name = "default";
-	private TestBean tb;
-	private String stringValue;
-
-	/**
-	 * Constructor is private: not for use outside this class,
-	 * even by IoC container.
-	 */
-	private FactoryMethods(TestBean tb, String name, int num) {
-		this.tb = tb;
-		this.name = name;
-		this.num = num;
+	public String getStringValue() {
+		return this.stringValue;
 	}
 
 	public void setStringValue(String stringValue) {
 		this.stringValue = stringValue;
-	}
-
-	public String getStringValue() {
-		return this.stringValue;
 	}
 
 	public TestBean getTestBean() {
@@ -403,6 +397,7 @@ class FactoryMethods {
 
 /**
  * Fixed method replacer for String return types
+ *
  * @author Rod Johnson
  */
 class FixedMethodReplacer implements MethodReplacer {
@@ -414,7 +409,6 @@ class FixedMethodReplacer implements MethodReplacer {
 		return VALUE;
 	}
 }
-
 
 /**
  * @author Chris Beams
@@ -436,7 +430,6 @@ class MapAndSet {
 	}
 }
 
-
 /**
  * @author Rod Johnson
  */
@@ -447,7 +440,6 @@ class MethodReplaceCandidate {
 	}
 }
 
-
 /**
  * Bean that exposes a simple property that can be set
  * to a mix of references and individual values.
@@ -456,26 +448,14 @@ class MixedCollectionBean {
 
 	private Collection<?> jumble;
 
-	public void setJumble(Collection<?> jumble) {
-		this.jumble = jumble;
-	}
-
 	public Collection<?> getJumble() {
 		return jumble;
 	}
+
+	public void setJumble(Collection<?> jumble) {
+		this.jumble = jumble;
+	}
 }
-
-
-/**
- * @author Juergen Hoeller
- */
-interface OverrideInterface {
-
-	TestBean getPrototypeDependency();
-
-	TestBean getPrototypeDependency(Object someParam);
-}
-
 
 /**
  * @author Rod Johnson
@@ -515,7 +495,7 @@ abstract class OverrideOneMethod extends MethodReplaceCandidate implements Overr
 
 	@Override
 	public String replaceMe(String someParam) {
-		return "replaceMe:"  + someParam;
+		return "replaceMe:" + someParam;
 	}
 }
 
@@ -559,21 +539,21 @@ class ProtectedLifecycleBean implements BeanNameAware, BeanFactoryAware, Initial
 
 	protected boolean destroyed;
 
+	public boolean isInitMethodDeclared() {
+		return initMethodDeclared;
+	}
+
 	public void setInitMethodDeclared(boolean initMethodDeclared) {
 		this.initMethodDeclared = initMethodDeclared;
 	}
 
-	public boolean isInitMethodDeclared() {
-		return initMethodDeclared;
+	public String getBeanName() {
+		return beanName;
 	}
 
 	@Override
 	public void setBeanName(String name) {
 		this.beanName = name;
-	}
-
-	public String getBeanName() {
-		return beanName;
 	}
 
 	@Override

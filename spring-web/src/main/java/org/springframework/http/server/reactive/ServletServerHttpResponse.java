@@ -16,20 +16,8 @@
 
 package org.springframework.http.server.reactive;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import javax.servlet.AsyncContext;
-import javax.servlet.AsyncEvent;
-import javax.servlet.AsyncListener;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-
 import org.reactivestreams.Processor;
 import org.reactivestreams.Publisher;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
@@ -37,6 +25,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import javax.servlet.*;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 
 /**
  * Adapt {@link ServerHttpResponse} to the Servlet {@link HttpServletResponse}.
@@ -62,7 +57,7 @@ class ServletServerHttpResponse extends AbstractListenerServerHttpResponse {
 
 
 	public ServletServerHttpResponse(HttpServletResponse response, AsyncContext asyncContext,
-			DataBufferFactory bufferFactory, int bufferSize) throws IOException {
+									 DataBufferFactory bufferFactory, int bufferSize) throws IOException {
 
 		super(bufferFactory);
 
@@ -144,6 +139,7 @@ class ServletServerHttpResponse extends AbstractListenerServerHttpResponse {
 	 * Write the DataBuffer to the response body OutputStream.
 	 * Invoked only when {@link ServletOutputStream#isReady()} returns "true"
 	 * and the readable bytes in the DataBuffer is greater than 0.
+	 *
 	 * @return the number of bytes written
 	 */
 	protected int writeToOutputStream(DataBuffer dataBuffer) throws IOException {
@@ -165,13 +161,11 @@ class ServletServerHttpResponse extends AbstractListenerServerHttpResponse {
 			try {
 				outputStream.flush();
 				this.flushOnNext = false;
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				this.flushOnNext = true;
 				throw ex;
 			}
-		}
-		else {
+		} else {
 			this.flushOnNext = true;
 		}
 	}
@@ -184,7 +178,8 @@ class ServletServerHttpResponse extends AbstractListenerServerHttpResponse {
 	private final class ResponseAsyncListener implements AsyncListener {
 
 		@Override
-		public void onStartAsync(AsyncEvent event) {}
+		public void onStartAsync(AsyncEvent event) {
+		}
 
 		@Override
 		public void onTimeout(AsyncEvent event) {
@@ -236,8 +231,7 @@ class ServletServerHttpResponse extends AbstractListenerServerHttpResponse {
 			ResponseBodyProcessor processor = bodyProcessor;
 			if (processor != null) {
 				processor.onWritePossible();
-			}
-			else {
+			} else {
 				ResponseBodyFlushProcessor flushProcessor = bodyFlushProcessor;
 				if (flushProcessor != null) {
 					flushProcessor.onFlushPossible();
@@ -251,8 +245,7 @@ class ServletServerHttpResponse extends AbstractListenerServerHttpResponse {
 			if (processor != null) {
 				processor.cancel();
 				processor.onError(ex);
-			}
-			else {
+			} else {
 				ResponseBodyFlushProcessor flushProcessor = bodyFlushProcessor;
 				if (flushProcessor != null) {
 					flushProcessor.cancel();

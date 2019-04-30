@@ -15,15 +15,8 @@
  */
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.time.Duration;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
@@ -37,22 +30,25 @@ import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.server.ServerErrorException;
 import org.springframework.web.server.ServerWebInputException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.*;
 import static org.springframework.web.method.MvcAnnotationPredicates.matrixAttribute;
 
 /**
  * Unit tests for {@link MatrixVariableMethodArgumentResolver}.
+ *
  * @author Rossen Stoyanchev
  */
 public class MatrixVariablesMethodArgumentResolverTests {
 
+	private final MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/"));
 	private MatrixVariableMethodArgumentResolver resolver =
 			new MatrixVariableMethodArgumentResolver(null, ReactiveAdapterRegistry.getSharedInstance());
-
-	private final MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/"));
-
 	private ResolvableMethod testMethod = ResolvableMethod.on(this.getClass()).named("handle").build();
 
 

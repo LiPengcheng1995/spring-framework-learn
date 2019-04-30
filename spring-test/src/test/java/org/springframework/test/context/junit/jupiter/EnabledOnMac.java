@@ -16,11 +16,7 @@
 
 package org.springframework.test.context.junit.jupiter;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Demo <em>composed annotation</em> for {@link EnabledIf @EnabledIf} that
@@ -30,7 +26,7 @@ import java.lang.annotation.Target;
  * @author Sam Brannen
  * @since 5.0
  */
-@Target({ ElementType.TYPE, ElementType.METHOD })
+@Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @EnabledIf(expression = "#{systemProperties['os.name'].toLowerCase().contains('mac')}", reason = "Enabled on Mac OS")

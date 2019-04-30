@@ -16,12 +16,6 @@
 
 package org.springframework.web.socket.sockjs.support;
 
-import java.io.IOException;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.context.Lifecycle;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -39,6 +33,12 @@ import org.springframework.web.socket.handler.ExceptionWebSocketHandlerDecorator
 import org.springframework.web.socket.handler.LoggingWebSocketHandlerDecorator;
 import org.springframework.web.socket.sockjs.SockJsException;
 import org.springframework.web.socket.sockjs.SockJsService;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * An {@link HttpRequestHandler} that allows mapping a {@link SockJsService} to requests
@@ -62,7 +62,8 @@ public class SockJsHttpRequestHandler
 
 	/**
 	 * Create a new SockJsHttpRequestHandler.
-	 * @param sockJsService the SockJS service
+	 *
+	 * @param sockJsService    the SockJS service
 	 * @param webSocketHandler the websocket handler
 	 */
 	public SockJsHttpRequestHandler(SockJsService sockJsService, WebSocketHandler webSocketHandler) {
@@ -131,8 +132,7 @@ public class SockJsHttpRequestHandler
 
 		try {
 			this.sockJsService.handleRequest(request, response, getSockJsPath(servletRequest), this.webSocketHandler);
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			throw new SockJsException("Uncaught failure in SockJS request, uri=" + request.getURI(), ex);
 		}
 	}

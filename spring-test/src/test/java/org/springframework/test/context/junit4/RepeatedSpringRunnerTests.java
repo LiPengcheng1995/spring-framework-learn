@@ -16,25 +16,24 @@
 
 package org.springframework.test.context.junit4;
 
-import java.io.IOException;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runner.Runner;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-
 import org.springframework.test.annotation.Repeat;
 import org.springframework.test.annotation.Timed;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.util.ClassUtils;
 
-import static org.junit.Assert.*;
-import static org.springframework.test.context.junit4.JUnitTestingUtils.*;
+import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.junit.Assert.assertEquals;
+import static org.springframework.test.context.junit4.JUnitTestingUtils.runTestsAndAssertCounters;
 
 /**
  * Verifies proper handling of the following in conjunction with the
@@ -60,25 +59,25 @@ public class RepeatedSpringRunnerTests {
 	private final int expectedInvocationCount;
 
 
-	@Parameters(name = "{0}")
-	public static Object[][] repetitionData() {
-		return new Object[][] {//
-			{ NonAnnotatedRepeatedTestCase.class.getSimpleName(), 0, 1, 1, 1 },//
-			{ DefaultRepeatValueRepeatedTestCase.class.getSimpleName(), 0, 1, 1, 1 },//
-			{ NegativeRepeatValueRepeatedTestCase.class.getSimpleName(), 0, 1, 1, 1 },//
-			{ RepeatedFiveTimesRepeatedTestCase.class.getSimpleName(), 0, 1, 1, 5 },//
-			{ RepeatedFiveTimesViaMetaAnnotationRepeatedTestCase.class.getSimpleName(), 0, 1, 1, 5 },//
-			{ TimedRepeatedTestCase.class.getSimpleName(), 3, 4, 4, (5 + 1 + 4 + 10) } //
-		};
-	}
-
 	public RepeatedSpringRunnerTests(String testClassName, int expectedFailureCount,
-			int expectedTestStartedCount, int expectedTestFinishedCount, int expectedInvocationCount) throws Exception {
+									 int expectedTestStartedCount, int expectedTestFinishedCount, int expectedInvocationCount) throws Exception {
 		this.testClass = ClassUtils.forName(getClass().getName() + "." + testClassName, getClass().getClassLoader());
 		this.expectedFailureCount = expectedFailureCount;
 		this.expectedStartedCount = expectedTestStartedCount;
 		this.expectedFinishedCount = expectedTestFinishedCount;
 		this.expectedInvocationCount = expectedInvocationCount;
+	}
+
+	@Parameters(name = "{0}")
+	public static Object[][] repetitionData() {
+		return new Object[][]{//
+				{NonAnnotatedRepeatedTestCase.class.getSimpleName(), 0, 1, 1, 1},//
+				{DefaultRepeatValueRepeatedTestCase.class.getSimpleName(), 0, 1, 1, 1},//
+				{NegativeRepeatValueRepeatedTestCase.class.getSimpleName(), 0, 1, 1, 1},//
+				{RepeatedFiveTimesRepeatedTestCase.class.getSimpleName(), 0, 1, 1, 5},//
+				{RepeatedFiveTimesViaMetaAnnotationRepeatedTestCase.class.getSimpleName(), 0, 1, 1, 5},//
+				{TimedRepeatedTestCase.class.getSimpleName(), 3, 4, 4, (5 + 1 + 4 + 10)} //
+		};
 	}
 
 	protected Class<? extends Runner> getRunnerClass() {
@@ -90,11 +89,16 @@ public class RepeatedSpringRunnerTests {
 		invocationCount.set(0);
 
 		runTestsAndAssertCounters(getRunnerClass(), this.testClass, expectedStartedCount, expectedFailureCount,
-			expectedFinishedCount, 0, 0);
+				expectedFinishedCount, 0, 0);
 
 		assertEquals("invocations for [" + testClass + "]:", expectedInvocationCount, invocationCount.get());
 	}
 
+
+	@Repeat(5)
+	@Retention(RetentionPolicy.RUNTIME)
+	private static @interface RepeatedFiveTimes {
+	}
 
 	@TestExecutionListeners({})
 	public abstract static class AbstractRepeatedTestCase {
@@ -140,11 +144,6 @@ public class RepeatedSpringRunnerTests {
 		public void repeatedFiveTimes() throws Exception {
 			incrementInvocationCount();
 		}
-	}
-
-	@Repeat(5)
-	@Retention(RetentionPolicy.RUNTIME)
-	private static @interface RepeatedFiveTimes {
 	}
 
 	public static final class RepeatedFiveTimesViaMetaAnnotationRepeatedTestCase extends AbstractRepeatedTestCase {

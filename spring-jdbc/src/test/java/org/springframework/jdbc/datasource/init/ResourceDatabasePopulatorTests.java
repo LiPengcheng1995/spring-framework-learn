@@ -18,17 +18,16 @@ package org.springframework.jdbc.datasource.init;
 
 import org.junit.Test;
 import org.mockito.Mockito;
-
 import org.springframework.core.io.Resource;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Unit tests for {@link ResourceDatabasePopulator}.
  *
  * @author Sam Brannen
- * @since 4.1
  * @see AbstractDatabasePopulatorTests
+ * @since 4.1
  */
 public class ResourceDatabasePopulatorTests {
 

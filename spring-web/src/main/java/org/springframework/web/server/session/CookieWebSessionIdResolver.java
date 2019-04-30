@@ -16,16 +16,16 @@
 
 package org.springframework.web.server.session;
 
-import java.time.Duration;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.http.HttpCookie;
 import org.springframework.http.ResponseCookie;
 import org.springframework.util.Assert;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.server.ServerWebExchange;
+
+import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Cookie-based {@link WebSessionIdResolver}.
@@ -39,17 +39,6 @@ public class CookieWebSessionIdResolver implements WebSessionIdResolver {
 
 	private Duration cookieMaxAge = Duration.ofSeconds(-1);
 
-
-	/**
-	 * Set the name of the cookie to use for the session id.
-	 * <p>By default set to "SESSION".
-	 * @param cookieName the cookie name
-	 */
-	public void setCookieName(String cookieName) {
-		Assert.hasText(cookieName, "'cookieName' must not be empty");
-		this.cookieName = cookieName;
-	}
-
 	/**
 	 * Return the configured cookie name.
 	 */
@@ -58,13 +47,14 @@ public class CookieWebSessionIdResolver implements WebSessionIdResolver {
 	}
 
 	/**
-	 * Set the value for the "Max-Age" attribute of the cookie that holds the
-	 * session id. For the range of values see {@link ResponseCookie#getMaxAge()}.
-	 * <p>By default set to -1.
-	 * @param maxAge the maxAge duration value
+	 * Set the name of the cookie to use for the session id.
+	 * <p>By default set to "SESSION".
+	 *
+	 * @param cookieName the cookie name
 	 */
-	public void setCookieMaxAge(Duration maxAge) {
-		this.cookieMaxAge = maxAge;
+	public void setCookieName(String cookieName) {
+		Assert.hasText(cookieName, "'cookieName' must not be empty");
+		this.cookieName = cookieName;
 	}
 
 	/**
@@ -74,6 +64,16 @@ public class CookieWebSessionIdResolver implements WebSessionIdResolver {
 		return this.cookieMaxAge;
 	}
 
+	/**
+	 * Set the value for the "Max-Age" attribute of the cookie that holds the
+	 * session id. For the range of values see {@link ResponseCookie#getMaxAge()}.
+	 * <p>By default set to -1.
+	 *
+	 * @param maxAge the maxAge duration value
+	 */
+	public void setCookieMaxAge(Duration maxAge) {
+		this.cookieMaxAge = maxAge;
+	}
 
 	@Override
 	public List<String> resolveSessionIds(ServerWebExchange exchange) {

@@ -16,19 +16,10 @@
 
 package org.springframework.http.converter.feed;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.Writer;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-
 import com.rometools.rome.feed.WireFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.WireFeedInput;
 import com.rometools.rome.io.WireFeedOutput;
-
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -36,6 +27,10 @@ import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.util.StringUtils;
+
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Abstract base class for Atom and RSS Feed message converters, using the
@@ -45,9 +40,9 @@ import org.springframework.util.StringUtils;
  * variant of ROME, version 1.5. Please upgrade your build dependency.</b>
  *
  * @author Arjen Poutsma
- * @since 3.0.2
  * @see AtomFeedHttpMessageConverter
  * @see RssChannelHttpMessageConverter
+ * @since 3.0.2
  */
 public abstract class AbstractWireFeedHttpMessageConverter<T extends WireFeed>
 		extends AbstractHttpMessageConverter<T> {
@@ -72,8 +67,7 @@ public abstract class AbstractWireFeedHttpMessageConverter<T extends WireFeed>
 		try {
 			Reader reader = new InputStreamReader(inputMessage.getBody(), charset);
 			return (T) feedInput.build(reader);
-		}
-		catch (FeedException ex) {
+		} catch (FeedException ex) {
 			throw new HttpMessageNotReadableException("Could not read WireFeed: " + ex.getMessage(), ex);
 		}
 	}
@@ -94,8 +88,7 @@ public abstract class AbstractWireFeedHttpMessageConverter<T extends WireFeed>
 		try {
 			Writer writer = new OutputStreamWriter(outputMessage.getBody(), charset);
 			feedOutput.output(wireFeed, writer);
-		}
-		catch (FeedException ex) {
+		} catch (FeedException ex) {
 			throw new HttpMessageNotWritableException("Could not write WireFeed: " + ex.getMessage(), ex);
 		}
 	}

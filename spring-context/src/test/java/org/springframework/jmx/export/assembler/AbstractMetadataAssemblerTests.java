@@ -16,17 +16,7 @@
 
 package org.springframework.jmx.export.assembler;
 
-import java.util.HashMap;
-import java.util.Map;
-import javax.management.Descriptor;
-import javax.management.MBeanInfo;
-import javax.management.MBeanParameterInfo;
-import javax.management.modelmbean.ModelMBeanAttributeInfo;
-import javax.management.modelmbean.ModelMBeanInfo;
-import javax.management.modelmbean.ModelMBeanOperationInfo;
-
 import org.junit.Test;
-
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.jmx.IJmxTestBean;
 import org.springframework.jmx.JmxTestBean;
@@ -34,6 +24,15 @@ import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.jmx.export.metadata.JmxAttributeSource;
 import org.springframework.jmx.support.ObjectNameManager;
 import org.springframework.tests.aop.interceptor.NopInterceptor;
+
+import javax.management.Descriptor;
+import javax.management.MBeanInfo;
+import javax.management.MBeanParameterInfo;
+import javax.management.modelmbean.ModelMBeanAttributeInfo;
+import javax.management.modelmbean.ModelMBeanInfo;
+import javax.management.modelmbean.ModelMBeanOperationInfo;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -202,10 +201,10 @@ public abstract class AbstractMetadataAssemblerTests extends AbstractJmxAssemble
 		assertEquals("Currency Time Limit should be 20", "20", desc.getFieldValue("currencyTimeLimit"));
 		assertEquals("Persist Policy should be OnUpdate", "OnUpdate", desc.getFieldValue("persistPolicy"));
 		assertEquals("Persist Period should be 300", "300", desc.getFieldValue("persistPeriod"));
-		assertEquals("Unit should be messages", "messages",desc.getFieldValue("units"));
-		assertEquals("Display Name should be Queue Size", "Queue Size",desc.getFieldValue("displayName"));
-		assertEquals("Metric Type should be COUNTER", "COUNTER",desc.getFieldValue("metricType"));
-		assertEquals("Metric Category should be utilization", "utilization",desc.getFieldValue("metricCategory"));
+		assertEquals("Unit should be messages", "messages", desc.getFieldValue("units"));
+		assertEquals("Display Name should be Queue Size", "Queue Size", desc.getFieldValue("displayName"));
+		assertEquals("Metric Type should be COUNTER", "COUNTER", desc.getFieldValue("metricType"));
+		assertEquals("Metric Category should be utilization", "utilization", desc.getFieldValue("metricCategory"));
 	}
 
 	@Test
@@ -216,8 +215,8 @@ public abstract class AbstractMetadataAssemblerTests extends AbstractJmxAssemble
 		assertNull("Persist Policy should not be populated", desc.getFieldValue("persistPolicy"));
 		assertNull("Persist Period should not be populated", desc.getFieldValue("persistPeriod"));
 		assertNull("Unit should not be populated", desc.getFieldValue("units"));
-		assertEquals("Display Name should be populated by default via JMX", CACHE_ENTRIES_METRIC,desc.getFieldValue("displayName"));
-		assertEquals("Metric Type should be GAUGE", "GAUGE",desc.getFieldValue("metricType"));
+		assertEquals("Display Name should be populated by default via JMX", CACHE_ENTRIES_METRIC, desc.getFieldValue("displayName"));
+		assertEquals("Metric Type should be GAUGE", "GAUGE", desc.getFieldValue("metricType"));
 		assertNull("Metric Category should not be populated", desc.getFieldValue("metricCategory"));
 	}
 

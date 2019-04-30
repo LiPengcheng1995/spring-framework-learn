@@ -16,16 +16,16 @@
 
 package org.springframework.test.context.support;
 
+import org.junit.Test;
+import org.springframework.context.annotation.Configuration;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.junit.Test;
-import org.springframework.context.annotation.Configuration;
-
 import static org.junit.Assert.*;
-import static org.springframework.test.context.support.AnnotationConfigContextLoaderUtils.*;
+import static org.springframework.test.context.support.AnnotationConfigContextLoaderUtils.detectDefaultConfigurationClasses;
 
 /**
  * Unit tests for {@link AnnotationConfigContextLoaderUtils}.
@@ -51,16 +51,22 @@ public class AnnotationConfigContextLoaderUtilsTests {
 	public void detectDefaultConfigurationClassesWithExplicitConfigurationAnnotation() {
 		Class<?>[] configClasses = detectDefaultConfigurationClasses(ExplicitConfigTestCase.class);
 		assertNotNull(configClasses);
-		assertArrayEquals(new Class<?>[] { ExplicitConfigTestCase.Config.class }, configClasses);
+		assertArrayEquals(new Class<?>[]{ExplicitConfigTestCase.Config.class}, configClasses);
 	}
 
 	@Test
 	public void detectDefaultConfigurationClassesWithConfigurationMetaAnnotation() {
 		Class<?>[] configClasses = detectDefaultConfigurationClasses(MetaAnnotatedConfigTestCase.class);
 		assertNotNull(configClasses);
-		assertArrayEquals(new Class<?>[] { MetaAnnotatedConfigTestCase.Config.class }, configClasses);
+		assertArrayEquals(new Class<?>[]{MetaAnnotatedConfigTestCase.Config.class}, configClasses);
 	}
 
+
+	@Configuration
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	private static @interface MetaConfig {
+	}
 
 	private static class NoConfigTestCase {
 
@@ -71,12 +77,6 @@ public class AnnotationConfigContextLoaderUtilsTests {
 		@Configuration
 		static class Config {
 		}
-	}
-
-	@Configuration
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target(ElementType.TYPE)
-	private static @interface MetaConfig {
 	}
 
 	private static class MetaAnnotatedConfigTestCase {

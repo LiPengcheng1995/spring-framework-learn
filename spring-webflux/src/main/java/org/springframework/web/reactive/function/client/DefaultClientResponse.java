@@ -16,28 +16,19 @@
 
 package org.springframework.web.reactive.function.client;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalLong;
-
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.buffer.DataBufferUtils;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.client.reactive.ClientHttpResponse;
 import org.springframework.http.codec.HttpMessageReader;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyExtractor;
 import org.springframework.web.reactive.function.BodyExtractors;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.*;
 
 /**
  * Default implementation of {@link ClientResponse}.
@@ -89,10 +80,12 @@ class DefaultClientResponse implements ClientResponse {
 			public List<HttpMessageReader<?>> messageReaders() {
 				return strategies.messageReaders();
 			}
+
 			@Override
 			public Optional<ServerHttpResponse> serverResponse() {
 				return Optional.empty();
 			}
+
 			@Override
 			public Map<String, Object> hints() {
 				return Collections.emptyMap();
@@ -104,8 +97,7 @@ class DefaultClientResponse implements ClientResponse {
 	public <T> Mono<T> bodyToMono(Class<? extends T> elementClass) {
 		if (Void.class == elementClass) {
 			return consumeAndCancel();
-		}
-		else {
+		} else {
 			return body(BodyExtractors.toMono(elementClass));
 		}
 	}
@@ -114,8 +106,7 @@ class DefaultClientResponse implements ClientResponse {
 	public <T> Mono<T> bodyToMono(ParameterizedTypeReference<T> typeReference) {
 		if (Void.class == typeReference.getType()) {
 			return consumeAndCancel();
-		}
-		else {
+		} else {
 			return body(BodyExtractors.toMono(typeReference));
 		}
 	}
@@ -124,8 +115,7 @@ class DefaultClientResponse implements ClientResponse {
 	public <T> Flux<T> bodyToFlux(Class<? extends T> elementClass) {
 		if (Void.class == elementClass) {
 			return Flux.from(consumeAndCancel());
-		}
-		else {
+		} else {
 			return body(BodyExtractors.toFlux(elementClass));
 		}
 	}
@@ -134,8 +124,7 @@ class DefaultClientResponse implements ClientResponse {
 	public <T> Flux<T> bodyToFlux(ParameterizedTypeReference<T> typeReference) {
 		if (Void.class == typeReference.getType()) {
 			return Flux.from(consumeAndCancel());
-		}
-		else {
+		} else {
 			return body(BodyExtractors.toFlux(typeReference));
 		}
 	}
@@ -144,8 +133,7 @@ class DefaultClientResponse implements ClientResponse {
 	public <T> Mono<ResponseEntity<T>> toEntity(Class<T> bodyType) {
 		if (Void.class == bodyType) {
 			return toEntityInternal(consumeAndCancel());
-		}
-		else {
+		} else {
 			return toEntityInternal(bodyToMono(bodyType));
 		}
 	}
@@ -154,8 +142,7 @@ class DefaultClientResponse implements ClientResponse {
 	public <T> Mono<ResponseEntity<T>> toEntity(ParameterizedTypeReference<T> typeReference) {
 		if (Void.class == typeReference.getType()) {
 			return toEntityInternal(consumeAndCancel());
-		}
-		else {
+		} else {
 			return toEntityInternal(bodyToMono(typeReference));
 		}
 	}
@@ -198,6 +185,9 @@ class DefaultClientResponse implements ClientResponse {
 				.map(body -> new ResponseEntity<>(body, headers, statusCode));
 	}
 
+	@SuppressWarnings("serial")
+	private static class ReadCancellationException extends RuntimeException {
+	}
 
 	private class DefaultHeaders implements Headers {
 
@@ -229,11 +219,6 @@ class DefaultClientResponse implements ClientResponse {
 		private OptionalLong toOptionalLong(long value) {
 			return (value != -1 ? OptionalLong.of(value) : OptionalLong.empty());
 		}
-	}
-
-
-	@SuppressWarnings("serial")
-	private static class ReadCancellationException extends RuntimeException {
 	}
 
 }

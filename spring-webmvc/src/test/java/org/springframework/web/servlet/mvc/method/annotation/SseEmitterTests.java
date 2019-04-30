@@ -15,15 +15,14 @@
  */
 package org.springframework.web.servlet.mvc.method.annotation;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.http.MediaType;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import org.springframework.http.MediaType;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -32,6 +31,7 @@ import static org.springframework.web.servlet.mvc.method.annotation.SseEmitter.e
 
 /**
  * Unit tests for {@link org.springframework.web.servlet.mvc.method.annotation.SseEmitter}.
+ *
  * @author Rossen Stoyanchev
  */
 public class SseEmitterTests {

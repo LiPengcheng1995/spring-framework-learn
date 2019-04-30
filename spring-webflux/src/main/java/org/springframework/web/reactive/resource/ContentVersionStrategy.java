@@ -16,9 +16,6 @@
 
 package org.springframework.web.reactive.resource;
 
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
@@ -26,6 +23,8 @@ import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StreamUtils;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /**
  * A {@code VersionStrategy} that calculates an Hex MD5 hashes from the content
@@ -34,8 +33,8 @@ import org.springframework.util.StreamUtils;
  *
  * @author Rossen Stoyanchev
  * @author Brian Clozel
- * @since 5.0
  * @see VersionResourceResolver
+ * @since 5.0
  */
 public class ContentVersionStrategy extends AbstractFileNameVersionStrategy {
 

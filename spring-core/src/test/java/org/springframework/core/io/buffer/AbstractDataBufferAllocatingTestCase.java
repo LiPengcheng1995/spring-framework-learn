@@ -16,6 +16,13 @@
 
 package org.springframework.core.io.buffer;
 
+import io.netty.buffer.*;
+import org.junit.Rule;
+import org.junit.rules.Verifier;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.springframework.core.io.buffer.support.DataBufferTestUtils;
+
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
@@ -23,19 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
-import io.netty.buffer.ByteBufAllocator;
-import io.netty.buffer.PoolArenaMetric;
-import io.netty.buffer.PooledByteBufAllocator;
-import io.netty.buffer.PooledByteBufAllocatorMetric;
-import io.netty.buffer.UnpooledByteBufAllocator;
-import org.junit.Rule;
-import org.junit.rules.Verifier;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-
-import org.springframework.core.io.buffer.support.DataBufferTestUtils;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Base class for tests that read or write data buffers with a rule to check
@@ -47,12 +42,14 @@ import static org.junit.Assert.*;
 @RunWith(Parameterized.class)
 public abstract class AbstractDataBufferAllocatingTestCase {
 
+	@Rule
+	public final Verifier leakDetector = new LeakDetector();
 	@Parameterized.Parameter
 	public DataBufferFactory bufferFactory;
 
 	@Parameterized.Parameters(name = "{0}")
 	public static Object[][] dataBufferFactories() {
-		return new Object[][] {
+		return new Object[][]{
 				{new NettyDataBufferFactory(new UnpooledByteBufAllocator(true))},
 				{new NettyDataBufferFactory(new UnpooledByteBufAllocator(false))},
 				// disable caching for reliable leak detection, see https://github.com/netty/netty/issues/5275
@@ -64,9 +61,9 @@ public abstract class AbstractDataBufferAllocatingTestCase {
 		};
 	}
 
-	@Rule
-	public final Verifier leakDetector = new LeakDetector();
-
+	private static long getAllocations(List<PoolArenaMetric> metrics) {
+		return metrics.stream().mapToLong(PoolArenaMetric::numActiveAllocations).sum();
+	}
 
 	protected DataBuffer createDataBuffer(int capacity) {
 		return this.bufferFactory.allocateBuffer(capacity);
@@ -101,8 +98,7 @@ public abstract class AbstractDataBufferAllocatingTestCase {
 			try {
 				verifyAllocations();
 				break;
-			}
-			catch (AssertionError ex) {
+			} catch (AssertionError ex) {
 				// ignore;
 			}
 			Thread.sleep(50);
@@ -119,11 +115,6 @@ public abstract class AbstractDataBufferAllocatingTestCase {
 			}
 		}
 	}
-
-	private static long getAllocations(List<PoolArenaMetric> metrics) {
-		return metrics.stream().mapToLong(PoolArenaMetric::numActiveAllocations).sum();
-	}
-
 
 	protected class LeakDetector extends Verifier {
 

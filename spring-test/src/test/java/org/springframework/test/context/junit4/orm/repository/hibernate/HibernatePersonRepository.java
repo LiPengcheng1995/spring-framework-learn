@@ -17,7 +17,6 @@
 package org.springframework.test.context.junit4.orm.repository.hibernate;
 
 import org.hibernate.SessionFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.test.context.junit4.orm.domain.Person;
@@ -49,7 +48,7 @@ public class HibernatePersonRepository implements PersonRepository {
 	@Override
 	public Person findByName(String name) {
 		return (Person) this.sessionFactory.getCurrentSession().createQuery(
-			"from Person person where person.name = :name").setParameter("name", name).getSingleResult();
+				"from Person person where person.name = :name").setParameter("name", name).getSingleResult();
 	}
 
 }

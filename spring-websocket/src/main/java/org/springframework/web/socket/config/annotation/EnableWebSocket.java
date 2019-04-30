@@ -16,13 +16,9 @@
 
 package org.springframework.web.socket.config.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.context.annotation.Import;
+
+import java.lang.annotation.*;
 
 /**
  * Add this annotation to an {@code @Configuration} class to configure
@@ -47,10 +43,10 @@ import org.springframework.context.annotation.Import;
  * 	   &#064;Override
  * 	   public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
  *         registry.addHandler(echoWebSocketHandler(), "/echo").withSockJS();
- * 	   }
+ *       }
  *
- *	   &#064;Override
- *	   public WebSocketHandler echoWebSocketHandler() {
+ * 	   &#064;Override
+ * 	   public WebSocketHandler echoWebSocketHandler() {
  *         return new EchoWebSocketHandler();
  *     }
  * }

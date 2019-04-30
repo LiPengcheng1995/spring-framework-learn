@@ -16,11 +16,7 @@
 
 package org.springframework.messaging.simp.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Annotation for mapping subscription messages onto specific handler methods based
@@ -46,10 +42,10 @@ import java.lang.annotation.Target;
  * the controller <i>interface</i> rather than on the implementation class.
  *
  * @author Rossen Stoyanchev
- * @since 4.0
  * @see org.springframework.messaging.handler.annotation.MessageMapping
  * @see org.springframework.messaging.handler.annotation.SendTo
  * @see org.springframework.messaging.simp.annotation.SendToUser
+ * @since 4.0
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

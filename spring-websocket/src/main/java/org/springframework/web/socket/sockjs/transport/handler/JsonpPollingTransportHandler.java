@@ -16,9 +16,6 @@
 
 package org.springframework.web.socket.sockjs.transport.handler;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.ServerHttpRequest;
@@ -35,6 +32,9 @@ import org.springframework.web.socket.sockjs.transport.TransportType;
 import org.springframework.web.socket.sockjs.transport.session.AbstractHttpSockJsSession;
 import org.springframework.web.socket.sockjs.transport.session.PollingSockJsSession;
 import org.springframework.web.util.JavaScriptUtils;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 /**
  * A TransportHandler that sends messages via JSONP polling.
@@ -70,7 +70,7 @@ public class JsonpPollingTransportHandler extends AbstractHttpSendingTransportHa
 
 	@Override
 	public void handleRequestInternal(ServerHttpRequest request, ServerHttpResponse response,
-			AbstractHttpSockJsSession sockJsSession) throws SockJsException {
+									  AbstractHttpSockJsSession sockJsSession) throws SockJsException {
 
 		try {
 			String callback = getCallbackParam(request);
@@ -79,8 +79,7 @@ public class JsonpPollingTransportHandler extends AbstractHttpSendingTransportHa
 				response.getBody().write("\"callback\" parameter required".getBytes(StandardCharsets.UTF_8));
 				return;
 			}
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			sockJsSession.tryCloseWithSockJsTransportError(ex, CloseStatus.SERVER_ERROR);
 			throw new SockJsTransportFailureException("Failed to send error", sockJsSession.getId(), ex);
 		}

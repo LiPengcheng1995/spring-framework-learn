@@ -16,6 +16,23 @@
 
 package org.springframework.http.codec.multipart;
 
+import org.springframework.core.ResolvableType;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferFactory;
+import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.core.io.buffer.DefaultDataBufferFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ReactiveHttpInputMessage;
+import org.springframework.http.codec.HttpMessageReader;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+import org.synchronoss.cloud.nio.multipart.*;
+import org.synchronoss.cloud.nio.stream.storage.StreamStorage;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
+import reactor.core.publisher.Mono;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.channels.Channels;
@@ -32,30 +49,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-import org.synchronoss.cloud.nio.multipart.DefaultPartBodyStreamStorageFactory;
-import org.synchronoss.cloud.nio.multipart.Multipart;
-import org.synchronoss.cloud.nio.multipart.MultipartContext;
-import org.synchronoss.cloud.nio.multipart.MultipartUtils;
-import org.synchronoss.cloud.nio.multipart.NioMultipartParser;
-import org.synchronoss.cloud.nio.multipart.NioMultipartParserListener;
-import org.synchronoss.cloud.nio.multipart.PartBodyStreamStorageFactory;
-import org.synchronoss.cloud.nio.stream.storage.StreamStorage;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.FluxSink;
-import reactor.core.publisher.Mono;
-
-import org.springframework.core.ResolvableType;
-import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.core.io.buffer.DataBufferFactory;
-import org.springframework.core.io.buffer.DataBufferUtils;
-import org.springframework.core.io.buffer.DefaultDataBufferFactory;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ReactiveHttpInputMessage;
-import org.springframework.http.codec.HttpMessageReader;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-
 /**
  * {@code HttpMessageReader} for parsing {@code "multipart/form-data"} requests
  * to a stream of {@link Part}'s using the Synchronoss NIO Multipart library.
@@ -66,9 +59,9 @@ import org.springframework.util.Assert;
  * @author Sebastien Deleuze
  * @author Rossen Stoyanchev
  * @author Arjen Poutsma
- * @since 5.0
  * @see <a href="https://github.com/synchronoss/nio-multipart">Synchronoss NIO Multipart</a>
  * @see MultipartHttpMessageReader
+ * @since 5.0
  */
 public class SynchronossPartHttpMessageReader implements HttpMessageReader<Part> {
 
@@ -114,7 +107,7 @@ public class SynchronossPartHttpMessageReader implements HttpMessageReader<Part>
 		private final PartBodyStreamStorageFactory streamStorageFactory;
 
 		SynchronossPartGenerator(ReactiveHttpInputMessage inputMessage, DataBufferFactory bufferFactory,
-				PartBodyStreamStorageFactory streamStorageFactory) {
+								 PartBodyStreamStorageFactory streamStorageFactory) {
 
 			this.inputMessage = inputMessage;
 			this.bufferFactory = bufferFactory;
@@ -142,26 +135,22 @@ public class SynchronossPartHttpMessageReader implements HttpMessageReader<Part>
 				buffer.read(resultBytes);
 				try {
 					parser.write(resultBytes);
-				}
-				catch (IOException ex) {
+				} catch (IOException ex) {
 					listener.onError("Exception thrown providing input to the parser", ex);
-				}
-				finally {
+				} finally {
 					DataBufferUtils.release(buffer);
 				}
 			}, ex -> {
 				try {
 					listener.onError("Request body input error", ex);
 					parser.close();
-				}
-				catch (IOException ex2) {
+				} catch (IOException ex2) {
 					listener.onError("Exception thrown while closing the parser", ex2);
 				}
 			}, () -> {
 				try {
 					parser.close();
-				}
-				catch (IOException ex) {
+				} catch (IOException ex) {
 					listener.onError("Exception thrown while closing the parser", ex);
 				}
 			});
@@ -205,12 +194,10 @@ public class SynchronossPartHttpMessageReader implements HttpMessageReader<Part>
 			String filename = MultipartUtils.getFileName(httpHeaders);
 			if (filename != null) {
 				return new SynchronossFilePart(httpHeaders, filename, storage, this.bufferFactory);
-			}
-			else if (MultipartUtils.isFormField(httpHeaders, this.context)) {
+			} else if (MultipartUtils.isFormField(httpHeaders, this.context)) {
 				String value = MultipartUtils.readFormParameterValue(storage, httpHeaders);
 				return new SynchronossFormFieldPart(httpHeaders, this.bufferFactory, value);
-			}
-			else {
+			} else {
 				return new SynchronossPart(httpHeaders, storage, this.bufferFactory);
 			}
 		}
@@ -325,23 +312,19 @@ public class SynchronossPartHttpMessageReader implements HttpMessageReader<Part>
 					}
 					totalWritten += written;
 				}
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				return Mono.error(ex);
-			}
-			finally {
+			} finally {
 				if (input != null) {
 					try {
 						input.close();
-					}
-					catch (IOException ignored) {
+					} catch (IOException ignored) {
 					}
 				}
 				if (output != null) {
 					try {
 						output.close();
-					}
-					catch (IOException ignored) {
+					} catch (IOException ignored) {
 					}
 				}
 			}

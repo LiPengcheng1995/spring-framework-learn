@@ -16,22 +16,20 @@
 
 package org.springframework.web.servlet.tags.form;
 
-import java.beans.PropertyEditorSupport;
-import java.io.StringReader;
-import java.util.Collections;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.Tag;
-
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-
 import org.junit.Test;
-
 import org.springframework.tests.sample.beans.Pet;
 import org.springframework.tests.sample.beans.TestBean;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.Tag;
+import java.beans.PropertyEditorSupport;
+import java.io.StringReader;
+import java.util.Collections;
 
 import static org.junit.Assert.*;
 
@@ -248,8 +246,7 @@ public class RadioButtonTagTests extends AbstractFormTagTests {
 		try {
 			this.tag.setDynamicAttribute(null, "type", "email");
 			fail("Expected exception");
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			assertEquals("Attribute type=\"email\" is not allowed", e.getMessage());
 		}
 	}
@@ -279,13 +276,13 @@ public class RadioButtonTagTests extends AbstractFormTagTests {
 	private static class MyFloatEditor extends PropertyEditorSupport {
 
 		@Override
-		public void setAsText(String text) throws IllegalArgumentException {
-			setValue(text.substring(1));
+		public String getAsText() {
+			return "F" + getValue();
 		}
 
 		@Override
-		public String getAsText() {
-			return "F" + getValue();
+		public void setAsText(String text) throws IllegalArgumentException {
+			setValue(text.substring(1));
 		}
 	}
 

@@ -16,13 +16,12 @@
 
 package org.springframework.web.servlet.mvc.condition;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import org.junit.Test;
-
 import org.springframework.mock.web.test.MockHttpServletRequest;
 import org.springframework.web.servlet.mvc.condition.ConsumesRequestCondition.ConsumeMediaTypeExpression;
+
+import java.util.Collection;
+import java.util.Collections;
 
 import static org.junit.Assert.*;
 
@@ -156,7 +155,7 @@ public class ConsumesRequestConditionTests {
 
 	@Test
 	public void parseConsumesAndHeaders() {
-		String[] consumes = new String[] {"text/plain"};
+		String[] consumes = new String[]{"text/plain"};
 		String[] headers = new String[]{"foo=bar", "content-type=application/xml,application/pdf"};
 		ConsumesRequestCondition condition = new ConsumesRequestCondition(consumes, headers);
 

@@ -18,7 +18,6 @@ package org.springframework.test.context.junit4.profile.annotation;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -33,7 +32,7 @@ import static org.junit.Assert.*;
  * @since 3.1
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { DefaultProfileConfig.class, DevProfileConfig.class }, loader = AnnotationConfigContextLoader.class)
+@ContextConfiguration(classes = {DefaultProfileConfig.class, DevProfileConfig.class}, loader = AnnotationConfigContextLoader.class)
 public class DefaultProfileAnnotationConfigTests {
 
 	@Autowired

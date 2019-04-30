@@ -16,12 +16,6 @@
 
 package org.springframework.http.client.reactive;
 
-import java.util.Collection;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import reactor.core.publisher.Flux;
-import reactor.ipc.netty.http.client.HttpClientResponse;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -30,13 +24,18 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import reactor.core.publisher.Flux;
+import reactor.ipc.netty.http.client.HttpClientResponse;
+
+import java.util.Collection;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * {@link ClientHttpResponse} implementation for the Reactor-Netty HTTP client.
  *
  * @author Brian Clozel
- * @since 5.0
  * @see reactor.ipc.netty.http.client.HttpClient
+ * @since 5.0
  */
 class ReactorClientHttpResponse implements ClientHttpResponse {
 
@@ -90,13 +89,13 @@ class ReactorClientHttpResponse implements ClientHttpResponse {
 		MultiValueMap<String, ResponseCookie> result = new LinkedMultiValueMap<>();
 		this.response.cookies().values().stream().flatMap(Collection::stream)
 				.forEach(cookie ->
-					result.add(cookie.name(), ResponseCookie.from(cookie.name(), cookie.value())
-							.domain(cookie.domain())
-							.path(cookie.path())
-							.maxAge(cookie.maxAge())
-							.secure(cookie.isSecure())
-							.httpOnly(cookie.isHttpOnly())
-							.build()));
+						result.add(cookie.name(), ResponseCookie.from(cookie.name(), cookie.value())
+								.domain(cookie.domain())
+								.path(cookie.path())
+								.maxAge(cookie.maxAge())
+								.secure(cookie.isSecure())
+								.httpOnly(cookie.isHttpOnly())
+								.build()));
 		return CollectionUtils.unmodifiableMultiValueMap(result);
 	}
 

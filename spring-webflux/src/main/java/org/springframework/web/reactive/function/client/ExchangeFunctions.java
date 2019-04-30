@@ -18,11 +18,10 @@ package org.springframework.web.reactive.function.client;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import reactor.core.publisher.Mono;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.util.Assert;
+import reactor.core.publisher.Mono;
 
 /**
  * Exposes request-response exchange functionality, such as to
@@ -41,6 +40,7 @@ public abstract class ExchangeFunctions {
 	/**
 	 * Create a new {@link ExchangeFunction} with the given connector. This method uses
 	 * {@linkplain ExchangeStrategies#withDefaults() default strategies}.
+	 *
 	 * @param connector the connector to create connections
 	 * @return the created function
 	 */
@@ -50,7 +50,8 @@ public abstract class ExchangeFunctions {
 
 	/**
 	 * Create a new {@link ExchangeFunction} with the given connector and strategies.
-	 * @param connector the connector to create connections
+	 *
+	 * @param connector  the connector to create connections
 	 * @param strategies the strategies to use
 	 * @return the created function
 	 */

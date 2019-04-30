@@ -16,12 +16,12 @@
 
 package org.springframework.test.web.servlet.setup;
 
-import javax.servlet.ServletContext;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import javax.servlet.ServletContext;
 
 /**
  * A concrete implementation of {@link AbstractMockMvcBuilder} that provides
@@ -46,6 +46,7 @@ public class DefaultMockMvcBuilder extends AbstractMockMvcBuilder<DefaultMockMvc
 
 	/**
 	 * Protected constructor. Not intended for direct instantiation.
+	 *
 	 * @see MockMvcBuilders#webAppContextSetup(WebApplicationContext)
 	 */
 	protected DefaultMockMvcBuilder(WebApplicationContext webAppContext) {

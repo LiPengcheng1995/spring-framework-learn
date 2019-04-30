@@ -16,23 +16,23 @@
 
 package org.springframework.web.reactive.function.server;
 
-import java.time.Duration;
-
 import org.junit.Before;
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import static org.junit.Assert.*;
-import static org.springframework.http.MediaType.*;
-import static org.springframework.web.reactive.function.BodyInserters.*;
-import static org.springframework.web.reactive.function.server.RouterFunctions.*;
+import java.time.Duration;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.springframework.http.MediaType.TEXT_EVENT_STREAM;
+import static org.springframework.web.reactive.function.BodyInserters.fromServerSentEvents;
+import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 /**
  * @author Arjen Poutsma
@@ -93,17 +93,18 @@ public class SseHandlerFunctionIntegrationTests extends AbstractRouterFunctionIn
 				.uri("/event")
 				.accept(TEXT_EVENT_STREAM)
 				.retrieve()
-				.bodyToFlux(new ParameterizedTypeReference<ServerSentEvent<String>>() {});
+				.bodyToFlux(new ParameterizedTypeReference<ServerSentEvent<String>>() {
+				});
 
 		StepVerifier.create(result)
-				.consumeNextWith( event -> {
+				.consumeNextWith(event -> {
 					assertEquals("0", event.id());
 					assertEquals("foo", event.data());
 					assertEquals("bar", event.comment());
 					assertNull(event.event());
 					assertNull(event.retry());
 				})
-				.consumeNextWith( event -> {
+				.consumeNextWith(event -> {
 					assertEquals("1", event.id());
 					assertEquals("foo", event.data());
 					assertEquals("bar", event.comment());

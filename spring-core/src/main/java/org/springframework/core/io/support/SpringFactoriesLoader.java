@@ -16,28 +16,16 @@
 
 package org.springframework.core.io.support;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.io.UrlResource;
 import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.ConcurrentReferenceHashMap;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StringUtils;
+import org.springframework.util.*;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.*;
 
 /**
  * General purpose factory loading mechanism for internal use within the framework.
@@ -50,7 +38,7 @@ import org.springframework.util.StringUtils;
  * implementation class names. For example:
  *
  * <pre class="code">example.MyService=example.MyServiceImpl1,example.MyServiceImpl2</pre>
- *
+ * <p>
  * where {@code example.MyService} is the name of the interface, and {@code MyServiceImpl1}
  * and {@code MyServiceImpl2} are two implementations.
  *
@@ -79,10 +67,11 @@ public abstract class SpringFactoriesLoader {
 	 * <p>The returned factories are sorted through {@link AnnotationAwareOrderComparator}.
 	 * <p>If a custom instantiation strategy is required, use {@link #loadFactoryNames}
 	 * to obtain all registered factory names.
+	 *
 	 * @param factoryClass the interface or abstract class representing the factory
-	 * @param classLoader the ClassLoader to use for loading (can be {@code null} to use the default)
+	 * @param classLoader  the ClassLoader to use for loading (can be {@code null} to use the default)
 	 * @throws IllegalArgumentException if any factory implementation class cannot
-	 * be loaded or if an error occurs while instantiating any factory
+	 *                                  be loaded or if an error occurs while instantiating any factory
 	 * @see #loadFactoryNames
 	 */
 	public static <T> List<T> loadFactories(Class<T> factoryClass, @Nullable ClassLoader classLoader) {
@@ -107,9 +96,10 @@ public abstract class SpringFactoriesLoader {
 	 * Load the fully qualified class names of factory implementations of the
 	 * given type from {@value #FACTORIES_RESOURCE_LOCATION}, using the given
 	 * class loader.
+	 *
 	 * @param factoryClass the interface or abstract class representing the factory
-	 * @param classLoader the ClassLoader to use for loading resources; can be
-	 * {@code null} to use the default
+	 * @param classLoader  the ClassLoader to use for loading resources; can be
+	 *                     {@code null} to use the default
 	 * @throws IllegalArgumentException if an error occurs while loading factory names
 	 * @see #loadFactories
 	 */
@@ -142,8 +132,7 @@ public abstract class SpringFactoriesLoader {
 			}
 			cache.put(classLoader, result);
 			return result;
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			throw new IllegalArgumentException("Unable to load factories from location [" +
 					FACTORIES_RESOURCE_LOCATION + "]", ex);
 		}
@@ -158,8 +147,7 @@ public abstract class SpringFactoriesLoader {
 						"Class [" + instanceClassName + "] is not assignable to [" + factoryClass.getName() + "]");
 			}
 			return (T) ReflectionUtils.accessibleConstructor(instanceClass).newInstance();
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			throw new IllegalArgumentException("Unable to instantiate factory class: " + factoryClass.getName(), ex);
 		}
 	}

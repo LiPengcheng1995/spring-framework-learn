@@ -16,26 +16,7 @@
 
 package org.springframework.web.reactive.function.server;
 
-import java.net.URI;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Consumer;
-
-import reactor.core.publisher.Mono;
-
-import org.springframework.http.CacheControl;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseCookie;
+import org.springframework.http.*;
 import org.springframework.http.codec.HttpMessageWriter;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -44,6 +25,13 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+import java.net.URI;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Default {@link EntityResponse.Builder} implementation.
@@ -57,14 +45,10 @@ class DefaultEntityResponseBuilder<T> implements EntityResponse.Builder<T> {
 	private final T entity;
 
 	private final BodyInserter<T, ? super ServerHttpResponse> inserter;
-
-	private int status = HttpStatus.OK.value();
-
 	private final HttpHeaders headers = new HttpHeaders();
-
 	private final MultiValueMap<String, ResponseCookie> cookies = new LinkedMultiValueMap<>();
-
 	private final Map<String, Object> hints = new HashMap<>();
+	private int status = HttpStatus.OK.value();
 
 
 	public DefaultEntityResponseBuilder(T entity, BodyInserter<T, ? super ServerHttpResponse> inserter) {
@@ -201,8 +185,8 @@ class DefaultEntityResponseBuilder<T> implements EntityResponse.Builder<T> {
 		private final Map<String, Object> hints;
 
 		public DefaultEntityResponse(int statusCode, HttpHeaders headers,
-				MultiValueMap<String, ResponseCookie> cookies, T entity,
-				BodyInserter<T, ? super ServerHttpResponse> inserter, Map<String, Object> hints) {
+									 MultiValueMap<String, ResponseCookie> cookies, T entity,
+									 BodyInserter<T, ? super ServerHttpResponse> inserter, Map<String, Object> hints) {
 
 			super(statusCode, headers, cookies);
 			this.entity = entity;
@@ -227,10 +211,12 @@ class DefaultEntityResponseBuilder<T> implements EntityResponse.Builder<T> {
 				public List<HttpMessageWriter<?>> messageWriters() {
 					return context.messageWriters();
 				}
+
 				@Override
 				public Optional<ServerHttpRequest> serverRequest() {
 					return Optional.of(exchange.getRequest());
 				}
+
 				@Override
 				public Map<String, Object> hints() {
 					return hints;

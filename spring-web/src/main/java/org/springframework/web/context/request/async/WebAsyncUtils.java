@@ -16,12 +16,12 @@
 
 package org.springframework.web.context.request.async;
 
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.WebRequest;
+
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.WebRequest;
 
 /**
  * Utility methods related to processing asynchronous web requests.
@@ -74,7 +74,8 @@ public abstract class WebAsyncUtils {
 	/**
 	 * Create an AsyncWebRequest instance. By default, an instance of
 	 * {@link StandardServletAsyncWebRequest} gets created.
-	 * @param request the current request
+	 *
+	 * @param request  the current request
 	 * @param response the current response
 	 * @return an AsyncWebRequest instance (never {@code null})
 	 */

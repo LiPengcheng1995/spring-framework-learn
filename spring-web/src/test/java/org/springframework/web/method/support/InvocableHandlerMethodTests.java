@@ -16,11 +16,8 @@
 
 package org.springframework.web.method.support;
 
-import java.lang.reflect.Method;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.mock.web.test.MockHttpServletRequest;
@@ -29,7 +26,9 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
 
-import static org.hamcrest.Matchers.*;
+import java.lang.reflect.Method;
+
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.*;
 
 /**
@@ -91,8 +90,7 @@ public class InvocableHandlerMethodTests {
 		try {
 			handlerMethod.invokeForRequest(webRequest, null);
 			fail("Expected exception");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertTrue(ex.getMessage().contains("No suitable resolver for argument 0 of type 'java.lang.Integer'"));
 		}
 	}
@@ -128,8 +126,7 @@ public class InvocableHandlerMethodTests {
 		try {
 			handlerMethod.invokeForRequest(webRequest, null);
 			fail("Expected exception");
-		}
-		catch (HttpMessageNotReadableException ex) {
+		} catch (HttpMessageNotReadableException ex) {
 			// expected -  allow HandlerMethodArgumentResolver exceptions to propagate
 		}
 	}
@@ -147,8 +144,7 @@ public class InvocableHandlerMethodTests {
 		try {
 			handlerMethod.invokeForRequest(webRequest, null);
 			fail("Expected exception");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertNotNull("Exception not wrapped", ex.getCause());
 			assertTrue(ex.getCause() instanceof IllegalArgumentException);
 			assertTrue(ex.getMessage().contains("Controller ["));
@@ -164,32 +160,28 @@ public class InvocableHandlerMethodTests {
 		Throwable expected = new RuntimeException("error");
 		try {
 			invokeExceptionRaisingHandler(expected);
-		}
-		catch (RuntimeException actual) {
+		} catch (RuntimeException actual) {
 			assertSame(expected, actual);
 		}
 
 		expected = new Error("error");
 		try {
 			invokeExceptionRaisingHandler(expected);
-		}
-		catch (Error actual) {
+		} catch (Error actual) {
 			assertSame(expected, actual);
 		}
 
 		expected = new Exception("error");
 		try {
 			invokeExceptionRaisingHandler(expected);
-		}
-		catch (Exception actual) {
+		} catch (Exception actual) {
 			assertSame(expected, actual);
 		}
 
 		expected = new Throwable("error");
 		try {
 			invokeExceptionRaisingHandler(expected);
-		}
-		catch (IllegalStateException actual) {
+		} catch (IllegalStateException actual) {
 			assertNotNull(actual.getCause());
 			assertSame(expected, actual.getCause());
 			assertTrue(actual.getMessage().contains("Failed to invoke handler method"));
@@ -209,8 +201,7 @@ public class InvocableHandlerMethodTests {
 		try {
 			hm.invokeForRequest(this.webRequest, new ModelAndViewContainer());
 			fail();
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertThat(ex.getMessage(), containsString("Illegal argument"));
 		}
 	}
@@ -260,7 +251,7 @@ public class InvocableHandlerMethodTests {
 
 		@Override
 		public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-				NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+									  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 			throw new HttpMessageNotReadableException("oops, can't read");
 		}
 	}

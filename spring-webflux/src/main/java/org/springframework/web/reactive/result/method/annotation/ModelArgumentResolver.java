@@ -16,8 +16,6 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.util.Map;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.ui.Model;
@@ -25,6 +23,8 @@ import org.springframework.web.reactive.BindingContext;
 import org.springframework.web.reactive.result.method.HandlerMethodArgumentResolverSupport;
 import org.springframework.web.reactive.result.method.SyncHandlerMethodArgumentResolver;
 import org.springframework.web.server.ServerWebExchange;
+
+import java.util.Map;
 
 /**
  * Resolver for a controller method argument of type {@link Model} that can
@@ -54,11 +54,9 @@ public class ModelArgumentResolver extends HandlerMethodArgumentResolverSupport
 		Class<?> type = parameter.getParameterType();
 		if (Model.class.isAssignableFrom(type)) {
 			return context.getModel();
-		}
-		else if (Map.class.isAssignableFrom(type)) {
+		} else if (Map.class.isAssignableFrom(type)) {
 			return context.getModel().asMap();
-		}
-		else {
+		} else {
 			// Should never happen..
 			throw new IllegalStateException("Unexpected method parameter type: " + type);
 		}

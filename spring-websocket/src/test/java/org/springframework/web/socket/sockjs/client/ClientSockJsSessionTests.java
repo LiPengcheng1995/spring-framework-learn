@@ -16,28 +16,24 @@
 
 package org.springframework.web.socket.sockjs.client;
 
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.springframework.util.concurrent.SettableListenableFuture;
+import org.springframework.web.socket.*;
+import org.springframework.web.socket.sockjs.frame.Jackson2SockJsMessageCodec;
+import org.springframework.web.socket.sockjs.frame.SockJsFrame;
+import org.springframework.web.socket.sockjs.transport.TransportType;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import org.springframework.util.concurrent.SettableListenableFuture;
-import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketExtension;
-import org.springframework.web.socket.WebSocketHandler;
-import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.sockjs.frame.Jackson2SockJsMessageCodec;
-import org.springframework.web.socket.sockjs.frame.SockJsFrame;
-import org.springframework.web.socket.sockjs.transport.TransportType;
-
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.*;
 
 /**
@@ -49,16 +45,11 @@ import static org.mockito.BDDMockito.*;
 public class ClientSockJsSessionTests {
 
 	private static final Jackson2SockJsMessageCodec CODEC = new Jackson2SockJsMessageCodec();
-
-	private TestClientSockJsSession session;
-
-	private WebSocketHandler handler;
-
-	private SettableListenableFuture<WebSocketSession> connectFuture;
-
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();
-
+	private TestClientSockJsSession session;
+	private WebSocketHandler handler;
+	private SettableListenableFuture<WebSocketSession> connectFuture;
 
 	@Before
 	public void setup() throws Exception {
@@ -224,7 +215,7 @@ public class ClientSockJsSessionTests {
 
 
 		protected TestClientSockJsSession(TransportRequest request, WebSocketHandler handler,
-				SettableListenableFuture<WebSocketSession> connectFuture) {
+										  SettableListenableFuture<WebSocketSession> connectFuture) {
 			super(request, handler, connectFuture);
 		}
 
@@ -254,23 +245,23 @@ public class ClientSockJsSessionTests {
 		}
 
 		@Override
-		public void setTextMessageSizeLimit(int messageSizeLimit) {
-
-		}
-
-		@Override
 		public int getTextMessageSizeLimit() {
 			return 0;
 		}
 
 		@Override
-		public void setBinaryMessageSizeLimit(int messageSizeLimit) {
+		public void setTextMessageSizeLimit(int messageSizeLimit) {
 
 		}
 
 		@Override
 		public int getBinaryMessageSizeLimit() {
 			return 0;
+		}
+
+		@Override
+		public void setBinaryMessageSizeLimit(int messageSizeLimit) {
+
 		}
 
 		@Override

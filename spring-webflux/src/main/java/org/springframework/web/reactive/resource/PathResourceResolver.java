@@ -16,21 +16,20 @@
 
 package org.springframework.web.reactive.resource;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.Arrays;
-import java.util.List;
-
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * A simple {@code ResourceResolver} that tries to find a resource under the given
@@ -47,6 +46,10 @@ public class PathResourceResolver extends AbstractResourceResolver {
 	@Nullable
 	private Resource[] allowedLocations;
 
+	@Nullable
+	public Resource[] getAllowedLocations() {
+		return this.allowedLocations;
+	}
 
 	/**
 	 * By default when a Resource is found, the path of the resolved resource is
@@ -61,33 +64,27 @@ public class PathResourceResolver extends AbstractResourceResolver {
 	 * relative to which it was found, this list may be checked as well.
 	 * <p>By default {@link ResourceWebHandler} initializes this property
 	 * to match its list of locations.
+	 *
 	 * @param locations the list of allowed locations
 	 */
 	public void setAllowedLocations(@Nullable Resource... locations) {
 		this.allowedLocations = locations;
 	}
 
-	@Nullable
-	public Resource[] getAllowedLocations() {
-		return this.allowedLocations;
-	}
-
-
 	@Override
 	protected Mono<Resource> resolveResourceInternal(@Nullable ServerWebExchange exchange,
-			String requestPath, List<? extends Resource> locations, ResourceResolverChain chain) {
+													 String requestPath, List<? extends Resource> locations, ResourceResolverChain chain) {
 
 		return getResource(requestPath, locations);
 	}
 
 	@Override
 	protected Mono<String> resolveUrlPathInternal(String path, List<? extends Resource> locations,
-			ResourceResolverChain chain) {
+												  ResourceResolverChain chain) {
 
 		if (StringUtils.hasText(path)) {
 			return getResource(path, locations).map(resource -> path);
-		}
-		else {
+		} else {
 			return Mono.empty();
 		}
 	}
@@ -102,8 +99,9 @@ public class PathResourceResolver extends AbstractResourceResolver {
 	 * Find the resource under the given location.
 	 * <p>The default implementation checks if there is a readable
 	 * {@code Resource} for the given path relative to the location.
+	 *
 	 * @param resourcePath the path to the resource
-	 * @param location the location to check
+	 * @param location     the location to check
 	 * @return the resource, or empty {@link Mono} if none found
 	 */
 	protected Mono<Resource> getResource(String resourcePath, Resource location) {
@@ -115,21 +113,18 @@ public class PathResourceResolver extends AbstractResourceResolver {
 						logger.trace("Found match: " + resource);
 					}
 					return Mono.just(resource);
-				}
-				else if (logger.isTraceEnabled()) {
+				} else if (logger.isTraceEnabled()) {
 					Resource[] allowedLocations = getAllowedLocations();
 					logger.trace("Resource path \"" + resourcePath + "\" was successfully resolved " +
 							"but resource \"" + resource.getURL() + "\" is neither under the " +
 							"current location \"" + location.getURL() + "\" nor under any of the " +
 							"allowed locations " + (allowedLocations != null ? Arrays.asList(allowedLocations) : "[]"));
 				}
-			}
-			else if (logger.isTraceEnabled()) {
+			} else if (logger.isTraceEnabled()) {
 				logger.trace("No match for location: " + location);
 			}
 			return Mono.empty();
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			if (logger.isTraceEnabled()) {
 				logger.trace("Failure checking for relative resource under location + " + location, ex);
 			}
@@ -142,6 +137,7 @@ public class PathResourceResolver extends AbstractResourceResolver {
 	 * resources exists and is readable. The default implementation also verifies
 	 * the resource is either under the location relative to which it was found or
 	 * is under one of the {@link #setAllowedLocations allowed locations}.
+	 *
 	 * @param resource the resource to check
 	 * @param location the location relative to which the resource was found
 	 * @return "true" if resource is in a valid location, "false" otherwise.
@@ -171,12 +167,10 @@ public class PathResourceResolver extends AbstractResourceResolver {
 		if (resource instanceof UrlResource) {
 			resourcePath = resource.getURL().toExternalForm();
 			locationPath = StringUtils.cleanPath(location.getURL().toString());
-		}
-		else if (resource instanceof ClassPathResource) {
+		} else if (resource instanceof ClassPathResource) {
 			resourcePath = ((ClassPathResource) resource).getPath();
 			locationPath = StringUtils.cleanPath(((ClassPathResource) location).getPath());
-		}
-		else {
+		} else {
 			resourcePath = resource.getURL().getPath();
 			locationPath = StringUtils.cleanPath(location.getURL().getPath());
 		}
@@ -199,8 +193,7 @@ public class PathResourceResolver extends AbstractResourceResolver {
 					}
 					return true;
 				}
-			}
-			catch (UnsupportedEncodingException ex) {
+			} catch (UnsupportedEncodingException ex) {
 				// Should never happen...
 			}
 		}

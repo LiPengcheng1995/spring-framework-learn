@@ -16,17 +16,16 @@
 
 package org.springframework.web.servlet.view.document;
 
+import com.lowagie.text.pdf.PdfReader;
+import com.lowagie.text.pdf.PdfStamper;
+import org.springframework.util.Assert;
+import org.springframework.web.servlet.view.AbstractUrlBasedView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.PdfStamper;
-
-import org.springframework.util.Assert;
-import org.springframework.web.servlet.view.AbstractUrlBasedView;
 
 /**
  * Abstract superclass for PDF views that operate on an existing
@@ -43,12 +42,12 @@ import org.springframework.web.servlet.view.AbstractUrlBasedView;
  * <p>Thanks to Bryant Larsen for the suggestion and the original prototype!
  *
  * @author Juergen Hoeller
- * @since 2.5.4
  * @see AbstractPdfView
+ * @since 2.5.4
  */
 public abstract class AbstractPdfStamperView extends AbstractUrlBasedView {
 
-	public AbstractPdfStamperView(){
+	public AbstractPdfStamperView() {
 		setContentType("application/pdf");
 	}
 
@@ -78,6 +77,7 @@ public abstract class AbstractPdfStamperView extends AbstractUrlBasedView {
 	 * Read the raw PDF resource into an iText PdfReader.
 	 * <p>The default implementation resolve the specified "url" property
 	 * as ApplicationContext resource.
+	 *
 	 * @return the PdfReader instance
 	 * @throws IOException if resource access failed
 	 * @see #setUrl
@@ -106,15 +106,16 @@ public abstract class AbstractPdfStamperView extends AbstractUrlBasedView {
 	 * <p>Note that the passed-in HTTP response is just supposed to be used
 	 * for setting cookies or other HTTP headers. The built PDF document itself
 	 * will automatically get written to the response after this method returns.
-	 * @param model the model Map
-	 * @param stamper the PdfStamper instance that will contain the AcroFields.
-	 * You may also customize this PdfStamper instance according to your needs,
-	 * e.g. setting the "formFlattening" property.
-	 * @param request in case we need locale etc. Shouldn't look at attributes.
+	 *
+	 * @param model    the model Map
+	 * @param stamper  the PdfStamper instance that will contain the AcroFields.
+	 *                 You may also customize this PdfStamper instance according to your needs,
+	 *                 e.g. setting the "formFlattening" property.
+	 * @param request  in case we need locale etc. Shouldn't look at attributes.
 	 * @param response in case we need to set cookies. Shouldn't write to it.
 	 * @throws Exception any exception that occurred during document building
-     */
+	 */
 	protected abstract void mergePdfDocument(Map<String, Object> model, PdfStamper stamper,
-			HttpServletRequest request, HttpServletResponse response) throws Exception;
+											 HttpServletRequest request, HttpServletResponse response) throws Exception;
 
 }

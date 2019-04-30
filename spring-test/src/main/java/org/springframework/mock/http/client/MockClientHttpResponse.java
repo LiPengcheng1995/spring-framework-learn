@@ -16,13 +16,13 @@
 
 package org.springframework.mock.http.client;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.mock.http.MockHttpInputMessage;
 import org.springframework.util.Assert;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Mock implementation of {@link ClientHttpResponse}.
@@ -73,8 +73,7 @@ public class MockClientHttpResponse extends MockHttpInputMessage implements Clie
 	public void close() {
 		try {
 			getBody().close();
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			// ignore
 		}
 	}

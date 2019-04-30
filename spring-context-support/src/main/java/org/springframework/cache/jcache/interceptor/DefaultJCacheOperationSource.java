@@ -16,24 +16,15 @@
 
 package org.springframework.cache.jcache.interceptor;
 
-import java.util.Collection;
-
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
-import org.springframework.beans.factory.SmartInitializingSingleton;
+import org.springframework.beans.factory.*;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.interceptor.CacheOperationInvocationContext;
-import org.springframework.cache.interceptor.CacheResolver;
-import org.springframework.cache.interceptor.KeyGenerator;
-import org.springframework.cache.interceptor.SimpleCacheResolver;
-import org.springframework.cache.interceptor.SimpleKeyGenerator;
+import org.springframework.cache.interceptor.*;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.util.Collection;
 
 /**
  * The default {@link JCacheOperationSource} implementation delegating
@@ -63,15 +54,6 @@ public class DefaultJCacheOperationSource extends AnnotationJCacheOperationSourc
 	@Nullable
 	private BeanFactory beanFactory;
 
-
-	/**
-	 * Set the default {@link CacheManager} to use to lookup cache by name.
-	 * Only mandatory if the {@linkplain CacheResolver cache resolver} has not been set.
-	 */
-	public void setCacheManager(@Nullable CacheManager cacheManager) {
-		this.cacheManager = cacheManager;
-	}
-
 	/**
 	 * Return the specified cache manager to use, if any.
 	 */
@@ -81,11 +63,11 @@ public class DefaultJCacheOperationSource extends AnnotationJCacheOperationSourc
 	}
 
 	/**
-	 * Set the {@link CacheResolver} to resolve regular caches. If none is set, a default
-	 * implementation using the specified cache manager will be used.
+	 * Set the default {@link CacheManager} to use to lookup cache by name.
+	 * Only mandatory if the {@linkplain CacheResolver cache resolver} has not been set.
 	 */
-	public void setCacheResolver(@Nullable CacheResolver cacheResolver) {
-		this.cacheResolver = cacheResolver;
+	public void setCacheManager(@Nullable CacheManager cacheManager) {
+		this.cacheManager = cacheManager;
 	}
 
 	/**
@@ -97,11 +79,11 @@ public class DefaultJCacheOperationSource extends AnnotationJCacheOperationSourc
 	}
 
 	/**
-	 * Set the {@link CacheResolver} to resolve exception caches. If none is set, a default
+	 * Set the {@link CacheResolver} to resolve regular caches. If none is set, a default
 	 * implementation using the specified cache manager will be used.
 	 */
-	public void setExceptionCacheResolver(@Nullable CacheResolver exceptionCacheResolver) {
-		this.exceptionCacheResolver = exceptionCacheResolver;
+	public void setCacheResolver(@Nullable CacheResolver cacheResolver) {
+		this.cacheResolver = cacheResolver;
 	}
 
 	/**
@@ -113,12 +95,11 @@ public class DefaultJCacheOperationSource extends AnnotationJCacheOperationSourc
 	}
 
 	/**
-	 * Set the default {@link KeyGenerator}. If none is set, a {@link SimpleKeyGenerator}
-	 * honoring the JSR-107 {@link javax.cache.annotation.CacheKey} and
-	 * {@link javax.cache.annotation.CacheValue} will be used.
+	 * Set the {@link CacheResolver} to resolve exception caches. If none is set, a default
+	 * implementation using the specified cache manager will be used.
 	 */
-	public void setKeyGenerator(KeyGenerator keyGenerator) {
-		this.keyGenerator = keyGenerator;
+	public void setExceptionCacheResolver(@Nullable CacheResolver exceptionCacheResolver) {
+		this.exceptionCacheResolver = exceptionCacheResolver;
 	}
 
 	/**
@@ -126,6 +107,15 @@ public class DefaultJCacheOperationSource extends AnnotationJCacheOperationSourc
 	 */
 	public KeyGenerator getKeyGenerator() {
 		return this.keyGenerator;
+	}
+
+	/**
+	 * Set the default {@link KeyGenerator}. If none is set, a {@link SimpleKeyGenerator}
+	 * honoring the JSR-107 {@link javax.cache.annotation.CacheKey} and
+	 * {@link javax.cache.annotation.CacheValue} will be used.
+	 */
+	public void setKeyGenerator(KeyGenerator keyGenerator) {
+		this.keyGenerator = keyGenerator;
 	}
 
 	@Override
@@ -152,12 +142,10 @@ public class DefaultJCacheOperationSource extends AnnotationJCacheOperationSourc
 		Assert.state(this.beanFactory != null, () -> "BeanFactory required for resolution of [" + type + "]");
 		try {
 			return this.beanFactory.getBean(type);
-		}
-		catch (NoUniqueBeanDefinitionException ex) {
+		} catch (NoUniqueBeanDefinitionException ex) {
 			throw new IllegalStateException("No unique [" + type.getName() + "] bean found in application context - " +
 					"mark one as primary, or declare a more specific implementation type for your cache", ex);
-		}
-		catch (NoSuchBeanDefinitionException ex) {
+		} catch (NoSuchBeanDefinitionException ex) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("No bean of type [" + type.getName() + "] found in application context", ex);
 			}
@@ -170,13 +158,11 @@ public class DefaultJCacheOperationSource extends AnnotationJCacheOperationSourc
 			Assert.state(this.beanFactory != null, "BeanFactory required for default CacheManager resolution");
 			try {
 				this.cacheManager = this.beanFactory.getBean(CacheManager.class);
-			}
-			catch (NoUniqueBeanDefinitionException ex) {
-				throw new IllegalStateException("No unique bean of type CacheManager found. "+
+			} catch (NoUniqueBeanDefinitionException ex) {
+				throw new IllegalStateException("No unique bean of type CacheManager found. " +
 						"Mark one as primary or declare a specific CacheManager to use.");
-			}
-			catch (NoSuchBeanDefinitionException ex) {
-				throw new IllegalStateException("No bean of type CacheManager found. Register a CacheManager "+
+			} catch (NoSuchBeanDefinitionException ex) {
+				throw new IllegalStateException("No bean of type CacheManager found. Register a CacheManager " +
 						"bean or remove the @EnableCaching annotation from your configuration.");
 			}
 		}

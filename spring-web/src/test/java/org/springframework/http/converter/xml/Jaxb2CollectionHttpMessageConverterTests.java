@@ -16,28 +16,28 @@
 
 package org.springframework.http.converter.xml;
 
-import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.stream.XMLInputFactory;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MockHttpInputMessage;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 
-import static org.junit.Assert.*;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.stream.XMLInputFactory;
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test fixture for {@link Jaxb2CollectionHttpMessageConverter}.
@@ -47,27 +47,25 @@ import static org.junit.Assert.*;
  */
 public class Jaxb2CollectionHttpMessageConverterTests {
 
-	private Jaxb2CollectionHttpMessageConverter<?> converter;
-
-	private Type rootElementListType;
-
-	private Type rootElementSetType;
-
-	private Type typeListType;
-
-	private Type typeSetType;
-
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
-
+	private Jaxb2CollectionHttpMessageConverter<?> converter;
+	private Type rootElementListType;
+	private Type rootElementSetType;
+	private Type typeListType;
+	private Type typeSetType;
 
 	@Before
 	public void setup() {
 		converter = new Jaxb2CollectionHttpMessageConverter<Collection<Object>>();
-		rootElementListType = new ParameterizedTypeReference<List<RootElement>>() {}.getType();
-		rootElementSetType = new ParameterizedTypeReference<Set<RootElement>>() {}.getType();
-		typeListType = new ParameterizedTypeReference<List<TestType>>() {}.getType();
-		typeSetType = new ParameterizedTypeReference<Set<TestType>>() {}.getType();
+		rootElementListType = new ParameterizedTypeReference<List<RootElement>>() {
+		}.getType();
+		rootElementSetType = new ParameterizedTypeReference<Set<RootElement>>() {
+		}.getType();
+		typeListType = new ParameterizedTypeReference<List<TestType>>() {
+		}.getType();
+		typeSetType = new ParameterizedTypeReference<Set<TestType>>() {
+		}.getType();
 	}
 
 
@@ -130,7 +128,7 @@ public class Jaxb2CollectionHttpMessageConverterTests {
 	@SuppressWarnings("unchecked")
 	public void readXmlRootElementExternalEntityDisabled() throws Exception {
 		Resource external = new ClassPathResource("external.txt", getClass());
-		String content =  "<!DOCTYPE root [" +
+		String content = "<!DOCTYPE root [" +
 				"  <!ELEMENT external ANY >\n" +
 				"  <!ENTITY ext SYSTEM \"" + external.getURI() + "\" >]>" +
 				"  <list><rootElement><type s=\"1\"/><external>&ext;</external></rootElement></list>";
@@ -149,8 +147,7 @@ public class Jaxb2CollectionHttpMessageConverterTests {
 			Collection<RootElement> result = converter.read(rootElementListType, null, inputMessage);
 			assertEquals(1, result.size());
 			assertEquals("", result.iterator().next().external);
-		}
-		catch (HttpMessageNotReadableException ex) {
+		} catch (HttpMessageNotReadableException ex) {
 			// Some parsers raise an exception
 		}
 	}
@@ -159,7 +156,7 @@ public class Jaxb2CollectionHttpMessageConverterTests {
 	@SuppressWarnings("unchecked")
 	public void readXmlRootElementExternalEntityEnabled() throws Exception {
 		Resource external = new ClassPathResource("external.txt", getClass());
-		String content =  "<!DOCTYPE root [" +
+		String content = "<!DOCTYPE root [" +
 				"  <!ELEMENT external ANY >\n" +
 				"  <!ENTITY ext SYSTEM \"" + external.getURI() + "\" >]>" +
 				"  <list><rootElement><type s=\"1\"/><external>&ext;</external></rootElement></list>";
@@ -208,18 +205,17 @@ public class Jaxb2CollectionHttpMessageConverterTests {
 	@XmlRootElement
 	public static class RootElement {
 
+		@XmlElement
+		public TestType type = new TestType();
+		@XmlElement(required = false)
+		public String external;
+
 		public RootElement() {
 		}
 
 		public RootElement(String s) {
 			this.type = new TestType(s);
 		}
-
-		@XmlElement
-		public TestType type = new TestType();
-
-		@XmlElement(required=false)
-		public String external;
 
 		@Override
 		public boolean equals(Object o) {
@@ -243,15 +239,15 @@ public class Jaxb2CollectionHttpMessageConverterTests {
 	@XmlType
 	public static class TestType {
 
+		@XmlAttribute
+		public String s = "Hello World";
+
 		public TestType() {
 		}
 
 		public TestType(String s) {
 			this.s = s;
 		}
-
-		@XmlAttribute
-		public String s = "Hello World";
 
 		@Override
 		public boolean equals(Object o) {

@@ -17,16 +17,16 @@
 package org.springframework.test.web.servlet.samples.standalone;
 
 import org.junit.Test;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
 /**
  * Exception handling via {@code @ExceptionHandler} method.
@@ -38,7 +38,7 @@ public class ExceptionHandlerTests {
 	@Test
 	public void testExceptionHandlerMethod() throws Exception {
 		standaloneSetup(new PersonController()).build()
-			.perform(get("/person/Clyde"))
+				.perform(get("/person/Clyde"))
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("errorView"));
 	}
@@ -67,8 +67,7 @@ public class ExceptionHandlerTests {
 		public String show(@PathVariable String name) {
 			if (name.equals("Clyde")) {
 				throw new IllegalArgumentException("simulated exception");
-			}
-			else if (name.equals("Bonnie")) {
+			} else if (name.equals("Bonnie")) {
 				throw new IllegalStateException("simulated exception");
 			}
 			return "person/show";

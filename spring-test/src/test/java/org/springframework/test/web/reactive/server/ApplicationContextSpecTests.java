@@ -16,8 +16,6 @@
 package org.springframework.test.web.reactive.server;
 
 import org.junit.Test;
-import reactor.core.publisher.Mono;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -30,12 +28,14 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.WebSession;
 import org.springframework.web.server.session.InMemoryWebSessionStore;
 import org.springframework.web.server.session.WebSessionManager;
+import reactor.core.publisher.Mono;
 
-import static org.junit.Assert.*;
-import static org.springframework.web.reactive.function.server.RequestPredicates.*;
+import static org.junit.Assert.assertNotNull;
+import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 
 /**
  * Unit tests with {@link ApplicationContextSpec}.
+ *
  * @author Rossen Stoyanchev
  */
 public class ApplicationContextSpecTests {
@@ -52,7 +52,7 @@ public class ApplicationContextSpecTests {
 		assertNotNull(session);
 		String expected = ObjectUtils.getIdentityHexString(session);
 
-		for (int i=0; i < 2; i++) {
+		for (int i = 0; i < 2; i++) {
 			testClient.get().uri("/sessionIdentityHex")
 					.exchange()
 					.expectStatus().isOk()

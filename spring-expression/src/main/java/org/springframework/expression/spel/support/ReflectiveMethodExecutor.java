@@ -16,9 +16,6 @@
 
 package org.springframework.expression.spel.support;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.expression.AccessException;
@@ -27,6 +24,9 @@ import org.springframework.expression.MethodExecutor;
 import org.springframework.expression.TypedValue;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 /**
  * {@link MethodExecutor} that works via reflection.
@@ -52,6 +52,7 @@ public class ReflectiveMethodExecutor implements MethodExecutor {
 
 	/**
 	 * Create a new executor for the given method.
+	 *
 	 * @param method the method to invoke
 	 */
 	public ReflectiveMethodExecutor(Method method) {
@@ -59,8 +60,7 @@ public class ReflectiveMethodExecutor implements MethodExecutor {
 		if (method.isVarArgs()) {
 			Class<?>[] paramTypes = method.getParameterTypes();
 			this.varargsPosition = paramTypes.length - 1;
-		}
-		else {
+		} else {
 			this.varargsPosition = null;
 		}
 	}
@@ -97,8 +97,7 @@ public class ReflectiveMethodExecutor implements MethodExecutor {
 			try {
 				clazz.getDeclaredMethod(method.getName(), method.getParameterTypes());
 				return clazz;
-			}
-			catch (NoSuchMethodException ex) {
+			} catch (NoSuchMethodException ex) {
 				// Continue below...
 			}
 		}
@@ -125,8 +124,7 @@ public class ReflectiveMethodExecutor implements MethodExecutor {
 			ReflectionUtils.makeAccessible(this.method);
 			Object value = this.method.invoke(target, arguments);
 			return new TypedValue(value, new TypeDescriptor(new MethodParameter(this.method, -1)).narrow(value));
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new AccessException("Problem invoking method: " + this.method, ex);
 		}
 	}

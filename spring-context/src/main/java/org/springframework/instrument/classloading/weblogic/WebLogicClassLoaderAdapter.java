@@ -16,14 +16,10 @@
 
 package org.springframework.instrument.classloading.weblogic;
 
-import java.lang.instrument.ClassFileTransformer;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-
 import org.springframework.util.Assert;
+
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.reflect.*;
 
 /**
  * Reflective wrapper around a WebLogic 10 class loader. Used to
@@ -65,8 +61,7 @@ class WebLogicClassLoaderAdapter {
 			this.getParentMethod = classLoader.getClass().getMethod("getParent");
 			this.wlGenericClassLoaderConstructor = wlGenericClassLoaderClass.getConstructor(
 					this.getClassFinderMethod.getReturnType(), ClassLoader.class);
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			throw new IllegalStateException(
 					"Could not initialize WebLogic LoadTimeWeaver because WebLogic 10 API classes are not available", ex);
 		}
@@ -84,13 +79,11 @@ class WebLogicClassLoaderAdapter {
 		try {
 			InvocationHandler adapter = new WebLogicClassPreProcessorAdapter(transformer, this.classLoader);
 			Object adapterInstance = Proxy.newProxyInstance(this.wlPreProcessorClass.getClassLoader(),
-					new Class<?>[] {this.wlPreProcessorClass}, adapter);
+					new Class<?>[]{this.wlPreProcessorClass}, adapter);
 			this.addPreProcessorMethod.invoke(this.classLoader, adapterInstance);
-		}
-		catch (InvocationTargetException ex) {
+		} catch (InvocationTargetException ex) {
 			throw new IllegalStateException("WebLogic addInstanceClassPreProcessor method threw exception", ex.getCause());
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			throw new IllegalStateException("Could not invoke WebLogic addInstanceClassPreProcessor method", ex);
 		}
 	}
@@ -105,11 +98,9 @@ class WebLogicClassLoaderAdapter {
 			Object parent = this.getParentMethod.invoke(this.classLoader);
 			// arguments for 'clone'-like method
 			return (ClassLoader) this.wlGenericClassLoaderConstructor.newInstance(classFinder, parent);
-		}
-		catch (InvocationTargetException ex) {
+		} catch (InvocationTargetException ex) {
 			throw new IllegalStateException("WebLogic GenericClassLoader constructor failed", ex.getCause());
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			throw new IllegalStateException("Could not construct WebLogic GenericClassLoader", ex);
 		}
 	}

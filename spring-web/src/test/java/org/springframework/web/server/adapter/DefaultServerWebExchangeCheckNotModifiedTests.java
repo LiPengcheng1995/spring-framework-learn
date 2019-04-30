@@ -16,6 +16,17 @@
 
 package org.springframework.web.server.adapter;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
+import org.springframework.mock.web.test.server.MockServerWebExchange;
+
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -24,22 +35,7 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
-import org.junit.runners.Parameterized.Parameters;
-
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
-import org.springframework.mock.web.test.server.MockServerWebExchange;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.springframework.mock.http.server.reactive.test.MockServerHttpRequest.get;
 
 /**
@@ -51,18 +47,14 @@ import static org.springframework.mock.http.server.reactive.test.MockServerHttpR
 public class DefaultServerWebExchangeCheckNotModifiedTests {
 
 	private static final String CURRENT_TIME = "Wed, 09 Apr 2014 09:57:42 GMT";
-
-
-	private SimpleDateFormat dateFormat;
-
-	private Instant currentDate;
-
 	@Parameter
 	public HttpMethod method;
+	private SimpleDateFormat dateFormat;
+	private Instant currentDate;
 
 	@Parameters(name = "{0}")
 	static public Iterable<Object[]> safeMethods() {
-		return Arrays.asList(new Object[][] {
+		return Arrays.asList(new Object[][]{
 				{HttpMethod.GET},
 				{HttpMethod.HEAD}
 		});
@@ -223,7 +215,7 @@ public class DefaultServerWebExchangeCheckNotModifiedTests {
 		MockServerWebExchange exchange = MockServerWebExchange.from(get("/")
 				.ifNoneMatch(eTag)
 				.ifModifiedSince(oneMinuteAgo.toEpochMilli())
-				);
+		);
 
 		assertTrue(exchange.checkNotModified(eTag, currentDate));
 

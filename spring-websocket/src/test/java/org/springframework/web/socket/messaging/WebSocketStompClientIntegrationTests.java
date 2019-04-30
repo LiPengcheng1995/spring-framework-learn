@@ -15,13 +15,6 @@
  */
 package org.springframework.web.socket.messaging;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.After;
@@ -29,16 +22,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
-
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.converter.StringMessageConverter;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.messaging.simp.stomp.StompCommand;
-import org.springframework.messaging.simp.stomp.StompFrameHandler;
-import org.springframework.messaging.simp.stomp.StompHeaders;
-import org.springframework.messaging.simp.stomp.StompSession;
-import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
+import org.springframework.messaging.simp.stomp.*;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.socket.TomcatWebSocketTestServer;
 import org.springframework.web.socket.WebSocketTestServer;
@@ -50,9 +38,18 @@ import org.springframework.web.socket.server.RequestUpgradeStrategy;
 import org.springframework.web.socket.server.standard.TomcatRequestUpgradeStrategy;
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 
 /**
  * Integration tests for {@link WebSocketStompClient}.
+ *
  * @author Rossen Stoyanchev
  */
 public class WebSocketStompClientIntegrationTests {
@@ -92,20 +89,17 @@ public class WebSocketStompClientIntegrationTests {
 	public void tearDown() throws Exception {
 		try {
 			this.server.undeployConfig();
-		}
-		catch (Throwable t) {
+		} catch (Throwable t) {
 			logger.error("Failed to undeploy application config", t);
 		}
 		try {
 			this.server.stop();
-		}
-		catch (Throwable t) {
+		} catch (Throwable t) {
 			logger.error("Failed to stop server", t);
 		}
 		try {
 			this.wac.close();
-		}
-		catch (Throwable t) {
+		} catch (Throwable t) {
 			logger.error("Failed to close WebApplicationContext", t);
 		}
 	}
@@ -171,6 +165,7 @@ public class WebSocketStompClientIntegrationTests {
 				public Type getPayloadType(StompHeaders headers) {
 					return String.class;
 				}
+
 				@Override
 				public void handleFrame(StompHeaders headers, @Nullable Object payload) {
 					received.add((String) payload);
@@ -180,8 +175,7 @@ public class WebSocketStompClientIntegrationTests {
 				// Delay send since server processes concurrently
 				// Ideally order should be preserved or receipts supported (simple broker)
 				Thread.sleep(500);
-			}
-			catch (InterruptedException ex) {
+			} catch (InterruptedException ex) {
 				logger.error(ex);
 			}
 			session.send(this.topic, this.payload);
@@ -203,7 +197,7 @@ public class WebSocketStompClientIntegrationTests {
 
 		@Override
 		public void handleException(StompSession session, StompCommand command,
-				StompHeaders headers, byte[] payload, Throwable ex) {
+									StompHeaders headers, byte[] payload, Throwable ex) {
 
 			logger.error(command + " " + headers, ex);
 		}

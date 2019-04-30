@@ -16,14 +16,13 @@
 
 package org.springframework.jdbc.core.metadata;
 
-import javax.sql.DataSource;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.MetaDataAccessException;
+
+import javax.sql.DataSource;
 
 /**
  * Factory used to create a {@link TableMetaDataProvider} implementation
@@ -39,8 +38,9 @@ public class TableMetaDataProviderFactory {
 
 	/**
 	 * Create a {@link TableMetaDataProvider} based on the database meta-data.
+	 *
 	 * @param dataSource used to retrieve meta-data
-	 * @param context the class that holds configuration and meta-data
+	 * @param context    the class that holds configuration and meta-data
 	 * @return instance of the TableMetaDataProvider implementation to be used
 	 */
 	public static TableMetaDataProvider createMetaDataProvider(DataSource dataSource, TableMetaDataContext context) {
@@ -54,17 +54,13 @@ public class TableMetaDataProviderFactory {
 				if ("Oracle".equals(databaseProductName)) {
 					provider = new OracleTableMetaDataProvider(
 							databaseMetaData, context.isOverrideIncludeSynonymsDefault());
-				}
-				else if ("PostgreSQL".equals(databaseProductName)) {
+				} else if ("PostgreSQL".equals(databaseProductName)) {
 					provider = new PostgresTableMetaDataProvider(databaseMetaData);
-				}
-				else if ("Apache Derby".equals(databaseProductName)) {
+				} else if ("Apache Derby".equals(databaseProductName)) {
 					provider = new DerbyTableMetaDataProvider(databaseMetaData);
-				}
-				else if ("HSQL Database Engine".equals(databaseProductName)) {
+				} else if ("HSQL Database Engine".equals(databaseProductName)) {
 					provider = new HsqlTableMetaDataProvider(databaseMetaData);
-				}
-				else {
+				} else {
 					provider = new GenericTableMetaDataProvider(databaseMetaData);
 				}
 
@@ -78,8 +74,7 @@ public class TableMetaDataProviderFactory {
 				}
 				return provider;
 			});
-		}
-		catch (MetaDataAccessException ex) {
+		} catch (MetaDataAccessException ex) {
 			throw new DataAccessResourceFailureException("Error retrieving database meta-data", ex);
 		}
 	}

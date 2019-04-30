@@ -16,10 +16,6 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.util.List;
-
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -29,6 +25,9 @@ import org.springframework.web.reactive.HandlerResult;
 import org.springframework.web.reactive.HandlerResultHandler;
 import org.springframework.web.reactive.accept.RequestedContentTypeResolver;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 /**
  * {@code HandlerResultHandler} that handles return values from methods annotated
@@ -50,7 +49,8 @@ public class ResponseBodyResultHandler extends AbstractMessageWriterResultHandle
 
 	/**
 	 * Basic constructor with a default {@link ReactiveAdapterRegistry}.
-	 * @param writers writers for serializing to the response body
+	 *
+	 * @param writers  writers for serializing to the response body
 	 * @param resolver to determine the requested content type
 	 */
 	public ResponseBodyResultHandler(List<HttpMessageWriter<?>> writers, RequestedContentTypeResolver resolver) {
@@ -59,12 +59,13 @@ public class ResponseBodyResultHandler extends AbstractMessageWriterResultHandle
 
 	/**
 	 * Constructor with an {@link ReactiveAdapterRegistry} instance.
-	 * @param writers writers for serializing to the response body
+	 *
+	 * @param writers  writers for serializing to the response body
 	 * @param resolver to determine the requested content type
 	 * @param registry for adaptation to reactive types
 	 */
 	public ResponseBodyResultHandler(List<HttpMessageWriter<?>> writers,
-			RequestedContentTypeResolver resolver, ReactiveAdapterRegistry registry) {
+									 RequestedContentTypeResolver resolver, ReactiveAdapterRegistry registry) {
 
 		super(writers, resolver, registry);
 		setOrder(100);

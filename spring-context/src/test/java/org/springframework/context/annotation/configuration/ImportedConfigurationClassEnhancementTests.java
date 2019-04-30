@@ -17,7 +17,6 @@
 package org.springframework.context.annotation.configuration;
 
 import org.junit.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -27,7 +26,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.tests.sample.beans.TestBean;
 import org.springframework.util.ClassUtils;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.*;
 
 /**
@@ -84,18 +83,19 @@ public class ImportedConfigurationClassEnhancementTests {
 	}
 
 
-
 	@Configuration
 	static class ConfigToBeAutowired {
 
-		public @Bean TestBean testBean() {
+		public @Bean
+		TestBean testBean() {
 			return new TestBean();
 		}
 	}
 
 	static class Config {
 
-		@Autowired ConfigToBeAutowired autowiredConfig;
+		@Autowired
+		ConfigToBeAutowired autowiredConfig;
 	}
 
 	@Import(ConfigToBeAutowired.class)
@@ -111,7 +111,8 @@ public class ImportedConfigurationClassEnhancementTests {
 	@Import(TestBean.class)
 	static class ConfigThatImportsNonConfigClass {
 
-		@Autowired TestBean testBean;
+		@Autowired
+		TestBean testBean;
 	}
 
 }

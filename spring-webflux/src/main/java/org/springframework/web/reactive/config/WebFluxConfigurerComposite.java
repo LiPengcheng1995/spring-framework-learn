@@ -16,12 +16,6 @@
 
 package org.springframework.web.reactive.config;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.lang.Nullable;
@@ -30,6 +24,12 @@ import org.springframework.validation.MessageCodesResolver;
 import org.springframework.validation.Validator;
 import org.springframework.web.reactive.accept.RequestedContentTypeResolverBuilder;
 import org.springframework.web.reactive.result.method.annotation.ArgumentResolverConfigurer;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * A {@link WebFluxConfigurer} that delegates to one or more others.
@@ -105,11 +105,9 @@ public class WebFluxConfigurerComposite implements WebFluxConfigurer {
 		List<T> result = this.delegates.stream().map(factory).filter(Objects::nonNull).collect(Collectors.toList());
 		if (result.isEmpty()) {
 			return null;
-		}
-		else if (result.size() == 1) {
+		} else if (result.size() == 1) {
 			return result.get(0);
-		}
-		else {
+		} else {
 			throw new IllegalStateException("More than one WebFluxConfigurer implements " +
 					beanType.getSimpleName() + " factory method.");
 		}

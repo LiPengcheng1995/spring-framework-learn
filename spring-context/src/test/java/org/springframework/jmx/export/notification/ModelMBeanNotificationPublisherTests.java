@@ -16,16 +16,10 @@
 
 package org.springframework.jmx.export.notification;
 
-import javax.management.AttributeChangeNotification;
-import javax.management.MBeanException;
-import javax.management.MalformedObjectNameException;
-import javax.management.Notification;
-import javax.management.ObjectName;
-import javax.management.RuntimeOperationsException;
-
 import org.junit.Test;
-
 import org.springframework.jmx.export.SpringModelMBean;
+
+import javax.management.*;
 
 import static org.junit.Assert.*;
 
@@ -34,6 +28,10 @@ import static org.junit.Assert.*;
  * @author Chris Beams
  */
 public class ModelMBeanNotificationPublisherTests {
+
+	private static ObjectName createObjectName() throws MalformedObjectNameException {
+		return ObjectName.getInstance("foo:type=bar");
+	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testCtorWithNullMBean() throws Exception {
@@ -97,11 +95,6 @@ public class ModelMBeanNotificationPublisherTests {
 		assertSame("The exact same Notification is not being passed through from the publisher to the mbean.", notification, mbean.getActualNotification());
 		assertSame("The 'source' property of the Notification is *wrongly* being set to the ObjectName of the associated MBean.", this, mbean.getActualNotification().getSource());
 	}
-
-	private static ObjectName createObjectName() throws MalformedObjectNameException {
-		return ObjectName.getInstance("foo:type=bar");
-	}
-
 
 	private static class StubSpringModelMBean extends SpringModelMBean {
 

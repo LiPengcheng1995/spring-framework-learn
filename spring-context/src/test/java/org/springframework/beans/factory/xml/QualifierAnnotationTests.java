@@ -16,14 +16,7 @@
 
 package org.springframework.beans.factory.xml;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.util.Properties;
-
 import org.junit.Test;
-
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +27,15 @@ import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.support.StaticApplicationContext;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.Properties;
+
 import static java.lang.String.format;
 import static org.junit.Assert.*;
-import static org.springframework.util.ClassUtils.*;
+import static org.springframework.util.ClassUtils.convertClassNameToResourcePath;
 
 /**
  * @author Mark Fisher
@@ -47,8 +46,9 @@ public class QualifierAnnotationTests {
 
 	private static final String CLASSNAME = QualifierAnnotationTests.class.getName();
 	private static final String CONFIG_LOCATION =
-		format("classpath:%s-context.xml", convertClassNameToResourcePath(CLASSNAME));
-
+			format("classpath:%s-context.xml", convertClassNameToResourcePath(CLASSNAME));
+	private static final String FACTORY_QUALIFIER = "FACTORY";
+	private static final String IMPL_QUALIFIER = "IMPL";
 
 	@Test
 	public void testNonQualifiedFieldFails() {
@@ -59,8 +59,7 @@ public class QualifierAnnotationTests {
 		try {
 			context.refresh();
 			fail("Should have thrown a BeanCreationException");
-		}
-		catch (BeanCreationException e) {
+		} catch (BeanCreationException e) {
 			assertTrue(e.getMessage().contains("found 6"));
 		}
 	}
@@ -196,8 +195,7 @@ public class QualifierAnnotationTests {
 		try {
 			context.refresh();
 			fail("should have thrown a BeanCreationException");
-		}
-		catch (BeanCreationException e) {
+		} catch (BeanCreationException e) {
 			assertTrue(e.getMessage().contains("found 6"));
 		}
 	}
@@ -215,8 +213,8 @@ public class QualifierAnnotationTests {
 
 		MultiQualifierClient testBean = (MultiQualifierClient) context.getBean("testBean");
 
-		assertNotNull( testBean.factoryTheta);
-		assertNotNull( testBean.implTheta);
+		assertNotNull(testBean.factoryTheta);
+		assertNotNull(testBean.implTheta);
 	}
 
 	@Test
@@ -224,164 +222,6 @@ public class QualifierAnnotationTests {
 		StaticApplicationContext context = new StaticApplicationContext();
 		BeanDefinitionReader reader = new XmlBeanDefinitionReader(context);
 		reader.loadBeanDefinitions(CONFIG_LOCATION);
-	}
-
-
-	@SuppressWarnings("unused")
-	private static class NonQualifiedTestBean {
-
-		@Autowired
-		private Person anonymous;
-
-		public Person getAnonymous() {
-			return anonymous;
-		}
-	}
-
-
-	private static class QualifiedByValueTestBean {
-
-		@Autowired @Qualifier("larry")
-		private Person larry;
-
-		public Person getLarry() {
-			return larry;
-		}
-	}
-
-
-	private static class QualifiedByParentValueTestBean {
-
-		@Autowired @Qualifier("parentLarry")
-		private Person larry;
-
-		public Person getLarry() {
-			return larry;
-		}
-	}
-
-
-	private static class QualifiedByBeanNameTestBean {
-
-		@Autowired @Qualifier("larryBean")
-		private Person larry;
-
-		@Autowired @Qualifier("testProperties")
-		public Properties myProps;
-
-		public Person getLarry() {
-			return larry;
-		}
-	}
-
-
-	private static class QualifiedByFieldNameTestBean {
-
-		@Autowired
-		private Person larryBean;
-
-		public Person getLarry() {
-			return larryBean;
-		}
-	}
-
-
-	private static class QualifiedByParameterNameTestBean {
-
-		private Person larryBean;
-
-		@Autowired
-		public void setLarryBean(Person larryBean) {
-			this.larryBean = larryBean;
-		}
-
-		public Person getLarry() {
-			return larryBean;
-		}
-	}
-
-
-	private static class QualifiedByAliasTestBean {
-
-		@Autowired @Qualifier("stooge")
-		private Person stooge;
-
-		public Person getStooge() {
-			return stooge;
-		}
-	}
-
-
-	private static class QualifiedByAnnotationTestBean {
-
-		@Autowired @Qualifier("special")
-		private Person larry;
-
-		public Person getLarry() {
-			return larry;
-		}
-	}
-
-
-	private static class QualifiedByCustomValueTestBean {
-
-		@Autowired @SimpleValueQualifier("curly")
-		private Person curly;
-
-		public Person getCurly() {
-			return curly;
-		}
-	}
-
-
-	private static class QualifiedByAnnotationValueTestBean {
-
-		@Autowired @SimpleValueQualifier("special")
-		private Person larry;
-
-		public Person getLarry() {
-			return larry;
-		}
-	}
-
-
-	@SuppressWarnings("unused")
-	private static class QualifiedByAttributesTestBean {
-
-		@Autowired @MultipleAttributeQualifier(name="moe", age=42)
-		private Person moeSenior;
-
-		@Autowired @MultipleAttributeQualifier(name="moe", age=15)
-		private Person moeJunior;
-
-		public Person getMoeSenior() {
-			return moeSenior;
-		}
-
-		public Person getMoeJunior() {
-			return moeJunior;
-		}
-	}
-
-
-	@SuppressWarnings("unused")
-	private static class Person {
-
-		private String name;
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-	}
-
-
-	@Qualifier("special")
-	@SimpleValueQualifier("special")
-	private static class SpecialPerson extends Person {
 	}
 
 
@@ -404,24 +244,173 @@ public class QualifierAnnotationTests {
 	}
 
 
-	private static final String FACTORY_QUALIFIER = "FACTORY";
-
-	private static final String IMPL_QUALIFIER = "IMPL";
-
-
-	public static class MultiQualifierClient {
-
-		@Autowired @Qualifier(FACTORY_QUALIFIER)
-		public Theta factoryTheta;
-
-		@Autowired @Qualifier(IMPL_QUALIFIER)
-		public Theta implTheta;
-	}
-
-
 	public interface Theta {
 	}
 
+	@SuppressWarnings("unused")
+	private static class NonQualifiedTestBean {
+
+		@Autowired
+		private Person anonymous;
+
+		public Person getAnonymous() {
+			return anonymous;
+		}
+	}
+
+	private static class QualifiedByValueTestBean {
+
+		@Autowired
+		@Qualifier("larry")
+		private Person larry;
+
+		public Person getLarry() {
+			return larry;
+		}
+	}
+
+	private static class QualifiedByParentValueTestBean {
+
+		@Autowired
+		@Qualifier("parentLarry")
+		private Person larry;
+
+		public Person getLarry() {
+			return larry;
+		}
+	}
+
+	private static class QualifiedByBeanNameTestBean {
+
+		@Autowired
+		@Qualifier("testProperties")
+		public Properties myProps;
+		@Autowired
+		@Qualifier("larryBean")
+		private Person larry;
+
+		public Person getLarry() {
+			return larry;
+		}
+	}
+
+	private static class QualifiedByFieldNameTestBean {
+
+		@Autowired
+		private Person larryBean;
+
+		public Person getLarry() {
+			return larryBean;
+		}
+	}
+
+	private static class QualifiedByParameterNameTestBean {
+
+		private Person larryBean;
+
+		@Autowired
+		public void setLarryBean(Person larryBean) {
+			this.larryBean = larryBean;
+		}
+
+		public Person getLarry() {
+			return larryBean;
+		}
+	}
+
+	private static class QualifiedByAliasTestBean {
+
+		@Autowired
+		@Qualifier("stooge")
+		private Person stooge;
+
+		public Person getStooge() {
+			return stooge;
+		}
+	}
+
+	private static class QualifiedByAnnotationTestBean {
+
+		@Autowired
+		@Qualifier("special")
+		private Person larry;
+
+		public Person getLarry() {
+			return larry;
+		}
+	}
+
+	private static class QualifiedByCustomValueTestBean {
+
+		@Autowired
+		@SimpleValueQualifier("curly")
+		private Person curly;
+
+		public Person getCurly() {
+			return curly;
+		}
+	}
+
+	private static class QualifiedByAnnotationValueTestBean {
+
+		@Autowired
+		@SimpleValueQualifier("special")
+		private Person larry;
+
+		public Person getLarry() {
+			return larry;
+		}
+	}
+
+	@SuppressWarnings("unused")
+	private static class QualifiedByAttributesTestBean {
+
+		@Autowired
+		@MultipleAttributeQualifier(name = "moe", age = 42)
+		private Person moeSenior;
+
+		@Autowired
+		@MultipleAttributeQualifier(name = "moe", age = 15)
+		private Person moeJunior;
+
+		public Person getMoeSenior() {
+			return moeSenior;
+		}
+
+		public Person getMoeJunior() {
+			return moeJunior;
+		}
+	}
+
+	@SuppressWarnings("unused")
+	private static class Person {
+
+		private String name;
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+	}
+
+	@Qualifier("special")
+	@SimpleValueQualifier("special")
+	private static class SpecialPerson extends Person {
+	}
+
+	public static class MultiQualifierClient {
+
+		@Autowired
+		@Qualifier(FACTORY_QUALIFIER)
+		public Theta factoryTheta;
+
+		@Autowired
+		@Qualifier(IMPL_QUALIFIER)
+		public Theta implTheta;
+	}
 
 	@Qualifier(IMPL_QUALIFIER)
 	public static class ThetaImpl implements Theta {
@@ -433,7 +422,8 @@ public class QualifierAnnotationTests {
 
 		@Override
 		public Theta getObject() {
-			return new Theta() {};
+			return new Theta() {
+			};
 		}
 
 		@Override

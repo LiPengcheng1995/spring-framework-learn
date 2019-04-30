@@ -29,13 +29,13 @@ public class AnnotationTestSubBean extends AnnotationTestBean implements IAnnota
 	}
 
 	@Override
-	public void setAge(int age) {
-		super.setAge(age);
+	public int getAge() {
+		return super.getAge();
 	}
 
 	@Override
-	public int getAge() {
-		return super.getAge();
+	public void setAge(int age) {
+		super.setAge(age);
 	}
 
 	@Override

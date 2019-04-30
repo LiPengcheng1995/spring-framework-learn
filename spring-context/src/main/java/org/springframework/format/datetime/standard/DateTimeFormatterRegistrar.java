@@ -16,34 +16,21 @@
 
 package org.springframework.format.datetime.standard;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Month;
-import java.time.MonthDay;
-import java.time.OffsetDateTime;
-import java.time.OffsetTime;
-import java.time.Period;
-import java.time.Year;
-import java.time.YearMonth;
-import java.time.ZonedDateTime;
+import org.springframework.format.FormatterRegistrar;
+import org.springframework.format.FormatterRegistry;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
+
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.EnumMap;
 import java.util.Map;
-
-import org.springframework.format.FormatterRegistrar;
-import org.springframework.format.FormatterRegistry;
-import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 /**
  * Configures the JSR-310 <code>java.time</code> formatting system for use with Spring.
  *
  * @author Juergen Hoeller
  * @author Phillip Webb
- * @since 4.0
  * @see #setDateStyle
  * @see #setTimeStyle
  * @see #setDateTimeStyle
@@ -51,29 +38,24 @@ import org.springframework.format.annotation.DateTimeFormat.ISO;
  * @see org.springframework.format.FormatterRegistrar#registerFormatters
  * @see org.springframework.format.datetime.DateFormatterRegistrar
  * @see org.springframework.format.datetime.joda.DateTimeFormatterFactoryBean
+ * @since 4.0
  */
 public class DateTimeFormatterRegistrar implements FormatterRegistrar {
-
-	private enum Type {DATE, TIME, DATE_TIME}
-
 
 	/**
 	 * User-defined formatters.
 	 */
 	private final Map<Type, DateTimeFormatter> formatters = new EnumMap<>(Type.class);
-
 	/**
 	 * Factories used when specific formatters have not been specified.
 	 */
 	private final Map<Type, DateTimeFormatterFactory> factories = new EnumMap<>(Type.class);
-
 
 	public DateTimeFormatterRegistrar() {
 		for (Type type : Type.values()) {
 			this.factories.put(type, new DateTimeFormatterFactory());
 		}
 	}
-
 
 	/**
 	 * Set whether standard ISO formatting should be applied to all date/time types.
@@ -116,6 +98,7 @@ public class DateTimeFormatterRegistrar implements FormatterRegistrar {
 	 * <p>This formatter will be used for the {@link LocalDate} type.
 	 * When specified, the {@link #setDateStyle dateStyle} and
 	 * {@link #setUseIsoFormat useIsoFormat} properties will be ignored.
+	 *
 	 * @param formatter the formatter to use
 	 * @see #setTimeFormatter
 	 * @see #setDateTimeFormatter
@@ -129,6 +112,7 @@ public class DateTimeFormatterRegistrar implements FormatterRegistrar {
 	 * <p>This formatter will be used for the {@link LocalTime} and {@link OffsetTime}
 	 * types. When specified, the {@link #setTimeStyle timeStyle} and
 	 * {@link #setUseIsoFormat useIsoFormat} properties will be ignored.
+	 *
 	 * @param formatter the formatter to use
 	 * @see #setDateFormatter
 	 * @see #setDateTimeFormatter
@@ -143,6 +127,7 @@ public class DateTimeFormatterRegistrar implements FormatterRegistrar {
 	 * and {@link OffsetDateTime} types. When specified, the
 	 * {@link #setDateTimeStyle dateTimeStyle} and
 	 * {@link #setUseIsoFormat useIsoFormat} properties will be ignored.
+	 *
 	 * @param formatter the formatter to use
 	 * @see #setDateFormatter
 	 * @see #setTimeFormatter
@@ -150,7 +135,6 @@ public class DateTimeFormatterRegistrar implements FormatterRegistrar {
 	public void setDateTimeFormatter(DateTimeFormatter formatter) {
 		this.formatters.put(Type.DATE_TIME, formatter);
 	}
-
 
 	@Override
 	public void registerFormatters(FormatterRegistry registry) {
@@ -211,10 +195,15 @@ public class DateTimeFormatterRegistrar implements FormatterRegistrar {
 
 	private DateTimeFormatter getFallbackFormatter(Type type) {
 		switch (type) {
-			case DATE: return DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
-			case TIME: return DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
-			default: return DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
+			case DATE:
+				return DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT);
+			case TIME:
+				return DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
+			default:
+				return DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
 		}
 	}
+
+	private enum Type {DATE, TIME, DATE_TIME}
 
 }

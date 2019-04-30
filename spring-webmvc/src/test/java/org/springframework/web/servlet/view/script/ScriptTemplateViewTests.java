@@ -16,23 +16,10 @@
 
 package org.springframework.web.servlet.view.script;
 
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.support.StaticApplicationContext;
@@ -44,6 +31,14 @@ import org.springframework.mock.web.test.MockServletContext;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.*;
 
@@ -54,15 +49,11 @@ import static org.mockito.BDDMockito.*;
  */
 public class ScriptTemplateViewTests {
 
-	private ScriptTemplateView view;
-
-	private ScriptTemplateConfigurer configurer;
-
-	private StaticWebApplicationContext wac;
-
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
-
+	private ScriptTemplateView view;
+	private ScriptTemplateConfigurer configurer;
+	private StaticWebApplicationContext wac;
 
 	@Before
 	public void setup() {

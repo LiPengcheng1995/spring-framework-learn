@@ -16,21 +16,12 @@
 
 package org.springframework.test.context.junit4.concurrency;
 
-import java.lang.annotation.Annotation;
-import java.util.Arrays;
-
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.ParallelComputer;
-
 import org.springframework.test.context.hierarchies.web.DispatcherWacRootWacEarTests;
-import org.springframework.test.context.junit4.InheritedConfigSpringJUnit4ClassRunnerAppCtxTests;
-import org.springframework.test.context.junit4.MethodLevelTransactionalSpringRunnerTests;
-import org.springframework.test.context.junit4.SpringJUnit47ClassRunnerRuleTests;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunnerAppCtxTests;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.junit4.TimedTransactionalSpringRunnerTests;
+import org.springframework.test.context.junit4.*;
 import org.springframework.test.context.junit4.rules.BaseAppCtxRuleTests;
 import org.springframework.test.context.junit4.rules.BasicAnnotationConfigWacSpringRuleTests;
 import org.springframework.test.context.junit4.rules.SpringClassRule;
@@ -44,8 +35,11 @@ import org.springframework.tests.Assume;
 import org.springframework.tests.TestGroup;
 import org.springframework.util.ReflectionUtils;
 
-import static org.springframework.core.annotation.AnnotatedElementUtils.*;
-import static org.springframework.test.context.junit4.JUnitTestingUtils.*;
+import java.lang.annotation.Annotation;
+import java.util.Arrays;
+
+import static org.springframework.core.annotation.AnnotatedElementUtils.hasAnnotation;
+import static org.springframework.test.context.junit4.JUnitTestingUtils.runTestsAndAssertCounters;
 
 /**
  * Concurrency tests for the {@link SpringRunner}, {@link SpringClassRule}, and
@@ -69,26 +63,26 @@ import static org.springframework.test.context.junit4.JUnitTestingUtils.*;
  * LONG_RUNNING} test group is enabled.
  *
  * @author Sam Brannen
- * @since 5.0
  * @see org.springframework.test.context.TestContextConcurrencyTests
+ * @since 5.0
  */
 public class SpringJUnit4ConcurrencyTests {
 
-	private final Class<?>[] testClasses = new Class<?>[] {
-		// Basics
+	private final Class<?>[] testClasses = new Class<?>[]{
+			// Basics
 			SpringJUnit4ClassRunnerAppCtxTests.class,
 			InheritedConfigSpringJUnit4ClassRunnerAppCtxTests.class,
 			SpringJUnit47ClassRunnerRuleTests.class,
 			BaseAppCtxRuleTests.class,
-		// Transactional
+			// Transactional
 			MethodLevelTransactionalSpringRunnerTests.class,
 			TimedTransactionalSpringRunnerTests.class,
-		// Web and Scopes
+			// Web and Scopes
 			DispatcherWacRootWacEarTests.class,
 			BasicAnnotationConfigWacSpringRuleTests.class,
 			RequestAndSessionScopedBeansWacTests.class,
 			WebSocketServletServerContainerFactoryBeanTests.class,
-		// Spring MVC Test
+			// Spring MVC Test
 			JavaConfigTests.class,
 			WebAppResourceTests.class,
 			SampleTests.class

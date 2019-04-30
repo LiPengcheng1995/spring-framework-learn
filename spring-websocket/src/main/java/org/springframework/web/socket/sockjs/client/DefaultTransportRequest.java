@@ -16,16 +16,8 @@
 
 package org.springframework.web.socket.sockjs.client;
 
-import java.net.URI;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.TaskScheduler;
@@ -37,6 +29,13 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.sockjs.SockJsTransportFailureException;
 import org.springframework.web.socket.sockjs.frame.SockJsMessageCodec;
 import org.springframework.web.socket.sockjs.transport.TransportType;
+
+import java.net.URI;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A default implementation of {@link TransportRequest}.
@@ -58,26 +57,20 @@ class DefaultTransportRequest implements TransportRequest {
 	private final Transport transport;
 
 	private final TransportType serverTransportType;
-
+	private final List<Runnable> timeoutTasks = new ArrayList<>();
 	private SockJsMessageCodec codec;
-
 	@Nullable
 	private Principal user;
-
 	private long timeoutValue;
-
 	@Nullable
 	private TaskScheduler timeoutScheduler;
-
-	private final List<Runnable> timeoutTasks = new ArrayList<>();
-
 	@Nullable
 	private DefaultTransportRequest fallbackRequest;
 
 
 	public DefaultTransportRequest(SockJsUrlInfo sockJsUrlInfo,
-			@Nullable HttpHeaders handshakeHeaders, @Nullable HttpHeaders httpRequestHeaders,
-			Transport transport, TransportType serverTransportType, SockJsMessageCodec codec) {
+								   @Nullable HttpHeaders handshakeHeaders, @Nullable HttpHeaders httpRequestHeaders,
+								   Transport transport, TransportType serverTransportType, SockJsMessageCodec codec) {
 
 		Assert.notNull(sockJsUrlInfo, "SockJsUrlInfo is required");
 		Assert.notNull(transport, "Transport is required");
@@ -112,14 +105,14 @@ class DefaultTransportRequest implements TransportRequest {
 		return this.sockJsUrlInfo.getTransportUrl(this.serverTransportType);
 	}
 
-	public void setUser(Principal user) {
-		this.user = user;
-	}
-
 	@Override
 	@Nullable
 	public Principal getUser() {
 		return this.user;
+	}
+
+	public void setUser(Principal user) {
+		this.user = user;
 	}
 
 	@Override
@@ -162,8 +155,7 @@ class DefaultTransportRequest implements TransportRequest {
 			}
 			Date timeoutDate = new Date(System.currentTimeMillis() + this.timeoutValue);
 			this.timeoutScheduler.schedule(connectHandler, timeoutDate);
-		}
-		else if (logger.isTraceEnabled()) {
+		} else if (logger.isTraceEnabled()) {
 			logger.trace("Connect timeout task not scheduled (no TaskScheduler configured).");
 		}
 	}
@@ -198,8 +190,7 @@ class DefaultTransportRequest implements TransportRequest {
 		public void onSuccess(@Nullable WebSocketSession session) {
 			if (this.handled.compareAndSet(false, true)) {
 				this.future.set(session);
-			}
-			else if (logger.isErrorEnabled()) {
+			} else if (logger.isErrorEnabled()) {
 				logger.error("Connect success/failure already handled for " + DefaultTransportRequest.this);
 			}
 		}
@@ -224,8 +215,7 @@ class DefaultTransportRequest implements TransportRequest {
 				if (fallbackRequest != null) {
 					logger.error(DefaultTransportRequest.this + " failed. Falling back on next transport.", ex);
 					fallbackRequest.connect(this.handler, this.future);
-				}
-				else {
+				} else {
 					logger.error("No more fallback transports after " + DefaultTransportRequest.this, ex);
 					if (ex != null) {
 						this.future.setException(ex);
@@ -236,13 +226,11 @@ class DefaultTransportRequest implements TransportRequest {
 						for (Runnable runnable : timeoutTasks) {
 							runnable.run();
 						}
-					}
-					catch (Throwable ex2) {
+					} catch (Throwable ex2) {
 						logger.error("Transport failed to run timeout tasks for " + DefaultTransportRequest.this, ex2);
 					}
 				}
-			}
-			else {
+			} else {
 				logger.error("Connect success/failure events already took place for " +
 						DefaultTransportRequest.this + ". Ignoring this additional failure event.", ex);
 			}

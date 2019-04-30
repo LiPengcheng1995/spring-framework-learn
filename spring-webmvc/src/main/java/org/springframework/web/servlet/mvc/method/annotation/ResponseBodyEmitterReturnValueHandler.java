@@ -16,16 +16,8 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.List;
-import java.util.function.Consumer;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.core.ResolvableType;
@@ -46,6 +38,13 @@ import org.springframework.web.context.request.async.WebAsyncUtils;
 import org.springframework.web.filter.ShallowEtagHeaderFilter;
 import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.method.support.ModelAndViewContainer;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Handler for return values of type {@link ResponseBodyEmitter} and sub-classes
@@ -82,14 +81,15 @@ public class ResponseBodyEmitterReturnValueHandler implements HandlerMethodRetur
 
 	/**
 	 * Complete constructor with pluggable "reactive" type support.
+	 *
 	 * @param messageConverters converters to write emitted objects with
-	 * @param reactiveRegistry for reactive return value type support
-	 * @param executor for blocking I/O writes of items emitted from reactive types
-	 * @param manager for detecting streaming media types
+	 * @param reactiveRegistry  for reactive return value type support
+	 * @param executor          for blocking I/O writes of items emitted from reactive types
+	 * @param manager           for detecting streaming media types
 	 * @since 5.0
 	 */
 	public ResponseBodyEmitterReturnValueHandler(List<HttpMessageConverter<?>> messageConverters,
-			ReactiveAdapterRegistry reactiveRegistry, TaskExecutor executor, ContentNegotiationManager manager) {
+												 ReactiveAdapterRegistry reactiveRegistry, TaskExecutor executor, ContentNegotiationManager manager) {
 
 		Assert.notEmpty(messageConverters, "HttpMessageConverter List must not be empty");
 		this.messageConverters = messageConverters;
@@ -110,7 +110,7 @@ public class ResponseBodyEmitterReturnValueHandler implements HandlerMethodRetur
 	@Override
 	@SuppressWarnings("resource")
 	public void handleReturnValue(@Nullable Object returnValue, MethodParameter returnType,
-			ModelAndViewContainer mavContainer, NativeWebRequest webRequest) throws Exception {
+								  ModelAndViewContainer mavContainer, NativeWebRequest webRequest) throws Exception {
 
 		if (returnValue == null) {
 			mavContainer.setRequestHandled(true);
@@ -140,8 +140,7 @@ public class ResponseBodyEmitterReturnValueHandler implements HandlerMethodRetur
 		ResponseBodyEmitter emitter;
 		if (returnValue instanceof ResponseBodyEmitter) {
 			emitter = (ResponseBodyEmitter) returnValue;
-		}
-		else {
+		} else {
 			emitter = this.reactiveHandler.handleValue(returnValue, returnType, mavContainer, webRequest);
 			if (emitter == null) {
 				// Not streaming: write headers without committing response..
@@ -170,6 +169,46 @@ public class ResponseBodyEmitterReturnValueHandler implements HandlerMethodRetur
 		emitter.initialize(handler);
 	}
 
+	/**
+	 * Wrap to silently ignore header changes HttpMessageConverter's that would
+	 * otherwise cause HttpHeaders to raise exceptions.
+	 */
+	private static class StreamingServletServerHttpResponse implements ServerHttpResponse {
+
+		private final ServerHttpResponse delegate;
+
+		private final HttpHeaders mutableHeaders = new HttpHeaders();
+
+		public StreamingServletServerHttpResponse(ServerHttpResponse delegate) {
+			this.delegate = delegate;
+			this.mutableHeaders.putAll(delegate.getHeaders());
+		}
+
+		@Override
+		public void setStatusCode(HttpStatus status) {
+			this.delegate.setStatusCode(status);
+		}
+
+		@Override
+		public HttpHeaders getHeaders() {
+			return this.mutableHeaders;
+		}
+
+		@Override
+		public OutputStream getBody() throws IOException {
+			return this.delegate.getBody();
+		}
+
+		@Override
+		public void flush() throws IOException {
+			this.delegate.flush();
+		}
+
+		@Override
+		public void close() {
+			this.delegate.close();
+		}
+	}
 
 	/**
 	 * ResponseBodyEmitter.Handler that writes with HttpMessageConverter's.
@@ -228,48 +267,6 @@ public class ResponseBodyEmitterReturnValueHandler implements HandlerMethodRetur
 		@Override
 		public void onCompletion(Runnable callback) {
 			this.deferredResult.onCompletion(callback);
-		}
-	}
-
-
-	/**
-	 * Wrap to silently ignore header changes HttpMessageConverter's that would
-	 * otherwise cause HttpHeaders to raise exceptions.
-	 */
-	private static class StreamingServletServerHttpResponse implements ServerHttpResponse {
-
-		private final ServerHttpResponse delegate;
-
-		private final HttpHeaders mutableHeaders = new HttpHeaders();
-
-		public StreamingServletServerHttpResponse(ServerHttpResponse delegate) {
-			this.delegate = delegate;
-			this.mutableHeaders.putAll(delegate.getHeaders());
-		}
-
-		@Override
-		public void setStatusCode(HttpStatus status) {
-			this.delegate.setStatusCode(status);
-		}
-
-		@Override
-		public HttpHeaders getHeaders() {
-			return this.mutableHeaders;
-		}
-
-		@Override
-		public OutputStream getBody() throws IOException {
-			return this.delegate.getBody();
-		}
-
-		@Override
-		public void flush() throws IOException {
-			this.delegate.flush();
-		}
-
-		@Override
-		public void close() {
-			this.delegate.close();
 		}
 	}
 

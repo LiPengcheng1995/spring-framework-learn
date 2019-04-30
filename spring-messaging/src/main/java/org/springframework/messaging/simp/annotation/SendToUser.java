@@ -16,13 +16,9 @@
 
 package org.springframework.messaging.simp.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.springframework.core.annotation.AliasFor;
+
+import java.lang.annotation.*;
 
 /**
  * Annotation that indicates that the return value of a message-handling method
@@ -32,13 +28,13 @@ import org.springframework.core.annotation.AliasFor;
  *
  * <p>The annotation may also be placed at class-level in which case all methods
  * in the class where the annotation applies will inherit it.
-
+ *
  * @author Rossen Stoyanchev
  * @author Sam Brannen
- * @since 4.0
  * @see org.springframework.messaging.simp.annotation.support.SendToMethodReturnValueHandler
  * @see org.springframework.messaging.simp.user.UserDestinationMessageHandler
  * @see org.springframework.messaging.simp.SimpMessageHeaderAccessor#getUser()
+ * @since 4.0
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
@@ -47,6 +43,7 @@ public @interface SendToUser {
 
 	/**
 	 * Alias for {@link #destinations}.
+	 *
 	 * @see #destinations
 	 */
 	@AliasFor("destinations")
@@ -56,9 +53,10 @@ public @interface SendToUser {
 	 * One or more destinations to send a message to.
 	 * <p>If left unspecified, a default destination is selected based on the
 	 * destination of the input message being handled.
-	 * @since 4.2
+	 *
 	 * @see #value
 	 * @see org.springframework.messaging.simp.annotation.support.SendToMethodReturnValueHandler
+	 * @since 4.2
 	 */
 	@AliasFor("value")
 	String[] destinations() default {};
@@ -68,7 +66,7 @@ public @interface SendToUser {
 	 * or only to the session of the input message being handled.
 	 * <p>By default, this is set to {@code true} in which case messages are
 	 * broadcast to all sessions.
-     */
-    boolean broadcast() default true;
+	 */
+	boolean broadcast() default true;
 
 }

@@ -16,11 +16,7 @@
 
 package org.springframework.web.servlet.i18n;
 
-import java.util.Locale;
-import java.util.TimeZone;
-
 import org.junit.Test;
-
 import org.springframework.context.i18n.LocaleContext;
 import org.springframework.context.i18n.SimpleLocaleContext;
 import org.springframework.context.i18n.SimpleTimeZoneAwareLocaleContext;
@@ -30,6 +26,9 @@ import org.springframework.mock.web.test.MockHttpServletResponse;
 import org.springframework.mock.web.test.MockServletContext;
 import org.springframework.web.servlet.LocaleContextResolver;
 import org.springframework.web.servlet.LocaleResolver;
+
+import java.util.Locale;
+import java.util.TimeZone;
 
 import static org.junit.Assert.*;
 
@@ -77,8 +76,7 @@ public class LocaleResolverTests {
 			// check new locale
 			locale = localeResolver.resolveLocale(request);
 			assertEquals(Locale.GERMANY, locale);
-		}
-		catch (UnsupportedOperationException ex) {
+		} catch (UnsupportedOperationException ex) {
 			if (shouldSet) {
 				fail("should be able to set Locale");
 			}
@@ -90,8 +88,7 @@ public class LocaleResolverTests {
 			LocaleContext localeContext = localeContextResolver.resolveLocaleContext(request);
 			if (shouldSet) {
 				assertEquals(Locale.GERMANY, localeContext.getLocale());
-			}
-			else {
+			} else {
 				assertEquals(Locale.UK, localeContext.getLocale());
 			}
 			assertTrue(localeContext instanceof TimeZoneAwareLocaleContext);
@@ -111,8 +108,7 @@ public class LocaleResolverTests {
 				assertEquals(Locale.US, localeContext.getLocale());
 				if (localeContextResolver instanceof AbstractLocaleContextResolver) {
 					assertEquals(((TimeZoneAwareLocaleContext) localeContext).getTimeZone(), TimeZone.getTimeZone("GMT+1"));
-				}
-				else {
+				} else {
 					assertNull(((TimeZoneAwareLocaleContext) localeContext).getTimeZone());
 				}
 
@@ -134,8 +130,7 @@ public class LocaleResolverTests {
 					((AbstractLocaleContextResolver) localeContextResolver).setDefaultLocale(Locale.GERMANY);
 					assertEquals(Locale.GERMANY, localeContext.getLocale());
 				}
-			}
-			catch (UnsupportedOperationException ex) {
+			} catch (UnsupportedOperationException ex) {
 				if (shouldSet) {
 					fail("should be able to set Locale");
 				}

@@ -17,7 +17,6 @@
 package org.springframework.format.datetime.joda;
 
 import org.joda.time.format.DateTimeFormatter;
-
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.lang.Nullable;
@@ -28,11 +27,11 @@ import org.springframework.lang.Nullable;
  *
  * @author Phillip Webb
  * @author Sam Brannen
- * @since 3.2
  * @see #setPattern
  * @see #setIso
  * @see #setStyle
  * @see DateTimeFormatterFactory
+ * @since 3.2
  */
 public class DateTimeFormatterFactoryBean extends DateTimeFormatterFactory
 		implements FactoryBean<DateTimeFormatter>, InitializingBean {

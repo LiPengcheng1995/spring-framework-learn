@@ -16,10 +16,10 @@
 
 package org.springframework.jdbc.datasource.embedded;
 
-import java.sql.Driver;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
+
+import java.sql.Driver;
 
 /**
  * {@link EmbeddedDatabaseConfigurer} for an HSQL embedded database instance.
@@ -38,23 +38,23 @@ final class HsqlEmbeddedDatabaseConfigurer extends AbstractEmbeddedDatabaseConfi
 	private final Class<? extends Driver> driverClass;
 
 
+	private HsqlEmbeddedDatabaseConfigurer(Class<? extends Driver> driverClass) {
+		this.driverClass = driverClass;
+	}
+
 	/**
 	 * Get the singleton {@link HsqlEmbeddedDatabaseConfigurer} instance.
+	 *
 	 * @return the configurer instance
 	 * @throws ClassNotFoundException if HSQL is not on the classpath
 	 */
 	@SuppressWarnings("unchecked")
 	public static synchronized HsqlEmbeddedDatabaseConfigurer getInstance() throws ClassNotFoundException {
 		if (instance == null) {
-			instance = new HsqlEmbeddedDatabaseConfigurer( (Class<? extends Driver>)
+			instance = new HsqlEmbeddedDatabaseConfigurer((Class<? extends Driver>)
 					ClassUtils.forName("org.hsqldb.jdbcDriver", HsqlEmbeddedDatabaseConfigurer.class.getClassLoader()));
 		}
 		return instance;
-	}
-
-
-	private HsqlEmbeddedDatabaseConfigurer(Class<? extends Driver> driverClass) {
-		this.driverClass = driverClass;
 	}
 
 	@Override

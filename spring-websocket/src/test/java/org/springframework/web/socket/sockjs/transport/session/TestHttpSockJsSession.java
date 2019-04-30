@@ -16,11 +16,6 @@
 
 package org.springframework.web.socket.sockjs.transport.session;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketHandler;
@@ -28,15 +23,18 @@ import org.springframework.web.socket.sockjs.SockJsTransportFailureException;
 import org.springframework.web.socket.sockjs.frame.SockJsFrame;
 import org.springframework.web.socket.sockjs.transport.SockJsServiceConfig;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author Rossen Stoyanchev
  */
 public class TestHttpSockJsSession extends StreamingSockJsSession {
 
-	private boolean active;
-
 	private final List<SockJsFrame> sockJsFrames = new ArrayList<>();
-
+	private boolean active;
 	private CloseStatus closeStatus;
 
 	private IOException exceptionOnWrite;
@@ -49,7 +47,7 @@ public class TestHttpSockJsSession extends StreamingSockJsSession {
 
 
 	public TestHttpSockJsSession(String sessionId, SockJsServiceConfig config,
-			WebSocketHandler wsHandler, Map<String, Object> attributes) {
+								 WebSocketHandler wsHandler, Map<String, Object> attributes) {
 
 		super(sessionId, config, wsHandler, attributes);
 	}

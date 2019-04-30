@@ -16,22 +16,22 @@
 
 package org.springframework.web.servlet.view.json;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-
+import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.cfg.SerializerFactoryConfig;
+import com.fasterxml.jackson.databind.ser.BeanSerializerFactory;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.SerializerFactory;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.ScriptableObject;
-
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.test.MockHttpServletRequest;
@@ -40,25 +40,13 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.View;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.cfg.SerializerFactoryConfig;
-import com.fasterxml.jackson.databind.ser.BeanSerializerFactory;
-import com.fasterxml.jackson.databind.ser.FilterProvider;
-import com.fasterxml.jackson.databind.ser.SerializerFactory;
-import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
-import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import java.io.IOException;
+import java.util.*;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * @author Jeremy Grelle
@@ -346,7 +334,7 @@ public class MappingJackson2JsonViewTests {
 	private void validateResult() throws Exception {
 		String json = response.getContentAsString();
 		DirectFieldAccessor viewAccessor = new DirectFieldAccessor(view);
-		String jsonPrefix = (String)viewAccessor.getPropertyValue("jsonPrefix");
+		String jsonPrefix = (String) viewAccessor.getPropertyValue("jsonPrefix");
 		if (jsonPrefix != null) {
 			json = json.substring(5);
 		}
@@ -370,8 +358,7 @@ public class MappingJackson2JsonViewTests {
 		String content = this.response.getContentAsString();
 		if (validValue) {
 			assertEquals("/**/" + paramValue + "({\"foo\":\"bar\"});", content);
-		}
-		else {
+		} else {
 			assertEquals("{\"foo\":\"bar\"}", content);
 		}
 	}
@@ -420,7 +407,7 @@ public class MappingJackson2JsonViewTests {
 	}
 
 
-	@JsonSerialize(using=TestBeanSimpleSerializer.class)
+	@JsonSerialize(using = TestBeanSimpleSerializer.class)
 	public static class TestBeanSimpleAnnotated extends TestBeanSimple {
 	}
 
@@ -498,8 +485,7 @@ public class MappingJackson2JsonViewTests {
 		public JsonSerializer<Object> createSerializer(SerializerProvider prov, JavaType type) throws JsonMappingException {
 			if (type.getRawClass() == TestBeanSimple.class) {
 				return new TestBeanSimpleSerializer();
-			}
-			else {
+			} else {
 				return super.createSerializer(prov, type);
 			}
 		}

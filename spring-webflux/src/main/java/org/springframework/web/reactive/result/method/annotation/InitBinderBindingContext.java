@@ -16,8 +16,6 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.util.List;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
@@ -31,6 +29,8 @@ import org.springframework.web.reactive.HandlerResult;
 import org.springframework.web.reactive.result.method.SyncInvocableHandlerMethod;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebSession;
+
+import java.util.List;
 
 /**
  * Extends {@link BindingContext} with {@code @InitBinder} method initialization.
@@ -51,7 +51,7 @@ class InitBinderBindingContext extends BindingContext {
 
 
 	InitBinderBindingContext(@Nullable WebBindingInitializer initializer,
-			List<SyncInvocableHandlerMethod> binderMethods) {
+							 List<SyncInvocableHandlerMethod> binderMethods) {
 
 		super(initializer);
 		this.binderMethods = binderMethods;
@@ -106,8 +106,7 @@ class InitBinderBindingContext extends BindingContext {
 		this.saveModelOperation = () -> {
 			if (getSessionStatus().isComplete()) {
 				attributesHandler.cleanupAttributes(session);
-			}
-			else {
+			} else {
 				attributesHandler.storeAttributes(session, getModel().asMap());
 			}
 		};

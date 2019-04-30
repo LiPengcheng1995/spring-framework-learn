@@ -16,8 +16,6 @@
 
 package org.springframework.test.context.junit4;
 
-import java.lang.reflect.Constructor;
-
 import org.junit.experimental.ParallelComputer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.runner.Computer;
@@ -25,8 +23,9 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.RunWith;
 import org.junit.runner.Runner;
 import org.junit.runner.notification.RunNotifier;
-
 import org.springframework.beans.BeanUtils;
+
+import java.lang.reflect.Constructor;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,8 +38,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * proper test failure for failed assertions.
  *
  * @author Sam Brannen
- * @since 4.2
  * @see TrackingRunListener
+ * @since 4.2
  */
 public class JUnitTestingUtils {
 
@@ -49,19 +48,19 @@ public class JUnitTestingUtils {
 	 * configured via {@link RunWith @RunWith} or the default JUnit runner, and
 	 * assert the expectations of the test execution.
 	 *
-	 * @param testClass the test class to run with JUnit
-	 * @param expectedStartedCount the expected number of tests that started
-	 * @param expectedFailedCount the expected number of tests that failed
-	 * @param expectedFinishedCount the expected number of tests that finished
-	 * @param expectedIgnoredCount the expected number of tests that were ignored
+	 * @param testClass                     the test class to run with JUnit
+	 * @param expectedStartedCount          the expected number of tests that started
+	 * @param expectedFailedCount           the expected number of tests that failed
+	 * @param expectedFinishedCount         the expected number of tests that finished
+	 * @param expectedIgnoredCount          the expected number of tests that were ignored
 	 * @param expectedAssumptionFailedCount the expected number of tests that
-	 * resulted in a failed assumption
+	 *                                      resulted in a failed assumption
 	 */
 	public static void runTestsAndAssertCounters(Class<?> testClass, int expectedStartedCount, int expectedFailedCount,
-			int expectedFinishedCount, int expectedIgnoredCount, int expectedAssumptionFailedCount) throws Exception {
+												 int expectedFinishedCount, int expectedIgnoredCount, int expectedAssumptionFailedCount) throws Exception {
 
 		runTestsAndAssertCounters(null, testClass, expectedStartedCount, expectedFailedCount, expectedFinishedCount,
-			expectedIgnoredCount, expectedAssumptionFailedCount);
+				expectedIgnoredCount, expectedAssumptionFailedCount);
 	}
 
 	/**
@@ -72,19 +71,19 @@ public class JUnitTestingUtils {
 	 * will be run with the runner that the test class is configured with
 	 * (i.e., via {@link RunWith @RunWith}) or the default JUnit runner.
 	 *
-	 * @param runnerClass the explicit runner class to use or {@code null}
-	 * if the default JUnit runner should be used
-	 * @param testClass the test class to run with JUnit
-	 * @param expectedStartedCount the expected number of tests that started
-	 * @param expectedFailedCount the expected number of tests that failed
-	 * @param expectedFinishedCount the expected number of tests that finished
-	 * @param expectedIgnoredCount the expected number of tests that were ignored
+	 * @param runnerClass                   the explicit runner class to use or {@code null}
+	 *                                      if the default JUnit runner should be used
+	 * @param testClass                     the test class to run with JUnit
+	 * @param expectedStartedCount          the expected number of tests that started
+	 * @param expectedFailedCount           the expected number of tests that failed
+	 * @param expectedFinishedCount         the expected number of tests that finished
+	 * @param expectedIgnoredCount          the expected number of tests that were ignored
 	 * @param expectedAssumptionFailedCount the expected number of tests that
-	 * resulted in a failed assumption
+	 *                                      resulted in a failed assumption
 	 */
 	public static void runTestsAndAssertCounters(Class<? extends Runner> runnerClass, Class<?> testClass,
-			int expectedStartedCount, int expectedFailedCount, int expectedFinishedCount, int expectedIgnoredCount,
-			int expectedAssumptionFailedCount) throws Exception {
+												 int expectedStartedCount, int expectedFailedCount, int expectedFinishedCount, int expectedIgnoredCount,
+												 int expectedAssumptionFailedCount) throws Exception {
 
 		TrackingRunListener listener = new TrackingRunListener();
 
@@ -94,8 +93,7 @@ public class JUnitTestingUtils {
 			RunNotifier notifier = new RunNotifier();
 			notifier.addListener(listener);
 			runner.run(notifier);
-		}
-		else {
+		} else {
 			JUnitCore junit = new JUnitCore();
 			junit.addListener(listener);
 			junit.run(testClass);
@@ -103,11 +101,11 @@ public class JUnitTestingUtils {
 
 		// @formatter:off
 		assertAll(
-			() -> assertEquals(expectedStartedCount, listener.getTestStartedCount(), "tests started for [" + testClass + "]"),
-			() -> assertEquals(expectedFailedCount, listener.getTestFailureCount(), "tests failed for [" + testClass + "]"),
-			() -> assertEquals(expectedFinishedCount, listener.getTestFinishedCount(), "tests finished for [" + testClass + "]"),
-			() -> assertEquals(expectedIgnoredCount, listener.getTestIgnoredCount(), "tests ignored for [" + testClass + "]"),
-			() -> assertEquals(expectedAssumptionFailedCount, listener.getTestAssumptionFailureCount(), "failed assumptions for [" + testClass + "]")
+				() -> assertEquals(expectedStartedCount, listener.getTestStartedCount(), "tests started for [" + testClass + "]"),
+				() -> assertEquals(expectedFailedCount, listener.getTestFailureCount(), "tests failed for [" + testClass + "]"),
+				() -> assertEquals(expectedFinishedCount, listener.getTestFinishedCount(), "tests finished for [" + testClass + "]"),
+				() -> assertEquals(expectedIgnoredCount, listener.getTestIgnoredCount(), "tests ignored for [" + testClass + "]"),
+				() -> assertEquals(expectedAssumptionFailedCount, listener.getTestAssumptionFailureCount(), "failed assumptions for [" + testClass + "]")
 		);
 		// @formatter:on
 	}
@@ -122,18 +120,18 @@ public class JUnitTestingUtils {
 	 * as the {@code Computer}. To have all tests executed serially, supply
 	 * {@link Computer#serial()} as the {@code Computer}.
 	 *
-	 * @param computer the JUnit {@code Computer} to use
-	 * @param expectedStartedCount the expected number of tests that started
-	 * @param expectedFailedCount the expected number of tests that failed
-	 * @param expectedFinishedCount the expected number of tests that finished
-	 * @param expectedIgnoredCount the expected number of tests that were ignored
+	 * @param computer                      the JUnit {@code Computer} to use
+	 * @param expectedStartedCount          the expected number of tests that started
+	 * @param expectedFailedCount           the expected number of tests that failed
+	 * @param expectedFinishedCount         the expected number of tests that finished
+	 * @param expectedIgnoredCount          the expected number of tests that were ignored
 	 * @param expectedAssumptionFailedCount the expected number of tests that
-	 * resulted in a failed assumption
-	 * @param testClasses one or more test classes to run
+	 *                                      resulted in a failed assumption
+	 * @param testClasses                   one or more test classes to run
 	 */
 	public static void runTestsAndAssertCounters(Computer computer, int expectedStartedCount, int expectedFailedCount,
-			int expectedFinishedCount, int expectedIgnoredCount, int expectedAssumptionFailedCount,
-			Class<?>... testClasses) throws Exception {
+												 int expectedFinishedCount, int expectedIgnoredCount, int expectedAssumptionFailedCount,
+												 Class<?>... testClasses) throws Exception {
 
 		JUnitCore junit = new JUnitCore();
 		TrackingRunListener listener = new TrackingRunListener();
@@ -142,11 +140,11 @@ public class JUnitTestingUtils {
 
 		// @formatter:off
 		assertAll(
-			() -> assertEquals(expectedStartedCount, listener.getTestStartedCount(), "tests started"),
-			() -> assertEquals(expectedFailedCount, listener.getTestFailureCount(), "tests failed"),
-			() -> assertEquals(expectedFinishedCount, listener.getTestFinishedCount(), "tests finished"),
-			() -> assertEquals(expectedIgnoredCount, listener.getTestIgnoredCount(), "tests ignored"),
-			() -> assertEquals(expectedAssumptionFailedCount, listener.getTestAssumptionFailureCount(), "failed assumptions")
+				() -> assertEquals(expectedStartedCount, listener.getTestStartedCount(), "tests started"),
+				() -> assertEquals(expectedFailedCount, listener.getTestFailureCount(), "tests failed"),
+				() -> assertEquals(expectedFinishedCount, listener.getTestFinishedCount(), "tests finished"),
+				() -> assertEquals(expectedIgnoredCount, listener.getTestIgnoredCount(), "tests ignored"),
+				() -> assertEquals(expectedAssumptionFailedCount, listener.getTestAssumptionFailureCount(), "failed assumptions")
 		);
 		// @formatter:on
 	}

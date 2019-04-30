@@ -16,16 +16,7 @@
 
 package org.springframework.http.client.reactive;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
 import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.Nullable;
@@ -33,6 +24,14 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Base class for {@link ClientHttpRequest} implementations.
@@ -43,34 +42,21 @@ import org.springframework.util.MultiValueMap;
  */
 public abstract class AbstractClientHttpRequest implements ClientHttpRequest {
 
-	/**
-	 * COMMITTING -> COMMITTED is the period after doCommit is called but before
-	 * the response status and headers have been applied to the underlying
-	 * response during which time pre-commit actions can still make changes to
-	 * the response status and headers.
-	 */
-	private enum State {NEW, COMMITTING, COMMITTED}
-
-
 	private final HttpHeaders headers;
-
 	private final MultiValueMap<String, HttpCookie> cookies;
-
 	private final AtomicReference<State> state = new AtomicReference<>(State.NEW);
-
 	private final List<Supplier<? extends Publisher<Void>>> commitActions = new ArrayList<>(4);
-
 
 	public AbstractClientHttpRequest() {
 		this(new HttpHeaders());
 	}
+
 
 	public AbstractClientHttpRequest(HttpHeaders headers) {
 		Assert.notNull(headers, "HttpHeaders must not be null");
 		this.headers = headers;
 		this.cookies = new LinkedMultiValueMap<>();
 	}
-
 
 	@Override
 	public HttpHeaders getHeaders() {
@@ -101,6 +87,7 @@ public abstract class AbstractClientHttpRequest implements ClientHttpRequest {
 
 	/**
 	 * A variant of {@link #doCommit(Supplier)} for a request without body.
+	 *
 	 * @return a completion publisher
 	 */
 	protected Mono<Void> doCommit() {
@@ -110,6 +97,7 @@ public abstract class AbstractClientHttpRequest implements ClientHttpRequest {
 	/**
 	 * Apply {@link #beforeCommit(Supplier) beforeCommit} actions, apply the
 	 * request headers/cookies, and write the request body.
+	 *
 	 * @param writeAction the action to write the request body (may be {@code null})
 	 * @return a completion publisher
 	 */
@@ -135,7 +123,6 @@ public abstract class AbstractClientHttpRequest implements ClientHttpRequest {
 		return Flux.concat(actions).then();
 	}
 
-
 	/**
 	 * Apply header changes from {@link #getHeaders()} to the underlying response.
 	 * This method is called once only.
@@ -147,5 +134,13 @@ public abstract class AbstractClientHttpRequest implements ClientHttpRequest {
 	 * This method is called once only.
 	 */
 	protected abstract void applyCookies();
+
+	/**
+	 * COMMITTING -> COMMITTED is the period after doCommit is called but before
+	 * the response status and headers have been applied to the underlying
+	 * response during which time pre-commit actions can still make changes to
+	 * the response status and headers.
+	 */
+	private enum State {NEW, COMMITTING, COMMITTED}
 
 }

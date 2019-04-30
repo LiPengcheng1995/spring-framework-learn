@@ -16,20 +16,13 @@
 
 package org.springframework.format.datetime.joda;
 
-import java.util.Calendar;
-import java.util.Date;
-
-import org.joda.time.DateTime;
-import org.joda.time.Instant;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
-import org.joda.time.LocalTime;
-import org.joda.time.MutableDateTime;
-import org.joda.time.ReadableInstant;
-
+import org.joda.time.*;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.format.datetime.DateFormatterRegistrar;
+
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Installs lower-level type converters required to integrate
@@ -48,6 +41,7 @@ final class JodaTimeConverters {
 
 	/**
 	 * Install the converters into the converter registry.
+	 *
 	 * @param registry the converter registry
 	 */
 	@SuppressWarnings("deprecation")
@@ -155,6 +149,7 @@ final class JodaTimeConverters {
 
 	/**
 	 * Used when printing a {@code java.util.Date} field with a ReadableInstantPrinter.
+	 *
 	 * @see MillisecondInstantPrinter
 	 * @see JodaDateTimeFormatAnnotationFormatterFactory
 	 */
@@ -169,6 +164,7 @@ final class JodaTimeConverters {
 
 	/**
 	 * Used when printing a {@code java.util.Calendar} field with a ReadableInstantPrinter.
+	 *
 	 * @see MillisecondInstantPrinter
 	 * @see JodaDateTimeFormatAnnotationFormatterFactory
 	 */
@@ -183,6 +179,7 @@ final class JodaTimeConverters {
 
 	/**
 	 * Used when printing a Long field with a ReadableInstantPrinter.
+	 *
 	 * @see MillisecondInstantPrinter
 	 * @see JodaDateTimeFormatAnnotationFormatterFactory
 	 */

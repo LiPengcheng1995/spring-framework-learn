@@ -15,21 +15,21 @@
  */
 package org.springframework.web.reactive.resource;
 
-import java.util.Collections;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.FileCopyUtils;
+
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 /**
  * Unit tests for {@link ContentVersionStrategy}.
+ *
  * @author Rossen Stoyanchev
  * @author Brian Clozel
  */
@@ -58,7 +58,7 @@ public class ContentBasedVersionStrategyTests {
 		String file = "font-awesome/css/font-awesome.min%s%s.css";
 		String hash = "7fbe76cdac6093784895bb4989203e5a";
 
-		assertEquals(String.format(file, "", ""),  this.strategy.removeVersion(String.format(file, "-", hash), hash));
+		assertEquals(String.format(file, "", ""), this.strategy.removeVersion(String.format(file, "-", hash), hash));
 		assertNull(this.strategy.extractVersion("foo/bar.css"));
 	}
 

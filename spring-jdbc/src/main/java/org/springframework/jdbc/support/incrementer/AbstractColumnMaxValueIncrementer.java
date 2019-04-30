@@ -16,9 +16,9 @@
 
 package org.springframework.jdbc.support.incrementer;
 
-import javax.sql.DataSource;
-
 import org.springframework.util.Assert;
+
+import javax.sql.DataSource;
 
 /**
  * Abstract base class for {@link DataFieldMaxValueIncrementer} implementations that use
@@ -30,15 +30,20 @@ import org.springframework.util.Assert;
  */
 public abstract class AbstractColumnMaxValueIncrementer extends AbstractDataFieldMaxValueIncrementer {
 
-	/** The name of the column for this sequence */
+	/**
+	 * The name of the column for this sequence
+	 */
 	private String columnName;
 
-	/** The number of keys buffered in a cache */
+	/**
+	 * The number of keys buffered in a cache
+	 */
 	private int cacheSize = 1;
 
 
 	/**
 	 * Default constructor for bean property style usage.
+	 *
 	 * @see #setDataSource
 	 * @see #setIncrementerName
 	 * @see #setColumnName
@@ -48,21 +53,14 @@ public abstract class AbstractColumnMaxValueIncrementer extends AbstractDataFiel
 
 	/**
 	 * Convenience constructor.
-	 * @param dataSource the DataSource to use
+	 *
+	 * @param dataSource      the DataSource to use
 	 * @param incrementerName the name of the sequence/table to use
-	 * @param columnName the name of the column in the sequence table to use
+	 * @param columnName      the name of the column in the sequence table to use
 	 */
 	public AbstractColumnMaxValueIncrementer(DataSource dataSource, String incrementerName, String columnName) {
 		super(dataSource, incrementerName);
 		Assert.notNull(columnName, "Column name must not be null");
-		this.columnName = columnName;
-	}
-
-
-	/**
-	 * Set the name of the column in the sequence table.
-	 */
-	public void setColumnName(String columnName) {
 		this.columnName = columnName;
 	}
 
@@ -74,10 +72,10 @@ public abstract class AbstractColumnMaxValueIncrementer extends AbstractDataFiel
 	}
 
 	/**
-	 * Set the number of buffered keys.
+	 * Set the name of the column in the sequence table.
 	 */
-	public void setCacheSize(int cacheSize) {
-		this.cacheSize = cacheSize;
+	public void setColumnName(String columnName) {
+		this.columnName = columnName;
 	}
 
 	/**
@@ -85,6 +83,13 @@ public abstract class AbstractColumnMaxValueIncrementer extends AbstractDataFiel
 	 */
 	public int getCacheSize() {
 		return this.cacheSize;
+	}
+
+	/**
+	 * Set the number of buffered keys.
+	 */
+	public void setCacheSize(int cacheSize) {
+		this.cacheSize = cacheSize;
 	}
 
 	@Override

@@ -16,17 +16,7 @@
 
 package org.springframework.web.reactive.result.method;
 
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.Arrays;
-
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.HttpStatus;
@@ -39,15 +29,19 @@ import org.springframework.web.reactive.BindingContext;
 import org.springframework.web.reactive.HandlerResult;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.UnsupportedMediaTypeStatusException;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Arrays;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 import static org.springframework.mock.http.server.reactive.test.MockServerHttpRequest.get;
 import static org.springframework.web.method.ResolvableMethod.on;
 
@@ -158,8 +152,7 @@ public class InvocableHandlerMethodTests {
 		try {
 			mono.block();
 			fail("Expected IllegalStateException");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertThat(ex.getMessage(), is("No suitable resolver for argument 0 of type 'java.lang.String' " +
 					"on " + method.toGenericString()));
 		}
@@ -174,8 +167,7 @@ public class InvocableHandlerMethodTests {
 		try {
 			mono.block();
 			fail("Expected UnsupportedMediaTypeStatusException");
-		}
-		catch (UnsupportedMediaTypeStatusException ex) {
+		} catch (UnsupportedMediaTypeStatusException ex) {
 			assertThat(ex.getMessage(), is("Response status 415 with reason \"boo\""));
 		}
 	}
@@ -189,8 +181,7 @@ public class InvocableHandlerMethodTests {
 		try {
 			mono.block();
 			fail("Expected IllegalStateException");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertThat(ex.getMessage(), is("Failed to invoke handler method with resolved arguments: " +
 					"[0][type=java.lang.Integer][value=1] " +
 					"on " + method.toGenericString()));
@@ -205,8 +196,7 @@ public class InvocableHandlerMethodTests {
 		try {
 			mono.block();
 			fail("Expected IllegalStateException");
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			assertThat(ex.getMessage(), is("boo"));
 		}
 	}
@@ -226,7 +216,7 @@ public class InvocableHandlerMethodTests {
 	}
 
 	private Mono<HandlerResult> invoke(Object handler, Method method,
-			HandlerMethodArgumentResolver... resolver) {
+									   HandlerMethodArgumentResolver... resolver) {
 
 		InvocableHandlerMethod hm = new InvocableHandlerMethod(handler, method);
 		hm.setArgumentResolvers(Arrays.asList(resolver));
@@ -305,8 +295,7 @@ public class InvocableHandlerMethodTests {
 		private Flux<DataBuffer> getBody(String body) {
 			try {
 				return Flux.just(new DefaultDataBufferFactory().wrap(body.getBytes("UTF-8")));
-			}
-			catch (UnsupportedEncodingException ex) {
+			} catch (UnsupportedEncodingException ex) {
 				throw new IllegalStateException(ex);
 			}
 		}

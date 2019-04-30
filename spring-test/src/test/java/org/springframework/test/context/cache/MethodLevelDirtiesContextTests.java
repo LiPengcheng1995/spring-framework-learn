@@ -16,13 +16,10 @@
 
 package org.springframework.test.context.cache;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -34,8 +31,10 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static org.junit.Assert.*;
-import static org.springframework.test.annotation.DirtiesContext.MethodMode.*;
+import static org.springframework.test.annotation.DirtiesContext.MethodMode.BEFORE_METHOD;
 
 /**
  * Integration test which verifies correct interaction between the
@@ -53,24 +52,10 @@ import static org.springframework.test.annotation.DirtiesContext.MethodMode.*;
 public class MethodLevelDirtiesContextTests {
 
 	private static final AtomicInteger contextCount = new AtomicInteger();
-
-
-	@Configuration
-	static class Config {
-
-		@Bean
-		Integer count() {
-			return contextCount.incrementAndGet();
-		}
-	}
-
-
 	@Autowired
 	private ConfigurableApplicationContext context;
-
 	@Autowired
 	private Integer count;
-
 
 	@Test
 	// test## prefix required for @FixMethodOrder.
@@ -106,6 +91,15 @@ public class MethodLevelDirtiesContextTests {
 		assertEquals("count: ", expectedContextCreationCount, this.count.intValue());
 
 		assertEquals("context creation count: ", expectedContextCreationCount, contextCount.get());
+	}
+
+	@Configuration
+	static class Config {
+
+		@Bean
+		Integer count() {
+			return contextCount.incrementAndGet();
+		}
 	}
 
 }

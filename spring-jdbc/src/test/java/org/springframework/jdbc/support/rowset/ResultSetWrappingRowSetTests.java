@@ -16,22 +16,19 @@
 
 package org.springframework.jdbc.support.rowset;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.jdbc.InvalidResultSetAccessException;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Time;
-import java.sql.Timestamp;
+import java.sql.*;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import org.springframework.jdbc.InvalidResultSetAccessException;
-
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
 
 /**
  * @author Thomas Risberg
@@ -208,16 +205,14 @@ public class ResultSetWrappingRowSetTests {
 		if (arg instanceof String) {
 			given(resultSet.findColumn((String) arg)).willReturn(1);
 			given(rsetMethod.invoke(resultSet, 1)).willReturn(ret).willThrow(new SQLException("test"));
-		}
-		else {
+		} else {
 			given(rsetMethod.invoke(resultSet, arg)).willReturn(ret).willThrow(new SQLException("test"));
 		}
 		rowsetMethod.invoke(rowSet, arg);
 		try {
 			rowsetMethod.invoke(rowSet, arg);
 			fail("InvalidResultSetAccessException should have been thrown");
-		}
-		catch (InvocationTargetException ex) {
+		} catch (InvocationTargetException ex) {
 			assertEquals(InvalidResultSetAccessException.class, ex.getTargetException().getClass());
 		}
 	}

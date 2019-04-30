@@ -18,7 +18,6 @@ package org.springframework.web.reactive.result.condition;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,8 +45,7 @@ abstract class AbstractMediaTypeExpression implements Comparable<AbstractMediaTy
 		if (expression.startsWith("!")) {
 			this.isNegated = true;
 			expression = expression.substring(1);
-		}
-		else {
+		} else {
 			this.isNegated = false;
 		}
 		this.mediaType = MediaType.parseMediaType(expression);
@@ -74,8 +72,7 @@ abstract class AbstractMediaTypeExpression implements Comparable<AbstractMediaTy
 		try {
 			boolean match = matchMediaType(exchange);
 			return (!this.isNegated == match);
-		}
-		catch (NotAcceptableStatusException | UnsupportedMediaTypeStatusException ex) {
+		} catch (NotAcceptableStatusException | UnsupportedMediaTypeStatusException ex) {
 			return false;
 		}
 	}

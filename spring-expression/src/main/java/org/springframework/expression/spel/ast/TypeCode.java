@@ -50,12 +50,6 @@ public enum TypeCode {
 		this.type = type;
 	}
 
-
-	public Class<?> getType() {
-		return this.type;
-	}
-
-
 	public static TypeCode forName(String name) {
 		String searchingFor = name.toUpperCase();
 		TypeCode[] tcs = values();
@@ -75,6 +69,10 @@ public enum TypeCode {
 			}
 		}
 		return OBJECT;
+	}
+
+	public Class<?> getType() {
+		return this.type;
 	}
 
 }

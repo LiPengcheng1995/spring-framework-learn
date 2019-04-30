@@ -16,9 +16,6 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapterRegistry;
@@ -28,6 +25,9 @@ import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.ServerWebInputException;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Resolves method arguments annotated with {@code @RequestHeader} except for
@@ -42,19 +42,19 @@ import org.springframework.web.server.ServerWebInputException;
  * request header values that don't yet match the method parameter type.
  *
  * @author Rossen Stoyanchev
- * @since 5.0
  * @see RequestHeaderMapMethodArgumentResolver
+ * @since 5.0
  */
 public class RequestHeaderMethodArgumentResolver extends AbstractNamedValueSyncArgumentResolver {
 
 	/**
-	 * @param factory a bean factory to use for resolving  ${...}
-	 * placeholder and #{...} SpEL expressions in default values;
-	 * or {@code null} if default values are not expected to have expressions
+	 * @param factory  a bean factory to use for resolving  ${...}
+	 *                 placeholder and #{...} SpEL expressions in default values;
+	 *                 or {@code null} if default values are not expected to have expressions
 	 * @param registry for checking reactive type wrappers
 	 */
 	public RequestHeaderMethodArgumentResolver(@Nullable ConfigurableBeanFactory factory,
-			ReactiveAdapterRegistry registry) {
+											   ReactiveAdapterRegistry registry) {
 
 		super(factory, registry);
 	}

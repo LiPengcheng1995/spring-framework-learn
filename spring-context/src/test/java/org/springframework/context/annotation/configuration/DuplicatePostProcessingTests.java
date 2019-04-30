@@ -17,7 +17,6 @@
 package org.springframework.context.annotation.configuration;
 
 import org.junit.Test;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.FactoryBean;
@@ -41,17 +40,16 @@ public class DuplicatePostProcessingTests {
 	}
 
 
-
 	static class Config {
-
-		@Bean
-		public ExampleFactoryBean exampleFactory() {
-			return new ExampleFactoryBean();
-		}
 
 		@Bean
 		public static ExampleBeanPostProcessor exampleBeanPostProcessor() {
 			return new ExampleBeanPostProcessor();
+		}
+
+		@Bean
+		public ExampleFactoryBean exampleFactory() {
+			return new ExampleFactoryBean();
 		}
 
 		@Bean

@@ -16,26 +16,23 @@
 
 package org.springframework.web.reactive.result.view;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.http.MediaType;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 import org.springframework.mock.web.test.server.MockServerWebExchange;
 import org.springframework.tests.sample.beans.TestBean;
 import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.*;
 
 /**
  * Unit tests for {@link AbstractView}.
@@ -66,10 +63,10 @@ public class AbstractViewTests {
 
 		Map<String, Object> actual = view.attributes;
 		assertEquals(testBean1, actual.get("attr1"));
-		assertArrayEquals(new TestBean[] { testBean1, testBean2 },
+		assertArrayEquals(new TestBean[]{testBean1, testBean2},
 				((List<TestBean>) actual.get("attr2")).toArray());
 		assertEquals(testBean2, actual.get("attr3"));
-		assertArrayEquals(new TestBean[] { testBean1, testBean2 },
+		assertArrayEquals(new TestBean[]{testBean1, testBean2},
 				((List<TestBean>) actual.get("attr4")).toArray());
 		assertNull(actual.get("attr5"));
 	}
@@ -80,7 +77,7 @@ public class AbstractViewTests {
 
 		@Override
 		protected Mono<Void> renderInternal(Map<String, Object> renderAttributes,
-				MediaType contentType, ServerWebExchange exchange) {
+											MediaType contentType, ServerWebExchange exchange) {
 
 			this.attributes = renderAttributes;
 			return Mono.empty();

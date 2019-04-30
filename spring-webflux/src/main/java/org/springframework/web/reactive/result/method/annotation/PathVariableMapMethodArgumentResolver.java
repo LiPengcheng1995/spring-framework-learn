@@ -16,9 +16,6 @@
 
 package org.springframework.web.reactive.result.method.annotation;
 
-import java.util.Collections;
-import java.util.Map;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.util.StringUtils;
@@ -29,6 +26,9 @@ import org.springframework.web.reactive.result.method.HandlerMethodArgumentResol
 import org.springframework.web.reactive.result.method.SyncHandlerMethodArgumentResolver;
 import org.springframework.web.server.ServerWebExchange;
 
+import java.util.Collections;
+import java.util.Map;
+
 /**
  * Resolver for {@link Map} method arguments also annotated with
  * {@link PathVariable @PathVariable} where the annotation does not specify a
@@ -36,8 +36,8 @@ import org.springframework.web.server.ServerWebExchange;
  * template name-value pairs.
  *
  * @author Rossen Stoyanchev
- * @since 5.0
  * @see PathVariableMethodArgumentResolver
+ * @since 5.0
  */
 public class PathVariableMapMethodArgumentResolver extends HandlerMethodArgumentResolverSupport
 		implements SyncHandlerMethodArgumentResolver {

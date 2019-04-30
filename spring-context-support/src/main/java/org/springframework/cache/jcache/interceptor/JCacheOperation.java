@@ -16,12 +16,12 @@
 
 package org.springframework.cache.jcache.interceptor;
 
-import java.lang.annotation.Annotation;
-import javax.cache.annotation.CacheInvocationParameter;
-import javax.cache.annotation.CacheMethodDetails;
-
 import org.springframework.cache.interceptor.BasicOperation;
 import org.springframework.cache.interceptor.CacheResolver;
+
+import javax.cache.annotation.CacheInvocationParameter;
+import javax.cache.annotation.CacheMethodDetails;
+import java.lang.annotation.Annotation;
 
 /**
  * Model the base of JSR-107 cache operation through an interface contract.
@@ -29,9 +29,9 @@ import org.springframework.cache.interceptor.CacheResolver;
  * <p>A cache operation can be statically cached as it does not contain any
  * runtime operation of a specific cache invocation.
  *
+ * @param <A> the type of the JSR-107 annotation
  * @author Stephane Nicoll
  * @since 4.1
- * @param <A> the type of the JSR-107 annotation
  */
 public interface JCacheOperation<A extends Annotation> extends BasicOperation, CacheMethodDetails<A> {
 
@@ -45,6 +45,7 @@ public interface JCacheOperation<A extends Annotation> extends BasicOperation, C
 	 * Return the {@link CacheInvocationParameter} instances based on the
 	 * specified method arguments.
 	 * <p>The method arguments must match the signature of the related method invocation
+	 *
 	 * @param values the parameters value for a particular invocation
 	 */
 	CacheInvocationParameter[] getAllParameters(Object... values);

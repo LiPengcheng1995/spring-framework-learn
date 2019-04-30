@@ -17,7 +17,6 @@
 package org.springframework.context.annotation.configuration.spr9031;
 
 import org.junit.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
@@ -26,8 +25,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.configuration.spr9031.scanpackage.Spr9031Component;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 /**
  * Unit tests cornering bug SPR-9031.
@@ -61,19 +61,22 @@ public class Spr9031Tests {
 		assertThat(ctx.getBean(LowLevelConfig.class).scanned, not(nullValue()));
 	}
 
+	public @interface MarkerAnnotation {
+	}
+
 	@Configuration
 	@Import(LowLevelConfig.class)
-	static class HighLevelConfig {}
+	static class HighLevelConfig {
+	}
 
 	@Configuration
 	@ComponentScan(
 			basePackages = "org.springframework.context.annotation.configuration.spr9031.scanpackage",
-			includeFilters = { @Filter(MarkerAnnotation.class) })
+			includeFilters = {@Filter(MarkerAnnotation.class)})
 	static class LowLevelConfig {
 		// fails to wire when LowLevelConfig is processed with ASM because nested @Filter
 		// annotation is not parsed
-		@Autowired Spr9031Component scanned;
+		@Autowired
+		Spr9031Component scanned;
 	}
-
-	public @interface MarkerAnnotation {}
 }

@@ -16,9 +16,9 @@
 
 package org.springframework.web.servlet.tags.form;
 
-import javax.servlet.jsp.JspException;
-
 import org.springframework.lang.Nullable;
+
+import javax.servlet.jsp.JspException;
 
 /**
  * Base class for databinding-aware JSP tags that render HTML form input element.
@@ -81,15 +81,6 @@ public abstract class AbstractHtmlInputElementTag extends AbstractHtmlElementTag
 
 	private boolean readonly;
 
-
-	/**
-	 * Set the value of the '{@code onfocus}' attribute.
-	 * May be a runtime expression.
-	 */
-	public void setOnfocus(String onfocus) {
-		this.onfocus = onfocus;
-	}
-
 	/**
 	 * Get the value of the '{@code onfocus}' attribute.
 	 */
@@ -99,11 +90,11 @@ public abstract class AbstractHtmlInputElementTag extends AbstractHtmlElementTag
 	}
 
 	/**
-	 * Set the value of the '{@code onblur}' attribute.
+	 * Set the value of the '{@code onfocus}' attribute.
 	 * May be a runtime expression.
 	 */
-	public void setOnblur(String onblur) {
-		this.onblur = onblur;
+	public void setOnfocus(String onfocus) {
+		this.onfocus = onfocus;
 	}
 
 	/**
@@ -115,11 +106,11 @@ public abstract class AbstractHtmlInputElementTag extends AbstractHtmlElementTag
 	}
 
 	/**
-	 * Set the value of the '{@code onchange}' attribute.
+	 * Set the value of the '{@code onblur}' attribute.
 	 * May be a runtime expression.
 	 */
-	public void setOnchange(String onchange) {
-		this.onchange = onchange;
+	public void setOnblur(String onblur) {
+		this.onblur = onblur;
 	}
 
 	/**
@@ -131,11 +122,11 @@ public abstract class AbstractHtmlInputElementTag extends AbstractHtmlElementTag
 	}
 
 	/**
-	 * Set the value of the '{@code accesskey}' attribute.
+	 * Set the value of the '{@code onchange}' attribute.
 	 * May be a runtime expression.
 	 */
-	public void setAccesskey(String accesskey) {
-		this.accesskey = accesskey;
+	public void setOnchange(String onchange) {
+		this.onchange = onchange;
 	}
 
 	/**
@@ -147,10 +138,11 @@ public abstract class AbstractHtmlInputElementTag extends AbstractHtmlElementTag
 	}
 
 	/**
-	 * Set the value of the '{@code disabled}' attribute.
+	 * Set the value of the '{@code accesskey}' attribute.
+	 * May be a runtime expression.
 	 */
-	public void setDisabled(boolean disabled) {
-		this.disabled = disabled;
+	public void setAccesskey(String accesskey) {
+		this.accesskey = accesskey;
 	}
 
 	/**
@@ -161,10 +153,10 @@ public abstract class AbstractHtmlInputElementTag extends AbstractHtmlElementTag
 	}
 
 	/**
-	 * Sets the value of the '{@code readonly}' attribute.
+	 * Set the value of the '{@code disabled}' attribute.
 	 */
-	public void setReadonly(boolean readonly) {
-		this.readonly = readonly;
+	public void setDisabled(boolean disabled) {
+		this.disabled = disabled;
 	}
 
 	/**
@@ -174,6 +166,12 @@ public abstract class AbstractHtmlInputElementTag extends AbstractHtmlElementTag
 		return this.readonly;
 	}
 
+	/**
+	 * Sets the value of the '{@code readonly}' attribute.
+	 */
+	public void setReadonly(boolean readonly) {
+		this.readonly = readonly;
+	}
 
 	/**
 	 * Adds input-specific optional attributes as defined by this base class.

@@ -16,19 +16,18 @@
 
 package org.springframework.web.servlet.support;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
-
 import org.junit.Test;
-
 import org.springframework.mock.web.test.MockServletContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
+
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRegistration;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -78,18 +77,6 @@ public class DispatcherServletInitializerTests {
 		assertEquals(ROLE_NAME, registration.getRunAsRole());
 	}
 
-
-	private class MyMockServletContext extends MockServletContext {
-
-		@Override
-		public ServletRegistration.Dynamic addServlet(String servletName, Servlet servlet) {
-			servlets.put(servletName, servlet);
-			MockServletRegistration registration = new MockServletRegistration();
-			registrations.put(servletName, registration);
-			return registration;
-		}
-	}
-
 	private static class MyDispatcherServletInitializer extends AbstractDispatcherServletInitializer {
 
 		@Override
@@ -111,7 +98,7 @@ public class DispatcherServletInitializerTests {
 
 		@Override
 		protected String[] getServletMappings() {
-			return new String[] { SERVLET_MAPPING };
+			return new String[]{SERVLET_MAPPING};
 		}
 
 		@Override
@@ -132,6 +119,17 @@ public class DispatcherServletInitializerTests {
 	private static class MyDispatcherServlet extends DispatcherServlet {
 		public MyDispatcherServlet(WebApplicationContext webApplicationContext) {
 			super(webApplicationContext);
+		}
+	}
+
+	private class MyMockServletContext extends MockServletContext {
+
+		@Override
+		public ServletRegistration.Dynamic addServlet(String servletName, Servlet servlet) {
+			servlets.put(servletName, servlet);
+			MockServletRegistration registration = new MockServletRegistration();
+			registrations.put(servletName, registration);
+			return registration;
 		}
 	}
 

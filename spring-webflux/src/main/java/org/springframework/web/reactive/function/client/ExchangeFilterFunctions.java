@@ -16,6 +16,11 @@
 
 package org.springframework.web.reactive.function.client;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.util.Assert;
+import reactor.core.publisher.Mono;
+
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -24,12 +29,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
-import reactor.core.publisher.Mono;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.util.Assert;
 
 /**
  * Static factory methods providing access to built-in implementations of
@@ -54,11 +53,12 @@ public abstract class ExchangeFilterFunctions {
 	 * header, based on the given user and password.
 	 * <p>Note that Basic Authentication only supports characters in the
 	 * {@link StandardCharsets#ISO_8859_1 ISO-8859-1} character set.
-	 * @param user the user
+	 *
+	 * @param user     the user
 	 * @param password the password
 	 * @return the filter for basic authentication
 	 * @throws IllegalArgumentException if either {@code user} or
-	 * {@code password} contain characters that cannot be encoded to ISO-8859-1.
+	 *                                  {@code password} contain characters that cannot be encoded to ISO-8859-1.
 	 */
 	public static ExchangeFilterFunction basicAuthentication(String user, String password) {
 		Assert.notNull(user, "'user' must not be null");
@@ -72,6 +72,7 @@ public abstract class ExchangeFilterFunctions {
 	 * the {@link Credentials Credentials} provided in a
 	 * {@linkplain ClientRequest#attributes() request attribute}, or if the
 	 * attribute is not found, the authorization header is not added.
+	 *
 	 * @return the filter for basic authentication
 	 * @see #BASIC_AUTHENTICATION_CREDENTIALS_ATTRIBUTE
 	 * @see Credentials#basicAuthenticationCredentials(String, String)
@@ -114,12 +115,13 @@ public abstract class ExchangeFilterFunctions {
 	/**
 	 * Return a filter that generates an error signal when the given
 	 * {@link HttpStatus} predicate matches.
-	 * @param statusPredicate the predicate to check the HTTP status with
+	 *
+	 * @param statusPredicate   the predicate to check the HTTP status with
 	 * @param exceptionFunction the function that to create the exception
 	 * @return the filter to generate an error signal
 	 */
 	public static ExchangeFilterFunction statusError(Predicate<HttpStatus> statusPredicate,
-			Function<ClientResponse, ? extends Throwable> exceptionFunction) {
+													 Function<ClientResponse, ? extends Throwable> exceptionFunction) {
 
 		Assert.notNull(statusPredicate, "Predicate must not be null");
 		Assert.notNull(exceptionFunction, "Function must not be null");
@@ -132,6 +134,7 @@ public abstract class ExchangeFilterFunctions {
 
 	/**
 	 * Stores user and password for HTTP basic authentication.
+	 *
 	 * @see #basicAuthentication()
 	 * @see #basicAuthenticationCredentials(String, String)
 	 */
@@ -143,6 +146,7 @@ public abstract class ExchangeFilterFunctions {
 
 		/**
 		 * Create a new {@code Credentials} instance with the given username and password.
+		 *
 		 * @param username the username
 		 * @param password the password
 		 */
@@ -157,7 +161,8 @@ public abstract class ExchangeFilterFunctions {
 		 * Return a {@literal Consumer} that stores the given user and password
 		 * as a request attribute of type {@code Credentials} that is in turn
 		 * used by {@link ExchangeFilterFunctions#basicAuthentication()}.
-		 * @param user the user
+		 *
+		 * @param user     the user
 		 * @param password the password
 		 * @return a consumer that can be passed into
 		 * {@linkplain ClientRequest.Builder#attributes(java.util.function.Consumer)}

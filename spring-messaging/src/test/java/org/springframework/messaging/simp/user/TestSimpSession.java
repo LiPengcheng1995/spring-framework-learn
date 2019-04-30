@@ -25,10 +25,8 @@ import java.util.Set;
 public class TestSimpSession implements SimpSession {
 
 	private final String id;
-
-	private TestSimpUser user;
-
 	private final Set<SimpSubscription> subscriptions = new HashSet<>();
+	private TestSimpUser user;
 
 
 	public TestSimpSession(String id) {

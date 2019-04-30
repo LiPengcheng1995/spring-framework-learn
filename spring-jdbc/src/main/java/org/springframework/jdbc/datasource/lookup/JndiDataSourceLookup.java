@@ -16,10 +16,10 @@
 
 package org.springframework.jdbc.datasource.lookup;
 
+import org.springframework.jndi.JndiLocatorSupport;
+
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-
-import org.springframework.jndi.JndiLocatorSupport;
 
 /**
  * JNDI-based {@link DataSourceLookup} implementation.
@@ -29,9 +29,9 @@ import org.springframework.jndi.JndiLocatorSupport;
  *
  * @author Costin Leau
  * @author Juergen Hoeller
- * @since 2.0
  * @see #setJndiEnvironment
  * @see #setJndiTemplate
+ * @since 2.0
  */
 public class JndiDataSourceLookup extends JndiLocatorSupport implements DataSourceLookup {
 
@@ -43,8 +43,7 @@ public class JndiDataSourceLookup extends JndiLocatorSupport implements DataSour
 	public DataSource getDataSource(String dataSourceName) throws DataSourceLookupFailureException {
 		try {
 			return lookup(dataSourceName, DataSource.class);
-		}
-		catch (NamingException ex) {
+		} catch (NamingException ex) {
 			throw new DataSourceLookupFailureException(
 					"Failed to look up JNDI DataSource with name '" + dataSourceName + "'", ex);
 		}

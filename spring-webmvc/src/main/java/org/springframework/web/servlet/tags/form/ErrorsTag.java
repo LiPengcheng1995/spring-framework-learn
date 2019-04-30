@@ -16,17 +16,17 @@
 
 package org.springframework.web.servlet.tags.form;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.BodyTag;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.PageContext;
+import javax.servlet.jsp.tagext.BodyTag;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * The {@code <errors>} tag renders field errors in an HTML 'span' tag.
@@ -35,9 +35,9 @@ import org.springframework.util.StringUtils;
  * <p>This tag supports three main usage patterns:
  *
  * <ol>
- *	<li>Field only - set '{@code path}' to the field name (or path)</li>
- *	<li>Object errors only - omit '{@code path}'</li>
- *	<li>All errors - set '{@code path}' to '{@code *}'</li>
+ * <li>Field only - set '{@code path}' to the field name (or path)</li>
+ * <li>Object errors only - omit '{@code path}'</li>
+ * <li>All errors - set '{@code path}' to '{@code *}'</li>
  * </ol>
  *
  * <p>
@@ -215,6 +215,12 @@ public class ErrorsTag extends AbstractHtmlElementBodyTag implements BodyTag {
 
 	private boolean errorMessagesWereExposed;
 
+	/**
+	 * Get the HTML element must be used to render the error messages.
+	 */
+	public String getElement() {
+		return this.element;
+	}
 
 	/**
 	 * Set the HTML element must be used to render the error messages.
@@ -226,10 +232,10 @@ public class ErrorsTag extends AbstractHtmlElementBodyTag implements BodyTag {
 	}
 
 	/**
-	 * Get the HTML element must be used to render the error messages.
+	 * Return the delimiter to be used between error messages.
 	 */
-	public String getElement() {
-		return this.element;
+	public String getDelimiter() {
+		return this.delimiter;
 	}
 
 	/**
@@ -241,18 +247,11 @@ public class ErrorsTag extends AbstractHtmlElementBodyTag implements BodyTag {
 	}
 
 	/**
-	 * Return the delimiter to be used between error messages.
-	 */
-	public String getDelimiter() {
-		return this.delimiter;
-	}
-
-
-	/**
 	 * Get the value for the HTML '{@code id}' attribute.
 	 * <p>Appends '{@code .errors}' to the value returned by {@link #getPropertyPath()}
 	 * or to the model attribute name if the {@code <form:errors/>} tag's
 	 * '{@code path}' attribute has been omitted.
+	 *
 	 * @return the value for the HTML '{@code id}' attribute
 	 * @see #getPropertyPath()
 	 */
@@ -280,14 +279,14 @@ public class ErrorsTag extends AbstractHtmlElementBodyTag implements BodyTag {
 	/**
 	 * Should rendering of this tag proceed at all?
 	 * <p>Only renders output when there are errors for the configured {@link #setPath path}.
+	 *
 	 * @return {@code true} only when there are errors for the configured {@link #setPath path}
 	 */
 	@Override
 	protected boolean shouldRender() throws JspException {
 		try {
 			return getBindStatus().isError();
-		}
-		catch (IllegalStateException ex) {
+		} catch (IllegalStateException ex) {
 			// Neither BindingResult nor target object available.
 			return false;
 		}
@@ -313,6 +312,7 @@ public class ErrorsTag extends AbstractHtmlElementBodyTag implements BodyTag {
 	 * Exposes any bind status error messages under {@link #MESSAGES_ATTRIBUTE this key}
 	 * in the {@link PageContext#PAGE_SCOPE}.
 	 * <p>Only called if {@link #shouldRender()} returns {@code true}.
+	 *
 	 * @see #removeAttributes()
 	 */
 	@Override
@@ -327,6 +327,7 @@ public class ErrorsTag extends AbstractHtmlElementBodyTag implements BodyTag {
 	/**
 	 * Removes any bind status error messages that were previously stored under
 	 * {@link #MESSAGES_ATTRIBUTE this key} in the {@link PageContext#PAGE_SCOPE}.
+	 *
 	 * @see #exposeAttributes()
 	 */
 	@Override
@@ -335,8 +336,7 @@ public class ErrorsTag extends AbstractHtmlElementBodyTag implements BodyTag {
 			if (this.oldMessages != null) {
 				this.pageContext.setAttribute(MESSAGES_ATTRIBUTE, this.oldMessages, PageContext.PAGE_SCOPE);
 				this.oldMessages = null;
-			}
-			else {
+			} else {
 				this.pageContext.removeAttribute(MESSAGES_ATTRIBUTE, PageContext.PAGE_SCOPE);
 			}
 		}

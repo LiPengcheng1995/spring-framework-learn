@@ -16,18 +16,6 @@
 
 package org.springframework.web.servlet.mvc.method;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.InvalidMediaTypeException;
@@ -46,6 +34,11 @@ import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
 import org.springframework.web.servlet.mvc.condition.NameValueExpression;
 import org.springframework.web.util.WebUtils;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Method;
+import java.util.*;
+
 /**
  * Abstract base class for classes for which {@link RequestMappingInfo} defines
  * the mapping between a request and a handler method.
@@ -61,8 +54,7 @@ public abstract class RequestMappingInfoHandlerMapping extends AbstractHandlerMe
 	static {
 		try {
 			HTTP_OPTIONS_HANDLE_METHOD = HttpOptionsHandler.class.getMethod("handle");
-		}
-		catch (NoSuchMethodException ex) {
+		} catch (NoSuchMethodException ex) {
 			// Should never happen
 			throw new IllegalStateException("Failed to retrieve internal handler method for HTTP OPTIONS", ex);
 		}
@@ -86,6 +78,7 @@ public abstract class RequestMappingInfoHandlerMapping extends AbstractHandlerMe
 	 * Check if the given RequestMappingInfo matches the current request and
 	 * return a (potentially new) instance with conditions that match the
 	 * current request -- for example with a subset of URL patterns.
+	 *
 	 * @return an info in case of a match; or {@code null} otherwise.
 	 */
 	@Override
@@ -103,6 +96,7 @@ public abstract class RequestMappingInfoHandlerMapping extends AbstractHandlerMe
 
 	/**
 	 * Expose URI template variables, matrix variables, and producible media types in the request.
+	 *
 	 * @see HandlerMapping#URI_TEMPLATE_VARIABLES_ATTRIBUTE
 	 * @see HandlerMapping#MATRIX_VARIABLES_ATTRIBUTE
 	 * @see HandlerMapping#PRODUCIBLE_MEDIA_TYPES_ATTRIBUTE
@@ -118,8 +112,7 @@ public abstract class RequestMappingInfoHandlerMapping extends AbstractHandlerMe
 		if (patterns.isEmpty()) {
 			bestPattern = lookupPath;
 			uriVariables = Collections.emptyMap();
-		}
-		else {
+		} else {
 			bestPattern = patterns.iterator().next();
 			uriVariables = getPathMatcher().extractUriTemplateVariables(bestPattern, lookupPath);
 		}
@@ -159,8 +152,7 @@ public abstract class RequestMappingInfoHandlerMapping extends AbstractHandlerMe
 			int semicolonIndex = uriVarValue.indexOf(';');
 			if ((semicolonIndex == -1) || (semicolonIndex == 0) || (equalsIndex < semicolonIndex)) {
 				matrixVariables = uriVarValue;
-			}
-			else {
+			} else {
 				matrixVariables = uriVarValue.substring(semicolonIndex + 1);
 				uriVariables.put(uriVarKey, uriVarValue.substring(0, semicolonIndex));
 			}
@@ -174,10 +166,11 @@ public abstract class RequestMappingInfoHandlerMapping extends AbstractHandlerMe
 	/**
 	 * Iterate all RequestMappingInfo's once again, look if any match by URL at
 	 * least and raise exceptions according to what doesn't match.
+	 *
 	 * @throws HttpRequestMethodNotSupportedException if there are matches by URL
-	 * but not by HTTP method
-	 * @throws HttpMediaTypeNotAcceptableException if there are matches by URL
-	 * but not by consumable/producible media types
+	 *                                                but not by HTTP method
+	 * @throws HttpMediaTypeNotAcceptableException    if there are matches by URL
+	 *                                                but not by consumable/producible media types
 	 */
 	@Override
 	protected HandlerMethod handleNoMatch(
@@ -203,8 +196,7 @@ public abstract class RequestMappingInfoHandlerMapping extends AbstractHandlerMe
 			if (StringUtils.hasLength(request.getContentType())) {
 				try {
 					contentType = MediaType.parseMediaType(request.getContentType());
-				}
-				catch (InvalidMediaTypeException ex) {
+				} catch (InvalidMediaTypeException ex) {
 					throw new HttpMediaTypeNotSupportedException(ex.getMessage());
 				}
 			}
@@ -375,7 +367,7 @@ public abstract class RequestMappingInfoHandlerMapping extends AbstractHandlerMe
 			private final boolean paramsMatch;
 
 			/**
-			 * @param info RequestMappingInfo that matches the URL path.
+			 * @param info    RequestMappingInfo that matches the URL path.
 			 * @param request the current request
 			 */
 			public PartialMatch(RequestMappingInfo info, HttpServletRequest request) {
@@ -433,8 +425,7 @@ public abstract class RequestMappingInfoHandlerMapping extends AbstractHandlerMe
 						result.add(method);
 					}
 				}
-			}
-			else {
+			} else {
 				for (String method : declaredMethods) {
 					HttpMethod httpMethod = HttpMethod.valueOf(method);
 					result.add(httpMethod);

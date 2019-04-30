@@ -16,25 +16,8 @@
 
 package org.springframework.web.reactive.function.server;
 
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.security.Principal;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalLong;
-
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpCookie;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpRange;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.http.codec.HttpMessageReader;
 import org.springframework.http.codec.json.Jackson2CodecSupport;
 import org.springframework.http.codec.multipart.Part;
@@ -47,6 +30,14 @@ import org.springframework.web.reactive.function.BodyExtractor;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebSession;
 import org.springframework.web.util.UriBuilder;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.security.Principal;
+import java.util.*;
 
 /**
  * Represents a server-side HTTP request, as handled by a {@code HandlerFunction}.
@@ -61,7 +52,20 @@ import org.springframework.web.util.UriBuilder;
 public interface ServerRequest {
 
 	/**
+	 * Create a new {@code ServerRequest} based on the given {@code ServerWebExchange} and
+	 * message readers.
+	 *
+	 * @param exchange       the exchange
+	 * @param messageReaders the message readers
+	 * @return the created {@code ServerRequest}
+	 */
+	static ServerRequest create(ServerWebExchange exchange, List<HttpMessageReader<?>> messageReaders) {
+		return new DefaultServerRequest(exchange, messageReaders);
+	}
+
+	/**
 	 * Get the HTTP method.
+	 *
 	 * @return the HTTP method as an HttpMethod enum value, or {@code null}
 	 * if not resolvable (e.g. in case of a non-standard HTTP method)
 	 */
@@ -72,6 +76,7 @@ public interface ServerRequest {
 
 	/**
 	 * Get the name of the HTTP method.
+	 *
 	 * @return the HTTP method as a String
 	 */
 	String methodName();
@@ -87,6 +92,7 @@ public interface ServerRequest {
 	 * "Forwarded" (<a href="https://tools.ietf.org/html/rfc7239">RFC 7239</a>),
 	 * or "X-Forwarded-Host", "X-Forwarded-Port", and "X-Forwarded-Proto" if
 	 * "Forwarded" is not found.
+	 *
 	 * @return a URI builder
 	 */
 	UriBuilder uriBuilder();
@@ -117,8 +123,9 @@ public interface ServerRequest {
 
 	/**
 	 * Extract the body with the given {@code BodyExtractor}.
+	 *
 	 * @param extractor the {@code BodyExtractor} that reads from the request
-	 * @param <T> the type of the body returned
+	 * @param <T>       the type of the body returned
 	 * @return the extracted body
 	 * @see #body(BodyExtractor, Map)
 	 */
@@ -126,48 +133,54 @@ public interface ServerRequest {
 
 	/**
 	 * Extract the body with the given {@code BodyExtractor} and hints.
+	 *
 	 * @param extractor the {@code BodyExtractor} that reads from the request
-	 * @param hints the map of hints like {@link Jackson2CodecSupport#JSON_VIEW_HINT}
-	 * to use to customize body extraction
-	 * @param <T> the type of the body returned
+	 * @param hints     the map of hints like {@link Jackson2CodecSupport#JSON_VIEW_HINT}
+	 *                  to use to customize body extraction
+	 * @param <T>       the type of the body returned
 	 * @return the extracted body
 	 */
 	<T> T body(BodyExtractor<T, ? super ServerHttpRequest> extractor, Map<String, Object> hints);
 
 	/**
 	 * Extract the body to a {@code Mono}.
+	 *
 	 * @param elementClass the class of element in the {@code Mono}
-	 * @param <T> the element type
+	 * @param <T>          the element type
 	 * @return the body as a mono
 	 */
 	<T> Mono<T> bodyToMono(Class<? extends T> elementClass);
 
 	/**
 	 * Extract the body to a {@code Mono}.
+	 *
 	 * @param typeReference a type reference describing the expected response request type
-	 * @param <T> the element type
+	 * @param <T>           the element type
 	 * @return a mono containing the body of the given type {@code T}
 	 */
 	<T> Mono<T> bodyToMono(ParameterizedTypeReference<T> typeReference);
 
 	/**
 	 * Extract the body to a {@code Flux}.
+	 *
 	 * @param elementClass the class of element in the {@code Flux}
-	 * @param <T> the element type
+	 * @param <T>          the element type
 	 * @return the body as a flux
 	 */
 	<T> Flux<T> bodyToFlux(Class<? extends T> elementClass);
 
 	/**
 	 * Extract the body to a {@code Flux}.
+	 *
 	 * @param typeReference a type reference describing the expected request body type
-	 * @param <T> the element type
+	 * @param <T>           the element type
 	 * @return a flux containing the body of the given type {@code T}
 	 */
 	<T> Flux<T> bodyToFlux(ParameterizedTypeReference<T> typeReference);
 
 	/**
 	 * Get the request attribute value if present.
+	 *
 	 * @param name the attribute name
 	 * @return the attribute value
 	 */
@@ -177,12 +190,14 @@ public interface ServerRequest {
 
 	/**
 	 * Get a mutable map of request attributes.
+	 *
 	 * @return the request attributes
 	 */
 	Map<String, Object> attributes();
 
 	/**
 	 * Get the first query parameter with the given name, if present.
+	 *
 	 * @param name the parameter name
 	 * @return the parameter value
 	 */
@@ -190,8 +205,7 @@ public interface ServerRequest {
 		List<String> queryParamValues = queryParams().get(name);
 		if (CollectionUtils.isEmpty(queryParamValues)) {
 			return Optional.empty();
-		}
-		else {
+		} else {
 			String value = queryParamValues.get(0);
 			if (value == null) {
 				value = "";
@@ -207,6 +221,7 @@ public interface ServerRequest {
 
 	/**
 	 * Get the path variable with the given name, if present.
+	 *
 	 * @param name the variable name
 	 * @return the variable value
 	 * @throws IllegalArgumentException if there is no path variable with the given name
@@ -215,8 +230,7 @@ public interface ServerRequest {
 		Map<String, String> pathVariables = pathVariables();
 		if (pathVariables.containsKey(name)) {
 			return pathVariables().get(name);
-		}
-		else {
+		} else {
 			throw new IllegalArgumentException("No path variable with name \"" + name + "\" available");
 		}
 	}
@@ -249,6 +263,9 @@ public interface ServerRequest {
 	 */
 	Mono<MultiValueMap<String, String>> formData();
 
+
+	// Static builder methods
+
 	/**
 	 * Get the parts of a multipart request if the Content-Type is
 	 * {@code "multipart/form-data"} or an empty map otherwise.
@@ -259,22 +276,9 @@ public interface ServerRequest {
 	Mono<MultiValueMap<String, Part>> multipartData();
 
 
-	// Static builder methods
-
-	/**
-	 * Create a new {@code ServerRequest} based on the given {@code ServerWebExchange} and
-	 * message readers.
-	 * @param exchange the exchange
-	 * @param messageReaders the message readers
-	 * @return the created {@code ServerRequest}
-	 */
-	static ServerRequest create(ServerWebExchange exchange, List<HttpMessageReader<?>> messageReaders) {
-		return new DefaultServerRequest(exchange, messageReaders);
-	}
-
-
 	/**
 	 * Represents the headers of the HTTP request.
+	 *
 	 * @see ServerRequest#headers()
 	 */
 	interface Headers {
@@ -328,6 +332,7 @@ public interface ServerRequest {
 		/**
 		 * Get the header value(s), if any, for the header of the given name.
 		 * <p>Returns an empty list if no header values are found.
+		 *
 		 * @param headerName the header name
 		 */
 		List<String> header(String headerName);

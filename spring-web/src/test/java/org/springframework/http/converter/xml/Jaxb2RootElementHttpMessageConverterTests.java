@@ -16,22 +16,10 @@
 
 package org.springframework.http.converter.xml;
 
-import java.nio.charset.StandardCharsets;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.xmlunit.diff.DifferenceEvaluator;
-
 import org.springframework.aop.framework.AdvisedSupport;
 import org.springframework.aop.framework.AopProxy;
 import org.springframework.aop.framework.DefaultAopProxyFactory;
@@ -41,11 +29,22 @@ import org.springframework.http.MediaType;
 import org.springframework.http.MockHttpInputMessage;
 import org.springframework.http.MockHttpOutputMessage;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.xmlunit.diff.DifferenceEvaluator;
+
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.nio.charset.StandardCharsets;
 
 import static org.junit.Assert.*;
-import static org.xmlunit.diff.ComparisonType.*;
+import static org.xmlunit.diff.ComparisonType.XML_STANDALONE;
 import static org.xmlunit.diff.DifferenceEvaluators.*;
-import static org.xmlunit.matchers.CompareMatcher.*;
+import static org.xmlunit.matchers.CompareMatcher.isSimilarTo;
 
 /**
  * Tests for {@link Jaxb2RootElementHttpMessageConverter}.
@@ -56,15 +55,11 @@ import static org.xmlunit.matchers.CompareMatcher.*;
  */
 public class Jaxb2RootElementHttpMessageConverterTests {
 
-	private Jaxb2RootElementHttpMessageConverter converter;
-
-	private RootElement rootElement;
-
-	private RootElement rootElementCglib;
-
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
-
+	private Jaxb2RootElementHttpMessageConverter converter;
+	private RootElement rootElement;
+	private RootElement rootElementCglib;
 
 	@Before
 	public void setup() {
@@ -125,7 +120,7 @@ public class Jaxb2RootElementHttpMessageConverterTests {
 	@Test
 	public void readXmlRootElementExternalEntityDisabled() throws Exception {
 		Resource external = new ClassPathResource("external.txt", getClass());
-		String content =  "<!DOCTYPE root SYSTEM \"https://192.168.28.42/1.jsp\" [" +
+		String content = "<!DOCTYPE root SYSTEM \"https://192.168.28.42/1.jsp\" [" +
 				"  <!ELEMENT external ANY >\n" +
 				"  <!ENTITY ext SYSTEM \"" + external.getURI() + "\" >]>" +
 				"  <rootElement><external>&ext;</external></rootElement>";
@@ -139,7 +134,7 @@ public class Jaxb2RootElementHttpMessageConverterTests {
 	@Test
 	public void readXmlRootElementExternalEntityEnabled() throws Exception {
 		Resource external = new ClassPathResource("external.txt", getClass());
-		String content =  "<!DOCTYPE root [" +
+		String content = "<!DOCTYPE root [" +
 				"  <!ELEMENT external ANY >\n" +
 				"  <!ENTITY ext SYSTEM \"" + external.getURI() + "\" >]>" +
 				"  <rootElement><external>&ext;</external></rootElement>";
@@ -223,10 +218,9 @@ public class Jaxb2RootElementHttpMessageConverterTests {
 	@XmlRootElement
 	public static class RootElement {
 
-		private Type type = new Type();
-
-		@XmlElement(required=false)
+		@XmlElement(required = false)
 		public String external;
+		private Type type = new Type();
 
 		public Type getType() {
 			return this.type;

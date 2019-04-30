@@ -16,16 +16,6 @@
 
 package org.springframework.messaging.simp.user;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.SmartApplicationListener;
 import org.springframework.core.Ordered;
@@ -34,6 +24,11 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * {@code SimpUserRegistry} that looks up users in a "local" user registry as
@@ -74,8 +69,7 @@ public class MultiServerUserRegistry implements SimpUserRegistry, SmartApplicati
 		String host;
 		try {
 			host = InetAddress.getLocalHost().getHostAddress();
-		}
-		catch (UnknownHostException ex) {
+		} catch (UnknownHostException ex) {
 			host = "unknown";
 		}
 		return host + '-' + UUID.randomUUID();
@@ -180,7 +174,7 @@ public class MultiServerUserRegistry implements SimpUserRegistry, SmartApplicati
 
 	@Override
 	public String toString() {
-		return "local=[" + this.localRegistry +	"], remote=" + this.remoteRegistries;
+		return "local=[" + this.localRegistry + "], remote=" + this.remoteRegistries;
 	}
 
 
@@ -215,20 +209,20 @@ public class MultiServerUserRegistry implements SimpUserRegistry, SmartApplicati
 			}
 		}
 
-		public void setId(String id) {
-			this.id = id;
-		}
-
 		public String getId() {
 			return this.id;
 		}
 
-		public void setUserMap(Map<String, TransferSimpUser> users) {
-			this.users = users;
+		public void setId(String id) {
+			this.id = id;
 		}
 
 		public Map<String, TransferSimpUser> getUserMap() {
 			return this.users;
+		}
+
+		public void setUserMap(Map<String, TransferSimpUser> users) {
+			this.users = users;
 		}
 
 		public boolean isExpired(long now) {
@@ -297,13 +291,13 @@ public class MultiServerUserRegistry implements SimpUserRegistry, SmartApplicati
 			}
 		}
 
-		public void setName(String name) {
-			this.name = name;
-		}
-
 		@Override
 		public String getName() {
 			return this.name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
 		}
 
 		@Override
@@ -328,10 +322,6 @@ public class MultiServerUserRegistry implements SimpUserRegistry, SmartApplicati
 			return null;
 		}
 
-		public void setSessions(Set<TransferSimpSession> sessions) {
-			this.sessions.addAll(sessions);
-		}
-
 		@Override
 		public Set<SimpSession> getSessions() {
 			if (this.sessionLookup != null) {
@@ -339,6 +329,10 @@ public class MultiServerUserRegistry implements SimpUserRegistry, SmartApplicati
 				return new HashSet<>(sessions.values());
 			}
 			return new HashSet<>(this.sessions);
+		}
+
+		public void setSessions(Set<TransferSimpSession> sessions) {
+			this.sessions.addAll(sessions);
 		}
 
 		private void afterDeserialization(SessionLookup sessionLookup) {
@@ -378,11 +372,9 @@ public class MultiServerUserRegistry implements SimpUserRegistry, SmartApplicati
 	 */
 	private static class TransferSimpSession implements SimpSession {
 
-		private String id;
-
-		private TransferSimpUser user;
-
 		private final Set<TransferSimpSubscription> subscriptions;
+		private String id;
+		private TransferSimpUser user;
 
 		/**
 		 * Default constructor for JSON deserialization.
@@ -407,17 +399,13 @@ public class MultiServerUserRegistry implements SimpUserRegistry, SmartApplicati
 			}
 		}
 
-		public void setId(String id) {
-			this.id = id;
-		}
-
 		@Override
 		public String getId() {
 			return this.id;
 		}
 
-		public void setUser(TransferSimpUser user) {
-			this.user = user;
+		public void setId(String id) {
+			this.id = id;
 		}
 
 		@Override
@@ -425,13 +413,17 @@ public class MultiServerUserRegistry implements SimpUserRegistry, SmartApplicati
 			return this.user;
 		}
 
-		public void setSubscriptions(Set<TransferSimpSubscription> subscriptions) {
-			this.subscriptions.addAll(subscriptions);
+		public void setUser(TransferSimpUser user) {
+			this.user = user;
 		}
 
 		@Override
 		public Set<SimpSubscription> getSubscriptions() {
 			return new HashSet<>(this.subscriptions);
+		}
+
+		public void setSubscriptions(Set<TransferSimpSubscription> subscriptions) {
+			this.subscriptions.addAll(subscriptions);
 		}
 
 		private void afterDeserialization() {
@@ -487,17 +479,13 @@ public class MultiServerUserRegistry implements SimpUserRegistry, SmartApplicati
 			this.destination = subscription.getDestination();
 		}
 
-		public void setId(String id) {
-			this.id = id;
-		}
-
 		@Override
 		public String getId() {
 			return this.id;
 		}
 
-		public void setSession(TransferSimpSession session) {
-			this.session = session;
+		public void setId(String id) {
+			this.id = id;
 		}
 
 		@Override
@@ -505,13 +493,17 @@ public class MultiServerUserRegistry implements SimpUserRegistry, SmartApplicati
 			return this.session;
 		}
 
-		public void setDestination(String destination) {
-			this.destination = destination;
+		public void setSession(TransferSimpSession session) {
+			this.session = session;
 		}
 
 		@Override
 		public String getDestination() {
 			return this.destination;
+		}
+
+		public void setDestination(String destination) {
+			this.destination = destination;
 		}
 
 		@Override

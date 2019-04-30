@@ -16,13 +16,9 @@
 
 package org.springframework.web.servlet.config.annotation;
 
-import java.io.IOException;
-import javax.servlet.ServletException;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.test.MockHttpServletRequest;
@@ -39,6 +35,9 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupConfigurer;
 import org.springframework.web.servlet.view.tiles3.TilesConfigurer;
+
+import javax.servlet.ServletException;
+import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 

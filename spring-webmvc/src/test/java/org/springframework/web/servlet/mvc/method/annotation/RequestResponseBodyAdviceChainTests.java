@@ -16,15 +16,9 @@
 
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.MediaType;
@@ -42,7 +36,13 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.method.ControllerAdviceBean;
 
-import static org.junit.Assert.*;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.mockito.BDDMockito.*;
 
 /**
@@ -142,6 +142,11 @@ public class RequestResponseBodyAdviceChainTests {
 		assertEquals(this.body, actual);
 	}
 
+	@SuppressWarnings("unused")
+	@ResponseBody
+	public String handle(String body) {
+		return "";
+	}
 
 	@ControllerAdvice
 	private static class MyControllerAdvice implements ResponseBodyAdvice<String> {
@@ -154,13 +159,12 @@ public class RequestResponseBodyAdviceChainTests {
 		@SuppressWarnings("unchecked")
 		@Override
 		public String beforeBodyWrite(String body, MethodParameter returnType,
-				MediaType contentType, Class<? extends HttpMessageConverter<?>> converterType,
-				ServerHttpRequest request, ServerHttpResponse response) {
+									  MediaType contentType, Class<? extends HttpMessageConverter<?>> converterType,
+									  ServerHttpRequest request, ServerHttpResponse response) {
 
 			return body + "-MyControllerAdvice";
 		}
 	}
-
 
 	@ControllerAdvice(annotations = Controller.class)
 	private static class TargetedControllerAdvice implements ResponseBodyAdvice<String> {
@@ -173,18 +177,11 @@ public class RequestResponseBodyAdviceChainTests {
 		@SuppressWarnings("unchecked")
 		@Override
 		public String beforeBodyWrite(String body, MethodParameter returnType,
-				MediaType contentType, Class<? extends HttpMessageConverter<?>> converterType,
-				ServerHttpRequest request, ServerHttpResponse response) {
+									  MediaType contentType, Class<? extends HttpMessageConverter<?>> converterType,
+									  ServerHttpRequest request, ServerHttpResponse response) {
 
 			return body + "-TargetedControllerAdvice";
 		}
-	}
-
-
-	@SuppressWarnings("unused")
-	@ResponseBody
-	public String handle(String body) {
-		return "";
 	}
 
 }

@@ -16,12 +16,11 @@
 
 package org.springframework.format.datetime.joda;
 
-import java.util.Locale;
-
 import org.joda.time.ReadablePartial;
 import org.joda.time.format.DateTimeFormatter;
-
 import org.springframework.format.Printer;
+
+import java.util.Locale;
 
 /**
  * Prints Joda-Time {@link ReadablePartial} instances using a {@link DateTimeFormatter}.
@@ -36,6 +35,7 @@ public final class ReadablePartialPrinter implements Printer<ReadablePartial> {
 
 	/**
 	 * Create a new ReadableInstantPrinter.
+	 *
 	 * @param formatter the Joda DateTimeFormatter instance
 	 */
 	public ReadablePartialPrinter(DateTimeFormatter formatter) {

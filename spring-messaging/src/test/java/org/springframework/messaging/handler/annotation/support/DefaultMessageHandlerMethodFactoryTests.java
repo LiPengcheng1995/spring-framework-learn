@@ -16,19 +16,10 @@
 
 package org.springframework.messaging.handler.annotation.support;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TestName;
-
 import org.springframework.beans.factory.support.StaticListableBeanFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.converter.Converter;
@@ -47,6 +38,9 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
 
+import java.lang.reflect.Method;
+import java.util.*;
+
 import static org.junit.Assert.*;
 
 /**
@@ -54,14 +48,11 @@ import static org.junit.Assert.*;
  */
 public class DefaultMessageHandlerMethodFactoryTests {
 
-	private final SampleBean sample = new SampleBean();
-
 	@Rule
 	public final TestName name = new TestName();
-
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none();
-
+	private final SampleBean sample = new SampleBean();
 
 	@Test
 	public void customConversion() throws Exception {
@@ -172,6 +163,7 @@ public class DefaultMessageHandlerMethodFactoryTests {
 			public boolean supports(Class<?> clazz) {
 				return String.class.isAssignableFrom(clazz);
 			}
+
 			@Override
 			public void validate(Object target, Errors errors) {
 				String value = (String) target;

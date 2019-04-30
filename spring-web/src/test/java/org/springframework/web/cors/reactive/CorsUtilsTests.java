@@ -17,7 +17,6 @@
 package org.springframework.web.cors.reactive;
 
 import org.junit.Test;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.http.server.reactive.test.MockServerHttpRequest;
 
@@ -28,6 +27,7 @@ import static org.springframework.mock.http.server.reactive.test.MockServerHttpR
 
 /**
  * Test case for reactive {@link CorsUtils}.
+ *
  * @author Sebastien Deleuze
  * @author Rossen Stoyanchev
  */

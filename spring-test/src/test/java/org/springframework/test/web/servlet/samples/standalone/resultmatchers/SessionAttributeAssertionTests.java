@@ -16,11 +16,8 @@
 
 package org.springframework.test.web.servlet.samples.standalone.resultmatchers;
 
-import java.util.Locale;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.ui.Model;
@@ -28,11 +25,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import static org.hamcrest.Matchers.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import java.util.Locale;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
 /**
  * Examples of expectations on created session attributes.
@@ -54,14 +54,14 @@ public class SessionAttributeAssertionTests {
 	@Test
 	public void testSessionAttributeEqualTo() throws Exception {
 		this.mockMvc.perform(get("/"))
-			.andExpect(request().sessionAttribute("locale", Locale.UK))
-			.andExpect(request().sessionAttribute("locale", equalTo(Locale.UK)));
+				.andExpect(request().sessionAttribute("locale", Locale.UK))
+				.andExpect(request().sessionAttribute("locale", equalTo(Locale.UK)));
 	}
 
 	@Test
 	public void testSessionAttributeMatcher() throws Exception {
 		this.mockMvc.perform(get("/"))
-			.andExpect(request().sessionAttribute("locale", notNullValue()));
+				.andExpect(request().sessionAttribute("locale", notNullValue()));
 	}
 
 

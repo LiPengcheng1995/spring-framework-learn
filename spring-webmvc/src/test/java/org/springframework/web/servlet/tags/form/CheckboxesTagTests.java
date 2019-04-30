@@ -16,27 +16,10 @@
 
 package org.springframework.web.servlet.tags.form;
 
-import java.beans.PropertyEditorSupport;
-import java.io.StringReader;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.Tag;
-
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-
 import org.junit.Test;
-
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.format.Formatter;
 import org.springframework.format.support.FormattingConversionService;
@@ -47,6 +30,13 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.Tag;
+import java.beans.PropertyEditorSupport;
+import java.io.StringReader;
+import java.text.ParseException;
+import java.util.*;
+
 import static org.junit.Assert.*;
 
 /**
@@ -56,7 +46,7 @@ import static org.junit.Assert.*;
  * @author Benjamin Hoffmann
  * @author Jeremy Grelle
  */
-@SuppressWarnings({ "rawtypes", "unchecked" })
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class CheckboxesTagTests extends AbstractFormTagTests {
 
 	private CheckboxesTag tag;
@@ -78,7 +68,7 @@ public class CheckboxesTagTests extends AbstractFormTagTests {
 	@Test
 	public void withMultiValueArray() throws Exception {
 		this.tag.setPath("stringArray");
-		this.tag.setItems(new Object[] {"foo", "bar", "baz"});
+		this.tag.setItems(new Object[]{"foo", "bar", "baz"});
 		int result = this.tag.doStartTag();
 		assertEquals(Tag.SKIP_BODY, result);
 
@@ -120,7 +110,7 @@ public class CheckboxesTagTests extends AbstractFormTagTests {
 		String dynamicAttribute2 = "attr2";
 
 		this.tag.setPath("stringArray");
-		this.tag.setItems(new Object[] {"foo", "bar", "baz"});
+		this.tag.setItems(new Object[]{"foo", "bar", "baz"});
 		this.tag.setDynamicAttribute(null, dynamicAttribute1, dynamicAttribute1);
 		this.tag.setDynamicAttribute(null, dynamicAttribute2, dynamicAttribute2);
 
@@ -172,7 +162,7 @@ public class CheckboxesTagTests extends AbstractFormTagTests {
 	public void withMultiValueArrayWithDelimiter() throws Exception {
 		this.tag.setDelimiter("<br/>");
 		this.tag.setPath("stringArray");
-		this.tag.setItems(new Object[] {"foo", "bar", "baz"});
+		this.tag.setItems(new Object[]{"foo", "bar", "baz"});
 		int result = this.tag.doStartTag();
 		assertEquals(Tag.SKIP_BODY, result);
 
@@ -352,7 +342,7 @@ public class CheckboxesTagTests extends AbstractFormTagTests {
 	@Test
 	public void withMultiValueWithEditor() throws Exception {
 		this.tag.setPath("stringArray");
-		this.tag.setItems(new Object[] {"   foo", "   bar", "   baz"});
+		this.tag.setItems(new Object[]{"   foo", "   bar", "   baz"});
 		BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(this.bean, COMMAND_NAME);
 		MyStringTrimmerEditor editor = new MyStringTrimmerEditor();
 		bindingResult.getPropertyEditorRegistry().registerCustomEditor(String.class, editor);
@@ -395,7 +385,7 @@ public class CheckboxesTagTests extends AbstractFormTagTests {
 	@Test
 	public void withMultiValueWithReverseEditor() throws Exception {
 		this.tag.setPath("stringArray");
-		this.tag.setItems(new Object[] {"FOO", "BAR", "BAZ"});
+		this.tag.setItems(new Object[]{"FOO", "BAR", "BAZ"});
 		BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(this.bean, COMMAND_NAME);
 		MyLowerCaseEditor editor = new MyLowerCaseEditor();
 		bindingResult.getPropertyEditorRegistry().registerCustomEditor(String.class, editor);
@@ -437,7 +427,7 @@ public class CheckboxesTagTests extends AbstractFormTagTests {
 	@Test
 	public void withMultiValueWithFormatter() throws Exception {
 		this.tag.setPath("stringArray");
-		this.tag.setItems(new Object[] {"   foo", "   bar", "   baz"});
+		this.tag.setItems(new Object[]{"   foo", "   bar", "   baz"});
 		BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(this.bean, COMMAND_NAME);
 		FormattingConversionService cs = new FormattingConversionService();
 		cs.addFormatterForFieldType(String.class, new Formatter<String>() {
@@ -445,6 +435,7 @@ public class CheckboxesTagTests extends AbstractFormTagTests {
 			public String print(String object, Locale locale) {
 				return object;
 			}
+
 			@Override
 			public String parse(String text, Locale locale) throws ParseException {
 				return text.trim();
@@ -679,8 +670,7 @@ public class CheckboxesTagTests extends AbstractFormTagTests {
 			this.tag.setPath("name");
 			this.tag.doStartTag();
 			fail("Should not be able to render with a null value when binding to a non-boolean.");
-		}
-		catch (IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			// success
 		}
 	}
@@ -688,7 +678,7 @@ public class CheckboxesTagTests extends AbstractFormTagTests {
 	@Test
 	public void hiddenElementOmittedOnDisabled() throws Exception {
 		this.tag.setPath("stringArray");
-		this.tag.setItems(new Object[] {"foo", "bar", "baz"});
+		this.tag.setItems(new Object[]{"foo", "bar", "baz"});
 		this.tag.setDisabled(true);
 		int result = this.tag.doStartTag();
 		assertEquals(Tag.SKIP_BODY, result);
@@ -714,7 +704,7 @@ public class CheckboxesTagTests extends AbstractFormTagTests {
 	@Test
 	public void spanElementCustomizable() throws Exception {
 		this.tag.setPath("stringArray");
-		this.tag.setItems(new Object[] {"foo", "bar", "baz"});
+		this.tag.setItems(new Object[]{"foo", "bar", "baz"});
 		this.tag.setElement("element");
 		int result = this.tag.doStartTag();
 		assertEquals(Tag.SKIP_BODY, result);
@@ -734,8 +724,7 @@ public class CheckboxesTagTests extends AbstractFormTagTests {
 		try {
 			this.tag.setDynamicAttribute(null, "type", "email");
 			fail("Expected exception");
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			assertEquals("Attribute type=\"email\" is not allowed", e.getMessage());
 		}
 	}
@@ -774,8 +763,8 @@ public class CheckboxesTagTests extends AbstractFormTagTests {
 		this.bean.setName("Rob Harrop");
 		this.bean.setJedi(true);
 		this.bean.setSomeBoolean(Boolean.TRUE);
-		this.bean.setStringArray(new String[] {"bar", "foo"});
-		this.bean.setSomeIntegerArray(new Integer[] {new Integer(2), new Integer(1)});
+		this.bean.setStringArray(new String[]{"bar", "foo"});
+		this.bean.setSomeIntegerArray(new Integer[]{new Integer(2), new Integer(1)});
 		this.bean.setOtherColours(colours);
 		this.bean.setPets(pets);
 		this.bean.setSomeSet(someObjects);
@@ -806,13 +795,13 @@ public class CheckboxesTagTests extends AbstractFormTagTests {
 	private static class MyLowerCaseEditor extends PropertyEditorSupport {
 
 		@Override
-		public void setAsText(String text) throws IllegalArgumentException {
-			setValue(text.toLowerCase());
+		public String getAsText() {
+			return ObjectUtils.nullSafeToString(getValue()).toUpperCase();
 		}
 
 		@Override
-		public String getAsText() {
-			return ObjectUtils.nullSafeToString(getValue()).toUpperCase();
+		public void setAsText(String text) throws IllegalArgumentException {
+			setValue(text.toLowerCase());
 		}
 	}
 

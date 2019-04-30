@@ -16,20 +16,14 @@
 
 package org.springframework.core.type.classreading;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
-import org.springframework.asm.AnnotationVisitor;
-import org.springframework.asm.Attribute;
-import org.springframework.asm.ClassVisitor;
-import org.springframework.asm.FieldVisitor;
-import org.springframework.asm.MethodVisitor;
-import org.springframework.asm.Opcodes;
-import org.springframework.asm.SpringAsmInfo;
+import org.springframework.asm.*;
 import org.springframework.core.type.ClassMetadata;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * ASM class visitor which looks only for the class name and implemented types,
@@ -104,8 +98,7 @@ class ClassMetadataReadingVisitor extends ClassVisitor implements ClassMetadata 
 			if (this.className.equals(fqName)) {
 				this.enclosingClassName = fqOuterName;
 				this.independentInnerClass = ((access & Opcodes.ACC_STATIC) != 0);
-			}
-			else if (this.className.equals(fqOuterName)) {
+			} else if (this.className.equals(fqOuterName)) {
 				this.memberClassNames.add(fqName);
 			}
 		}

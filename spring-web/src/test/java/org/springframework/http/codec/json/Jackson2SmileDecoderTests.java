@@ -16,14 +16,8 @@
 
 package org.springframework.http.codec.json;
 
-import java.util.List;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.codec.CodecException;
 import org.springframework.core.io.buffer.AbstractDataBufferAllocatingTestCase;
@@ -31,6 +25,11 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.codec.Pojo;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.util.MimeType;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
+import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
@@ -66,7 +65,7 @@ public class Jackson2SmileDecoderTests extends AbstractDataBufferAllocatingTestC
 		ObjectMapper mapper = Jackson2ObjectMapperBuilder.smile().build();
 		Pojo pojo = new Pojo("foo", "bar");
 		byte[] serializedPojo = mapper.writer().writeValueAsBytes(pojo);
-		
+
 		Flux<DataBuffer> source = Flux.just(this.bufferFactory.wrap(serializedPojo));
 		ResolvableType elementType = forClass(Pojo.class);
 		Flux<Object> flux = decoder.decode(source, elementType, null, emptyMap());

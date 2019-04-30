@@ -16,18 +16,17 @@
 
 package org.springframework.web.reactive.socket.server.upgrade;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.springframework.util.Assert;
 
 import javax.websocket.Decoder;
 import javax.websocket.Encoder;
 import javax.websocket.Endpoint;
 import javax.websocket.Extension;
 import javax.websocket.server.ServerEndpointConfig;
-
-import org.springframework.util.Assert;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Default implementation of {@link javax.websocket.server.ServerEndpointConfig}
@@ -49,7 +48,8 @@ class DefaultServerEndpointConfig extends ServerEndpointConfig.Configurator
 
 	/**
 	 * Constructor with a path and an {@code javax.websocket.Endpoint}.
-	 * @param path the endpoint path
+	 *
+	 * @param path     the endpoint path
 	 * @param endpoint the endpoint instance
 	 */
 	public DefaultServerEndpointConfig(String path, Endpoint endpoint) {
@@ -85,13 +85,13 @@ class DefaultServerEndpointConfig extends ServerEndpointConfig.Configurator
 		return this.path;
 	}
 
-	public void setSubprotocols(List<String> protocols) {
-		this.protocols = protocols;
-	}
-
 	@Override
 	public List<String> getSubprotocols() {
 		return this.protocols;
+	}
+
+	public void setSubprotocols(List<String> protocols) {
+		this.protocols = protocols;
 	}
 
 	@Override

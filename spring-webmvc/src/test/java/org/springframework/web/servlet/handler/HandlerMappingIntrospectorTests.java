@@ -16,13 +16,7 @@
 
 package org.springframework.web.servlet.handler;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-
 import org.junit.Test;
-
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,9 +33,12 @@ import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.*;
 import static org.springframework.web.servlet.HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE;
 
 /**
@@ -83,7 +80,8 @@ public class HandlerMappingIntrospectorTests {
 		assertEquals(expected, actual);
 	}
 
-	@Test @SuppressWarnings("deprecation")
+	@Test
+	@SuppressWarnings("deprecation")
 	public void defaultHandlerMappings() throws Exception {
 		StaticWebApplicationContext cxt = new StaticWebApplicationContext();
 		cxt.refresh();
@@ -170,7 +168,8 @@ public class HandlerMappingIntrospectorTests {
 	}
 
 
-	@Configuration @SuppressWarnings({"WeakerAccess", "unused"})
+	@Configuration
+	@SuppressWarnings({"WeakerAccess", "unused"})
 	static class TestConfig {
 
 		@Bean

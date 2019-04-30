@@ -15,17 +15,8 @@
  */
 package org.springframework.web.servlet.mvc.method.annotation;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
-
 import org.junit.Before;
 import org.junit.Test;
-import reactor.core.publisher.EmitterProcessor;
-import reactor.core.publisher.Flux;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
 import org.springframework.http.ResponseEntity;
@@ -41,28 +32,32 @@ import org.springframework.web.context.request.async.AsyncWebRequest;
 import org.springframework.web.context.request.async.StandardServletAsyncWebRequest;
 import org.springframework.web.context.request.async.WebAsyncUtils;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import reactor.core.publisher.EmitterProcessor;
+import reactor.core.publisher.Flux;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.core.ResolvableType.*;
-import static org.springframework.web.method.ResolvableMethod.*;
+import static org.springframework.core.ResolvableType.forClassWithGenerics;
+import static org.springframework.web.method.ResolvableMethod.on;
 
 /**
  * Unit tests for ResponseBodyEmitterReturnValueHandler.
+ *
  * @author Rossen Stoyanchev
  */
 public class ResponseBodyEmitterReturnValueHandlerTests {
 
-	private ResponseBodyEmitterReturnValueHandler handler;
-
-	private MockHttpServletRequest request;
-
-	private MockHttpServletResponse response;
-
-	private NativeWebRequest webRequest;
-
 	private final ModelAndViewContainer mavContainer = new ModelAndViewContainer();
-
+	private ResponseBodyEmitterReturnValueHandler handler;
+	private MockHttpServletRequest request;
+	private MockHttpServletResponse response;
+	private NativeWebRequest webRequest;
 
 	@Before
 	public void setup() throws Exception {
@@ -98,7 +93,7 @@ public class ResponseBodyEmitterReturnValueHandlerTests {
 
 		assertTrue(this.handler.supportsReturnType(
 				on(TestController.class).resolveReturnType(forClassWithGenerics(ResponseEntity.class,
-								forClassWithGenerics(Flux.class, String.class)))));
+						forClassWithGenerics(Flux.class, String.class)))));
 	}
 
 	@Test
@@ -140,8 +135,8 @@ public class ResponseBodyEmitterReturnValueHandlerTests {
 		emitter.send(bean);
 
 		assertEquals("{\"id\":1,\"name\":\"Joe\"}\n" +
-						"{\"id\":2,\"name\":\"John\"}\n" +
-						"{\"id\":3,\"name\":\"Jason\"}", this.response.getContentAsString());
+				"{\"id\":2,\"name\":\"John\"}\n" +
+				"{\"id\":3,\"name\":\"Jason\"}", this.response.getContentAsString());
 
 		MockAsyncContext asyncContext = (MockAsyncContext) this.request.getAsyncContext();
 		assertNull(asyncContext.getDispatchedPath());
@@ -210,12 +205,12 @@ public class ResponseBodyEmitterReturnValueHandlerTests {
 				comment("a test").name("update").id("1").reconnectTime(5000L).data(bean1).data(bean2));
 
 		assertEquals(":a test\n" +
-						"event:update\n" +
-						"id:1\n" +
-						"retry:5000\n" +
-						"data:{\"id\":1,\"name\":\"Joe\"}\n" +
-						"data:{\"id\":2,\"name\":\"John\"}\n" +
-						"\n", this.response.getContentAsString());
+				"event:update\n" +
+				"id:1\n" +
+				"retry:5000\n" +
+				"data:{\"id\":1,\"name\":\"Joe\"}\n" +
+				"data:{\"id\":2,\"name\":\"John\"}\n" +
+				"\n", this.response.getContentAsString());
 	}
 
 	@Test
@@ -302,25 +297,45 @@ public class ResponseBodyEmitterReturnValueHandlerTests {
 	@SuppressWarnings("unused")
 	private static class TestController {
 
-		private ResponseBodyEmitter h1() { return null; }
+		private ResponseBodyEmitter h1() {
+			return null;
+		}
 
-		private ResponseEntity<ResponseBodyEmitter> h2() { return null; }
+		private ResponseEntity<ResponseBodyEmitter> h2() {
+			return null;
+		}
 
-		private SseEmitter h3() { return null; }
+		private SseEmitter h3() {
+			return null;
+		}
 
-		private ResponseEntity<SseEmitter> h4() { return null; }
+		private ResponseEntity<SseEmitter> h4() {
+			return null;
+		}
 
-		private ResponseEntity<String> h5() { return null; }
+		private ResponseEntity<String> h5() {
+			return null;
+		}
 
-		private ResponseEntity<AtomicReference<String>> h6() { return null; }
+		private ResponseEntity<AtomicReference<String>> h6() {
+			return null;
+		}
 
-		private ResponseEntity h7() { return null; }
+		private ResponseEntity h7() {
+			return null;
+		}
 
-		private Flux<String> h8() { return null; }
+		private Flux<String> h8() {
+			return null;
+		}
 
-		private ResponseEntity<Flux<String>> h9() { return null; }
+		private ResponseEntity<Flux<String>> h9() {
+			return null;
+		}
 
-		private ResponseEntity<Flux<SimpleBean>> h10() { return null; }
+		private ResponseEntity<Flux<SimpleBean>> h10() {
+			return null;
+		}
 	}
 
 

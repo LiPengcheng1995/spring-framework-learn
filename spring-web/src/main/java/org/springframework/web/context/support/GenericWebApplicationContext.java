@@ -16,9 +16,6 @@
 
 package org.springframework.web.context.support;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.support.GenericApplicationContext;
@@ -35,6 +32,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.ConfigurableWebEnvironment;
 import org.springframework.web.context.ServletContextAware;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 
 /**
  * Subclass of {@link GenericApplicationContext}, suitable for web environments.
@@ -73,6 +73,7 @@ public class GenericWebApplicationContext extends GenericApplicationContext
 
 	/**
 	 * Create a new GenericWebApplicationContext.
+	 *
 	 * @see #setServletContext
 	 * @see #registerBeanDefinition
 	 * @see #refresh
@@ -83,6 +84,7 @@ public class GenericWebApplicationContext extends GenericApplicationContext
 
 	/**
 	 * Create a new GenericWebApplicationContext for the given ServletContext.
+	 *
 	 * @param servletContext the ServletContext to run in
 	 * @see #registerBeanDefinition
 	 * @see #refresh
@@ -93,6 +95,7 @@ public class GenericWebApplicationContext extends GenericApplicationContext
 
 	/**
 	 * Create a new GenericWebApplicationContext with the given DefaultListableBeanFactory.
+	 *
 	 * @param beanFactory the DefaultListableBeanFactory instance to use for this context
 	 * @see #setServletContext
 	 * @see #registerBeanDefinition
@@ -104,7 +107,8 @@ public class GenericWebApplicationContext extends GenericApplicationContext
 
 	/**
 	 * Create a new GenericWebApplicationContext with the given DefaultListableBeanFactory.
-	 * @param beanFactory the DefaultListableBeanFactory instance to use for this context
+	 *
+	 * @param beanFactory    the DefaultListableBeanFactory instance to use for this context
 	 * @param servletContext the ServletContext to run in
 	 * @see #registerBeanDefinition
 	 * @see #refresh
@@ -114,6 +118,11 @@ public class GenericWebApplicationContext extends GenericApplicationContext
 		this.servletContext = servletContext;
 	}
 
+	@Override
+	@Nullable
+	public ServletContext getServletContext() {
+		return this.servletContext;
+	}
 
 	/**
 	 * Set the ServletContext that this WebApplicationContext runs in.
@@ -121,12 +130,6 @@ public class GenericWebApplicationContext extends GenericApplicationContext
 	@Override
 	public void setServletContext(@Nullable ServletContext servletContext) {
 		this.servletContext = servletContext;
-	}
-
-	@Override
-	@Nullable
-	public ServletContext getServletContext() {
-		return this.servletContext;
 	}
 
 	@Override
@@ -144,6 +147,7 @@ public class GenericWebApplicationContext extends GenericApplicationContext
 
 	/**
 	 * Register ServletContextAwareProcessor.
+	 *
 	 * @see ServletContextAwareProcessor
 	 */
 	@Override
@@ -158,6 +162,7 @@ public class GenericWebApplicationContext extends GenericApplicationContext
 
 	/**
 	 * This implementation supports file paths beneath the root of the ServletContext.
+	 *
 	 * @see ServletContextResource
 	 */
 	@Override
@@ -168,6 +173,7 @@ public class GenericWebApplicationContext extends GenericApplicationContext
 
 	/**
 	 * This implementation supports pattern matching in unexpanded WARs too.
+	 *
 	 * @see ServletContextResourcePatternResolver
 	 */
 	@Override
@@ -208,11 +214,6 @@ public class GenericWebApplicationContext extends GenericApplicationContext
 	// ---------------------------------------------------------------------
 
 	@Override
-	public void setServletConfig(@Nullable ServletConfig servletConfig) {
-		// no-op
-	}
-
-	@Override
 	@Nullable
 	public ServletConfig getServletConfig() {
 		throw new UnsupportedOperationException(
@@ -220,7 +221,7 @@ public class GenericWebApplicationContext extends GenericApplicationContext
 	}
 
 	@Override
-	public void setNamespace(@Nullable String namespace) {
+	public void setServletConfig(@Nullable ServletConfig servletConfig) {
 		// no-op
 	}
 
@@ -232,20 +233,16 @@ public class GenericWebApplicationContext extends GenericApplicationContext
 	}
 
 	@Override
+	public void setNamespace(@Nullable String namespace) {
+		// no-op
+	}
+
+	@Override
 	public void setConfigLocation(String configLocation) {
 		if (StringUtils.hasText(configLocation)) {
 			throw new UnsupportedOperationException(
 					"GenericWebApplicationContext does not support setConfigLocation(). " +
-					"Do you still have an 'contextConfigLocations' init-param set?");
-		}
-	}
-
-	@Override
-	public void setConfigLocations(String... configLocations) {
-		if (!ObjectUtils.isEmpty(configLocations)) {
-			throw new UnsupportedOperationException(
-					"GenericWebApplicationContext does not support setConfigLocations(). " +
-					"Do you still have an 'contextConfigLocations' init-param set?");
+							"Do you still have an 'contextConfigLocations' init-param set?");
 		}
 	}
 
@@ -253,6 +250,15 @@ public class GenericWebApplicationContext extends GenericApplicationContext
 	public String[] getConfigLocations() {
 		throw new UnsupportedOperationException(
 				"GenericWebApplicationContext does not support getConfigLocations()");
+	}
+
+	@Override
+	public void setConfigLocations(String... configLocations) {
+		if (!ObjectUtils.isEmpty(configLocations)) {
+			throw new UnsupportedOperationException(
+					"GenericWebApplicationContext does not support setConfigLocations(). " +
+							"Do you still have an 'contextConfigLocations' init-param set?");
+		}
 	}
 
 }

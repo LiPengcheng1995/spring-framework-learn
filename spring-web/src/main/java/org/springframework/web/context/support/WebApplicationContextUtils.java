@@ -16,19 +16,6 @@
 
 package org.springframework.web.context.support;
 
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.env.MutablePropertySources;
@@ -38,13 +25,20 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.RequestScope;
-import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.context.request.ServletWebRequest;
-import org.springframework.web.context.request.SessionScope;
-import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.context.request.*;
+
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Convenience methods for retrieving the root {@link WebApplicationContext} for
@@ -73,6 +67,7 @@ public abstract class WebApplicationContextUtils {
 	 * loaded via {@link org.springframework.web.context.ContextLoaderListener}.
 	 * <p>Will rethrow an exception that happened on root context startup,
 	 * to differentiate between a failed context startup and no context at all.
+	 *
 	 * @param sc ServletContext to find the web application context for
 	 * @return the root WebApplicationContext for this web app
 	 * @throws IllegalStateException if the root WebApplicationContext could not be found
@@ -91,6 +86,7 @@ public abstract class WebApplicationContextUtils {
 	 * loaded via {@link org.springframework.web.context.ContextLoaderListener}.
 	 * <p>Will rethrow an exception that happened on root context startup,
 	 * to differentiate between a failed context startup and no context at all.
+	 *
 	 * @param sc ServletContext to find the web application context for
 	 * @return the root WebApplicationContext for this web app, or {@code null} if none
 	 * @see org.springframework.web.context.WebApplicationContext#ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE
@@ -102,7 +98,8 @@ public abstract class WebApplicationContextUtils {
 
 	/**
 	 * Find a custom {@code WebApplicationContext} for this web app.
-	 * @param sc ServletContext to find the web application context for
+	 *
+	 * @param sc       ServletContext to find the web application context for
 	 * @param attrName the name of the ServletContext attribute to look for
 	 * @return the desired WebApplicationContext for this web app, or {@code null} if none
 	 */
@@ -137,11 +134,12 @@ public abstract class WebApplicationContextUtils {
 	 * controlled through its {@code publishContext} property, which is {@code true}
 	 * by default but can be selectively switched to only publish a single context
 	 * despite multiple {@code DispatcherServlet} registrations in the web app.
+	 *
 	 * @param sc ServletContext to find the web application context for
 	 * @return the desired WebApplicationContext for this web app, or {@code null} if none
-	 * @since 4.2
 	 * @see #getWebApplicationContext(ServletContext)
 	 * @see ServletContext#getAttributeNames()
+	 * @since 4.2
 	 */
 	@Nullable
 	public static WebApplicationContext findWebApplicationContext(ServletContext sc) {
@@ -167,6 +165,7 @@ public abstract class WebApplicationContextUtils {
 	/**
 	 * Register web-specific scopes ("request", "session", "globalSession")
 	 * with the given BeanFactory, as used by the WebApplicationContext.
+	 *
 	 * @param beanFactory the BeanFactory to configure
 	 */
 	public static void registerWebApplicationScopes(ConfigurableListableBeanFactory beanFactory) {
@@ -176,11 +175,12 @@ public abstract class WebApplicationContextUtils {
 	/**
 	 * Register web-specific scopes ("request", "session", "globalSession", "application")
 	 * with the given BeanFactory, as used by the WebApplicationContext.
+	 *
 	 * @param beanFactory the BeanFactory to configure
-	 * @param sc the ServletContext that we're running within
+	 * @param sc          the ServletContext that we're running within
 	 */
 	public static void registerWebApplicationScopes(ConfigurableListableBeanFactory beanFactory,
-			@Nullable ServletContext sc) {
+													@Nullable ServletContext sc) {
 
 		beanFactory.registerScope(WebApplicationContext.SCOPE_REQUEST, new RequestScope());
 		beanFactory.registerScope(WebApplicationContext.SCOPE_SESSION, new SessionScope());
@@ -203,6 +203,7 @@ public abstract class WebApplicationContextUtils {
 	/**
 	 * Register web-specific environment beans ("contextParameters", "contextAttributes")
 	 * with the given BeanFactory, as used by the WebApplicationContext.
+	 *
 	 * @param bf the BeanFactory to configure
 	 * @param sc the ServletContext that we're running within
 	 */
@@ -213,12 +214,13 @@ public abstract class WebApplicationContextUtils {
 	/**
 	 * Register web-specific environment beans ("contextParameters", "contextAttributes")
 	 * with the given BeanFactory, as used by the WebApplicationContext.
-	 * @param bf the BeanFactory to configure
+	 *
+	 * @param bf             the BeanFactory to configure
 	 * @param servletContext the ServletContext that we're running within
-	 * @param servletConfig the ServletConfig of the containing Portlet
+	 * @param servletConfig  the ServletConfig of the containing Portlet
 	 */
 	public static void registerEnvironmentBeans(ConfigurableListableBeanFactory bf,
-			@Nullable ServletContext servletContext, @Nullable ServletConfig servletConfig) {
+												@Nullable ServletContext servletContext, @Nullable ServletConfig servletConfig) {
 
 		if (servletContext != null && !bf.containsBean(WebApplicationContext.SERVLET_CONTEXT_BEAN_NAME)) {
 			bf.registerSingleton(WebApplicationContext.SERVLET_CONTEXT_BEAN_NAME, servletContext);
@@ -266,6 +268,7 @@ public abstract class WebApplicationContextUtils {
 	 * Convenient variant of {@link #initServletPropertySources(MutablePropertySources,
 	 * ServletContext, ServletConfig)} that always provides {@code null} for the
 	 * {@link ServletConfig} parameter.
+	 *
 	 * @see #initServletPropertySources(MutablePropertySources, ServletContext, ServletConfig)
 	 */
 	public static void initServletPropertySources(MutablePropertySources propertySources, ServletContext servletContext) {
@@ -279,19 +282,20 @@ public abstract class WebApplicationContextUtils {
 	 * <p>This method is idempotent with respect to the fact it may be called any number
 	 * of times but will perform replacement of stub property sources with their
 	 * corresponding actual property sources once and only once.
-	 * @param sources the {@link MutablePropertySources} to initialize (must not
-	 * be {@code null})
+	 *
+	 * @param sources        the {@link MutablePropertySources} to initialize (must not
+	 *                       be {@code null})
 	 * @param servletContext the current {@link ServletContext} (ignored if {@code null}
-	 * or if the {@link StandardServletEnvironment#SERVLET_CONTEXT_PROPERTY_SOURCE_NAME
-	 * servlet context property source} has already been initialized)
-	 * @param servletConfig the current {@link ServletConfig} (ignored if {@code null}
-	 * or if the {@link StandardServletEnvironment#SERVLET_CONFIG_PROPERTY_SOURCE_NAME
-	 * servlet config property source} has already been initialized)
+	 *                       or if the {@link StandardServletEnvironment#SERVLET_CONTEXT_PROPERTY_SOURCE_NAME
+	 *                       servlet context property source} has already been initialized)
+	 * @param servletConfig  the current {@link ServletConfig} (ignored if {@code null}
+	 *                       or if the {@link StandardServletEnvironment#SERVLET_CONFIG_PROPERTY_SOURCE_NAME
+	 *                       servlet config property source} has already been initialized)
 	 * @see org.springframework.core.env.PropertySource.StubPropertySource
 	 * @see org.springframework.core.env.ConfigurableEnvironment#getPropertySources()
 	 */
 	public static void initServletPropertySources(MutablePropertySources sources,
-			@Nullable ServletContext servletContext, @Nullable ServletConfig servletConfig) {
+												  @Nullable ServletContext servletContext, @Nullable ServletConfig servletConfig) {
 
 		Assert.notNull(sources, "'propertySources' must not be null");
 		String name = StandardServletEnvironment.SERVLET_CONTEXT_PROPERTY_SOURCE_NAME;
@@ -306,6 +310,7 @@ public abstract class WebApplicationContextUtils {
 
 	/**
 	 * Return the current RequestAttributes instance as ServletRequestAttributes.
+	 *
 	 * @see RequestContextHolder#currentRequestAttributes()
 	 */
 	private static ServletRequestAttributes currentRequestAttributes() {
@@ -397,7 +402,7 @@ public abstract class WebApplicationContextUtils {
 
 	/**
 	 * Inner class to avoid hard-coded JSF dependency.
- 	 */
+	 */
 	private static class FacesDependencyRegistrar {
 
 		public static void registerFacesDependencies(ConfigurableListableBeanFactory beanFactory) {
@@ -406,6 +411,7 @@ public abstract class WebApplicationContextUtils {
 				public FacesContext getObject() {
 					return FacesContext.getCurrentInstance();
 				}
+
 				@Override
 				public String toString() {
 					return "Current JSF FacesContext";
@@ -416,6 +422,7 @@ public abstract class WebApplicationContextUtils {
 				public ExternalContext getObject() {
 					return FacesContext.getCurrentInstance().getExternalContext();
 				}
+
 				@Override
 				public String toString() {
 					return "Current JSF ExternalContext";
