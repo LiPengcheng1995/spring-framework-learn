@@ -281,6 +281,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
 	/**
 	 * Load bean definitions from the specified XML file.
+	 * 此方法向外暴露，仅进行一些前置校验及处理工作，具体逻辑会委托给 doXXXX 函数
 	 *
 	 * @param encodedResource the resource descriptor for the XML file,
 	 *                        allowing to specify an encoding to use for parsing the file
@@ -298,17 +299,23 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 			currentResources = new HashSet<>(4);
 			this.resourcesCurrentlyBeingLoaded.set(currentResources);
 		}
+		// currentResources 是线程安全的 Set 【不考虑反射啥的极端情况】，添加失败的原因是该对象已经存在，所以无法添加
+		// 所以，如果添加失败，说明这个正在被此线程解析时被第二次解析了，有循环引用
 		if (!currentResources.add(encodedResource)) {
 			throw new BeanDefinitionStoreException(
 					"Detected cyclic loading of " + encodedResource + " - check your import definitions!");
 		}
 		try {
+			// 获得输入流
 			InputStream inputStream = encodedResource.getResource().getInputStream();
 			try {
+				// 用 SAX 框架的 InputSource 包一下，方便后面直接调用该框架进行 xml 格式文件的解析
+				// 详见 https://www.cnblogs.com/nerxious/archive/2013/05/03/3056588.html
 				InputSource inputSource = new InputSource(inputStream);
 				if (encodedResource.getEncoding() != null) {
 					inputSource.setEncoding(encodedResource.getEncoding());
 				}
+				// 将具体实现委托给 doXXXXX
 				return doLoadBeanDefinitions(inputSource, encodedResource.getResource());
 			} finally {
 				inputStream.close();
@@ -317,6 +324,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 			throw new BeanDefinitionStoreException(
 					"IOException parsing XML document from " + encodedResource.getResource(), ex);
 		} finally {
+			// 完成解析后移除
 			currentResources.remove(encodedResource);
 			if (currentResources.isEmpty()) {
 				this.resourcesCurrentlyBeingLoaded.remove();
@@ -355,6 +363,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 *
 	 * @param inputSource the SAX InputSource to read from
 	 * @param resource    the resource descriptor for the XML file
+	 *                    【只是要注释的话，为啥还专门用Resource包一下。。。是为了以后方便拓展？】
 	 * @return the number of bean definitions found
 	 * @throws BeanDefinitionStoreException in case of loading or parsing errors
 	 * @see #doLoadDocument
@@ -363,7 +372,10 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	protected int doLoadBeanDefinitions(InputSource inputSource, Resource resource)
 			throws BeanDefinitionStoreException {
 		try {
+			// 将 xml 中的元素解析成 Document 对象中的数据
 			Document doc = doLoadDocument(inputSource, resource);
+
+			// 注册 bean
 			return registerBeanDefinitions(doc, resource);
 		} catch (BeanDefinitionStoreException ex) {
 			throw ex;
@@ -451,6 +463,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 		}
 
 		try {
+			// 上面将一些前置条件判断完，然后将格式判断委托给 validationModeDetector ，通过从开头开始过滤
+			// 注释行和空格，看第一行是不是有 DOCTYPE ，如果有就是 DTD ，否则是 XSD
 			return this.validationModeDetector.detectValidationMode(inputStream);
 		} catch (IOException ex) {
 			throw new BeanDefinitionStoreException("Unable to determine validation mode for [" +

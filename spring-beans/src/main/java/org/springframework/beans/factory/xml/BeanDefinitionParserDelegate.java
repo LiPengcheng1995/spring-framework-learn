@@ -349,23 +349,31 @@ public class BeanDefinitionParserDelegate {
 			checkNameUniqueness(beanName, aliases, ele);
 		}
 
+		// 将 ele 中的属性转化成 BeanDefinition 的属性，生成对应的 BD
 		AbstractBeanDefinition beanDefinition = parseBeanDefinitionElement(ele, beanName, containingBean);
 		if (beanDefinition != null) {
+			// 如果没有设置 id 和 name 也就是说没有设置任何可以做默认属性的东西，
+			// 那就根据 bean 的相关信息自行生成 id
 			if (!StringUtils.hasText(beanName)) {
 				try {
 					if (containingBean != null) {
 						beanName = BeanDefinitionReaderUtils.generateBeanName(
 								beanDefinition, this.readerContext.getRegistry(), true);
 					} else {
+						// 这两个归根结底都是调用的 BeanDefinitionReaderUtils.generateBeanName
+						// 只是这里传的 isInnerBean 是 false ，即 containingBean 不存在，所以不是内部 bean
 						beanName = this.readerContext.generateBeanName(beanDefinition);
+
 						// Register an alias for the plain bean class name, if still possible,
 						// if the generator returned the class name plus a suffix.
 						// This is expected for Spring 1.2/2.0 backwards compatibility.
 						String beanClassName = beanDefinition.getBeanClassName();
+						// 按照生成的逻辑缺失都符合
+						//TODO 但是感觉只判断不为空就行了吧，毕竟根据逻辑， beanClassName 存在，就是返回这种的 name 格式
 						if (beanClassName != null &&
 								beanName.startsWith(beanClassName) && beanName.length() > beanClassName.length() &&
 								!this.readerContext.getRegistry().isBeanNameInUse(beanClassName)) {
-							aliases.add(beanClassName);
+							aliases.add(beanClassName); // 默认把 bean 的 className 加到别名中去了
 						}
 					}
 					if (logger.isDebugEnabled()) {
@@ -409,6 +417,7 @@ public class BeanDefinitionParserDelegate {
 	 * Parse the bean definition itself, without regard to name or aliases. May return
 	 * {@code null} if problems occurred during the parsing of the bean definition.
 	 */
+	// 从 element 中取得 bean 定义的相关信息
 	@Nullable
 	public AbstractBeanDefinition parseBeanDefinitionElement(
 			Element ele, String beanName, @Nullable BeanDefinition containingBean) {
@@ -463,6 +472,7 @@ public class BeanDefinitionParserDelegate {
 	 * @param containingBean containing bean definition
 	 * @return a bean definition initialized according to the bean element attributes
 	 */
+	// 把 xml 中读取出来的节点中的属性转化成 BeanDefinition 中的属性
 	public AbstractBeanDefinition parseBeanDefinitionAttributes(Element ele, String beanName,
 																@Nullable BeanDefinition containingBean, AbstractBeanDefinition bd) {
 

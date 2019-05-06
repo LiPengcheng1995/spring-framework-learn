@@ -95,6 +95,7 @@ public class BeanDefinitionReaderUtils {
 	 * @param definition  the bean definition to generate a bean name for
 	 * @param registry    the bean factory that the definition is going to be
 	 *                    registered with (to check for existing bean names)
+	 *                    【就是用来查重的】
 	 * @param isInnerBean whether the given bean definition will be registered
 	 *                    as inner bean or as top-level bean (allowing for special name generation
 	 *                    for inner beans versus top-level beans)
