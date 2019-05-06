@@ -143,6 +143,7 @@ public class BeanDefinitionReaderUtils {
 	 * @param registry         the bean factory to register with
 	 * @throws BeanDefinitionStoreException if registration failed
 	 */
+	// 之前看了 SimpleRegistry 的东西，这个应该没啥大问题
 	public static void registerBeanDefinition(
 			BeanDefinitionHolder definitionHolder, BeanDefinitionRegistry registry)
 			throws BeanDefinitionStoreException {

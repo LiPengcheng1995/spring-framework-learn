@@ -189,6 +189,9 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		} else if (delegate.nodeNameEquals(ele, ALIAS_ELEMENT)) {
 			processAliasRegistration(ele);
 		} else if (delegate.nodeNameEquals(ele, BEAN_ELEMENT)) {
+			// 完成对 bean 元素的解析
+			// 解析完成后，bean Element 会被解析成对应的 BeanDefinition 并和 id,alias
+			// 一起注册至 Registry
 			processBeanDefinition(ele, delegate);
 		} else if (delegate.nodeNameEquals(ele, NESTED_BEANS_ELEMENT)) {
 			// recurse
@@ -294,15 +297,18 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		// 方便统一进行注册
 		BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele);
 		if (bdHolder != null) {
+			// 对生成的 BeanDefinitionHolder 进行一些装饰
 			bdHolder = delegate.decorateBeanDefinitionIfRequired(ele, bdHolder);
 			try {
-				// Register the final decorated instance.
+				// 对该 bean 进行注册
 				BeanDefinitionReaderUtils.registerBeanDefinition(bdHolder, getReaderContext().getRegistry());
 			} catch (BeanDefinitionStoreException ex) {
 				getReaderContext().error("Failed to register bean definition with name '" +
 						bdHolder.getBeanName() + "'", ele, ex);
 			}
 			// Send registration event.
+			// 新 bean 注册完成，触发对应的监听器
+			// TODO 监听器的东西，后面详细阅读吧
 			getReaderContext().fireComponentRegistered(new BeanComponentDefinition(bdHolder));
 		}
 	}
