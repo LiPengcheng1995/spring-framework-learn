@@ -216,21 +216,29 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	@SuppressWarnings("unchecked")
 	protected <T> T doGetBean(final String name, @Nullable final Class<T> requiredType,
 							  @Nullable final Object[] args, boolean typeCheckOnly) throws BeansException {
-
+		// 将入参的别名真正映射到指向某个 Bean 的唯一id【beanName】
+		// TODO 在这一步中，将所有试图指向 FactoryBean 的前缀都删掉了
 		final String beanName = transformedBeanName(name);
 		Object bean;
 
 		// Eagerly check singleton cache for manually registered singletons.
+		// 提前检查单例中是否有 beanName 指向的 bean 。如果有，返回其实例【不一定完成初始化，但是这个地址引用一定是对的】
+		// 如果返回空，表示这个 beanName 指向的 bean 不是单例。
 		Object sharedInstance = getSingleton(beanName);
 		if (sharedInstance != null && args == null) {
+			// beanName 指向的是单例，同时，使用配置好的参数进行初始化，不再额外指定参数。
 			if (logger.isDebugEnabled()) {
 				if (isSingletonCurrentlyInCreation(beanName)) {
+					// 获得的实例正在初始化中
 					logger.debug("Returning eagerly cached instance of singleton bean '" + beanName +
 							"' that is not fully initialized yet - a consequence of a circular reference");
 				} else {
+					// 获得的实例已经完成初始化
 					logger.debug("Returning cached instance of singleton bean '" + beanName + "'");
 				}
 			}
+			// 根据入参的 name 、处理后的 beanName、beanName 得到的单例 bean ，得到我们最后需要的结果
+			// 最后一个参数传 null， 表示默认先从缓存取
 			bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
 		} else {
 			// Fail if we're already creating this bean instance:
@@ -1569,37 +1577,56 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * Get the object for the given bean instance, either the bean
 	 * instance itself or its created object in case of a FactoryBean.
 	 *
+	 * 这里已经说明，会根据三个入参选择合适的实例送出去
+	 *
 	 * @param beanInstance the shared bean instance
 	 * @param name         name that may include factory dereference prefix
 	 * @param beanName     the canonical bean name
 	 * @param mbd          the merged bean definition
 	 * @return the object to expose for the bean
 	 */
+	//TODO 什么是 "合并的 bean 定义"
 	protected Object getObjectForBeanInstance(
 			Object beanInstance, String name, String beanName, @Nullable RootBeanDefinition mbd) {
 
 		// Don't let calling code try to dereference the factory if the bean isn't a factory.
+		// 先判断，看我们能不能继续操作【注意，不能从 bean 实例得到 factory 】：
+		// 1. 得到的空。。。没法过了，返回空吧
+		// 2. 要的 factory ,得到的不是 factory ，没法通过 bean 实例得到 factory ，直接报错
 		if (BeanFactoryUtils.isFactoryDereference(name)) {
 			if (beanInstance instanceof NullBean) {
+				// 空。。。没话说
 				return beanInstance;
 			}
 			if (!(beanInstance instanceof FactoryBean)) {
+				// 不一致，要的 factory ，得到的是普通 bean
 				throw new BeanIsNotAFactoryException(transformedBeanName(name), beanInstance.getClass());
 			}
 		}
 
+
 		// Now we have the bean instance, which may be a normal bean or a FactoryBean.
 		// If it's a FactoryBean, we use it to create a bean instance, unless the
 		// caller actually wants a reference to the factory.
+
+		// 先判断，看我们要不要继续操作：
+		// 1. 我们不要 factory ，恰好也不是
+		// 2. 我们要 factory ，恰好是
+		// 阅读这段代码时可以考虑 || 的短路作用
 		if (!(beanInstance instanceof FactoryBean) || BeanFactoryUtils.isFactoryDereference(name)) {
 			return beanInstance;
 		}
 
+		// 这里，基本确定：
+		// 1. 我们可以操作 ----> 没有明显的逻辑问题
+		// 2. 我们需要操作 ----> 还差一步 ---> 从 factory 获得 bean
 		Object object = null;
-		if (mbd == null) {
+		if (mbd == null) { // TODO 为什么有这个限制？
+			// 通过 beanName 看能否从缓存中获得需要的实例
 			object = getCachedObjectForFactoryBean(beanName);
 		}
 		if (object == null) {
+			//TODO  缓存中没有，或者传入了 mbd ，要从头开始构建
 			// Return bean instance from factory.
 			FactoryBean<?> factory = (FactoryBean<?>) beanInstance;
 			// Caches object obtained from FactoryBean if it is a singleton.
