@@ -243,19 +243,30 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		} else {
 			// Fail if we're already creating this bean instance:
 			// We're assumably within a circular reference.
+			// 如果我们获得的实例是 null 而且正在创建中，则出了问题，因为 ObjectFactory 没有成功的创建实例
+			// 后面我们的初始化也没法同步到现在的引用
 			if (isPrototypeCurrentlyInCreation(beanName)) {
 				throw new BeanCurrentlyInCreationException(beanName);
 			}
 
+			//TODO 到这里，我们已经确定 beanName 对应的 bean 不是单例。需要看看能不能找到或者能不能构建出来。。。。应该
+
 			// Check if bean definition exists in this factory.
+			// 多级 BeanFactory 加载的顺序：
+			// 1. 先从本级 BeanFactory 中尝试加载bean，如果加载成功则返回
+			// 2. 如果本级 BeanFactory 中没有对应的 BeanDefination【或者其他】，就委托给父工厂
+			// 这里正好和 ClassLoader 的委托模型相反
 			BeanFactory parentBeanFactory = getParentBeanFactory();
 			if (parentBeanFactory != null && !containsBeanDefinition(beanName)) {
+				// 本工厂无法加载 bean 定义，委托给父工厂
 				// Not found -> check parent.
+				// 获得要加载的原始bean名称
+				// TODO 感觉有点脱裤子放屁，但是如果非要说的话，应该是将 "&&&&&&&name"这样的极端情况排除了，如果有需要就只留下一个`&`
 				String nameToLookup = originalBeanName(name);
 				if (parentBeanFactory instanceof AbstractBeanFactory) {
 					return ((AbstractBeanFactory) parentBeanFactory).doGetBean(
 							nameToLookup, requiredType, args, typeCheckOnly);
-				} else if (args != null) {
+				} else if (args != null) { // 这里这种操作感觉挺无语的，算是最大限度的将本方法的入参透传给上面了吧
 					// Delegation to parent with explicit args.
 					return (T) parentBeanFactory.getBean(nameToLookup, args);
 				} else {
@@ -264,6 +275,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				}
 			}
 
+			// TODO： 这里不明白
 			if (!typeCheckOnly) {
 				markBeanAsCreated(beanName);
 			}
@@ -276,12 +288,18 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				String[] dependsOn = mbd.getDependsOn();
 				if (dependsOn != null) {
 					for (String dep : dependsOn) {
+						// dep 在 mbd 的 dependsOn 中表示， mbd 对应的 bean 依赖 dep
+						// 如果 dep 也依赖 mbd 对应的 bean 则表明有循环依赖
 						if (isDependent(beanName, dep)) {
 							throw new BeanCreationException(mbd.getResourceDescription(), beanName,
 									"Circular depends-on relationship between '" + beanName + "' and '" + dep + "'");
 						}
+						// 注册依赖关系： beanName 对应的 bean 依赖 dep bean
 						registerDependentBean(dep, beanName);
 						try {
+							// 将 beanName 依赖的 bean 都初始化了
+							// 这里用 "初始化" 这个词有点微妙，如果是单例 bean 可能返回的是创建完成正在初始化的，如果是原型或者其他返回的应该是初始化完成的
+							// 递归调用嘛
 							getBean(dep);
 						} catch (NoSuchBeanDefinitionException ex) {
 							throw new BeanCreationException(mbd.getResourceDescription(), beanName,
@@ -292,6 +310,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 				// Create bean instance.
 				if (mbd.isSingleton()) {
+					// 完成对应 bean 实例的创建
 					sharedInstance = getSingleton(beanName, () -> {
 						try {
 							return createBean(beanName, mbd, args);
@@ -303,14 +322,17 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 							throw ex;
 						}
 					});
+					// 转化成我们需要的实例类型 【 FactoryBean ?Bean?】
 					bean = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
 				} else if (mbd.isPrototype()) {
 					// It's a prototype -> create a new instance.
 					Object prototypeInstance = null;
 					try {
 						beforePrototypeCreation(beanName);
+						// 原型模式，不用 getSingleton（） 那样加锁了，直接创建
 						prototypeInstance = createBean(beanName, mbd, args);
 					} finally {
+						// TODO： Prototype 创建完成后的一些操作
 						afterPrototypeCreation(beanName);
 					}
 					bean = getObjectForBeanInstance(prototypeInstance, name, beanName, mbd);
@@ -343,6 +365,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			}
 		}
 
+		// 对上面获得的 bean 实例进行判断看是否需要类型转换
 		// Check if required type matches the type of the actual bean instance.
 		if (requiredType != null && !requiredType.isInstance(bean)) {
 			try {
@@ -1329,6 +1352,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * @return the resolved bean class (or {@code null} if none)
 	 * @throws CannotLoadBeanClassException if we failed to load the class
 	 */
+	// 1. 如果 mbd 有缓存 class 引用，直接返回
+	// 2. 加载 class ，并缓存在 mbd 中
+	// TODO： 加载 Class 的细节后面有兴趣继续
 	@Nullable
 	protected Class<?> resolveBeanClass(final RootBeanDefinition mbd, String beanName, final Class<?>... typesToMatch)
 			throws CannotLoadBeanClassException {
@@ -1516,7 +1542,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				if (!this.alreadyCreated.contains(beanName)) {
 					// Let the bean definition get re-merged now that we're actually creating
 					// the bean... just in case some of its metadata changed in the meantime.
+					// 删除 beanDefination
 					clearMergedBeanDefinition(beanName);
+					// 把 bean 设置成已经创建
 					this.alreadyCreated.add(beanName);
 				}
 			}

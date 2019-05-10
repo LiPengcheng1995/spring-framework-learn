@@ -1199,16 +1199,20 @@ public abstract class ClassUtils {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.notNull(methodName, "Method name must not be null");
 		int count = 0;
+		// clazz.getDeclaredMethods() 返回的方法不包括继承的方法
+		// 【这么理解，Declared 声明的，继承的是在父类中声明的，不是在此类中，所以不算在 Declared 中】
 		Method[] declaredMethods = clazz.getDeclaredMethods();
 		for (Method method : declaredMethods) {
 			if (methodName.equals(method.getName())) {
 				count++;
 			}
 		}
+		// TODO 【后续留作实验】这个地方有点怪，为什么要专门遍历一遍 interface ？ 此类声明的方法 + 父类声明的方法不就都搞定了？？？？
 		Class<?>[] ifcs = clazz.getInterfaces();
 		for (Class<?> ifc : ifcs) {
 			count += getMethodCountForName(ifc, methodName);
 		}
+		// 从父类中找，由此递归，直接找完了
 		if (clazz.getSuperclass() != null) {
 			count += getMethodCountForName(clazz.getSuperclass(), methodName);
 		}

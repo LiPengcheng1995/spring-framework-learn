@@ -213,12 +213,13 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 *                         with, if necessary
 	 * @return the registered singleton object
 	 */
+	// 创建 beanName 对应的单例 bean ，如果还没创建就创建，创建过就直接返回
 	public Object getSingleton(String beanName, ObjectFactory<?> singletonFactory) {
 		Assert.notNull(beanName, "Bean name must not be null");
 		synchronized (this.singletonObjects) {
 			Object singletonObject = this.singletonObjects.get(beanName);
-			if (singletonObject == null) {
-				if (this.singletonsCurrentlyInDestruction) {
+			if (singletonObject == null) { // 缓存中没有，说明之前没创建过，那就创建一次
+				if (this.singletonsCurrentlyInDestruction) { // 已经进入删除阶段，不允许创建
 					throw new BeanCreationNotAllowedException(beanName,
 							"Singleton bean creation not allowed while singletons of this factory are in destruction " +
 									"(Do not request a bean from a BeanFactory in a destroy method implementation!)");
@@ -226,13 +227,15 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 				if (logger.isDebugEnabled()) {
 					logger.debug("Creating shared instance of singleton bean '" + beanName + "'");
 				}
-				beforeSingletonCreation(beanName);
+				beforeSingletonCreation(beanName); // 创建前的缓存标记——标记此 beanName 正在创建中
 				boolean newSingleton = false;
 				boolean recordSuppressedExceptions = (this.suppressedExceptions == null);
 				if (recordSuppressedExceptions) {
 					this.suppressedExceptions = new LinkedHashSet<>();
 				}
 				try {
+					// 创建 bean 实例
+					// TODO： 只有创建实例吗？初始化呢？？？？
 					singletonObject = singletonFactory.getObject();
 					newSingleton = true;
 				} catch (IllegalStateException ex) {
@@ -253,7 +256,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					if (recordSuppressedExceptions) {
 						this.suppressedExceptions = null;
 					}
-					afterSingletonCreation(beanName);
+					afterSingletonCreation(beanName); // 完成创建，删除标记——将此 beanName 从正在创建的列表中删除
 				}
 				if (newSingleton) {
 					addSingleton(beanName, singletonObject);

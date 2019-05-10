@@ -1108,6 +1108,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 					"Invalid method override: no method with name '" + mo.getMethodName() +
 							"' on class [" + getBeanClassName() + "]");
 		} else if (count == 1) {
+			// 只有一个，说明我们要覆盖的方法不需要重写
 			// Mark override as not overloaded, to avoid the overhead of arg type checking.
 			mo.setOverloaded(false);
 		}

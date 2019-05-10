@@ -412,6 +412,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 *
 	 * @see #doCreateBean
 	 */
+	// 创建 bean 实例、初始化、执行后处理方法
 	@Override
 	protected Object createBean(String beanName, RootBeanDefinition mbd, @Nullable Object[] args)
 			throws BeanCreationException {
@@ -424,7 +425,13 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Make sure bean class is actually resolved at this point, and
 		// clone the bean definition in case of a dynamically resolved Class
 		// which cannot be stored in the shared merged bean definition.
+		// 1. 确认指向的 bean Class 可以被加载
+		// 2. 将 BeanDefinition 复制一份，原因与 CopyOnWriteArrayList 相同，防止访问过程中被修改
+
 		Class<?> resolvedClass = resolveBeanClass(mbd, beanName);
+
+		// 理论上加载完成后如果获得结果不为空，mbd 中缓存的 beanClass 应该存在，但是这里没有
+		// 是有其他线程的影响，所以我们进行复制
 		if (resolvedClass != null && !mbd.hasBeanClass() && mbd.getBeanClassName() != null) {
 			mbdToUse = new RootBeanDefinition(mbd);
 			mbdToUse.setBeanClass(resolvedClass);
@@ -432,7 +439,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		// Prepare method overrides.
 		try {
-			mbdToUse.prepareMethodOverrides();
+			mbdToUse.prepareMethodOverrides(); // 将 bean 中要覆盖的方法进行一次统计及修饰
 		} catch (BeanDefinitionValidationException ex) {
 			throw new BeanDefinitionStoreException(mbdToUse.getResourceDescription(),
 					beanName, "Validation of method overrides failed", ex);
@@ -440,6 +447,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		try {
 			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
+			// 返回的 bean 实例不一定是目标的实例，可能是一层代理
+			// TODO： 这里是 AOP 的织入点，现在没看懂，后面可以继续看
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
 				return bean;
@@ -450,6 +459,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		try {
+			// 根据 beanName，BeanDefinition，入参 进行 bean 实例的创建
+			// TODO ： 草 恍恍惚惚
 			Object beanInstance = doCreateBean(beanName, mbdToUse, args);
 			if (logger.isDebugEnabled()) {
 				logger.debug("Finished creating instance of bean '" + beanName + "'");
@@ -486,6 +497,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Instantiate the bean.
 		BeanWrapper instanceWrapper = null;
 		if (mbd.isSingleton()) {
+			// TODO： factoryBeanInstanceCache 作用不太清楚
 			instanceWrapper = this.factoryBeanInstanceCache.remove(beanName);
 		}
 		if (instanceWrapper == null) {
@@ -1044,7 +1056,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 					"Bean class isn't public, and non-public access not allowed: " + beanClass.getName());
 		}
 
-		Supplier<?> instanceSupplier = mbd.getInstanceSupplier();
+		Supplier<?> instanceSupplier = mbd.getInstanceSupplier(); // 应该是一个 factory method 吧
 		if (instanceSupplier != null) {
 			return obtainFromSupplier(instanceSupplier, beanName);
 		}
