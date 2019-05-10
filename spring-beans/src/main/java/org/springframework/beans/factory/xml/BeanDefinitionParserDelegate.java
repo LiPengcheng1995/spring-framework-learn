@@ -147,6 +147,7 @@ public class BeanDefinitionParserDelegate {
 
 	private final DocumentDefaultsDefinition defaults = new DocumentDefaultsDefinition();
 
+	// TODO : 这个干啥用的。。。。感觉怪怪的
 	private final ParseState parseState = new ParseState();
 
 	/**

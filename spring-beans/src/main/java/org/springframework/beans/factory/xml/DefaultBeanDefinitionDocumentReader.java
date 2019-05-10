@@ -325,6 +325,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 *
 	 * @see #getReaderContext()
 	 */
+	// 可以用来重写来将非标准的节点转化成标准的节点
 	protected void preProcessXml(Element root) {
 	}
 
@@ -339,6 +340,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 *
 	 * @see #getReaderContext()
 	 */
+	//TODO  可以用来重写来将非标准的节点转化成标准的节点 ？？？？？ WTF
 	protected void postProcessXml(Element root) {
 	}
 

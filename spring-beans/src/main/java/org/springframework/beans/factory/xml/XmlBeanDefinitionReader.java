@@ -221,6 +221,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * Return the EntityResolver to use, building a default resolver
 	 * if none specified.
 	 */
+	// 防止网络不通导致无法加载。提供一个默认的或
 	protected EntityResolver getEntityResolver() {
 		if (this.entityResolver == null) {
 			// Determine default EntityResolver to use.
@@ -311,6 +312,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 			try {
 				// 用 SAX 框架的 InputSource 包一下，方便后面直接调用该框架进行 xml 格式文件的解析
 				// 详见 https://www.cnblogs.com/nerxious/archive/2013/05/03/3056588.html
+				// 思路还是很简单的，就是把 xml 的那些 "闭合标签 + 属性" 翻译成了一棵用数据结构表示的树
 				InputSource inputSource = new InputSource(inputStream);
 				if (encodedResource.getEncoding() != null) {
 					inputSource.setEncoding(encodedResource.getEncoding());
