@@ -59,7 +59,7 @@ public abstract class AbstractBeanDefinitionParser implements BeanDefinitionPars
 	 */
 	public static final String NAME_ATTRIBUTE = "name";
 
-
+	// 日常，模版方法模式
 	@Override
 	@Nullable
 	public final BeanDefinition parse(Element element, ParserContext parserContext) {
@@ -75,7 +75,7 @@ public abstract class AbstractBeanDefinitionParser implements BeanDefinitionPars
 				String[] aliases = null;
 				if (shouldParseNameAsAliases()) {
 					String name = element.getAttribute(NAME_ATTRIBUTE);
-					if (StringUtils.hasLength(name)) {
+					if (StringUtils.hasLength(name)) { // TODO： 注意啦！这里它是默认进行字段的拆分的，但是默认命名空间的那些 name,alias 啥的没有进行字段拆分
 						aliases = StringUtils.trimArrayElements(StringUtils.commaDelimitedListToStringArray(name));
 					}
 				}
