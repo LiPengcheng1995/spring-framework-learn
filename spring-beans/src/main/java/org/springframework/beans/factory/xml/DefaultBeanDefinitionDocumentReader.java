@@ -185,6 +185,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 
 	private void parseDefaultElement(Element ele, BeanDefinitionParserDelegate delegate) {
 		if (delegate.nodeNameEquals(ele, IMPORT_ELEMENT)) {
+			// 处理此类节点，通过配置文件路径引入新的配置文件并进行对应的解析
 			importBeanDefinitionResource(ele);
 		} else if (delegate.nodeNameEquals(ele, ALIAS_ELEMENT)) {
 			// 处理此类节点，增加 bean 对别名映射
@@ -196,6 +197,8 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 			processBeanDefinition(ele, delegate);
 		} else if (delegate.nodeNameEquals(ele, NESTED_BEANS_ELEMENT)) {
 			// recurse
+			// 在 beans 标签中还可以有 beans 标签，一般是用来进行测试、预发、线上的分组的
+			// 方便进行对应的 profile 控制。当然，这里就直接递归调用即可，ele 穿进去做 containerElement
 			doRegisterBeanDefinitions(ele);
 		}
 	}
@@ -206,7 +209,9 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 */
 	protected void importBeanDefinitionResource(Element ele) {
 		String location = ele.getAttribute(RESOURCE_ATTRIBUTE);
+		// 没有设置对应的属性。直接返回
 		if (!StringUtils.hasText(location)) {
+			// ReaderContext 是一个管理各种消息通道、事件通道、注册器的一个上下文环境
 			getReaderContext().error("Resource location must not be empty", ele);
 			return;
 		}
