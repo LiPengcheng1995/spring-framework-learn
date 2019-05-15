@@ -187,6 +187,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		if (delegate.nodeNameEquals(ele, IMPORT_ELEMENT)) {
 			importBeanDefinitionResource(ele);
 		} else if (delegate.nodeNameEquals(ele, ALIAS_ELEMENT)) {
+			// 处理此类节点，增加 bean 对别名映射
 			processAliasRegistration(ele);
 		} else if (delegate.nodeNameEquals(ele, BEAN_ELEMENT)) {
 			// 完成对 bean 元素的解析

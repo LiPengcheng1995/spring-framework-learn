@@ -107,6 +107,7 @@ public class TypedStringValue implements BeanMetadataElement {
 	/**
 	 * Return the type to convert to.
 	 */
+	// TODO 这里的设定有点怪怪的，如果你确定 targetType 必须是 Class 类型的，为什么在设置时不做校验，为什么不直接把变量设置成 Class 类型
 	public Class<?> getTargetType() {
 		Object targetTypeValue = this.targetType;
 		if (!(targetTypeValue instanceof Class)) {
