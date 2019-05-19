@@ -172,6 +172,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 
 	@Override
 	@Nullable
+	// 根据 bean 的 name（这里指的是 ID ，不是 alias ）获得对应的 bean 实例
 	public Object getSingleton(String beanName) {
 		return getSingleton(beanName, true);
 	}

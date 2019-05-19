@@ -101,7 +101,7 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 					// Only post-process and store if not put there already during getObject() call above
 					// (e.g. because of circular reference processing triggered by custom getBean calls)
 					// 如果在 cache 中发现了，说明构造完成，直接返回。否则根据入参及构造所处阶段进行构造和缓存。
-					// TODO： 应该是吧
+					// TODO： 你不是加了锁吗？？？？？？ 还会有重复构建的存在？
 					Object alreadyThere = this.factoryBeanObjectCache.get(beanName);
 					if (alreadyThere != null) {
 						object = alreadyThere;
@@ -131,7 +131,7 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 				}
 				return object;
 			}
-		} else {
+		} else { //不是单例就不用那么多锁啊缓存啊什么的东西了
 			Object object = doGetObjectFromFactoryBean(factory, beanName);
 			if (shouldPostProcess) {
 				try {

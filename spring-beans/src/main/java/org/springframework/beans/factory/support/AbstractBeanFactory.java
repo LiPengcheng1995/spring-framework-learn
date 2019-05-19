@@ -210,6 +210,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 *                      (only applied when creating a new instance as opposed to retrieving an existing one)
 	 * @param typeCheckOnly whether the instance is obtained for a type check,
 	 *                      not for actual use
+	 *                      这个参数感觉很怪，意思是不用构建，我只是check 一下我要的 beanName 对应的 bean 是不是我传入的 type
 	 * @return an instance of the bean
 	 * @throws BeansException if the bean could not be created
 	 */
@@ -223,7 +224,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 		// Eagerly check singleton cache for manually registered singletons.
 		// 提前检查单例中是否有 beanName 指向的 bean 。如果有，返回其实例【不一定完成初始化，但是这个地址引用一定是对的】
-		// 如果返回空，表示这个 beanName 指向的 bean 不是单例。
+		// 如果返回空，表示这个 beanName 指向的 bean 不是单例，或者这个单例还没创建，总之，接下来就得创建一番了。
 		Object sharedInstance = getSingleton(beanName);
 		if (sharedInstance != null && args == null) {
 			// beanName 指向的是单例，同时，使用配置好的参数进行初始化，不再额外指定参数。
@@ -239,6 +240,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			}
 			// 根据入参的 name 、处理后的 beanName、beanName 得到的单例 bean ，得到我们最后需要的结果
 			// 最后一个参数传 null， 表示默认先从缓存取
+			// 注意了，这里是为了预防遇到了 FactoryBean 所以包装了一个函数
 			bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
 		} else {
 			// Fail if we're already creating this bean instance:
@@ -249,7 +251,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				throw new BeanCurrentlyInCreationException(beanName);
 			}
 
-			//TODO 到这里，我们已经确定 beanName 对应的 bean 不是单例。需要看看能不能找到或者能不能构建出来。。。。应该
+			//TODO 到这里，我们已经确定 beanName 对应的 bean 不是已经缓存好的单例。需要看看能不能找到或者能不能构建出来。。。。应该
 
 			// Check if bean definition exists in this factory.
 			// 多级 BeanFactory 加载的顺序：
@@ -262,6 +264,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				// Not found -> check parent.
 				// 获得要加载的原始bean名称
 				// TODO 感觉有点脱裤子放屁，但是如果非要说的话，应该是将 "&&&&&&&name"这样的极端情况排除了，如果有需要就只留下一个`&`
+				// 也算是简化了一下
 				String nameToLookup = originalBeanName(name);
 				if (parentBeanFactory instanceof AbstractBeanFactory) {
 					return ((AbstractBeanFactory) parentBeanFactory).doGetBean(
@@ -275,13 +278,15 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				}
 			}
 
-			// TODO： 这里不明白
+			// 如果 typeCheckOnly 为 true ，则表示只是检测，如果为 false 则表示要创建出 bean ，
 			if (!typeCheckOnly) {
 				markBeanAsCreated(beanName);
 			}
 
 			try {
+				// 将 BD 拍平
 				final RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);
+				// bd 不能为抽象的，这样没法实例化
 				checkMergedBeanDefinition(mbd, beanName, args);
 
 				// Guarantee initialization of beans that the current bean depends on.
@@ -313,6 +318,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					// 完成对应 bean 实例的创建
 					sharedInstance = getSingleton(beanName, () -> {
 						try {
+							// 创建 bean 实例
 							return createBean(beanName, mbd, args);
 						} catch (BeansException ex) {
 							// Explicitly remove instance from singleton cache: It might have been put there
@@ -328,15 +334,17 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					// It's a prototype -> create a new instance.
 					Object prototypeInstance = null;
 					try {
+						// 这个保存操作我真 TM 醉了，真的是一切靠约定
+						// 好在是 ThreadLocal ，不会出现多个线程同时创建多个导致最后访问出现问题
 						beforePrototypeCreation(beanName);
 						// 原型模式，不用 getSingleton（） 那样加锁了，直接创建
 						prototypeInstance = createBean(beanName, mbd, args);
 					} finally {
-						// TODO： Prototype 创建完成后的一些操作
 						afterPrototypeCreation(beanName);
 					}
 					bean = getObjectForBeanInstance(prototypeInstance, name, beanName, mbd);
 				} else {
+					// TODO 如果设置了多个 scope ，它是怎么搞的，没看到拆分呀。看看他怎么实现的
 					String scopeName = mbd.getScope();
 					final Scope scope = this.scopes.get(scopeName);
 					if (scope == null) {
@@ -1258,6 +1266,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 						if (!beanName.equals(parentBeanName)) {
 							pbd = getMergedBeanDefinition(parentBeanName);
 						} else {
+							// TODO： parentBeanFactory 的意义
 							BeanFactory parent = getParentBeanFactory();
 							if (parent instanceof ConfigurableBeanFactory) {
 								pbd = ((ConfigurableBeanFactory) parent).getMergedBeanDefinition(parentBeanName);
@@ -1312,6 +1321,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	protected void checkMergedBeanDefinition(RootBeanDefinition mbd, String beanName, @Nullable Object[] args)
 			throws BeanDefinitionStoreException {
 
+		//TODO： 这里应该是映射到配置的 xml 中的 abstract 字段了，这么说来如果配置了那个字段就都不能实例化了？？？？
 		if (mbd.isAbstract()) {
 			throw new BeanIsAbstractException(beanName);
 		}
@@ -1540,6 +1550,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		if (!this.alreadyCreated.contains(beanName)) {
 			synchronized (this.mergedBeanDefinitions) {
 				if (!this.alreadyCreated.contains(beanName)) {
+					// TODO：疑惑，无比的疑惑
 					// Let the bean definition get re-merged now that we're actually creating
 					// the bean... just in case some of its metadata changed in the meantime.
 					// 删除 beanDefination
@@ -1613,12 +1624,12 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * @param mbd          the merged bean definition
 	 * @return the object to expose for the bean
 	 */
-	//TODO 什么是 "合并的 bean 定义"
+	// 根据已经得到的 bean 实例、希望要的 name 、 处理之后的 beanName 、拍平了的 beanDefinition，选择合适的实例送出去
 	protected Object getObjectForBeanInstance(
 			Object beanInstance, String name, String beanName, @Nullable RootBeanDefinition mbd) {
 
 		// Don't let calling code try to dereference the factory if the bean isn't a factory.
-		// 先判断，看我们能不能继续操作【注意，不能从 bean 实例得到 factory 】：
+		// 先判断，看我们能不能继续操作【注意，不能从 bean 实例得到 factoryBean 】：
 		// 1. 得到的空。。。没法过了，返回空吧
 		// 2. 要的 factory ,得到的不是 factory ，没法通过 bean 实例得到 factory ，直接报错
 		if (BeanFactoryUtils.isFactoryDereference(name)) {
@@ -1649,20 +1660,21 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		// 1. 我们可以操作 ----> 没有明显的逻辑问题
 		// 2. 我们需要操作 ----> 还差一步 ---> 从 factory 获得 bean
 		Object object = null;
-		if (mbd == null) { // TODO 为什么有这个限制？
+		if (mbd == null) { // 通过 factoryBean 构建 bean 还得跑构建的逻辑，看看之前有没有缓存能用的
 			// 通过 beanName 看能否从缓存中获得需要的实例
 			object = getCachedObjectForFactoryBean(beanName);
 		}
 		if (object == null) {
-			//TODO  缓存中没有，或者传入了 mbd ，要从头开始构建
+			// 没有缓存
+			// TODO ：为什么传入了 mbd 就必须得跑一下构建
 			// Return bean instance from factory.
 			FactoryBean<?> factory = (FactoryBean<?>) beanInstance;
 			// Caches object obtained from FactoryBean if it is a singleton.
 			if (mbd == null && containsBeanDefinition(beanName)) {
 				mbd = getMergedLocalBeanDefinition(beanName);
 			}
-			boolean synthetic = (mbd != null && mbd.isSynthetic());
-			object = getObjectFromFactoryBean(factory, beanName, !synthetic);
+			boolean synthetic = (mbd != null && mbd.isSynthetic());// 获得这个bean是否是合成的【不是程序定义的】
+			object = getObjectFromFactoryBean(factory, beanName, !synthetic);// 如果是程序定义的，就跑后处理器
 		}
 		return object;
 	}
