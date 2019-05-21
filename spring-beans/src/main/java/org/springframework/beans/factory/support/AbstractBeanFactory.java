@@ -1146,6 +1146,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 */
 	protected void initBeanWrapper(BeanWrapper bw) {
 		bw.setConversionService(getConversionService());
+		// TODO 什么意思？
 		registerCustomEditors(bw);
 	}
 

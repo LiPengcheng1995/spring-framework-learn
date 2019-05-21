@@ -461,7 +461,6 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		try {
 			// 根据 beanName，BeanDefinition，入参 进行 bean 实例的创建
-			// TODO ： 草 恍恍惚惚
 			Object beanInstance = doCreateBean(beanName, mbdToUse, args);
 			if (logger.isDebugEnabled()) {
 				logger.debug("Finished creating instance of bean '" + beanName + "'");
@@ -492,6 +491,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @see #instantiateUsingFactoryMethod
 	 * @see #autowireConstructor
 	 */
+	// 此方法进行 Bean 实例的：
+	// 1. 创建【通过工厂方法、根据参数指定构造器、默认构造器】
+	// 2. 实例值填充【解决了依赖问题，也解决了循环依赖问题（单例的）】
+	// 3. Bean 实例初始化钩子调用
+	// 4. 检查循环依赖 TODO 这个没看太懂
+	// 5. 注册 Bean 销毁方法/钩子
 	protected Object doCreateBean(final String beanName, final RootBeanDefinition mbd, final @Nullable Object[] args)
 			throws BeanCreationException {
 
@@ -502,6 +507,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			instanceWrapper = this.factoryBeanInstanceCache.remove(beanName);
 		}
 		if (instanceWrapper == null) {
+			// 1. 创建【通过工厂方法、根据参数指定构造器、默认构造器】
 			instanceWrapper = createBeanInstance(beanName, mbd, args);
 		}
 		final Object bean = instanceWrapper.getWrappedInstance();
@@ -995,6 +1001,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		Object bean = null;
 		if (!Boolean.FALSE.equals(mbd.beforeInstantiationResolved)) {
 			// Make sure bean class is actually resolved at this point.
+			// mbd 不是合成的 而且 本 BeanFactory 有这些处理器
 			if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
 				Class<?> targetType = determineTargetType(beanName, mbd);
 				if (targetType != null) {
@@ -1052,6 +1059,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Make sure bean class is actually resolved at this point.
 		Class<?> beanClass = resolveBeanClass(mbd, beanName);
 
+		// 判断 class 的作用域【不清楚是不是叫这个，姑且这么叫吧】是否符合标准
 		if (beanClass != null && !Modifier.isPublic(beanClass.getModifiers()) && !mbd.isNonPublicAccessAllowed()) {
 			throw new BeanCreationException(mbd.getResourceDescription(), beanName,
 					"Bean class isn't public, and non-public access not allowed: " + beanClass.getName());
@@ -1059,14 +1067,19 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		Supplier<?> instanceSupplier = mbd.getInstanceSupplier(); // 应该是一个 factory method 吧
 		if (instanceSupplier != null) {
+			// 直接从生产者方法调用
 			return obtainFromSupplier(instanceSupplier, beanName);
 		}
 
-		if (mbd.getFactoryMethodName() != null) {
+		if (mbd.getFactoryMethodName() != null) { // 通过工厂方法创建实例，在这里面有走缓存，所以在本函数没有体现缓存
 			return instantiateUsingFactoryMethod(beanName, mbd, args);
 		}
 
+		// 没有生产者方法、没有指定工厂方法
+
 		// Shortcut when re-creating the same bean...
+		// 已知：
+		// 	这些便捷路径在我们从工厂方法构建时设置了
 		boolean resolved = false;
 		boolean autowireNecessary = false;
 		if (args == null) {
@@ -1078,7 +1091,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}
 		}
 		if (resolved) {
-			if (autowireNecessary) {
+			if (autowireNecessary) { // 不能用工厂方法，而且有缓存，所以直接从构造器走
 				return autowireConstructor(beanName, mbd, null, null);
 			} else {
 				return instantiateBean(beanName, mbd);
@@ -1106,6 +1119,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @since 5.0
 	 */
 	protected BeanWrapper obtainFromSupplier(Supplier<?> instanceSupplier, String beanName) {
+		// 调用方法获得实例，并保存在 BeanWrapper 中
 		String outerBean = this.currentlyCreatedBean.get();
 		this.currentlyCreatedBean.set(beanName);
 		Object instance;

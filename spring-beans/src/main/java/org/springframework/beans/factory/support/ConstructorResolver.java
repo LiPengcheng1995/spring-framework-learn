@@ -348,18 +348,25 @@ class ConstructorResolver {
 		boolean isStatic;
 
 		String factoryBeanName = mbd.getFactoryBeanName();
-		if (factoryBeanName != null) {
+		if (factoryBeanName != null) { // 是引用的 factory 的 bean ，不是静态的。
+			// 注意了：
+			// 1. 他是能生产 bean 的 factory
+			// 2. 他也是一个 bean
+			// 所以，他是一个 factoryBean ，不一定是 FactoryBean 类型的。
 			if (factoryBeanName.equals(beanName)) {
 				throw new BeanDefinitionStoreException(mbd.getResourceDescription(), beanName,
 						"factory-bean reference points back to the same bean definition");
 			}
 			factoryBean = this.beanFactory.getBean(factoryBeanName);
+			// 如果要通过工厂创建的 bean 是单例，且已经创建，直接报错，这说明前面的单例缓存被击穿。
+			// 如果是日常业务，最多也就是数据库压力变大，但是在这里，单例的重复创建会引起很大的问题，
+			// 例如之前为了解决循环依赖提前暴露的引用，可能就失效了。
 			if (mbd.isSingleton() && this.beanFactory.containsSingleton(beanName)) {
 				throw new ImplicitlyAppearedSingletonException();
 			}
 			factoryClass = factoryBean.getClass();
 			isStatic = false;
-		} else {
+		} else { // 不是引用的 bean 实例，是静态的
 			// It's a static factory method on the bean class.
 			if (!mbd.hasBeanClass()) {
 				throw new BeanDefinitionStoreException(mbd.getResourceDescription(), beanName,
@@ -398,14 +405,17 @@ class ConstructorResolver {
 			// Try all methods with this name to see if they match the given arguments.
 			factoryClass = ClassUtils.getUserClass(factoryClass);
 
+			// 获得这个类下面所有的方法，包括父类的
 			Method[] rawCandidates = getCandidateMethods(factoryClass, mbd);
 			List<Method> candidateList = new ArrayList<>();
+			// 根据方法名和是否为静态，筛选
 			for (Method candidate : rawCandidates) {
 				if (Modifier.isStatic(candidate.getModifiers()) == isStatic && mbd.isFactoryMethod(candidate)) {
 					candidateList.add(candidate);
 				}
 			}
 			Method[] candidates = candidateList.toArray(new Method[0]);
+			// 根据入参数量排序
 			AutowireUtils.sortFactoryMethods(candidates);
 
 			ConstructorArgumentValues resolvedValues = null;
@@ -430,6 +440,7 @@ class ConstructorResolver {
 
 			LinkedList<UnsatisfiedDependencyException> causes = null;
 
+			// 根据入参数量筛选
 			for (Method candidate : candidates) {
 				Class<?>[] paramTypes = candidate.getParameterTypes();
 
@@ -493,7 +504,8 @@ class ConstructorResolver {
 				}
 			}
 
-			if (factoryMethodToUse == null) {
+			// 对筛选结果进行分类报错
+			if (factoryMethodToUse == null) {// 没有合适的
 				if (causes != null) {
 					UnsatisfiedDependencyException ex = causes.removeLast();
 					for (Exception cause : causes) {
@@ -526,22 +538,29 @@ class ConstructorResolver {
 								(minNrOfArgs > 0 ? "and arguments " : "") +
 								"exists and that it is " +
 								(isStatic ? "static" : "non-static") + ".");
-			} else if (void.class == factoryMethodToUse.getReturnType()) {
+			} else if (void.class == factoryMethodToUse.getReturnType()) { // 没有返回值，没法构建
 				throw new BeanCreationException(mbd.getResourceDescription(), beanName,
 						"Invalid factory method '" + mbd.getFactoryMethodName() +
 								"': needs to have a non-void return type!");
-			} else if (ambiguousFactoryMethods != null) {
+			} else if (ambiguousFactoryMethods != null) { // 无法精确定位方法
 				throw new BeanCreationException(mbd.getResourceDescription(), beanName,
 						"Ambiguous factory method matches found in bean '" + beanName + "' " +
 								"(hint: specify index/type/name arguments for simple parameters to avoid type ambiguities): " +
 								ambiguousFactoryMethods);
 			}
 
+			// 保存结果
+			// TODO ： 注意了，因为我们通过各种对比确定实例化函数还是很耗费性能的，所以我们采用缓存机制，将我们计算出的结果缓存值 mbd ，下次就直接用了
 			if (explicitArgs == null && argsHolderToUse != null) {
 				argsHolderToUse.storeCache(mbd, factoryMethodToUse);
 			}
 		}
 
+		// 至此，已确定了：
+		// 1. 构建工厂
+		// 2. 构建函数
+		// 3. 构建入参
+		// 接下来正常创建实例即可
 		try {
 			Object beanInstance;
 
@@ -833,8 +852,11 @@ class ConstructorResolver {
 
 		public void storeCache(RootBeanDefinition mbd, Executable constructorOrFactoryMethod) {
 			synchronized (mbd.constructorArgumentLock) {
+				// 设置我们排除好的方法
 				mbd.resolvedConstructorOrFactoryMethod = constructorOrFactoryMethod;
+				// 设置我们的构造函数可用
 				mbd.constructorArgumentsResolved = true;
+				//TODO ？？
 				if (this.resolveNecessary) {
 					mbd.preparedConstructorArguments = this.preparedArguments;
 				} else {

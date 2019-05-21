@@ -438,6 +438,7 @@ public abstract class ReflectionUtils {
 	 * @param leafClass the class to introspect
 	 * @throws IllegalStateException if introspection fails
 	 */
+	//TODO： 获得有所方法，包括父类的方法
 	public static Method[] getAllDeclaredMethods(Class<?> leafClass) {
 		final List<Method> methods = new ArrayList<>(32);
 		doWithMethods(leafClass, methods::add);
