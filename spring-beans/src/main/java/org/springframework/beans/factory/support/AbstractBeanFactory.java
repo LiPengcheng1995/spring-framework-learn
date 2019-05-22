@@ -1442,6 +1442,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * @see #setBeanExpressionResolver
 	 */
 	@Nullable
+	// 入参的 String 可能有 Spring 表达式需要解析
 	protected Object evaluateBeanDefinitionString(@Nullable String value, @Nullable BeanDefinition beanDefinition) {
 		if (this.beanExpressionResolver == null) {
 			return value;

@@ -1079,21 +1079,25 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		// Shortcut when re-creating the same bean...
 		// 已知：
-		// 	这些便捷路径在我们从工厂方法构建时设置了
+		// 	这些便捷路径在我们第一次通过默认参数构建时就会缓存上
+		// 注意：
+		//	缓存仅对默认参数有效，也只能应用于默认参数
 		boolean resolved = false;
 		boolean autowireNecessary = false;
 		if (args == null) {
 			synchronized (mbd.constructorArgumentLock) {
 				if (mbd.resolvedConstructorOrFactoryMethod != null) {
 					resolved = true;
+					// TODO： 这个是干啥的，判断是否已得到"默认入参"？？？
 					autowireNecessary = mbd.constructorArgumentsResolved;
 				}
 			}
 		}
-		if (resolved) {
-			if (autowireNecessary) { // 不能用工厂方法，而且有缓存，所以直接从构造器走
+		if (resolved) { // 说明是走缓存【使用默认参数、且有缓存】
+			// 结合上文，不是走的工厂方法，所以走的是构造函数【具体是默认构造函数还是啥的，再分析】
+			if (autowireNecessary) { // 已经得到默认入参，直接传空？？
 				return autowireConstructor(beanName, mbd, null, null);
-			} else {
+			} else { // 没得到默认入参？？？
 				return instantiateBean(beanName, mbd);
 			}
 		}
@@ -1245,6 +1249,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 *                     or {@code null} if none (-> use constructor argument values from bean definition)
 	 * @return a BeanWrapper for the new instance
 	 */
+	// 通过构造函数入参来完成对 bean 中对字段对装配，实现依赖注入
 	protected BeanWrapper autowireConstructor(
 			String beanName, RootBeanDefinition mbd, @Nullable Constructor<?>[] ctors, @Nullable Object[] explicitArgs) {
 

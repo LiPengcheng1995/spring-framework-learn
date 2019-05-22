@@ -117,15 +117,18 @@ class ConstructorResolver {
 			Object[] argsToResolve = null;
 			synchronized (mbd.constructorArgumentLock) {
 				constructorToUse = (Constructor<?>) mbd.resolvedConstructorOrFactoryMethod;
-				if (constructorToUse != null && mbd.constructorArgumentsResolved) {
+				if (constructorToUse != null && mbd.constructorArgumentsResolved) { // 使用 mbd 中获得的生产bean方法【看函数名--->这里专指构造函数】，使用默认构造入参
 					// Found a cached constructor...
 					argsToUse = mbd.resolvedConstructorArguments;
 					if (argsToUse == null) {
+						// TODO preparedConstructorArguments 是干啥的,看着像是一个兜底方案
 						argsToResolve = mbd.preparedConstructorArguments;
 					}
 				}
 			}
-			if (argsToResolve != null) {
+			if (argsToResolve != null) { // 只有从缓存中拿到的构造函数不为空才会去取缓存中的入参
+				// 能走这里说明构造函数、入参均取缓存中的默认值
+				// TODO 后面再细看吧
 				argsToUse = resolvePreparedArguments(beanName, mbd, bw, constructorToUse, argsToResolve);
 			}
 		}
@@ -550,7 +553,8 @@ class ConstructorResolver {
 			}
 
 			// 保存结果
-			// TODO ： 注意了，因为我们通过各种对比确定实例化函数还是很耗费性能的，所以我们采用缓存机制，将我们计算出的结果缓存值 mbd ，下次就直接用了
+			// TODO : 注意了，因为我们通过各种对比确定实例化函数还是很耗费性能的，所以我们采用缓存机制，将我们计算出的结果缓存值 mbd ，下次就直接用了
+			// TODO : 注意啦，这里只有使用默认构建参数时才会走缓存防止你在getBean（）时瞎玩
 			if (explicitArgs == null && argsHolderToUse != null) {
 				argsHolderToUse.storeCache(mbd, factoryMethodToUse);
 			}
@@ -742,19 +746,19 @@ class ConstructorResolver {
 		TypeConverter converter = (customConverter != null ? customConverter : bw);
 		BeanDefinitionValueResolver valueResolver =
 				new BeanDefinitionValueResolver(this.beanFactory, beanName, mbd, converter);
-		Class<?>[] paramTypes = executable.getParameterTypes();
+		Class<?>[] paramTypes = executable.getParameterTypes(); // 得到构造函数入参
 
-		Object[] resolvedArgs = new Object[argsToResolve.length];
+		Object[] resolvedArgs = new Object[argsToResolve.length]; // 获得传入的参数列表
 		for (int argIndex = 0; argIndex < argsToResolve.length; argIndex++) {
 			Object argValue = argsToResolve[argIndex];
-			MethodParameter methodParam = MethodParameter.forExecutable(executable, argIndex);
-			GenericTypeResolver.resolveParameterType(methodParam, executable.getDeclaringClass());
-			if (argValue instanceof AutowiredArgumentMarker) {
-				argValue = resolveAutowiredArgument(methodParam, beanName, null, converter);
-			} else if (argValue instanceof BeanMetadataElement) {
-				argValue = valueResolver.resolveValueIfNecessary("constructor argument", argValue);
+			MethodParameter methodParam = MethodParameter.forExecutable(executable, argIndex); // 得到构造函数指定下标的参数类型
+			GenericTypeResolver.resolveParameterType(methodParam, executable.getDeclaringClass()); // TODO： 啥意思？？
+			if (argValue instanceof AutowiredArgumentMarker) { // 需要 autowire 的
+				argValue = resolveAutowiredArgument(methodParam, beanName, null, converter);// TODO：从此工厂中解析指定的依赖
+			} else if (argValue instanceof BeanMetadataElement) { // bean 生成的源
+				argValue = valueResolver.resolveValueIfNecessary("constructor argument", argValue); // TODO： 看一下
 			} else if (argValue instanceof String) {
-				argValue = this.beanFactory.evaluateBeanDefinitionString((String) argValue, mbd);
+				argValue = this.beanFactory.evaluateBeanDefinitionString((String) argValue, mbd);// 解析一下可能存在的表达式
 			}
 			Class<?> paramType = paramTypes[argIndex];
 			try {
