@@ -134,8 +134,11 @@ class ConstructorResolver {
 			}
 		}
 
-		if (constructorToUse == null) { // 没有从mbd缓存中获得构造函数，更不用说入参了
-			// 需要自己根据入参筛选出合适的构造函数
+		if (constructorToUse == null) {
+			// 情况一、指定了入参， mbd 中缓存的构造方法、参数都不再有效，需要自己根据入参重新定位构造函数
+			// 情况二、没指定入参，但是没有从 mbd 缓存中获得构造函数，更不用说入参了
+			//
+			// 综上：需要自己根据上面拿到的入参筛选出合适的构造函数
 			// Need to resolve the constructor.
 			boolean autowiring = (chosenCtors != null ||
 					mbd.getResolvedAutowireMode() == AutowireCapableBeanFactory.AUTOWIRE_CONSTRUCTOR);
@@ -171,19 +174,25 @@ class ConstructorResolver {
 			for (Constructor<?> candidate : candidates) {
 				Class<?>[] paramTypes = candidate.getParameterTypes();
 
+				// 1. 我们确定了要用的构造方法【注意了，进上面 if 分支时 constructorToUse 还不是空，所以这里的意思是方法确定了，参数没对上】
+				// 2. 我们是按照入参数量由高到低排列的，现在的构造函数的入参数量就已经比我们期望的低了【结合1，不光没对上，后面也不太可能对上】
+				// 综上，已经凉了，不必循环
 				if (constructorToUse != null && argsToUse.length > paramTypes.length) {
 					// Already found greedy constructor that can be satisfied ->
 					// do not look any further, there are only less greedy constructors left.
 					break;
 				}
+				// TODO： minNrOfArgs 这个不知道干啥的
+				// 猜测是上一个等级作用域的过了一大半了，但是构造函数还没确定，反正是反射创建，就把 protected/private 也过一下，也许有合适的呢
+				// 所以 continue 快进了
 				if (paramTypes.length < minNrOfArgs) {
 					continue;
 				}
 
 				ArgumentsHolder argsHolder;
-				if (resolvedValues != null) {
+				if (resolvedValues != null) {// 入参 value 已经确定
 					try {
-						String[] paramNames = ConstructorPropertiesChecker.evaluate(candidate, paramTypes.length);
+						String[] paramNames = ConstructorPropertiesChecker.evaluate(candidate, paramTypes.length); // 如果这个构造函数用 ConstructorProperties 规范的注解了，就根据注解找到了实例变量名称列表
 						if (paramNames == null) {
 							ParameterNameDiscoverer pnd = this.beanFactory.getParameterNameDiscoverer();
 							if (pnd != null) {
@@ -208,9 +217,12 @@ class ConstructorResolver {
 					if (paramTypes.length != explicitArgs.length) {
 						continue;
 					}
-					argsHolder = new ArgumentsHolder(explicitArgs);
+					argsHolder = new ArgumentsHolder(explicitArgs); // 构造函数长度正好和入参长度一致
+					// TODO ： 为什么用 explicitArgs
 				}
 
+				//如果是宽松的构造策略，则对比spring构造的参数数组的类型和获取到的构造器参数的参数类型进行对比，返回不同的个数
+				//如果是严格的构造策略，则检查能否将构造的参数数组赋值到构造器参数的参数列表中
 				int typeDiffWeight = (mbd.isLenientConstructorResolution() ?
 						argsHolder.getTypeDifferenceWeight(paramTypes) : argsHolder.getAssignabilityWeight(paramTypes));
 				// Choose this constructor if it represents the closest match.
@@ -252,6 +264,7 @@ class ConstructorResolver {
 			}
 		}
 
+		// 构造函数和该函数对应的入参已经确定，现在可以直接用反射构建了
 		try {
 			final InstantiationStrategy strategy = beanFactory.getInstantiationStrategy();
 			Object beanInstance;

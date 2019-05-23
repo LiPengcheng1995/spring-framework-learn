@@ -49,6 +49,7 @@ abstract class AutowireUtils {
 	 *
 	 * @param constructors the constructor array to sort
 	 */
+	// 共有在前，入参多在前
 	public static void sortConstructors(Constructor<?>[] constructors) {
 		Arrays.sort(constructors, (c1, c2) -> {
 			boolean p1 = Modifier.isPublic(c1.getModifiers());
