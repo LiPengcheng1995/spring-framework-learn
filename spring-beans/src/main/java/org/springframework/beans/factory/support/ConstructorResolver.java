@@ -111,9 +111,9 @@ class ConstructorResolver {
 		ArgumentsHolder argsHolderToUse = null;
 		Object[] argsToUse = null;
 
-		if (explicitArgs != null) {
+		if (explicitArgs != null) { // 指定入参，用指定的
 			argsToUse = explicitArgs;
-		} else {
+		} else {// 未指定入参，先看看能不能走缓存
 			Object[] argsToResolve = null;
 			synchronized (mbd.constructorArgumentLock) {
 				constructorToUse = (Constructor<?>) mbd.resolvedConstructorOrFactoryMethod;
@@ -130,10 +130,12 @@ class ConstructorResolver {
 				// 能走这里说明构造函数、入参均取缓存中的默认值
 				// TODO 后面再细看吧
 				argsToUse = resolvePreparedArguments(beanName, mbd, bw, constructorToUse, argsToResolve);
+				// 得到了参数的真实值【或者是引用的实例或者是完成表达式解析的字符串】，接下来可以直接调用反射把值注进去了
 			}
 		}
 
-		if (constructorToUse == null) {
+		if (constructorToUse == null) { // 没有从mbd缓存中获得构造函数，更不用说入参了
+			// 需要自己根据入参筛选出合适的构造函数
 			// Need to resolve the constructor.
 			boolean autowiring = (chosenCtors != null ||
 					mbd.getResolvedAutowireMode() == AutowireCapableBeanFactory.AUTOWIRE_CONSTRUCTOR);
@@ -762,7 +764,7 @@ class ConstructorResolver {
 			}
 			Class<?> paramType = paramTypes[argIndex];
 			try {
-				resolvedArgs[argIndex] = converter.convertIfNecessary(argValue, paramType, methodParam);
+				resolvedArgs[argIndex] = converter.convertIfNecessary(argValue, paramType, methodParam);// TODO ：不知道是用的哪个实现
 			} catch (TypeMismatchException ex) {
 				throw new UnsatisfiedDependencyException(
 						mbd.getResourceDescription(), beanName, new InjectionPoint(methodParam),
