@@ -108,11 +108,12 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 					} else {
 						// TODO： postProcess 是个什么工序？，初步猜测应该是个可以选择的 wrapper
 						if (shouldPostProcess) {
-							if (isSingletonCurrentlyInCreation(beanName)) { // 已经在构建中了，直接返回
+							if (isSingletonCurrentlyInCreation(beanName)) {
+								// 已经在构建中了，你直接返回引用即可，构建这个的会完成后处理器的调用
 								// Temporarily return non-post-processed object, not storing it yet..
 								return object;
 							}
-							// 构建
+							// 准备调用后处理器的钩子，先把beanName放到正在创建到列表里
 							beforeSingletonCreation(beanName);
 							try {
 								object = postProcessObjectFromFactoryBean(object, beanName);
@@ -120,6 +121,7 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 								throw new BeanCreationException(beanName,
 										"Post-processing of FactoryBean's singleton object failed", ex);
 							} finally {
+								// 完成调用后处理器的钩子，把beanName从正在创建到列表里取出来
 								afterSingletonCreation(beanName);
 							}
 						}

@@ -218,7 +218,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	protected <T> T doGetBean(final String name, @Nullable final Class<T> requiredType,
 							  @Nullable final Object[] args, boolean typeCheckOnly) throws BeansException {
 		// 将入参的别名真正映射到指向某个 Bean 的唯一id【beanName】
-		// TODO 在这一步中，将所有试图指向 FactoryBean 的前缀都删掉了
+		// 在这一步中，将所有试图指向 FactoryBean 的前缀都删掉了
 		final String beanName = transformedBeanName(name);
 		Object bean;
 
@@ -245,13 +245,15 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		} else {
 			// Fail if we're already creating this bean instance:
 			// We're assumably within a circular reference.
-			// 如果我们获得的实例是 null 而且正在创建中，则出了问题，因为 ObjectFactory 没有成功的创建实例
-			// 后面我们的初始化也没法同步到现在的引用
+			// isPrototypeCurrentlyInCreation(beanName) 返回 true 表示：
+			// 1. 我们要创建的是原型生命周期的东西
+			// 2. 这个东西正在创建中
+			// 因为我们只解决单例的循环依赖问题
 			if (isPrototypeCurrentlyInCreation(beanName)) {
 				throw new BeanCurrentlyInCreationException(beanName);
 			}
 
-			//TODO 到这里，我们已经确定 beanName 对应的 bean 不是已经缓存好的单例。需要看看能不能找到或者能不能构建出来。。。。应该
+			//到这里，我们已经确定 beanName 对应的 bean 不是已经缓存好的单例。接下来开始尝试构建
 
 			// Check if bean definition exists in this factory.
 			// 多级 BeanFactory 加载的顺序：
@@ -284,7 +286,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			}
 
 			try {
-				// 将 BD 拍平
+				// 根据 beanName 得到 BeanDefinition ，顺手把 bd 拍平
 				final RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);
 				// bd 不能为抽象的，这样没法实例化
 				checkMergedBeanDefinition(mbd, beanName, args);
@@ -295,6 +297,12 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					for (String dep : dependsOn) {
 						// dep 在 mbd 的 dependsOn 中表示， mbd 对应的 bean 依赖 dep
 						// 如果 dep 也依赖 mbd 对应的 bean 则表明有循环依赖
+						// TODO： 这里不顾及一下单例 bean 么？
+						// 我猜测，单例 bean 因为只创建一次，比如： 单例AB互相依赖，在各自的 mbd 中的 dependsOn 中是有体现的，但是
+						// 在创建 A 时， 要创建依赖 B ，这时 B 还没在 registry 中上榜，所以可以走到创建 B，创建 B 时，A 在 getBean（）
+						// 最开始就找到了提前暴露的依赖，就搞定了。
+						// TODO ：后面有那种无入参的 getBean ，依旧走缓存，如果是有入参的 getBean(A) ,顾及 Spring 也会懵
+						// TODO ：综上： 正常使用是没问题的，极端情况后面可以试一下
 						if (isDependent(beanName, dep)) {
 							throw new BeanCreationException(mbd.getResourceDescription(), beanName,
 									"Circular depends-on relationship between '" + beanName + "' and '" + dep + "'");
@@ -312,10 +320,11 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 						}
 					}
 				}
-
+				// 到这里，完成了对 bean 依赖的准备，开始构建我们需要的这个 bean 实例了
 				// Create bean instance.
 				if (mbd.isSingleton()) {
 					// 完成对应 bean 实例的创建
+					// 单例 bean 需要加锁
 					sharedInstance = getSingleton(beanName, () -> {
 						try {
 							// 创建 bean 实例
@@ -324,6 +333,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 							// Explicitly remove instance from singleton cache: It might have been put there
 							// eagerly by the creation process, to allow for circular reference resolution.
 							// Also remove any beans that received a temporary reference to the bean.
+							// 构建失败记得清一下你预存的引用，防止出错
 							destroySingleton(beanName);
 							throw ex;
 						}
@@ -332,25 +342,27 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					bean = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
 				} else if (mbd.isPrototype()) {
 					// It's a prototype -> create a new instance.
+					// 原型 bean 保存一下就行，不是为了解决循环依赖，只是为了在创建时发现正在创建中，能快速失败
 					Object prototypeInstance = null;
 					try {
 						// 这个保存操作我真 TM 醉了，真的是一切靠约定
 						// 好在是 ThreadLocal ，不会出现多个线程同时创建多个导致最后访问出现问题
-						beforePrototypeCreation(beanName);
+						beforePrototypeCreation(beanName);// 存一下，在创建中
 						// 原型模式，不用 getSingleton（） 那样加锁了，直接创建
 						prototypeInstance = createBean(beanName, mbd, args);
 					} finally {
-						afterPrototypeCreation(beanName);
+						afterPrototypeCreation(beanName);// 创建完，删了标记
 					}
 					bean = getObjectForBeanInstance(prototypeInstance, name, beanName, mbd);
 				} else {
 					// TODO 如果设置了多个 scope ，它是怎么搞的，没看到拆分呀。看看他怎么实现的
 					String scopeName = mbd.getScope();
 					final Scope scope = this.scopes.get(scopeName);
-					if (scope == null) {
+					if (scope == null) { // scope 不符合
 						throw new IllegalStateException("No Scope registered for scope name '" + scopeName + "'");
 					}
 					try {
+						// TODO： scope 里面可能做了缓存，实现了 同请求下/同session下 的对象实例复用
 						Object scopedInstance = scope.get(beanName, () -> {
 							beforePrototypeCreation(beanName);
 							try {
@@ -1667,16 +1679,17 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			object = getCachedObjectForFactoryBean(beanName);
 		}
 		if (object == null) {
-			// 没有缓存
-			// TODO ：为什么传入了 mbd 就必须得跑一下构建
+			// 没有缓存或者没传 mbd
+			// 看着像是 "传入了 mbd 就必须得跑一下构建"，其实在 getObjectFromFactoryBean（） 做了缓存机制，都是先
+			// 从 getCachedObjectForFactoryBean（） 中去之前调用 FactoryBean 的缓存，不行才调用构建
 			// Return bean instance from factory.
 			FactoryBean<?> factory = (FactoryBean<?>) beanInstance;
 			// Caches object obtained from FactoryBean if it is a singleton.
 			if (mbd == null && containsBeanDefinition(beanName)) {
-				mbd = getMergedLocalBeanDefinition(beanName);
+				mbd = getMergedLocalBeanDefinition(beanName); // 自动根据 beanName 补全 mbd
 			}
 			boolean synthetic = (mbd != null && mbd.isSynthetic());// 获得这个bean是否是合成的【不是程序定义的】
-			object = getObjectFromFactoryBean(factory, beanName, !synthetic);// 如果是程序定义的，就跑后处理器
+			object = getObjectFromFactoryBean(factory, beanName, !synthetic);// 如果是程序定义的，在构建完成前后就跑后处理器
 		}
 		return object;
 	}

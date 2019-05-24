@@ -413,6 +413,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 *
 	 * @see #doCreateBean
 	 */
+	// 此时已经完成了 bean scope 的判断、bean 循环依赖的判断，现在应该是安心创建 bean 实例的环节了
 	// 创建 bean 实例、初始化、执行后处理方法
 	@Override
 	protected Object createBean(String beanName, RootBeanDefinition mbd, @Nullable Object[] args)
@@ -1098,6 +1099,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			if (autowireNecessary) { // 已经得到默认入参，直接传空？？
 				return autowireConstructor(beanName, mbd, null, null);
 			} else { // 没得到默认入参？？？
+				// TODO： 疑惑
 				return instantiateBean(beanName, mbd);
 			}
 		}
