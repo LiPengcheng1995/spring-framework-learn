@@ -44,6 +44,9 @@ import java.beans.PropertyDescriptor;
  * @see org.springframework.aop.framework.autoproxy.target.LazyInitTargetSourceCreator
  * @since 1.2
  */
+	// 这里新增两个钩子，是在 **创建实例** 之前、之后调用的。和父类 BeanPostProcessor 的 **初始化** 区分开
+	// 初始化指的是：填充属性
+	// 创建实例指的是： 用工厂方法或者构造函数或者提供的其他的 supplier 获得 bean 实例
 public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
 
 	/**
@@ -69,6 +72,9 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
 	 * @see #postProcessAfterInstantiation
 	 * @see org.springframework.beans.factory.support.AbstractBeanDefinition#hasBeanClass
 	 */
+	// 创建实例之前的钩子
+	// 在这里返回 bean 实例，可以造成创建该 bean 的操作的短路
+	// 直接短路到 postProcessAfterInitialization 钩子，将创建实例和初始化操作都短路了
 	@Nullable
 	default Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
 		return null;
@@ -90,6 +96,9 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 * @see #postProcessBeforeInstantiation
 	 */
+	// 创建实例之后的钩子
+	//TODO： 在创建实例之后而所有的属性填充都没开始时调用，可以用来填充对象实例中的通用的字段【个人理解是 @Value 那些】
+	// 返回 false 表示后面的 InstantiationAwareBeanPostProcessor 的钩子的属性填充不用走了
 	default boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
 		return true;
 	}
@@ -113,6 +122,7 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 * @see org.springframework.beans.MutablePropertyValues
 	 */
+	// 在使用属性之前包一下，对属性进行一些加工操作
 	@Nullable
 	default PropertyValues postProcessPropertyValues(
 			PropertyValues pvs, PropertyDescriptor[] pds, Object bean, String beanName) throws BeansException {

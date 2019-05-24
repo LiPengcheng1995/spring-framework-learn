@@ -25,6 +25,8 @@ import java.lang.reflect.Constructor;
  * Extension of the {@link InstantiationAwareBeanPostProcessor} interface,
  * adding a callback for predicting the eventual type of a processed bean.
  *
+ * 增加了用来预测创建 bean 的返回实例类型的方法
+ *
  * <p><b>NOTE:</b> This interface is a special purpose interface, mainly for
  * internal use within the framework. In general, application-provided
  * post-processors should simply implement the plain {@link BeanPostProcessor}
@@ -47,6 +49,7 @@ public interface SmartInstantiationAwareBeanPostProcessor extends InstantiationA
 	 * @return the type of the bean, or {@code null} if not predictable
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 */
+	// 预测 bean class
 	@Nullable
 	default Class<?> predictBeanType(Class<?> beanClass, String beanName) throws BeansException {
 		return null;
@@ -61,6 +64,7 @@ public interface SmartInstantiationAwareBeanPostProcessor extends InstantiationA
 	 * @return the candidate constructors, or {@code null} if none specified
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 */
+	// 决定使用 bean 的构造函数
 	@Nullable
 	default Constructor<?>[] determineCandidateConstructors(Class<?> beanClass, String beanName)
 			throws BeansException {
@@ -90,6 +94,7 @@ public interface SmartInstantiationAwareBeanPostProcessor extends InstantiationA
 	 * (typically with the passed-in bean instance as default)
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 */
+	// 获得 bean 的提前引用，用来解决循环引用
 	default Object getEarlyBeanReference(Object bean, String beanName) throws BeansException {
 		return bean;
 	}

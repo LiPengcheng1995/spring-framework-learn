@@ -28,6 +28,9 @@ import org.springframework.lang.Nullable;
  * Plain bean factories allow for programmatic registration of post-processors,
  * applying to all beans created through this factory.
  *
+ * 可以在 bd 中写，用于在 bean 创建 之后修改一下实例，也可以在 beanFactory 中写，统一将他们应用到
+ * 这个工厂生产出的 bean 中。
+ *
  * <p>Typically, post-processors that populate beans via marker interfaces
  * or the like will implement {@link #postProcessBeforeInitialization},
  * while post-processors that wrap beans with proxies will normally
@@ -40,6 +43,7 @@ import org.springframework.lang.Nullable;
  * @see BeanFactoryPostProcessor
  * @since 10.10.2003
  */
+// 他的两个钩子都是在 bean 实例创建之后调用的，一个是在初始化之前，一个是在初始化之后
 public interface BeanPostProcessor {
 
 	/**
@@ -56,6 +60,7 @@ public interface BeanPostProcessor {
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet
 	 */
+	// 后处理器方法，用来帮助填充属性
 	@Nullable
 	default Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		return bean;
@@ -83,6 +88,7 @@ public interface BeanPostProcessor {
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet
 	 * @see org.springframework.beans.factory.FactoryBean
 	 */
+	// 后处理器方法，用来在填充完属性后帮助创建代理
 	@Nullable
 	default Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		return bean;

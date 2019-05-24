@@ -429,7 +429,6 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// which cannot be stored in the shared merged bean definition.
 		// 1. 确认指向的 bean Class 可以被加载
 		// 2. 将 BeanDefinition 复制一份，原因与 CopyOnWriteArrayList 相同，防止访问过程中被修改
-
 		Class<?> resolvedClass = resolveBeanClass(mbd, beanName);
 
 		// 理论上加载完成后如果获得结果不为空，mbd 中缓存的 beanClass 应该存在，但是这里没有
@@ -518,6 +517,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		// Allow post-processors to modify the merged bean definition.
+		// TODO： 对 mbd 做一些修饰
 		synchronized (mbd.postProcessingLock) {
 			if (!mbd.postProcessed) {
 				try {
@@ -539,12 +539,14 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				logger.debug("Eagerly caching bean '" + beanName +
 						"' to allow for resolving potential circular references");
 			}
+			// 把找到的 bean 实例增加到缓存到 ObjectFactory 里去
 			addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
 		}
 
 		// Initialize the bean instance.
 		Object exposedObject = bean;
 		try {
+			// 填充一些 bean 的属性
 			populateBean(beanName, mbd, instanceWrapper);
 			exposedObject = initializeBean(beanName, exposedObject, mbd);
 		} catch (Throwable ex) {
@@ -1087,10 +1089,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		boolean autowireNecessary = false;
 		if (args == null) {
 			synchronized (mbd.constructorArgumentLock) {
-				if (mbd.resolvedConstructorOrFactoryMethod != null) {
+				if (mbd.resolvedConstructorOrFactoryMethod != null) { // 缓存中有指定构造的方法【结合情景，这里应该是构造函数了】
 					resolved = true;
 					// TODO： 这个是干啥的，判断是否已得到"默认入参"？？？
-					autowireNecessary = mbd.constructorArgumentsResolved;
+					autowireNecessary = mbd.constructorArgumentsResolved; // 构造的方法的入参可达
 				}
 			}
 		}
@@ -1098,8 +1100,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			// 结合上文，不是走的工厂方法，所以走的是构造函数【具体是默认构造函数还是啥的，再分析】
 			if (autowireNecessary) { // 已经得到默认入参，直接传空？？
 				return autowireConstructor(beanName, mbd, null, null);
-			} else { // 没得到默认入参？？？
-				// TODO： 疑惑
+			} else { // 构造函数有配置，但是没得到默认入参，就用默认构造函数吧
 				return instantiateBean(beanName, mbd);
 			}
 		}
