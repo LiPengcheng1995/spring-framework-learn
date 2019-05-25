@@ -214,7 +214,8 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 *                         with, if necessary
 	 * @return the registered singleton object
 	 */
-	// 创建 beanName 对应的单例 bean ，如果还没创建就创建，创建过就直接返回
+	// 创建 beanName 对应的单例 bean ，如果还没创建就创建，创建过就直接返回，
+	// TODO ： 第二个入参是懒加载吗？不是吧，直接就创建然后返回实例了
 	public Object getSingleton(String beanName, ObjectFactory<?> singletonFactory) {
 		Assert.notNull(beanName, "Bean name must not be null");
 		synchronized (this.singletonObjects) {
@@ -235,8 +236,8 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					this.suppressedExceptions = new LinkedHashSet<>();
 				}
 				try {
-					// 创建 bean 实例
-					// TODO： 只有创建实例吗？初始化呢？？？？
+					// 创建 bean 实例，并初始化。
+					// 如果总全局角度来看的话，其实这个里面的逻辑就是调用的 creatBean（）
 					singletonObject = singletonFactory.getObject();
 					newSingleton = true;
 				} catch (IllegalStateException ex) {
@@ -259,7 +260,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					}
 					afterSingletonCreation(beanName); // 完成创建，删除标记——将此 beanName 从正在创建的列表中删除
 				}
-				if (newSingleton) {
+				if (newSingleton) { // 缓存到正经缓存单例的里面
 					addSingleton(beanName, singletonObject);
 				}
 			}

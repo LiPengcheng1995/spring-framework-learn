@@ -302,7 +302,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 						// 我猜测，单例 bean 因为只创建一次，比如： 单例AB互相依赖，在各自的 mbd 中的 dependsOn 中是有体现的，但是
 						// 在创建 A 时， 要创建依赖 B ，这时 B 还没在 registry 中上榜，所以可以走到创建 B，创建 B 时，A 在 getBean（）
 						// 最开始就找到了提前暴露的依赖，就搞定了。
-						// TODO ：后面有那种无入参的 getBean ，依旧走缓存，如果是有入参的 getBean(A) ,顾及 Spring 也会懵
+						// TODO ：后面有那种无入参的 getBean ，依旧走缓存，如果是有入参的 getBean()【A】 ,顾及 Spring 也会懵
 						// TODO ：综上： 正常使用是没问题的，极端情况后面可以试一下
 						if (isDependent(beanName, dep)) {
 							throw new BeanCreationException(mbd.getResourceDescription(), beanName,
@@ -325,7 +325,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				// Create bean instance.
 				if (mbd.isSingleton()) {
 					// 完成对应 bean 实例的创建
-					// 单例 bean 需要加锁
+					// 单例 bean 需要一系列工序，例如加锁、缓存、注册单例等等
 					sharedInstance = getSingleton(beanName, () -> {
 						try {
 							// 创建 bean 实例
@@ -348,6 +348,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					try {
 						// 这个保存操作我真 TM 醉了，真的是一切靠约定
 						// 好在是 ThreadLocal ，不会出现多个线程同时创建多个导致最后访问出现问题
+						// TODO： 这个和单例一样的缓存标记不清楚有什么扩展作用，后面注意一下
+						// 至少能确定的是，可以用来做监视器扩展。。。。
 						beforePrototypeCreation(beanName);// 存一下，在创建中
 						// 原型模式，不用 getSingleton（） 那样加锁了，直接创建
 						prototypeInstance = createBean(beanName, mbd, args);
