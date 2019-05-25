@@ -1607,7 +1607,13 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * @param beanName the name of the bean
 	 * @return {@code true} if actually removed, {@code false} otherwise
 	 */
+	// 删除 beanName 对应的创建好的实例。
+	// 当然，前提条件是这个实例还没被正式使用【用来确认类型这个除外】
 	protected boolean removeSingletonIfCreatedForTypeCheckOnly(String beanName) {
+		// 注意，不是直接调删除单例 bean ，还记得我们在最开始调用 getBean（） 时有一个 forTypeCheckOnly 吗？
+		// 如果不是 forTypeCheckOnly ，我们会认为创建这个实例是有正经用途的，会缓存到 alreadyCreated 。
+		//
+		// 这里只能删除 forTypeCheckOnly 【目的是校验类型】 而创建的 bean 实例
 		if (!this.alreadyCreated.contains(beanName)) {
 			removeSingleton(beanName);
 			return true;
@@ -1717,6 +1723,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * @see AbstractBeanDefinition#getDestroyMethodName()
 	 * @see org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor
 	 */
+	// 和初始化方法差不多，在 bean 实例存在的情况下：
+	// 1. 看自己有没有实现指定的接口获得 mbd 有没有指定 destroy-method
+	// 2. 看工厂有没有统一的钩子
 	protected boolean requiresDestruction(Object bean, RootBeanDefinition mbd) {
 		return (bean.getClass() != NullBean.class &&
 				(DisposableBeanAdapter.hasDestroyMethod(bean, mbd) || (hasDestructionAwareBeanPostProcessors() &&
@@ -1738,19 +1747,29 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 */
 	protected void registerDisposableBeanIfNecessary(String beanName, Object bean, RootBeanDefinition mbd) {
 		AccessControlContext acc = (System.getSecurityManager() != null ? getAccessControlContext() : null);
+		// TODO： 第一个条件什么鬼？必须不能是原型模式么？我的其他 profile 不行么？？？
+		// 第二个条件很简单，就是判断在当前 factory + bean /mbd 情况下，有没有对应的销毁钩子可以用
 		if (!mbd.isPrototype() && requiresDestruction(bean, mbd)) {
 			if (mbd.isSingleton()) {
 				// Register a DisposableBean implementation that performs all destruction
 				// work for the given bean: DestructionAwareBeanPostProcessors,
 				// DisposableBean interface, custom destroy method.
+				// 如果是单例的话注册一个 DisposableBean 放到 this.disposableBeans 中，这样在 shutdown 时直接调用即可，
+				// 不用再进行一把子判断。而且，这里将销毁的逻辑从 factory 中独立出去，方便后面的扩展
 				registerDisposableBean(beanName,
 						new DisposableBeanAdapter(bean, beanName, mbd, getBeanPostProcessors(), acc));
 			} else {
 				// A bean with a custom scope...
+				// 跟着 scope 走，也就是此 bean 的销毁条件不是 application shutdown
+				//  有人可能问，在上面创建单例时在发现初始化后的和提前暴露的引用地址不一致时不是也进行了 bean 的销毁么？
+				//  那个不一样，销毁的是没什么用的 forTypeCheckOnly 的，正经的 bean 都是通过抛异常引起 application shutdown 来进行
+				//  终止应用，提醒报错的。
+				//  TODO ： 但是 forTypeCheckOnly 貌似也没少做啥活。。。。除了多注册一个 String ，其他的都干了，不调钩子资源也没法释放呀？？？？
 				Scope scope = this.scopes.get(mbd.getScope());
 				if (scope == null) {
 					throw new IllegalStateException("No Scope registered for scope name '" + mbd.getScope() + "'");
 				}
+				// TODO ：后面可以熟悉一下 Spring 的 sope 相关的管理，我觉得后面在 mvc 、 持久化 中会大量使用
 				scope.registerDestructionCallback(beanName,
 						new DisposableBeanAdapter(bean, beanName, mbd, getBeanPostProcessors(), acc));
 			}

@@ -533,6 +533,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		// Eagerly cache singletons to be able to resolve circular references
 		// even when triggered by lifecycle interfaces like BeanFactoryAware.
+		// 如果要解决循环依赖问题，需要提前将实例引用暴露。
+		// 暴露出去之后慢慢再进行实例填值、初始化、后处理钩子调用
 		boolean earlySingletonExposure = (mbd.isSingleton() && this.allowCircularReferences &&
 				isSingletonCurrentlyInCreation(beanName));
 		if (earlySingletonExposure) {
@@ -563,19 +565,28 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}
 		}
 
+
+		// 提前暴露出去了实例引用，但是我们在后续调用初始化钩子时可能会改变bean的地址，这里要做一下修复和回归
+		//
+		// 注意，我们只是完成了创建这个 bean 实例的操作，但是并没有改变 singleton 的注册状态，也就是说我们现在用 getSingleton（）获得的
+		// 还是之前放进去的用于提前暴露的引用
 		if (earlySingletonExposure) {
-			Object earlySingletonReference = getSingleton(beanName, false);
-			if (earlySingletonReference != null) {
-				if (exposedObject == bean) {
+			Object earlySingletonReference = getSingleton(beanName, false); //得到之前提前暴露的实例引用
+			if (earlySingletonReference != null) { // 刚开始觉得有点冗余，看了后面的实现感觉还是有必要的
+				if (exposedObject == bean) { // 我们一通操作，没有改变引用地址，说明我们后面的操作能即使同步出去
 					exposedObject = earlySingletonReference;
-				} else if (!this.allowRawInjectionDespiteWrapping && hasDependentBean(beanName)) {
-					String[] dependentBeans = getDependentBeans(beanName);
+				} else if (!this.allowRawInjectionDespiteWrapping && hasDependentBean(beanName)) { // 我们的一通操作，改变了引用地址【出现了代理或者包裹】
+					// 1. 是否提前注入原始的 bean 实例来防止循环引用，即使最终这个 bean 会被包裹【否】
+					// 2. 这个提前暴露出去的 bean 已经被人依赖了
+					String[] dependentBeans = getDependentBeans(beanName); // 获得依赖这个 bean 的 bean 列表，一个一个修改
 					Set<String> actualDependentBeans = new LinkedHashSet<>(dependentBeans.length);
 					for (String dependentBean : dependentBeans) {
-						if (!removeSingletonIfCreatedForTypeCheckOnly(dependentBean)) {
+						if (!removeSingletonIfCreatedForTypeCheckOnly(dependentBean)) { // 将还没有正式使用的 bean 实例删除
+							// 删除失败，当时创建这个 bean 是有正经用途的
 							actualDependentBeans.add(dependentBean);
 						}
 					}
+					// 经过层层筛选，我们发现提前暴露的 bean 里是有正经用途的，不能直接删，那就直接 fail-fast 失败，防止出现隐藏的bug造成更大的损失
 					if (!actualDependentBeans.isEmpty()) {
 						throw new BeanCurrentlyInCreationException(beanName,
 								"Bean with name '" + beanName + "' has been injected into other beans [" +
@@ -589,14 +600,20 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}
 		}
 
+
 		// Register bean as disposable.
+		// bean 销毁可能还有一些钩子，进行一些注册
+		// 这里先注册销毁的钩子，再注册创建的钩子，防止出现在注册的间隙提前暴露出去并立刻进行销毁的极端情况
 		try {
 			registerDisposableBeanIfNecessary(beanName, bean, mbd);
 		} catch (BeanDefinitionValidationException ex) {
 			throw new BeanCreationException(
 					mbd.getResourceDescription(), beanName, "Invalid destruction signature", ex);
 		}
-
+		// 注册销毁的钩子完成，对外暴露最终的 bean
+		// 注意：如果是提前暴露的单例 bean ，是从 singletonFactories 的缓存转移到 earlySingletonObjects 就不再动了，此函数只负责创建 bean ，
+		// 最外面我们是把 createBean 当作 singletonFacotry 传到 getSingleton 里面去的，在完成此方法后，外面的 getSingleton 会完成将 对应的
+		// bean 实例缓存至 singletonObjects 的。
 		return exposedObject;
 	}
 
