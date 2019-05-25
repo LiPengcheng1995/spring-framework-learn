@@ -551,6 +551,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		try {
 			// 填充一些 bean 的属性
 			populateBean(beanName, mbd, instanceWrapper);
+			// 初始化 bean
+			// 这里才叫初始化，初始化特指调用初始化和那些钩子方法，其他的包括填充属性，都叫创建实例
 			exposedObject = initializeBean(beanName, exposedObject, mbd);
 		} catch (Throwable ex) {
 			if (ex instanceof BeanCreationException && beanName.equals(((BeanCreationException) ex).getBeanName())) {
@@ -1292,6 +1294,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		boolean continueWithPropertyPopulation = true;
 
 		// mbd 不是合成的 ，而且有 InstantiationAwareBeanPostProcessor 来修饰属性，那就搞起
+		// TODO 这个创建实例的钩子是这里调用的？？理论上这个是用来填装属性的，
 		if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
 			for (BeanPostProcessor bp : getBeanPostProcessors()) {
 				if (bp instanceof InstantiationAwareBeanPostProcessor) {
@@ -1311,28 +1314,29 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		PropertyValues pvs = (mbd.hasPropertyValues() ? mbd.getPropertyValues() : null);
 
 		// 根据对应的注入方法进行注入
+		// TODO 这个应该不是@Autowire，感觉怪怪的
 		if (mbd.getResolvedAutowireMode() == AUTOWIRE_BY_NAME || mbd.getResolvedAutowireMode() == AUTOWIRE_BY_TYPE) {
 			MutablePropertyValues newPvs = new MutablePropertyValues(pvs);
 			// Add property values based on autowire by name if applicable.
-			// TODO ： 后面看一下
+			// 根据名称注入
 			if (mbd.getResolvedAutowireMode() == AUTOWIRE_BY_NAME) {
 				autowireByName(beanName, mbd, bw, newPvs);
 			}
 			// Add property values based on autowire by type if applicable.
-			// TODO ： 后面看一下
+			// 根据类型注入
 			if (mbd.getResolvedAutowireMode() == AUTOWIRE_BY_TYPE) {
 				autowireByType(beanName, mbd, bw, newPvs);
 			}
 			pvs = newPvs;
 		}
 
-		boolean hasInstAwareBpps = hasInstantiationAwareBeanPostProcessors();
-		boolean needsDepCheck = (mbd.getDependencyCheck() != AbstractBeanDefinition.DEPENDENCY_CHECK_NONE);
-		// TODO ： 懵逼中
+		boolean hasInstAwareBpps = hasInstantiationAwareBeanPostProcessors(); // 根据情况看需不需要对即将填充进实例的属性进行处理一下子
+		boolean needsDepCheck = (mbd.getDependencyCheck() != AbstractBeanDefinition.DEPENDENCY_CHECK_NONE); // TODO 判断是否需要检测依赖 ？？？？
 		if (hasInstAwareBpps || needsDepCheck) {
-			if (pvs == null) {
+			if (pvs == null) { // TODO 这是怎么回事？？？应该不会为空吧，即使为空了，这个赋值应该也没有意义
 				pvs = mbd.getPropertyValues();
 			}
+			// 对属性处理一下子
 			PropertyDescriptor[] filteredPds = filterPropertyDescriptorsForDependencyCheck(bw, mbd.allowCaching);
 			if (hasInstAwareBpps) {
 				for (BeanPostProcessor bp : getBeanPostProcessors()) {
@@ -1345,12 +1349,16 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 					}
 				}
 			}
+
+			// 这个是做一下依赖检测，大概思路感觉是：
+			// pvs 里面的属性是不是我要检测的依赖的，比如我只检测简单类型的，那么 pvs 里面就不能有复杂类型的
+			// TODO ： 说服不了自己，后面刷刷博客看看吧
 			if (needsDepCheck) {
 				checkDependencies(beanName, mbd, filteredPds, pvs);
 			}
 		}
 
-		if (pvs != null) {
+		if (pvs != null) { // 之前处理好的属性，这里填充进去吧
 			applyPropertyValues(beanName, mbd, bw, pvs);
 		}
 	}
@@ -1365,12 +1373,17 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @param bw       the BeanWrapper from which we can obtain information about the bean
 	 * @param pvs      the PropertyValues to register wired objects with
 	 */
+	// 根据名称注入，这个貌似不会报错，因为一个名称【不管是 id 还是 alias 】只能定位到一个 bean 实例，
+	// 如果有冲突，在生成 BeanDefinition 时就报错了。
+	//
+	// TODO 唯一的问题就是根据名称找不到符合条件的 bean ，这时竟然只是log一下，竟然没有结束？？？？
+	// 个人理解不应该是不进行 containsBean（）判断直接取吗？有问题直接抛出异常结束
 	protected void autowireByName(
 			String beanName, AbstractBeanDefinition mbd, BeanWrapper bw, MutablePropertyValues pvs) {
 
 		String[] propertyNames = unsatisfiedNonSimpleProperties(mbd, bw);
 		for (String propertyName : propertyNames) {
-			if (containsBean(propertyName)) {
+			if (containsBean(propertyName)) { // 属性名称就是用来查询的 bean 的 id 或者 alias
 				Object bean = getBean(propertyName);
 				pvs.add(propertyName, bean);
 				registerDependentBean(propertyName, beanName);
@@ -1399,6 +1412,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @param bw       the BeanWrapper from which we can obtain information about the bean
 	 * @param pvs      the PropertyValues to register wired objects with
 	 */
+	// 通过类型注入
+	//
+	// 此种注入方式要求必须能根据类型唯一地确定 bean。这种注入方式在项目比较简单时能很方便的搞定；当项目比较大时，这种方式就显得有点力不从心了，
+	// 比如我的项目要连接两个数据库，就要创建两个 SqlSessionFactory
 	protected void autowireByType(
 			String beanName, AbstractBeanDefinition mbd, BeanWrapper bw, MutablePropertyValues pvs) {
 
@@ -1408,6 +1425,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		Set<String> autowiredBeanNames = new LinkedHashSet<>(4);
+		// 得到还未被满足的非简单类型的属性
 		String[] propertyNames = unsatisfiedNonSimpleProperties(mbd, bw);
 		for (String propertyName : propertyNames) {
 			try {
@@ -1419,6 +1437,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 					// Do not allow eager init for type matching in case of a prioritized post-processor.
 					boolean eager = !PriorityOrdered.class.isInstance(bw.getWrappedInstance());
 					DependencyDescriptor desc = new AutowireByTypeDependencyDescriptor(methodParam, eager);
+					// TODO 这里后面再看，有点深了
 					Object autowiredArgument = resolveDependency(desc, beanName, autowiredBeanNames, converter);
 					if (autowiredArgument != null) {
 						pvs.add(propertyName, autowiredArgument);
@@ -1449,12 +1468,18 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @return an array of bean property names
 	 * @see org.springframework.beans.BeanUtils#isSimpleProperty
 	 */
+	// 返回实例参数名称列表，返回的列表满足以下条件：
+	// 1. 有 setter 方法
+	// 2. 需要进行依赖检查【属性的类型不是那种不需要检查的】
+	// 3. 在 mbd 中没有对这个参数进行安排
+	// 4. 不是简单的属性
 	protected String[] unsatisfiedNonSimpleProperties(AbstractBeanDefinition mbd, BeanWrapper bw) {
 		Set<String> result = new TreeSet<>();
 		PropertyValues pvs = mbd.getPropertyValues();
 		PropertyDescriptor[] pds = bw.getPropertyDescriptors();
 		for (PropertyDescriptor pd : pds) {
 			if (pd.getWriteMethod() != null && !isExcludedFromDependencyCheck(pd) && !pvs.contains(pd.getName()) &&
+					//TODO 这个参数有兴趣可以看看
 					!BeanUtils.isSimpleProperty(pd.getPropertyType())) {
 				result.add(pd.getName());
 			}
@@ -1558,6 +1583,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @param bw       the BeanWrapper wrapping the target object
 	 * @param pvs      the new property values
 	 */
+	// TODO： 这个后面可以细看
 	protected void applyPropertyValues(String beanName, BeanDefinition mbd, BeanWrapper bw, PropertyValues pvs) {
 		if (pvs.isEmpty()) {
 			return;
@@ -1594,6 +1620,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		BeanDefinitionValueResolver valueResolver = new BeanDefinitionValueResolver(this, beanName, mbd, converter);
 
 		// Create a deep copy, resolving any references for values.
+		// 没那么深，只是突破了数组纬度而已，直接指向数组中元素的引用
 		List<PropertyValue> deepCopy = new ArrayList<>(original.size());
 		boolean resolveNecessary = false;
 		for (PropertyValue pv : original) {
@@ -1632,6 +1659,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		// Set our (possibly massaged) deep copy.
+		// TODO： 这里为什么要用一个新数组完成对 bean 中的设置，是怕传进来的数组还在别的地方用到，容易被修改吗？
+		// TODO： 那也不对，看 setPropertyValues（） ，好像是将数组拆开扔进去的。
 		try {
 			bw.setPropertyValues(new MutablePropertyValues(deepCopy));
 		} catch (BeansException ex) {
@@ -1675,7 +1704,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @see #invokeInitMethods
 	 * @see #applyBeanPostProcessorsAfterInitialization
 	 */
+	// 初始化 bean ，主要调用 bean 的初始化方法【如果这个 bean 实现了对应的接口】以及工厂的一些回调函数
 	protected Object initializeBean(final String beanName, final Object bean, @Nullable RootBeanDefinition mbd) {
+		// 根据 bean 实现的 Aware 接口【aware ---> 知道的，也即是说这个 bean 想要获得的一些信息】，将对应的信息填充进 bean 实例
 		if (System.getSecurityManager() != null) {
 			AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
 				invokeAwareMethods(beanName, bean);
@@ -1686,10 +1717,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		Object wrappedBean = bean;
+		// bean 是系统生成的，不是合成的，就调用工厂注册的那些在初始化之前要调用的钩子
 		if (mbd == null || !mbd.isSynthetic()) {
 			wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
 		}
 
+		// 调用初始化方法
 		try {
 			invokeInitMethods(beanName, wrappedBean, mbd);
 		} catch (Throwable ex) {
@@ -1734,14 +1767,22 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @throws Throwable if thrown by init methods or by the invocation process
 	 * @see #invokeCustomInitMethod
 	 */
+	// 调用 bean 的初始化方法，初始化方法的指定有两种：
+	// 1. 用 init-method 指定【目前只关注了 xml 的配置，注解的那个我们后面再分析一遍】
+	// 2. bean 实现 InitializingBean 接口，直接调用接口下面的初始化方法
 	protected void invokeInitMethods(String beanName, final Object bean, @Nullable RootBeanDefinition mbd)
 			throws Throwable {
 
 		boolean isInitializingBean = (bean instanceof InitializingBean);
+		// mbs == null 用 或的短路去理解
+		// TODO ： mbd.isExternallyManagedInitMethod 这个的设置和对应的使用后面可以瞅一下
 		if (isInitializingBean && (mbd == null || !mbd.isExternallyManagedInitMethod("afterPropertiesSet"))) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Invoking afterPropertiesSet() on bean with name '" + beanName + "'");
 			}
+
+			// 调用 afterPropertiesSet
+
 			if (System.getSecurityManager() != null) {
 				try {
 					AccessController.doPrivileged((PrivilegedExceptionAction<Object>) () -> {
@@ -1758,6 +1799,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		if (mbd != null && bean.getClass() != NullBean.class) {
 			String initMethodName = mbd.getInitMethodName();
+			// 1. 有新的 initMethod
+			// 2. 且不是上面的接口中的 afterPropertiesSet
+			// 3. 而且不在 isExternallyManagedInitMethod 里面
 			if (StringUtils.hasLength(initMethodName) &&
 					!(isInitializingBean && "afterPropertiesSet".equals(initMethodName)) &&
 					!mbd.isExternallyManagedInitMethod(initMethodName)) {
@@ -1873,6 +1917,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * Always optional; never considering the parameter name for choosing a primary candidate.
 	 */
 	@SuppressWarnings("serial")
+	// TODO 只考虑类型不考虑名称，那我们打标的 @Autowire注解是从哪来的？？？？
 	private static class AutowireByTypeDependencyDescriptor extends DependencyDescriptor {
 
 		public AutowireByTypeDependencyDescriptor(MethodParameter methodParameter, boolean eager) {

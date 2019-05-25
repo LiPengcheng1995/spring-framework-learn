@@ -47,6 +47,7 @@ public interface Ordered {
 	 *
 	 * @see java.lang.Integer#MIN_VALUE
 	 */
+	// 越小越优先
 	int HIGHEST_PRECEDENCE = Integer.MIN_VALUE;
 
 	/**

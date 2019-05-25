@@ -133,6 +133,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * A custom TypeConverter to use, overriding the default PropertyEditor mechanism
 	 */
 	@Nullable
+	// TODO： 这个后面有兴趣可以看看
 	private TypeConverter typeConverter;
 	/**
 	 * Indicates whether any InstantiationAwareBeanPostProcessors have been registered
