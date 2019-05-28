@@ -125,7 +125,15 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		// the new (child) delegate with a reference to the parent for fallback purposes,
 		// then ultimately reset this.delegate back to its original (parent) reference.
 		// this behavior emulates a stack of delegates without actually necessitating one.
+
+		//  根节点应该是 <beans />标签，根节点下也可以有 <beans />标签，标签的嵌套也意味着此函数的递归调用。
+		//
+		//  为了保证递归之后在进行调用时仍能获得标签父节点的配置，我们使用 this.delegate 进行记录，先在操作前
+		//  保存当前值，然后该怎么用怎么用，最后再归位。在单线程的情况下完成了整个切换，原理是借助函数调用栈。
+		//
+		// 保存之前的
 		BeanDefinitionParserDelegate parent = this.delegate;
+		// 生成自己的
 		this.delegate = createDelegate(getReaderContext(), root, parent);
 
 		if (this.delegate.isDefaultNamespace(root)) {
@@ -147,6 +155,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		parseBeanDefinitions(root, this.delegate);
 		postProcessXml(root);
 
+		// 归位成之前的
 		this.delegate = parent;
 	}
 
