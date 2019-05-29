@@ -40,16 +40,18 @@ import org.springframework.lang.Nullable;
 public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
-	 * Scope identifier for the standard singleton scope: "singleton".
-	 * <p>Note that extended bean factories might support further scopes.
+	 * 单例 Bean 的生命周期常量
+	 *
+	 * 注意，具体的实现类可能会扩展其他的生命周期常量。
 	 *
 	 * @see #setScope
 	 */
 	String SCOPE_SINGLETON = ConfigurableBeanFactory.SCOPE_SINGLETON;
 
 	/**
-	 * Scope identifier for the standard prototype scope: "prototype".
-	 * <p>Note that extended bean factories might support further scopes.
+	 * 原型 Bean 的生命周期常量
+	 *
+	 * 注意，具体的实现类可能会扩展其他的生命周期常量。
 	 *
 	 * @see #setScope
 	 */
@@ -60,6 +62,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * Role hint indicating that a {@code BeanDefinition} is a major part
 	 * of the application. Typically corresponds to a user-defined bean.
 	 */
+	// 角色提示。表明这个 BD 是应用中的关键角色。这个角色通常对应用户定义的 Bean
 	int ROLE_APPLICATION = 0;
 
 	/**
@@ -71,6 +74,8 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * {@link org.springframework.beans.factory.parsing.ComponentDefinition},
 	 * but not when looking at the overall configuration of an application.
 	 */
+	// 角色提示，表明 BD 是一些大型配置的支撑角色。通常是一些外部框架的支撑 bean 。在梳理整体应用
+	// 配置时一般不关心它，但是在仔细查看特定框架实现时应该注意研读
 	int ROLE_SUPPORT = 1;
 
 	/**
@@ -79,6 +84,8 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * used when registering beans that are completely part of the internal workings
 	 * of a {@link org.springframework.beans.factory.parsing.ComponentDefinition}.
 	 */
+	// 角色提示，表示 BD 完全是一个后台服务，不会和使用者直接接触。在注册完全在 ComponentDefinition 内部工作
+	// 的 BD 时会用这个
 	int ROLE_INFRASTRUCTURE = 2;
 
 
