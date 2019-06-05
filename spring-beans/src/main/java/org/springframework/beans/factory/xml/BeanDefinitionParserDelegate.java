@@ -1286,7 +1286,9 @@ public class BeanDefinitionParserDelegate {
 				if (decorated != null) {
 					return decorated;
 				}
-			} else if (namespaceUri.startsWith("http://www.springframework.org/")) {
+			}
+			// TODO  懵逼
+			else if (namespaceUri.startsWith("http://www.springframework.org/")) {
 				error("Unable to locate Spring NamespaceHandler for XML schema namespace [" + namespaceUri + "]", node);
 			} else {
 				// A custom namespace, not to be handled by Spring - maybe "xml:...".

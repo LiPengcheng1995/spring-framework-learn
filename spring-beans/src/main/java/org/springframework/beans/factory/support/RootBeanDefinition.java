@@ -187,15 +187,15 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	 * @param autowireMode    by name or type, using the constants in this interface
 	 * @param dependencyCheck whether to perform a dependency check for objects
 	 *                        (not applicable to autowiring a constructor, thus ignored there)
+	 *                        是否对依赖的复杂对象进行依赖检测。
+	 *                        【此操作的前提是先构建出实例，也就是说不能是依赖构造函数注入来构建实例】
+	 *                        【因为这个是可以用来构建单例的，如果依赖构造函数注入的话，构造不出实例是没法解决循转依赖的】
 	 */
+
 	public RootBeanDefinition(@Nullable Class<?> beanClass, int autowireMode, boolean dependencyCheck) {
 		super();
 		setBeanClass(beanClass);
 		setAutowireMode(autowireMode);
-		// 第二个条件，我猜测的意思是：
-		// 如果可以的话，spring 会先构建出一个对象实例，再填值，看有没有构造函数
-		// 	1. 如果有入参为空的构造函数，就返回 AUTOWIRE_TYPE 【或者其他的】,可以根据 Class 类型直接开干
-		//  2. 如果没有入参为空的构造函数，就返回 AUTOWIRE_CONSTRUCTOR ，要有入参，这样就需要进行依赖检测【防止将未初始化完成的对象注入进去】
 		if (dependencyCheck && getResolvedAutowireMode() != AUTOWIRE_CONSTRUCTOR) {
 			setDependencyCheck(DEPENDENCY_CHECK_OBJECTS);
 		}
