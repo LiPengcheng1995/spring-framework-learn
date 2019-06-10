@@ -171,10 +171,10 @@ public class SimpleAliasRegistry implements AliasRegistry {
 				String resolvedAlias = valueResolver.resolveStringValue(alias);
 				String resolvedName = valueResolver.resolveStringValue(registeredName);
 				if (resolvedAlias == null || resolvedName == null || resolvedAlias.equals(resolvedName)) {
-					// 解析后的key value不全空，且不相同
+					// 解析后的key value全不空，且不相同
 					this.aliasMap.remove(alias);
 				} else if (!resolvedAlias.equals(alias)) {
-					// 解析后key变了，说明 key 之前是有占位符的，现在被解析了
+					// 完成解析，且key、value看起来合理
 
 					String existingName = this.aliasMap.get(resolvedAlias);
 					// 解析后的 key 发现已经在map中存在了

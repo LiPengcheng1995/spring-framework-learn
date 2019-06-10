@@ -281,7 +281,13 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				}
 			}
 
-			// 如果 typeCheckOnly 为 true ，则表示只是检测，如果为 false 则表示要创建出 bean ，
+			// 如果 typeCheckOnly 为 true ，则表示只是检测，如果为 false 则表示要创建出 bean
+			// 这个是一种约定，即：
+			//
+			// 如果你指明了这次 Bean 的实例化只是检测类型，不是要用来做正事的话，后面万一在解决冲突提前暴露出去地址，后来在修饰时
+			// 发现被代理导致实例地址变了，可以方便的删了
+			//
+			// 如果你指明这个就是用来用的，不是仅检测类型，后面发现后处理器给改变了实例地址，直接报错说解决循环依赖失败
 			if (!typeCheckOnly) {
 				markBeanAsCreated(beanName);
 			}
