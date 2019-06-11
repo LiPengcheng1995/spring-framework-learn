@@ -304,12 +304,10 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					for (String dep : dependsOn) {
 						// dep 在 mbd 的 dependsOn 中表示， mbd 对应的 bean 依赖 dep
 						// 如果 dep 也依赖 mbd 对应的 bean 则表明有循环依赖
-						// TODO： 这里不顾及一下单例 bean 么？
-						// 我猜测，单例 bean 因为只创建一次，比如： 单例AB互相依赖，在各自的 mbd 中的 dependsOn 中是有体现的，但是
-						// 在创建 A 时， 要创建依赖 B ，这时 B 还没在 registry 中上榜，所以可以走到创建 B，创建 B 时，A 在 getBean（）
-						// 最开始就找到了提前暴露的依赖，就搞定了。
-						// TODO ：后面有那种无入参的 getBean ，依旧走缓存，如果是有入参的 getBean()【A】 ,顾及 Spring 也会懵
-						// TODO ：综上： 正常使用是没问题的，极端情况后面可以试一下
+						// TODO: 注意了，这里和单例 Bean 的解决循环依赖没有关系
+						// 单例 Bean 解决的循环依赖是创建完实例后填充属性的循环依赖，针对一下两种情况没有办法解决：
+						// 1. 配置 dependsOn 手动指定实例化先后顺序
+						// 2. 使用构造函数实例化
 						if (isDependent(beanName, dep)) {
 							throw new BeanCreationException(mbd.getResourceDescription(), beanName,
 									"Circular depends-on relationship between '" + beanName + "' and '" + dep + "'");
