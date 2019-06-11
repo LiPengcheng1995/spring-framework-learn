@@ -77,6 +77,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	/**
 	 * Set of registered singletons, containing the bean names in registration order
 	 */
+	//TODO 没必要专门用个集合来存储，这样维护一致性要花费不少精力
 	private final Set<String> registeredSingletons = new LinkedHashSet<>(256);
 
 	/**
@@ -94,6 +95,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * Disposable bean instances: bean name --> disposable instance
 	 */
 	// 这里面的bean有删除的钩子，需要专门调用一下
+	// 这里的 disposableBeans 的 key 和要回收的 bean 实例在 singletonObjects 中的 key 一样
 	private final Map<String, Object> disposableBeans = new LinkedHashMap<>();
 	/**
 	 * Map between containing bean names: bean name --> Set of bean names that the bean contains
@@ -215,7 +217,9 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * @return the registered singleton object
 	 */
 	// 创建 beanName 对应的单例 bean ，如果还没创建就创建，创建过就直接返回，
-	// TODO ： 第二个入参是懒加载吗？不是吧，直接就创建然后返回实例了
+	//
+	// 第二个入参不是懒加载，在这里是直接调用创建然后放到正经缓存中去来。
+	// 使用表达式入参的原因之一可能是方便用户自定义逻辑，包括使用闭包访问自定义变量什么的。
 	public Object getSingleton(String beanName, ObjectFactory<?> singletonFactory) {
 		Assert.notNull(beanName, "Bean name must not be null");
 		synchronized (this.singletonObjects) {
@@ -317,7 +321,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		}
 	}
 
-
+	// TODO 此函数诡异，应该是是否将 beanName 设置成考虑 "是否正在创建中"
 	public void setCurrentlyInCreation(String beanName, boolean inCreation) {
 		Assert.notNull(beanName, "Bean name must not be null");
 		if (!inCreation) {
@@ -449,6 +453,10 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		}
 	}
 
+	// 从 dependentBeanMap 中找，看能否找到从 beanName-->dependentBeanName 的直接/间接映射
+	// 1. 递归
+	// 2. 树的深度遍历
+	// 思路很简单，和 SimpleAliasRegistry 的那个遍历差不多
 	private boolean isDependent(String beanName, String dependentBeanName, @Nullable Set<String> alreadySeen) {
 		if (alreadySeen != null && alreadySeen.contains(beanName)) {
 			return false;
@@ -478,6 +486,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 *
 	 * @param beanName the name of the bean to check
 	 */
+	// 判断 beanName 是否被依赖
 	protected boolean hasDependentBean(String beanName) {
 		return this.dependentBeanMap.containsKey(beanName);
 	}
@@ -510,7 +519,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		if (dependenciesForBean == null) {
 			return new String[0];
 		}
-		synchronized (this.dependenciesForBeanMap) {
+		synchronized (this.dependenciesForBeanMap) { // 为了缩小锁的粒度，减少持有锁的时间，提高吞吐量
 			return StringUtils.toStringArray(dependenciesForBean);
 		}
 	}
@@ -561,8 +570,10 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * @see #destroyBean
 	 */
 	// 这里可以优化吧，这里算作是树形的递归调用，最开始调用起这个函数时也是用的循环，
-	// 在方法头加一个判断，如果remove发现没有，说明在删除时就提前删完此单例bean了，直接退出
+	// 在方法头加一个判断，如果remove发现没有，说明在删除其他单例时就提前删完此单例bean了，直接退出
 	public void destroySingleton(String beanName) {
+		// 此函数主要目的是取消单例和对应的 DisposableBean 的注册
+
 		// Remove a registered singleton of the given name, if any.
 		removeSingleton(beanName);
 
@@ -571,6 +582,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		synchronized (this.disposableBeans) {
 			disposableBean = (DisposableBean) this.disposableBeans.remove(beanName);
 		}
+		// 将具体的销毁工作委托出去
 		destroyBean(beanName, disposableBean);
 	}
 
@@ -582,6 +594,8 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * @param bean     the bean instance to destroy
 	 */
 	protected void destroyBean(String beanName, @Nullable DisposableBean bean) {
+		// 先将依赖 beanName 的单例销毁才能销毁 beanName
+
 		// Trigger destruction of dependent beans first...
 		Set<String> dependencies;
 		synchronized (this.dependentBeanMap) {
@@ -592,19 +606,23 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 			if (logger.isDebugEnabled()) {
 				logger.debug("Retrieved dependent beans for bean '" + beanName + "': " + dependencies);
 			}
-			for (String dependentBeanName : dependencies) {
+			for (String dependentBeanName : dependencies) { // 先递归销毁依赖 beanName 的单例
 				destroySingleton(dependentBeanName);
 			}
 		}
+		// 完成依赖此单例的项目的销毁
 
 		// Actually destroy the bean now...
 		if (bean != null) {
 			try {
-				bean.destroy();
+				bean.destroy(); // 销毁 beanName
 			} catch (Throwable ex) {
 				logger.error("Destroy method on bean with name '" + beanName + "' threw an exception", ex);
 			}
 		}
+
+		// 将包含此单例的项目进行销毁
+		// TODO 感觉怪怪的，销毁完 beanName 后 containedBeans 应该不能继续工作了，怎么能把这个放在最后面？
 
 		// Trigger destruction of contained beans...
 		Set<String> containedBeans;
@@ -617,6 +635,10 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 				destroySingleton(containedBeanName);
 			}
 		}
+
+		// 完成包含此单例的项目的销毁
+
+		// 做一些善后操作，beanName 依赖了一些 bean ，把这些映射移除即可
 
 		// Remove destroyed bean from other beans' dependencies.
 		synchronized (this.dependentBeanMap) {
