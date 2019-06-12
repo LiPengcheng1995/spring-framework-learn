@@ -503,8 +503,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Instantiate the bean.
 		BeanWrapper instanceWrapper = null;
 		if (mbd.isSingleton()) {
-			// 先从缓存中拿出来，因为后面涉及修饰的问题，可能会改引用，所以用 remove
-			// 单例 bean 的情况，之前就没有从这里拿来引用过
+			// TODO 此处存疑，需要专门看一下 factoryBeanInstanceCache 的作用及存取
 			instanceWrapper = this.factoryBeanInstanceCache.remove(beanName);
 		}
 		if (instanceWrapper == null) {
