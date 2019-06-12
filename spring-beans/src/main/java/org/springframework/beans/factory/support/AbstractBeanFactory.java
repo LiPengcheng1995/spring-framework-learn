@@ -211,7 +211,10 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 *                      (only applied when creating a new instance as opposed to retrieving an existing one)
 	 * @param typeCheckOnly whether the instance is obtained for a type check,
 	 *                      not for actual use
-	 *                      这个参数感觉很怪，意思是不用构建，我只是check 一下我要的 beanName 对应的 bean 是不是我传入的 type
+	 *                      意思是不用构建，我只是check 一下我要的 beanName 对应的 bean 是不是我传入的 type
+	 *
+	 *                      在后面如果发现单例解决循环失败后会查看已经依赖此单例的是否可删除来挽回【如果只是用来校验
+	 *                      type 说明可挽回，就抢救一下，如果是有用的，不好意思，直接报错退出程序】
 	 * @return an instance of the bean
 	 * @throws BeansException if the bean could not be created
 	 */
@@ -299,6 +302,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				checkMergedBeanDefinition(mbd, beanName, args);
 
 				// Guarantee initialization of beans that the current bean depends on.
+				// 看看有没有手动设置循环依赖，指定实例化、初始化顺序的那种，如果有是无法解决的
 				String[] dependsOn = mbd.getDependsOn();
 				if (dependsOn != null) {
 					for (String dep : dependsOn) {
@@ -316,8 +320,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 						registerDependentBean(dep, beanName);
 						try {
 							// 将 beanName 依赖的 bean 都初始化了
-							// 这里用 "初始化" 这个词有点微妙，如果是单例 bean 可能返回的是创建完成正在初始化的，如果是原型或者其他返回的应该是初始化完成的
-							// 递归调用嘛
+							// 实例化、初始化完成，能正常使用的
 							getBean(dep);
 						} catch (NoSuchBeanDefinitionException ex) {
 							throw new BeanCreationException(mbd.getResourceDescription(), beanName,
