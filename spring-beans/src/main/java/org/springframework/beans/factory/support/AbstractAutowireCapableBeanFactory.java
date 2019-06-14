@@ -1330,8 +1330,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		PropertyValues pvs = (mbd.hasPropertyValues() ? mbd.getPropertyValues() : null);
 
 		// 根据对应的注入方法进行注入
-		// 这个在创建 BD 时写的属性，类似于你打的@Resource/@Autowire标记；或者用 xml，在 Bean 标签下面的 property 标签
-		// TODO xml 我们是在 bean 标签配置的通过名称/类型注入。但是注解的话我们是各打各的标签的啊？？？？
+		// TODO 注意了，这个注入并不是我们熟悉的，想象中的那种注入
+		// 这里的注入主要是针对我们没配置的那些属性，作一些在此实例层面统一标准的注入。【极少使用】
+		//
+		// 我们在创建 BD 时写的属性，比如你在每个属性上打的@Resource/@Autowire标记；
+		// 或者用 xml，在 Bean 标签下面的 property 标签。这些东西都是在最后面 applyPropertyValues 实现注入的
 		if (mbd.getResolvedAutowireMode() == AUTOWIRE_BY_NAME || mbd.getResolvedAutowireMode() == AUTOWIRE_BY_TYPE) {
 			MutablePropertyValues newPvs = new MutablePropertyValues(pvs);
 			// Add property values based on autowire by name if applicable.
@@ -1383,7 +1386,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}
 		}
 
-		if (pvs != null) { // 之前处理好的属性还有，正好这里就写进去吧
+		// 默认属性写入，配置属性注入
+		if (pvs != null) {
 			applyPropertyValues(beanName, mbd, bw, pvs);
 		}
 	}
@@ -1401,16 +1405,17 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	// 根据名称注入，这个貌似不会报错，因为一个名称【不管是 id 还是 alias 】只能定位到一个 bean 实例，
 	// 如果有冲突，在生成 BeanDefinition 时就报错了。
 	//
-	// TODO 唯一的问题就是根据名称找不到符合条件的 bean ，这时竟然只是log一下，竟然没有结束？？？？
-	// 个人理解不应该是不进行 containsBean（）判断直接取吗？有问题直接抛出异常结束
+	// 这里找不到就是没有了，就不加进去，最后会有统一检测的
 	protected void autowireByName(
 			String beanName, AbstractBeanDefinition mbd, BeanWrapper bw, MutablePropertyValues pvs) {
-
+		// 之前也介绍过，我们这里两种模式，根据名称、类型找实例都是为了将 properties 标签中的 ref 换成实际的引用
+		// 所以只负责复杂的
 		String[] propertyNames = unsatisfiedNonSimpleProperties(mbd, bw);
 		for (String propertyName : propertyNames) {
 			if (containsBean(propertyName)) { // 属性名称就是用来查询的 bean 的 id 或者 alias
 				Object bean = getBean(propertyName);
 				pvs.add(propertyName, bean);
+				// 你引用了 propertyName 对应的实例，也就依赖了它。注册一下依赖关系
 				registerDependentBean(propertyName, beanName);
 				if (logger.isDebugEnabled()) {
 					logger.debug("Added autowiring by name from bean name '" + beanName +
@@ -1450,7 +1455,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		Set<String> autowiredBeanNames = new LinkedHashSet<>(4);
-		// 得到还未被满足的非简单类型的属性
+
+		// 得到还未被满足的非简单类型的属性，不再赘述
 		String[] propertyNames = unsatisfiedNonSimpleProperties(mbd, bw);
 		for (String propertyName : propertyNames) {
 			try {
@@ -1503,8 +1509,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		PropertyValues pvs = mbd.getPropertyValues();
 		PropertyDescriptor[] pds = bw.getPropertyDescriptors();
 		for (PropertyDescriptor pd : pds) {
+			// TODO 注意此处，这里返回的是未在 properties 中配置的那部分属性中的引用属性 （unsatisfied）
 			if (pd.getWriteMethod() != null && !isExcludedFromDependencyCheck(pd) && !pvs.contains(pd.getName()) &&
-					//TODO 这个参数有兴趣可以看看
 					!BeanUtils.isSimpleProperty(pd.getPropertyType())) {
 				result.add(pd.getName());
 			}
