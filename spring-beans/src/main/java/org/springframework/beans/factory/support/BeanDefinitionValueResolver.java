@@ -97,7 +97,7 @@ class BeanDefinitionValueResolver {
 	public Object resolveValueIfNecessary(Object argName, @Nullable Object value) {
 		// We must check each value to see whether it requires a runtime reference
 		// to another bean to be resolved.
-		if (value instanceof RuntimeBeanReference) {
+		if (value instanceof RuntimeBeanReference) {// 标签中的 ref
 			RuntimeBeanReference ref = (RuntimeBeanReference) value;
 			return resolveReference(argName, ref);
 		} else if (value instanceof RuntimeBeanNameReference) {
@@ -166,7 +166,7 @@ class BeanDefinitionValueResolver {
 				copy.put(propKey, propValue);
 			});
 			return copy;
-		} else if (value instanceof TypedStringValue) {
+		} else if (value instanceof TypedStringValue) { // 标签中的 value
 			// Convert value to target type here.
 			TypedStringValue typedStringValue = (TypedStringValue) value;
 			Object valueObject = evaluate(typedStringValue);
@@ -343,7 +343,7 @@ class BeanDefinitionValueResolver {
 				}
 				bean = this.beanFactory.getParentBeanFactory().getBean(refName);
 			} else {
-				bean = this.beanFactory.getBean(refName);
+				bean = this.beanFactory.getBean(refName); // 获得对应的 Bean 实例
 				this.beanFactory.registerDependentBean(refName, this.beanName);
 			}
 			if (bean instanceof NullBean) {

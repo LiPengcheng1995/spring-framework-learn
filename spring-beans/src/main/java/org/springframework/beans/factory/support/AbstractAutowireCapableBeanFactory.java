@@ -1405,11 +1405,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	// 根据名称注入，这个貌似不会报错，因为一个名称【不管是 id 还是 alias 】只能定位到一个 bean 实例，
 	// 如果有冲突，在生成 BeanDefinition 时就报错了。
 	//
-	// 这里找不到就是没有了，就不加进去，最后会有统一检测的
+	// 这里找不到就是没有了，就不加进去，如果设置了这个必传，最后会有统一检测并报错的
 	protected void autowireByName(
 			String beanName, AbstractBeanDefinition mbd, BeanWrapper bw, MutablePropertyValues pvs) {
-		// 之前也介绍过，我们这里两种模式，根据名称、类型找实例都是为了将 properties 标签中的 ref 换成实际的引用
-		// 所以只负责复杂的
+		// 之前也介绍过，我们这里两种模式，根据名称、类型找实例都是为了将未配置的复杂引用注入成对实际实例的引用
+		// 对于那种没配置简单的属性我们也无能为力，只能按照java对基本类型对默认值来喽～～～所以只负责复杂的
 		String[] propertyNames = unsatisfiedNonSimpleProperties(mbd, bw);
 		for (String propertyName : propertyNames) {
 			if (containsBean(propertyName)) { // 属性名称就是用来查询的 bean 的 id 或者 alias
@@ -1618,7 +1618,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @param bw       the BeanWrapper wrapping the target object
 	 * @param pvs      the new property values
 	 */
-	// TODO： 这个后面可以细看
+	// 把这些属性处理一下，然后灌到 bw 中
+	// 为了安全，用到深拷贝
+	// TODO： 还是有一些问题的，这个后面可以细看
 	protected void applyPropertyValues(String beanName, BeanDefinition mbd, BeanWrapper bw, PropertyValues pvs) {
 		if (pvs.isEmpty()) {
 			return;
@@ -1632,6 +1634,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		List<PropertyValue> original;
 
 		if (pvs instanceof MutablePropertyValues) {
+			// 入参的参数列表是经过未配置属性自动注入的新值
 			mpvs = (MutablePropertyValues) pvs;
 			if (mpvs.isConverted()) {
 				// Shortcut: use the pre-converted values as-is.
@@ -1644,7 +1647,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				}
 			}
 			original = mpvs.getPropertyValueList();
-		} else {
+		} else { // 入参的参数列表仅仅是从 mbd 中读出来，调用了后处理钩子的那些配置了的属性值
 			original = Arrays.asList(pvs.getPropertyValues());
 		}
 
@@ -1664,6 +1667,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			} else {
 				String propertyName = pv.getName();
 				Object originalValue = pv.getValue();
+				// 根据 PropertyValue 拿到对应的 value ，这里将那些
+				// 配置在 properties ref标签或者@Resource,@Autowire
+				// 标记的属性根据规则拿到的具体的实例值
 				Object resolvedValue = valueResolver.resolveValueIfNecessary(pv, originalValue);
 				Object convertedValue = resolvedValue;
 				boolean convertible = bw.isWritableProperty(propertyName) &&
