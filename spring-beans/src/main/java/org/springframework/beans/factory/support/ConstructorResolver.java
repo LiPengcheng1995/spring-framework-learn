@@ -349,11 +349,21 @@ class ConstructorResolver {
 	 * so trial and error is the only way to go here. The explicitArgs array may contain
 	 * argument values passed in programmatically via the corresponding getBean method.
 	 *
+	 *
 	 * @param beanName     the name of the bean
 	 * @param mbd          the merged bean definition for the bean
 	 * @param explicitArgs argument values passed in programmatically via the getBean
 	 *                     method, or {@code null} if none (-> use constructor argument values from bean definition)
 	 * @return a BeanWrapper for the new instance
+	 */
+	/*
+	 * 此接口使用 `mbd.getFactoryMethodName`指定的方法来进行指定 Bean 的实例化操作。约定如下：
+	 * * 如果 mbd 指定了`mbd.getFactoryBeanName`，则以获得的 String 为别名，创建对应的实例并
+	 *   找到实例方法
+	 * * 如果没有指定`mbd.getFactoryBeanName`，则认为采用的是 `mbd` 对应的 bean 的 class 的
+	 *   静态方法来构建实例
+	 *
+	 * 我们确定从那个类找什么样的方法之后开始根据参数一个一个试就行了。
 	 */
 	public BeanWrapper instantiateUsingFactoryMethod(
 			String beanName, RootBeanDefinition mbd, @Nullable Object[] explicitArgs) {
@@ -366,9 +376,9 @@ class ConstructorResolver {
 		boolean isStatic;
 
 		String factoryBeanName = mbd.getFactoryBeanName();
-		if (factoryBeanName != null) { // 是引用的 factory 的 bean ，不是静态的。
+		if (factoryBeanName != null) { // 根据约定走就行了
 			// 注意了：
-			// 1. 他是能生产 bean 的 factory
+			// 1. 他是能生产 bean 的一个类，所以我们也叫他 factory
 			// 2. 他也是一个 bean
 			// 所以，他是一个 factoryBean ，不一定是 FactoryBean 类型的。
 			if (factoryBeanName.equals(beanName)) {
@@ -418,6 +428,10 @@ class ConstructorResolver {
 			}
 		}
 
+		// 第一个条件的意思：虽然我们拿到了要用方法的 String 的名称，但是没通过缓存拿到对应的方法，
+		// 需要自行根据入参筛选一下
+		//
+		// TODO 第二个条件情况不清楚
 		if (factoryMethodToUse == null || argsToUse == null) {
 			// Need to determine the factory method...
 			// Try all methods with this name to see if they match the given arguments.
@@ -433,7 +447,8 @@ class ConstructorResolver {
 				}
 			}
 			Method[] candidates = candidateList.toArray(new Method[0]);
-			// 根据入参数量排序
+			// 先根据函数作用域从大向小的排【public->protected->private】
+			// 同等作用域，根据入参数量从大到小排列
 			AutowireUtils.sortFactoryMethods(candidates);
 
 			ConstructorArgumentValues resolvedValues = null;
@@ -444,7 +459,8 @@ class ConstructorResolver {
 			int minNrOfArgs;
 			if (explicitArgs != null) {
 				minNrOfArgs = explicitArgs.length;
-			} else {
+			} else {//没有入参来确定数量，就根据BD中定下的构造函数入参数量来看
+				// TODO 具体情况未知
 				// We don't have arguments passed in programmatically, so we need to resolve the
 				// arguments specified in the constructor arguments held in the bean definition.
 				if (mbd.hasConstructorArgumentValues()) {
@@ -466,12 +482,12 @@ class ConstructorResolver {
 					ArgumentsHolder argsHolder;
 
 					if (explicitArgs != null) {
-						// Explicit arguments given -> arguments length must match exactly.
+						// 指定入参的话，工厂方法的入参数量必须和指定的入参数量完全一致
 						if (paramTypes.length != explicitArgs.length) {
 							continue;
 						}
 						argsHolder = new ArgumentsHolder(explicitArgs);
-					} else {
+					} else { // 不是指定的入参
 						// Resolved constructor arguments: type conversion and/or autowiring necessary.
 						try {
 							String[] paramNames = null;
@@ -479,6 +495,7 @@ class ConstructorResolver {
 							if (pnd != null) {
 								paramNames = pnd.getParameterNames(candidate);
 							}
+							// TODO 看一下
 							argsHolder = createArgumentArray(
 									beanName, mbd, resolvedValues, bw, paramTypes, paramNames, candidate, autowiring);
 						} catch (UnsatisfiedDependencyException ex) {
@@ -493,10 +510,12 @@ class ConstructorResolver {
 							continue;
 						}
 					}
-
+					// 根据是否是严格匹配模式
+					// 并此方法入参参算一下匹配程度
 					int typeDiffWeight = (mbd.isLenientConstructorResolution() ?
 							argsHolder.getTypeDifferenceWeight(paramTypes) : argsHolder.getAssignabilityWeight(paramTypes));
 					// Choose this factory method if it represents the closest match.
+					// 这个方法的入参匹配程度比上一个匹配的还好，就把这个方法记录一下，冲掉上一个方法
 					if (typeDiffWeight < minTypeDiffWeight) {
 						factoryMethodToUse = candidate;
 						argsHolderToUse = argsHolder;
@@ -509,6 +528,9 @@ class ConstructorResolver {
 					// and eventually raise an ambiguity exception.
 					// However, only perform that check in non-lenient constructor resolution mode,
 					// and explicitly ignore overridden methods (with the same parameter signature).
+
+					// 这个方法算出来的匹配程度和上一个一样。。。。
+					// 如果是严格模式的话就把这些方法都记录下来，后面该报错报错
 					else if (factoryMethodToUse != null && typeDiffWeight == minTypeDiffWeight &&
 							!mbd.isLenientConstructorResolution() &&
 							paramTypes.length == factoryMethodToUse.getParameterCount() &&

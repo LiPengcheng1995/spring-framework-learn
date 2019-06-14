@@ -1112,7 +1112,6 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			synchronized (mbd.constructorArgumentLock) {
 				if (mbd.resolvedConstructorOrFactoryMethod != null) { // 缓存中有指定构造的方法【结合情景，这里应该是构造函数了】
 					resolved = true;
-					// TODO： 这个是干啥的，判断是否已得到"默认入参"？？？
 					autowireNecessary = mbd.constructorArgumentsResolved; // 构造的方法的入参可达
 				}
 			}
@@ -1310,7 +1309,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		boolean continueWithPropertyPopulation = true;
 
 		// mbd 不是合成的 ，而且有 InstantiationAwareBeanPostProcessor 来修饰属性，那就搞起
-		// TODO 这个创建实例的钩子是这里调用的？？理论上这个是用来填装属性的，
+		// TODO 这个需要参考后处理器那些东西，专门统一的梳理一下那些后处理器
 		if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
 			for (BeanPostProcessor bp : getBeanPostProcessors()) {
 				if (bp instanceof InstantiationAwareBeanPostProcessor) {
@@ -1323,14 +1322,16 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}
 		}
 
-		if (!continueWithPropertyPopulation) { // 不用再调用 InstantiationAwareBeanPostProcessor 来填充属性了
+		if (!continueWithPropertyPopulation) { // 不用再继续填充属性了
 			return;
 		}
 
+		// 获得 mbd 配置的那些要注入的属性的 key-value
 		PropertyValues pvs = (mbd.hasPropertyValues() ? mbd.getPropertyValues() : null);
 
 		// 根据对应的注入方法进行注入
-		// TODO 这个应该不是@Autowire，感觉怪怪的
+		// 这个在创建 BD 时写的属性，类似于你打的@Resource/@Autowire标记；或者用 xml，在 Bean 标签下面的 property 标签
+		// TODO xml 我们是在 bean 标签配置的通过名称/类型注入。但是注解的话我们是各打各的标签的啊？？？？
 		if (mbd.getResolvedAutowireMode() == AUTOWIRE_BY_NAME || mbd.getResolvedAutowireMode() == AUTOWIRE_BY_TYPE) {
 			MutablePropertyValues newPvs = new MutablePropertyValues(pvs);
 			// Add property values based on autowire by name if applicable.
@@ -1346,35 +1347,43 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			pvs = newPvs;
 		}
 
-		boolean hasInstAwareBpps = hasInstantiationAwareBeanPostProcessors(); // 根据情况看需不需要对即将填充进实例的属性进行处理一下子
-		boolean needsDepCheck = (mbd.getDependencyCheck() != AbstractBeanDefinition.DEPENDENCY_CHECK_NONE); // TODO 判断是否需要检测依赖 ？？？？
+		// 根据情况看需不需要对即将填充进实例的属性进行处理
+		boolean hasInstAwareBpps = hasInstantiationAwareBeanPostProcessors(); //有注册的钩子可以用
+		boolean needsDepCheck = (mbd.getDependencyCheck() != AbstractBeanDefinition.DEPENDENCY_CHECK_NONE);// 设置了需要依赖检测
+
+		// TODO： 这个条件实在是误导人
+		// 其实简化逻辑后就可以发现这两个条件仅用来执行 if (pvs == null)，这个也是怕后处理器或者依赖校验取到 null
+		// 实际上逻辑很简单：
+		// 1. 如果有可以对属性用的后处理器，调用一遍
+		// 2. 如果 mbd 中配置了要进行依赖检测，就检测一下
 		if (hasInstAwareBpps || needsDepCheck) {
-			if (pvs == null) { // TODO 这是怎么回事？？？应该不会为空吧，即使为空了，这个赋值应该也没有意义
+			if (pvs == null) { // 考虑到在进行依赖注入后拿到的结果可能是空？？注入失败？
 				pvs = mbd.getPropertyValues();
 			}
-			// 对属性处理一下子
+			// 这个就不深入了，里面的东西还挺多的，根据上下文猜一下：
+			// 这个应该是根据 Bean 对应的 Class ，直接获得这个里面所有的属性
 			PropertyDescriptor[] filteredPds = filterPropertyDescriptorsForDependencyCheck(bw, mbd.allowCaching);
+
+			// 调用后处理器修饰
 			if (hasInstAwareBpps) {
 				for (BeanPostProcessor bp : getBeanPostProcessors()) {
 					if (bp instanceof InstantiationAwareBeanPostProcessor) {
 						InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;
 						pvs = ibp.postProcessPropertyValues(pvs, filteredPds, bw.getWrappedInstance(), beanName);
-						if (pvs == null) {
+						if (pvs == null) { // 处理结果是 null ，没得填充了
 							return;
 						}
 					}
 				}
 			}
 
-			// 这个是做一下依赖检测，大概思路感觉是：
-			// pvs 里面的属性是不是我要检测的依赖的，比如我只检测简单类型的，那么 pvs 里面就不能有复杂类型的
-			// TODO ： 说服不了自己，后面刷刷博客看看吧
+			// 这个是做一下依赖检测，主要看一下有没有该设置的属性结果给空着的
 			if (needsDepCheck) {
 				checkDependencies(beanName, mbd, filteredPds, pvs);
 			}
 		}
 
-		if (pvs != null) { // 之前处理好的属性，这里填充进去吧
+		if (pvs != null) { // 之前处理好的属性还有，正好这里就写进去吧
 			applyPropertyValues(beanName, mbd, bw, pvs);
 		}
 	}
@@ -1570,14 +1579,18 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @param pvs      the property values to be applied to the bean
 	 * @see #isExcludedFromDependencyCheck(java.beans.PropertyDescriptor)
 	 */
+	// 思路很简单：我们上面 filteredPds 拿到了所有的属性，也就是这里的 pds ，我们和处理后得到的属性集 pvs 一一比对
+	// 找出可设置但是没设置的属性，看看它是不是在我们的检查范围内，如果在就报错，如果不在就忽略。
 	protected void checkDependencies(
 			String beanName, AbstractBeanDefinition mbd, PropertyDescriptor[] pds, PropertyValues pvs)
 			throws UnsatisfiedDependencyException {
 
-		int dependencyCheck = mbd.getDependencyCheck();
+		int dependencyCheck = mbd.getDependencyCheck(); // 获得我们配置的检测范围：所有/仅简单属性/仅复杂属性【对象引用】
 		for (PropertyDescriptor pd : pds) {
 			if (pd.getWriteMethod() != null && !pvs.contains(pd.getName())) {
-				boolean isSimple = BeanUtils.isSimpleProperty(pd.getPropertyType());
+				// 这个属性有，切可以设置，但是在处理后获得的要注入的属性中没有
+				boolean isSimple = BeanUtils.isSimpleProperty(pd.getPropertyType()); // 获得属性所属范围
+				// 看看所属范围是不是在我们要检查的范围里，在就报错。
 				boolean unsatisfied = (dependencyCheck == AbstractBeanDefinition.DEPENDENCY_CHECK_ALL) ||
 						(isSimple && dependencyCheck == AbstractBeanDefinition.DEPENDENCY_CHECK_SIMPLE) ||
 						(!isSimple && dependencyCheck == AbstractBeanDefinition.DEPENDENCY_CHECK_OBJECTS);
