@@ -495,7 +495,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	// 1. 创建【通过工厂方法、根据参数指定构造器、默认构造器】
 	// 2. 实例值填充【解决了依赖问题，也解决了循环依赖问题（单例的）】
 	// 3. Bean 实例初始化钩子调用
-	// 4. 检查循环依赖 TODO 这个没看太懂
+	// 4. 检查循环依赖
 	// 5. 注册 Bean 销毁方法/钩子
 	protected Object doCreateBean(final String beanName, final RootBeanDefinition mbd, final @Nullable Object[] args)
 			throws BeanCreationException {
