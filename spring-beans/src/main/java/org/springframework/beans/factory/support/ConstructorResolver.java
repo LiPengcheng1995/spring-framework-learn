@@ -795,7 +795,7 @@ class ConstructorResolver {
 			} else if (argValue instanceof BeanMetadataElement) { // bean 生成的源
 				argValue = valueResolver.resolveValueIfNecessary("constructor argument", argValue); // TODO： 看一下
 			} else if (argValue instanceof String) {
-				argValue = this.beanFactory.evaluateBeanDefinitionString((String) argValue, mbd);// 解析一下可能存在的表达式
+				argValue = this.beanFactory.evaluateBeanDefinitionString((String) argValue, mbd);// 解析一下可能存在的表达式，例如SpEL
 			}
 			Class<?> paramType = paramTypes[argIndex];
 			try {

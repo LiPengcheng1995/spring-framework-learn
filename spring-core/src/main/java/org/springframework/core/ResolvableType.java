@@ -275,6 +275,7 @@ public class ResolvableType implements Serializable {
 	 * @return a {@link ResolvableType} for the specific class and generics
 	 * @see #forClassWithGenerics(Class, Class...)
 	 */
+	//TODO： 感觉这是个不错的工具函数，可以用来确定范型类型
 	public static ResolvableType forClassWithGenerics(Class<?> clazz, ResolvableType... generics) {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.notNull(generics, "Generics array must not be null");
