@@ -1748,6 +1748,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	// 初始化 bean ，主要调用 bean 的初始化方法【如果这个 bean 实现了对应的接口】以及工厂的一些回调函数
 	protected Object initializeBean(final String beanName, final Object bean, @Nullable RootBeanDefinition mbd) {
 		// 根据 bean 实现的 Aware 接口【aware ---> 知道的，也即是说这个 bean 想要获得的一些信息】，将对应的信息填充进 bean 实例
+
+		// 其实就是约定了一些接口，你实现一下，后面 Spring 会专门把一些你想知道的东西给你扔进去，比如 id、类加载器、创建你这个Bean的工厂啥的
+		// TODO 专门介绍一下下
 		if (System.getSecurityManager() != null) {
 			AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
 				invokeAwareMethods(beanName, bean);
@@ -1759,7 +1762,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		Object wrappedBean = bean;
 		// bean 是系统生成的，不是合成的，就调用工厂注册的那些在初始化之前要调用的钩子
-		if (mbd == null || !mbd.isSynthetic()) {
+		// TODO mbd.isSynthetic() 这个一直有些懵逼
+		if (mbd == null || !mbd.isSynthetic()) { // 调用 Factory 中的那些个钩子
 			wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
 		}
 
@@ -1771,7 +1775,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 					(mbd != null ? mbd.getResourceDescription() : null),
 					beanName, "Invocation of init method failed", ex);
 		}
-		if (mbd == null || !mbd.isSynthetic()) {
+		if (mbd == null || !mbd.isSynthetic()) {// 调用 Factory 中的那些个钩子
 			wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
 		}
 
@@ -1840,9 +1844,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		if (mbd != null && bean.getClass() != NullBean.class) {
 			String initMethodName = mbd.getInitMethodName();
-			// 1. 有新的 initMethod
-			// 2. 且不是上面的接口中的 afterPropertiesSet
-			// 3. 而且不在 isExternallyManagedInitMethod 里面
+			// 1. 有配置对应的 initMethod，就继续调用
 			if (StringUtils.hasLength(initMethodName) &&
 					!(isInitializingBean && "afterPropertiesSet".equals(initMethodName)) &&
 					!mbd.isExternallyManagedInitMethod(initMethodName)) {
