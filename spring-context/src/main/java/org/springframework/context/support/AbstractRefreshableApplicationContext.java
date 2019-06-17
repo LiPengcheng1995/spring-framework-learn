@@ -124,6 +124,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 * bean factory, shutting down the previous bean factory (if any) and
 	 * initializing a fresh bean factory for the next phase of the context's lifecycle.
 	 */
+	// 清除之前的 BeanFactory ， 然后重新设置、加载 BeanFactory
 	@Override
 	protected final void refreshBeanFactory() throws BeansException {
 		if (hasBeanFactory()) {
@@ -131,10 +132,18 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 			closeBeanFactory();
 		}
 		try {
+			// 创建 DefaultListableBeanFactory
 			DefaultListableBeanFactory beanFactory = createBeanFactory();
+			// 这个是 DefaultListableBeanFactory 设置的全局缓存。使用弱引用，不会影响垃圾回首你，
+			// 后面有需要可以直接通过 id 得到对应的 BeanFactory 实例。
 			beanFactory.setSerializationId(getId());
+
+			// TODO 看看从哪增加的对 Autowired 之类的注解的支持
+			// 根据 context 的设置定制 BeanFactory 的属性
 			customizeBeanFactory(beanFactory);
+			// 从配置文件【或者其他的配置载体】加载 BD 并完成注册
 			loadBeanDefinitions(beanFactory);
+			// 保存此次加载的结果
 			synchronized (this.beanFactoryMonitor) {
 				this.beanFactory = beanFactory;
 			}
