@@ -7,7 +7,7 @@ import org.springframework.core.io.ClassPathResource;
 /**
  * Package: org.springframework
  * User: 李鹏程
- * Email: lipengcheng3@jd.com
+ * Email:
  * Date: 2019-05-08
  * Time: 20:57
  * Description:
