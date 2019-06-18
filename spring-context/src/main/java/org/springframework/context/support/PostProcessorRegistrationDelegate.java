@@ -44,11 +44,15 @@ final class PostProcessorRegistrationDelegate {
 		// Invoke BeanDefinitionRegistryPostProcessors first, if any.
 		Set<String> processedBeans = new HashSet<>();
 
+		// BeanDefinitionRegistry 类型的调用
 		if (beanFactory instanceof BeanDefinitionRegistry) {
 			BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
+			// 通过硬编码注册的 BeanFactoryPostProcessor
 			List<BeanFactoryPostProcessor> regularPostProcessors = new ArrayList<>();
+			// 所有的 BeanDefinitionRegistryPostProcessor
 			List<BeanDefinitionRegistryPostProcessor> registryProcessors = new ArrayList<>();
 
+			// 先把硬编码带进来的后处理器处理了，如果是 BeanDefinitionRegistryPostProcessor 就立即调用
 			for (BeanFactoryPostProcessor postProcessor : beanFactoryPostProcessors) {
 				if (postProcessor instanceof BeanDefinitionRegistryPostProcessor) {
 					BeanDefinitionRegistryPostProcessor registryProcessor =
@@ -67,6 +71,8 @@ final class PostProcessorRegistrationDelegate {
 			List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors = new ArrayList<>();
 
 			// First, invoke the BeanDefinitionRegistryPostProcessors that implement PriorityOrdered.
+			// 从 BeanFactory 中取出所有的 BeanDefinitionRegistryPostProcessor ，并进行调用实现 PriorityOrdered
+			// 的后处理器
 			String[] postProcessorNames =
 					beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 			for (String ppName : postProcessorNames) {
@@ -76,11 +82,13 @@ final class PostProcessorRegistrationDelegate {
 				}
 			}
 			sortPostProcessors(currentRegistryProcessors, beanFactory);
-			registryProcessors.addAll(currentRegistryProcessors);
+			registryProcessors.addAll(currentRegistryProcessors);// 存
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
 			currentRegistryProcessors.clear();
 
 			// Next, invoke the BeanDefinitionRegistryPostProcessors that implement Ordered.
+			// 从 BeanFactory 中取出所有的 BeanDefinitionRegistryPostProcessor ，并进行调用实现 Ordered
+			// 的后处理器
 			postProcessorNames = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 			for (String ppName : postProcessorNames) {
 				if (!processedBeans.contains(ppName) && beanFactory.isTypeMatch(ppName, Ordered.class)) {
@@ -99,13 +107,15 @@ final class PostProcessorRegistrationDelegate {
 				reiterate = false;
 				postProcessorNames = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 				for (String ppName : postProcessorNames) {
-					if (!processedBeans.contains(ppName)) {
+					if (!processedBeans.contains(ppName)) { // 用来找落网之鱼。。。
 						currentRegistryProcessors.add(beanFactory.getBean(ppName, BeanDefinitionRegistryPostProcessor.class));
 						processedBeans.add(ppName);
 						reiterate = true;
 					}
 				}
-				sortPostProcessors(currentRegistryProcessors, beanFactory);
+				// 拿到了所有的未调用过的 BeanDefinitionRegistryPostProcessor
+				// 这里拿到的应该是未实现 PriorityOrdered，Ordered 的
+				sortPostProcessors(currentRegistryProcessors, beanFactory); // 感觉强行排序，后面的 mbd 的这种就没排
 				registryProcessors.addAll(currentRegistryProcessors);
 				invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
 				currentRegistryProcessors.clear();
@@ -115,6 +125,8 @@ final class PostProcessorRegistrationDelegate {
 			invokeBeanFactoryPostProcessors(registryProcessors, beanFactory);
 			invokeBeanFactoryPostProcessors(regularPostProcessors, beanFactory);
 		} else {
+			// BeanFactoryPostProcessor 类型的调用
+			// 这里只调用了入参的那些，这是硬编码写死的。还得从注册的 bean 里看有没有漏掉的
 			// Invoke factory processors registered with the context instance.
 			invokeBeanFactoryPostProcessors(beanFactoryPostProcessors, beanFactory);
 		}
@@ -126,6 +138,9 @@ final class PostProcessorRegistrationDelegate {
 
 		// Separate between BeanFactoryPostProcessors that implement PriorityOrdered,
 		// Ordered, and the rest.
+
+		// TODO 和下面对 MBD 的处理一个套路【只是这里是调用，不是注册】，看是不是可以抽离使用模版方法进行简化和统一
+		// TODO 上面的 BeanDefinitionRegistry 不晓得有没有什么特殊之处，看是不是也能统一
 		List<BeanFactoryPostProcessor> priorityOrderedPostProcessors = new ArrayList<>();
 		List<String> orderedPostProcessorNames = new ArrayList<>();
 		List<String> nonOrderedPostProcessorNames = new ArrayList<>();
@@ -183,10 +198,10 @@ final class PostProcessorRegistrationDelegate {
 		List<String> orderedPostProcessorNames = new ArrayList<>();
 		List<String> nonOrderedPostProcessorNames = new ArrayList<>();
 		for (String ppName : postProcessorNames) {
-			if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) {
+			if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) { // 同优先级数字，这个优先
 				BeanPostProcessor pp = beanFactory.getBean(ppName, BeanPostProcessor.class);
 				priorityOrderedPostProcessors.add(pp);
-				if (pp instanceof MergedBeanDefinitionPostProcessor) {
+				if (pp instanceof MergedBeanDefinitionPostProcessor) { // mbd 的后处理器缓存起来
 					internalPostProcessors.add(pp);
 				}
 			} else if (beanFactory.isTypeMatch(ppName, Ordered.class)) {
@@ -197,18 +212,19 @@ final class PostProcessorRegistrationDelegate {
 		}
 
 		// First, register the BeanPostProcessors that implement PriorityOrdered.
-		sortPostProcessors(priorityOrderedPostProcessors, beanFactory);
-		registerBeanPostProcessors(beanFactory, priorityOrderedPostProcessors);
+		sortPostProcessors(priorityOrderedPostProcessors, beanFactory); // 对实现优先级的列表进行排序
+		registerBeanPostProcessors(beanFactory, priorityOrderedPostProcessors); // 排序之后按照顺序完成注册
 
 		// Next, register the BeanPostProcessors that implement Ordered.
 		List<BeanPostProcessor> orderedPostProcessors = new ArrayList<>();
 		for (String ppName : orderedPostProcessorNames) {
 			BeanPostProcessor pp = beanFactory.getBean(ppName, BeanPostProcessor.class);
 			orderedPostProcessors.add(pp);
-			if (pp instanceof MergedBeanDefinitionPostProcessor) {
+			if (pp instanceof MergedBeanDefinitionPostProcessor) { // mbd 的后处理器缓存起来
 				internalPostProcessors.add(pp);
 			}
 		}
+		// 一个套路，排序、注册
 		sortPostProcessors(orderedPostProcessors, beanFactory);
 		registerBeanPostProcessors(beanFactory, orderedPostProcessors);
 
@@ -217,18 +233,23 @@ final class PostProcessorRegistrationDelegate {
 		for (String ppName : nonOrderedPostProcessorNames) {
 			BeanPostProcessor pp = beanFactory.getBean(ppName, BeanPostProcessor.class);
 			nonOrderedPostProcessors.add(pp);
-			if (pp instanceof MergedBeanDefinitionPostProcessor) {
+			if (pp instanceof MergedBeanDefinitionPostProcessor) {// mbd 的后处理器缓存起来
 				internalPostProcessors.add(pp);
 			}
 		}
+		// 不需要排序了，直接注册
 		registerBeanPostProcessors(beanFactory, nonOrderedPostProcessors);
 
 		// Finally, re-register all internal BeanPostProcessors.
+		// mbd 的后处理器再次进行注册
+		// 这里存在后处理器的重复注册问题，所有的 mbd 的后处理器都注册了两次。进去看会发现，底层进行了去重操作，
+		// TODO 上层代码这么搞可能是为了逻辑清晰吧，毕竟按这种写法后面可以抽离成子函数
 		sortPostProcessors(internalPostProcessors, beanFactory);
 		registerBeanPostProcessors(beanFactory, internalPostProcessors);
 
 		// Re-register post-processor for detecting inner beans as ApplicationListeners,
 		// moving it to the end of the processor chain (for picking up proxies etc).
+		// 增加一个自动发现监听器的后处理器
 		beanFactory.addBeanPostProcessor(new ApplicationListenerDetector(applicationContext));
 	}
 

@@ -539,7 +539,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				postProcessBeanFactory(beanFactory);
 
 				// Invoke factory processors registered as beans in the context.
-				// 将在 BeanFactory 中注册的后处理器实例摘出来，实例化并保存。
+				// 调用保存在上下文中的用来处理 BeanFactory 的后处理器
+				// TODO 从哪把处理 BeanFactory 的后处理器摘出来的？？？
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				// Register bean processors that intercept bean creation.
@@ -684,7 +685,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// 可以在这里设置，也可配置成 CustomEditorConfigurer 创建 BD 注册到要添加的 BeanFactory 中
 		// context 会自动发现 BeanFactory 中注册成 Bean 的后处理器并完成创建、注册。
 		// 【明确目的角色后，使用地点大概也能猜到了吧。。。】
-		// 【在进行 Bean 的实例化时，使用的是 BeanWrapper ，在初始化它时会调用将 BeanFactory 中的东西注册给它】
+		// 【在进行 Bean 的实例化时，使用的是 BeanWrapper ，在初始化它时会调用将 BeanFactory 中的东西注册给它,后面它设置值时会自动进行合适的调用】
 		beanFactory.addPropertyEditorRegistrar(new ResourceEditorRegistrar(this, getEnvironment()));
 
 		// Configure the bean factory with context callbacks.
@@ -756,7 +757,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	// 实例化并调用所有注册的后处理器 Bean 。如果定义调用顺序，就按定义的顺序来。
 	// 必须在单例初始化之前调用
 	protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
-		// TODO 后面再深入
+		// 调用处理 BeanFactory 的后处理器
 		PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
 
 		// Detect a LoadTimeWeaver and prepare for weaving, if found in the meantime
@@ -912,7 +913,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	// 完成剩余的非懒加载单例 Bean 的实例化
 	protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
 		// Initialize conversion service for this context.
-		// TODO 后面看看这个是做什么的
+		// TODO 这个是做什么的？？ 在什么时候从 BeanFactory 中拉出来并发挥作用的？？？
+		// 从配置的 value 反序列化：
+		// 1. 使用我们上面的 PropertyEditorRegistrar 之类的来做
+		// 2. 使用 converter
 		if (beanFactory.containsBean(CONVERSION_SERVICE_BEAN_NAME) &&
 				beanFactory.isTypeMatch(CONVERSION_SERVICE_BEAN_NAME, ConversionService.class)) {
 			beanFactory.setConversionService(
@@ -922,11 +926,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// Register a default embedded value resolver if no bean post-processor
 		// (such as a PropertyPlaceholderConfigurer bean) registered any before:
 		// at this point, primarily for resolution in annotation attribute values.
+		// TODO 这个是做什么的？？ 在什么时候从 BeanFactory 中拉出来并发挥作用的？？？
 		if (!beanFactory.hasEmbeddedValueResolver()) {
 			beanFactory.addEmbeddedValueResolver(strVal -> getEnvironment().resolvePlaceholders(strVal));
 		}
 
 		// Initialize LoadTimeWeaverAware beans early to allow for registering their transformers early.
+		// 一个 aware ，用来获得项目启动时间的
 		String[] weaverAwareNames = beanFactory.getBeanNamesForType(LoadTimeWeaverAware.class, false, false);
 		for (String weaverAwareName : weaverAwareNames) {
 			getBean(weaverAwareName);
@@ -938,6 +944,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// Allow for caching all bean definition metadata, not expecting further changes.
 		// 不再允许 BD 的修改
 		// 【可以继续注册新的BD】
+		// 【不许修改注册的 bd ，但是你自己拉出来的 mbd 还是可以继续用后处理器修改的，改完还能自己缓存】
 		beanFactory.freezeConfiguration();
 
 		// 至此，完成对 BeanFactory 的所有初始化操作
@@ -959,6 +966,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 		// TODO 这个生命周期控制，还不清楚
 		// Initialize lifecycle processor for this context.
+		// LifecycleProcessor ，实现此接口，Spring 框架会在启动时调用它的 start ，结束时调用 stop
+		// 后台进程的优先选择。。。。。
 		initLifecycleProcessor();
 
 		// Propagate refresh to lifecycle processor first.
