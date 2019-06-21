@@ -54,6 +54,7 @@ public abstract class AopConfigUtils {
 	/**
 	 * Stores the auto proxy creator classes in escalation order.
 	 */
+	// 保存对应的代理创建器，list 中越靠后优先级越高
 	private static final List<Class<?>> APC_PRIORITY_LIST = new ArrayList<>(3);
 
 	static {
@@ -120,21 +121,28 @@ public abstract class AopConfigUtils {
 
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
 
+		// 已经创建过 Creator ，比较优先级
 		if (registry.containsBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME)) {
 			BeanDefinition apcDefinition = registry.getBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME);
 			if (!cls.getName().equals(apcDefinition.getBeanClassName())) {
+				//数字越大优先级越高
 				int currentPriority = findPriorityForClass(apcDefinition.getBeanClassName());
 				int requiredPriority = findPriorityForClass(cls);
 				if (currentPriority < requiredPriority) {
+					//传入的优先级比现在的高，改个class name 就行了， BD 么。。。。。别疑神疑鬼了
 					apcDefinition.setBeanClassName(cls.getName());
 				}
 			}
 			return null;
 		}
 
+		// 还没创建过，注册 bean
+		// TODO 我们在解析框架中无法决定是先扫描到 <aop:auto-proxy> 还是你配置的 creator bd ，但是结果一样
+		// 都是保存高优先级的 bd ，这就行了
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(cls);
 		beanDefinition.setSource(source);
 		beanDefinition.getPropertyValues().add("order", Ordered.HIGHEST_PRECEDENCE);
+		// 用来创建代理的，角色为后台服务
 		beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 		registry.registerBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME, beanDefinition);
 		return beanDefinition;

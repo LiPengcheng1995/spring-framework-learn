@@ -73,20 +73,24 @@ public abstract class AopNamespaceUtils {
 	public static void registerAspectJAnnotationAutoProxyCreatorIfNecessary(
 			ParserContext parserContext, Element sourceElement) {
 
+		// 确保对应的 Creator BD 已经创建
 		BeanDefinition beanDefinition = AopConfigUtils.registerAspectJAnnotationAutoProxyCreatorIfNecessary(
 				parserContext.getRegistry(), parserContext.extractSource(sourceElement));
+		// 将<aop:aspectj-autoproxy>中的属性同步至上面的 BD 中
 		useClassProxyingIfNecessary(parserContext.getRegistry(), sourceElement);
+		// TODO 此处注册有点不明所以
 		registerComponentIfNecessary(beanDefinition, parserContext);
 	}
 
 	private static void useClassProxyingIfNecessary(BeanDefinitionRegistry registry, @Nullable Element sourceElement) {
 		if (sourceElement != null) {
+			// 是否强制使用 CGLIB 创建代理【代理类，jdk是代理接口】
 			boolean proxyTargetClass = Boolean.parseBoolean(sourceElement.getAttribute(PROXY_TARGET_CLASS_ATTRIBUTE));
-			if (proxyTargetClass) {
+			if (proxyTargetClass) { // 如果设置了，就同步到对应的 BD 中
 				AopConfigUtils.forceAutoProxyCreatorToUseClassProxying(registry);
 			}
 			boolean exposeProxy = Boolean.parseBoolean(sourceElement.getAttribute(EXPOSE_PROXY_ATTRIBUTE));
-			if (exposeProxy) {
+			if (exposeProxy) { // 如果设置了，就同步到对应的 BD 中
 				AopConfigUtils.forceAutoProxyCreatorToExposeProxy(registry);
 			}
 		}

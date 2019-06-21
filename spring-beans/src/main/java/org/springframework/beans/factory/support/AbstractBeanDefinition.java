@@ -971,6 +971,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * by the application itself (for example, an infrastructure bean such
 	 * as a helper for auto-proxying, created through {@code <aop:config>}).
 	 */
+	// synthetic 在设置 AOP config 生成的切点 BD 时设置成了 true
 	public void setSynthetic(boolean synthetic) {
 		this.synthetic = synthetic;
 	}

@@ -40,7 +40,11 @@ class AspectJAutoProxyBeanDefinitionParser implements BeanDefinitionParser {
 	@Override
 	@Nullable
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
+		// 根据 <aop:aspectj-autoproxy> 的属性进行 Creator 的 BD 及相关配置的设置
 		AopNamespaceUtils.registerAspectJAnnotationAutoProxyCreatorIfNecessary(parserContext, element);
+
+		// 根据 <aop:aspectj-autoproxy> 的子节点进行 Creator 的 BD 及相关配置的完善
+		// 一般配置的是 Creator 的 BD 的属性自动注入
 		extendBeanDefinition(element, parserContext);
 		return null;
 	}

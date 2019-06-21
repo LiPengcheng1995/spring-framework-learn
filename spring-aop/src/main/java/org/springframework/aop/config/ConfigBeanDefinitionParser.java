@@ -97,10 +97,13 @@ class ConfigBeanDefinitionParser implements BeanDefinitionParser {
 		for (Element elt : childElts) {
 			String localName = parserContext.getDelegate().getLocalName(elt);
 			if (POINTCUT.equals(localName)) {
+				// 解析 <aop:pointcut> 标签，将生成的 BD 注册【职责：切面】
 				parsePointcut(elt, parserContext);
 			} else if (ADVISOR.equals(localName)) {
+				// 解析 <aop:advisor> 标签，将生成的 BD 注册【职责：结合上面的切点；完成切面逻辑的带入和切面的定义】
 				parseAdvisor(elt, parserContext);
 			} else if (ASPECT.equals(localName)) {
+				// 解析 <aop:aspect> 标签，将生成的 BD 注册【职责：这个标签可以看作上面两个标签的功能结合体】
 				parseAspect(elt, parserContext);
 			}
 		}
@@ -117,6 +120,7 @@ class ConfigBeanDefinitionParser implements BeanDefinitionParser {
 	 * @see AopNamespaceUtils
 	 */
 	private void configureAutoProxyCreator(ParserContext parserContext, Element element) {
+		// 注册 AspectJAutoProxyCreator BD
 		AopNamespaceUtils.registerAspectJAutoProxyCreatorIfNecessary(parserContext, element);
 	}
 
@@ -126,24 +130,28 @@ class ConfigBeanDefinitionParser implements BeanDefinitionParser {
 	 * with the supplied {@link BeanDefinitionRegistry}.
 	 */
 	private void parseAdvisor(Element advisorElement, ParserContext parserContext) {
+		// 创建 BD 并将 `advice-ref` 填进去，这个属性指明了在切点前/后/前+后以及要在形成的切面中做什么逻辑
 		AbstractBeanDefinition advisorDef = createAdvisorBeanDefinition(advisorElement, parserContext);
 		String id = advisorElement.getAttribute(ID);
 
 		try {
-			this.parseState.push(new AdvisorEntry(id));
+			// 解析出 id 并进行注册
+			this.parseState.push(new AdvisorEntry(id)); // 和之前解析默认的标签一样，算是做个记录
 			String advisorBeanName = id;
 			if (StringUtils.hasText(advisorBeanName)) {
 				parserContext.getRegistry().registerBeanDefinition(advisorBeanName, advisorDef);
 			} else {
 				advisorBeanName = parserContext.getReaderContext().registerWithGeneratedName(advisorDef);
 			}
-
+			// 将 `pointcut`,`pointcut-ref` 填进去
 			Object pointcut = parsePointcutProperty(advisorElement, parserContext);
 			if (pointcut instanceof BeanDefinition) {
 				advisorDef.getPropertyValues().add(POINTCUT, pointcut);
+				// TODO 注册组件是什么情况。。。。后面注意看一下
 				parserContext.registerComponent(
 						new AdvisorComponentDefinition(advisorBeanName, advisorDef, (BeanDefinition) pointcut));
 			} else if (pointcut instanceof String) {
+				// Bean 引用
 				advisorDef.getPropertyValues().add(POINTCUT, new RuntimeBeanReference((String) pointcut));
 				parserContext.registerComponent(
 						new AdvisorComponentDefinition(advisorBeanName, advisorDef));
@@ -177,7 +185,7 @@ class ConfigBeanDefinitionParser implements BeanDefinitionParser {
 
 		return advisorDefinition;
 	}
-
+	// 依次解析 <aop:aspect/> 下面所有有意义的节点
 	private void parseAspect(Element aspectElement, ParserContext parserContext) {
 		String aspectId = aspectElement.getAttribute(ID);
 		String aspectName = aspectElement.getAttribute(REF);
@@ -188,6 +196,7 @@ class ConfigBeanDefinitionParser implements BeanDefinitionParser {
 			List<BeanReference> beanReferences = new ArrayList<>();
 
 			List<Element> declareParents = DomUtils.getChildElementsByTagName(aspectElement, DECLARE_PARENTS);
+			// 解析下面的 <aop:declare-parents/> 节点，这个是增强后的代理类需要实现的接口
 			for (int i = METHOD_INDEX; i < declareParents.size(); i++) {
 				Element declareParentsElement = declareParents.get(i);
 				beanDefinitions.add(parseDeclareParents(declareParentsElement, parserContext));
@@ -195,6 +204,7 @@ class ConfigBeanDefinitionParser implements BeanDefinitionParser {
 
 			// We have to parse "advice" and all the advice kinds in one loop, to get the
 			// ordering semantics right.
+			// 解析下面的 <aop:before/> 那一堆节点，都是要切进去的逻辑和在切点的前后顺序。需要配合切点使用
 			NodeList nodeList = aspectElement.getChildNodes();
 			boolean adviceFoundAlready = false;
 			for (int i = 0; i < nodeList.getLength(); i++) {
@@ -210,6 +220,7 @@ class ConfigBeanDefinitionParser implements BeanDefinitionParser {
 						}
 						beanReferences.add(new RuntimeBeanReference(aspectName));
 					}
+					// 生成对应的 BD 引用
 					AbstractBeanDefinition advisorDefinition = parseAdvice(
 							aspectName, i, aspectElement, (Element) node, parserContext, beanDefinitions, beanReferences);
 					beanDefinitions.add(advisorDefinition);
@@ -220,6 +231,7 @@ class ConfigBeanDefinitionParser implements BeanDefinitionParser {
 					aspectElement, aspectId, beanDefinitions, beanReferences, parserContext);
 			parserContext.pushContainingComponent(aspectComponentDefinition);
 
+			// 解析下面的 <aop:pointcut id="" expression=""/> ，切点
 			List<Element> pointcuts = DomUtils.getChildElementsByTagName(aspectElement, POINTCUT);
 			for (Element pointcutElement : pointcuts) {
 				parsePointcut(pointcutElement, parserContext);
