@@ -58,7 +58,6 @@ public class AnnotationAwareAspectJAutoProxyCreator extends AspectJAwareAdvisorA
 	@Nullable
 	private BeanFactoryAspectJAdvisorsBuilder aspectJAdvisorsBuilder;
 
-
 	/**
 	 * Set a list of regex patterns, matching eligible @AspectJ bean names.
 	 * <p>Default is to consider all @AspectJ beans as eligible.

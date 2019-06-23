@@ -112,6 +112,9 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	private final Set<String> targetSourcedBeans = Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 	private final Map<Object, Object> earlyProxyReferences = new ConcurrentHashMap<>(16);
 	private final Map<Object, Class<?>> proxyTypes = new ConcurrentHashMap<>(16);
+	// 已经增强的 Bean 的 map ，key 是根据 beanName 生成的。 value 是这个 bean 已经增强的原因：
+	// False 表示此 bean 不需要增强。
+	// TODO True ？？
 	private final Map<Object, Boolean> advisedBeans = new ConcurrentHashMap<>(256);
 	/**
 	 * Default is global AdvisorAdapterRegistry

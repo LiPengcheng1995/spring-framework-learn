@@ -35,7 +35,9 @@ public class ProxyConfig implements Serializable {
 	 */
 	private static final long serialVersionUID = -8409359707199703185L;
 	boolean opaque = false;
+	// 是否将创建的代理对象放到一个 ThreadLocal 变量中扔出去，方便在某些情况下主动调用代理对象
 	boolean exposeProxy = false;
+	// 是否强制使用 CGlib
 	private boolean proxyTargetClass = false;
 	private boolean optimize = false;
 	private boolean frozen = false;

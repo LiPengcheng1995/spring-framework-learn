@@ -46,6 +46,7 @@ public class ProxyProcessorSupport extends ProxyConfig implements Ordered, BeanC
 	private int order = Ordered.LOWEST_PRECEDENCE;
 
 	@Nullable
+	// DefaultClassLoader 是兜底的，默认的应该是通过 aware 丢进来的
 	private ClassLoader proxyClassLoader = ClassUtils.getDefaultClassLoader();
 
 	private boolean classLoaderConfigured = false;
@@ -88,6 +89,7 @@ public class ProxyProcessorSupport extends ProxyConfig implements Ordered, BeanC
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		if (!this.classLoaderConfigured) {
+			// 注意，这里没有设置 classLoaderConfigured ，说明默认的、在没设置的情况下，用的是 aware 丢进来的
 			this.proxyClassLoader = classLoader;
 		}
 	}
@@ -103,21 +105,31 @@ public class ProxyProcessorSupport extends ProxyConfig implements Ordered, BeanC
 	 * @param proxyFactory the ProxyFactory for the bean
 	 */
 	protected void evaluateProxyInterfaces(Class<?> beanClass, ProxyFactory proxyFactory) {
+		// 得到此类实现的所有接口
 		Class<?>[] targetInterfaces = ClassUtils.getAllInterfacesForClass(beanClass, getProxyClassLoader());
 		boolean hasReasonableProxyInterface = false;
+		// 筛选一下接口，看有没有可以用来代理的，如果有就可以考虑 JDK 动态代理了。如果没有只能走 CGLIB
 		for (Class<?> ifc : targetInterfaces) {
+
+			// 1. 不能是那些 Spring 容器回调的接口
+			// 2. 不能是那些本地链接库的
+			// 3. 接口不能是空的
 			if (!isConfigurationCallbackInterface(ifc) && !isInternalLanguageInterface(ifc) &&
 					ifc.getMethods().length > 0) {
 				hasReasonableProxyInterface = true;
 				break;
 			}
 		}
+		// 如果有符合条件的，就都存起来
+		// TODO 这里没有专门筛选那些，看看后面根据存的接口使用时有没有过滤
+		// TODO 感觉这里做的不是特别好
 		if (hasReasonableProxyInterface) {
 			// Must allow for introductions; can't just set interfaces to the target's interfaces only.
 			for (Class<?> ifc : targetInterfaces) {
 				proxyFactory.addInterface(ifc);
 			}
 		} else {
+			// 没有符合条件的接口，直接设置用 CGLIB 生成代理
 			proxyFactory.setProxyTargetClass(true);
 		}
 	}
@@ -131,6 +143,7 @@ public class ProxyProcessorSupport extends ProxyConfig implements Ordered, BeanC
 	 * @param ifc the interface to check
 	 * @return whether the given interface is just a container callback
 	 */
+	// 判断这个接口是不是那种不能代理的，这些接口后面需要容器进行回调
 	protected boolean isConfigurationCallbackInterface(Class<?> ifc) {
 		return (InitializingBean.class == ifc || DisposableBean.class == ifc || Closeable.class == ifc ||
 				AutoCloseable.class == ifc || ObjectUtils.containsElement(ifc.getInterfaces(), Aware.class));
@@ -145,6 +158,7 @@ public class ProxyProcessorSupport extends ProxyConfig implements Ordered, BeanC
 	 * @param ifc the interface to check
 	 * @return whether the given interface is an internal language interface
 	 */
+	// 判断这种接口是不是那些已知的内部语言接口【就是非普通的接口。。。。本地链接库那种吧】
 	protected boolean isInternalLanguageInterface(Class<?> ifc) {
 		return (ifc.getName().equals("groovy.lang.GroovyObject") ||
 				ifc.getName().endsWith(".cglib.proxy.Factory") ||
