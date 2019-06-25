@@ -253,12 +253,14 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		// Create proxy here if we have a custom TargetSource.
 		// Suppresses unnecessary default instantiation of the target bean:
 		// The TargetSource will handle target instances in a custom fashion.
+		// TODO 获取目标源？后面看一下用法
 		TargetSource targetSource = getCustomTargetSource(beanClass, beanName);
 		if (targetSource != null) {
 			if (StringUtils.hasLength(beanName)) {
 				this.targetSourcedBeans.add(beanName);
 			}
 			Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(beanClass, beanName, targetSource);
+			// 创建代理对象
 			Object proxy = createProxy(beanClass, beanName, specificInterceptors, targetSource);
 			this.proxyTypes.put(cacheKey, proxy.getClass());
 			return proxy;
@@ -290,10 +292,17 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 *
 	 * @see #getAdvicesAndAdvisorsForBean
 	 */
+	// 如果要处理的 bean 实例被子类标识为需要代理的，就通过配置的拦截器创建代理
+	//
+	// 注意，这里的用词是拦截器，因为是通过回调完成的调用。过滤器 Filter 是和 servlet 容器切合到一起的，
+	// 是 tomcat 的东西
 	@Override
 	public Object postProcessAfterInitialization(@Nullable Object bean, String beanName) throws BeansException {
 		if (bean != null) {
+			// TODO 这里后面重新过一下 Spring 创建 Bean 实例的步骤，传进来的 beanName 是 alias 还是带 & 的还是单纯的 beanId
+			// TODO 如果不是单纯的 beanId ,这里可能会出错
 			Object cacheKey = getCacheKey(bean.getClass(), beanName);
+			// TODO 后续看一下这块缓存的存在意义
 			if (this.earlyProxyReferences.remove(cacheKey) != bean) {
 				return wrapIfNecessary(bean, beanName, cacheKey);
 			}
@@ -316,6 +325,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 */
 	protected Object getCacheKey(Class<?> beanClass, @Nullable String beanName) {
 		if (StringUtils.hasLength(beanName)) {
+			// 如果传入的实例是 BeanFactory 类型的，就在前面加上个 & 符号。
 			return (FactoryBean.class.isAssignableFrom(beanClass) ?
 					BeanFactory.FACTORY_BEAN_PREFIX + beanName : beanName);
 		} else {
@@ -331,28 +341,38 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 * @param cacheKey the cache key for metadata access
 	 * @return a proxy wrapping the bean, or the raw bean instance as-is
 	 */
+	// 如果这个 Bean 需要被代理，就代理一下
 	protected Object wrapIfNecessary(Object bean, String beanName, Object cacheKey) {
+		// this.targetSourcedBeans.contains(beanName) 表示此 beanName 对应的 bean 已经被处理过
+		// TODO 这种 aop 是针对单例的吗？如果涉及原型或者定制生命周期需要重复创建的实例怎么办？后续看看这块缓存是什么时候写的
 		if (StringUtils.hasLength(beanName) && this.targetSourcedBeans.contains(beanName)) {
 			return bean;
 		}
+		// 此 cacheKey 【通过 bean 实例得出】 之前做过判断，根据之前的判断是不用代理的
 		if (Boolean.FALSE.equals(this.advisedBeans.get(cacheKey))) {
 			return bean;
 		}
+		// 如果满足以下条件，则不对 bean 进行代理
+		// 1. 此类是基础类【配置代理相关的配置类】
+		// 2. 或者根据用户自定义的逻辑，不对它进行代理
 		if (isInfrastructureClass(bean.getClass()) || shouldSkip(bean.getClass(), beanName)) {
-			this.advisedBeans.put(cacheKey, Boolean.FALSE);
+			this.advisedBeans.put(cacheKey, Boolean.FALSE);// 这里做了缓存，方便有重复判断时加快速度
 			return bean;
 		}
 
 		// Create proxy if we have advice.
+		// 得到 bean 对应的增强方法，如果有需要增强的方法，则创建代理
 		Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);
 		if (specificInterceptors != DO_NOT_PROXY) {
-			this.advisedBeans.put(cacheKey, Boolean.TRUE);
+			this.advisedBeans.put(cacheKey, Boolean.TRUE);// 直接放进去，方便后续判断
+			// 已经确定要创建代理，将创建工作进行委托
 			Object proxy = createProxy(
 					bean.getClass(), beanName, specificInterceptors, new SingletonTargetSource(bean));
+			// TODO 看一下这个缓存是怎么做的？？代理临时生成的类可以复用吗？？
 			this.proxyTypes.put(cacheKey, proxy.getClass());
 			return proxy;
 		}
-
+		// 已经确定不用创建代理，缓存一下结果，方便后面的判断
 		this.advisedBeans.put(cacheKey, Boolean.FALSE);
 		return bean;
 	}
@@ -588,6 +608,8 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 * @see #DO_NOT_PROXY
 	 * @see #PROXY_WITHOUT_ADDITIONAL_INTERCEPTORS
 	 */
+	// 查询创建 bean 代理需要应用的增强器，
+	// 如果没有增强或者不需要创建代理就返回一个特定的值表示不需要
 	@Nullable
 	protected abstract Object[] getAdvicesAndAdvisorsForBean(Class<?> beanClass, String beanName,
 															 @Nullable TargetSource customTargetSource) throws BeansException;

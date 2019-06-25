@@ -224,6 +224,9 @@ public abstract class AopUtils {
 	 *                         for this bean includes any introductions
 	 * @return whether the pointcut can apply on any method
 	 */
+	// 拿到 targetClass 实现的所有接口 ，然后根据 pc 得到的类过滤器和方法过滤器进行筛选
+	// TODO ：这里挑几个类过滤器和方法过滤器的实现类。确定一下他们筛选的逻辑，方便调用。
+	// TODO：借此熟悉一下 AOP 的注解的东西，看看之前写的笔记
 	public static boolean canApply(Pointcut pc, Class<?> targetClass, boolean hasIntroductions) {
 		Assert.notNull(pc, "Pointcut must not be null");
 		if (!pc.getClassFilter().matches(targetClass)) {
@@ -306,8 +309,9 @@ public abstract class AopUtils {
 	 * @return sublist of Advisors that can apply to an object of the given class
 	 * (may be the incoming List as-is)
 	 */
+	// 从入参的增强器列表中筛出入参的class可用的
 	public static List<Advisor> findAdvisorsThatCanApply(List<Advisor> candidateAdvisors, Class<?> clazz) {
-		if (candidateAdvisors.isEmpty()) {
+		if (candidateAdvisors.isEmpty()) { // 没得选，就返回空
 			return candidateAdvisors;
 		}
 		List<Advisor> eligibleAdvisors = new ArrayList<>();

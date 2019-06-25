@@ -208,16 +208,18 @@ public abstract class BeanFactoryUtils {
 	 *                             "factory-bean" reference) for the type check. Note that FactoryBeans need to be
 	 *                             eagerly initialized to determine their type: So be aware that passing in "true"
 	 *                             for this flag will initialize FactoryBeans and "factory-bean" references.
+	 *                             是否将 FactoryBean 进行初始化并创建 Bean 来进行类型检测
 	 * @param type                 the type that beans must match
 	 * @return the array of matching bean names, or an empty array if none
 	 * @see ListableBeanFactory#getBeanNamesForType(Class, boolean, boolean)
 	 */
+	// 实现思路很简单，遍历 ListableBeanFactory 中的 mbd ，类型符合要求的就吐出来
 	public static String[] beanNamesForTypeIncludingAncestors(
 			ListableBeanFactory lbf, Class<?> type, boolean includeNonSingletons, boolean allowEagerInit) {
 
 		Assert.notNull(lbf, "ListableBeanFactory must not be null");
 		String[] result = lbf.getBeanNamesForType(type, includeNonSingletons, allowEagerInit);
-		if (lbf instanceof HierarchicalBeanFactory) {
+		if (lbf instanceof HierarchicalBeanFactory) {// Factory 是分级的，要拿到 Type 下所有的 beanName
 			HierarchicalBeanFactory hbf = (HierarchicalBeanFactory) lbf;
 			if (hbf.getParentBeanFactory() instanceof ListableBeanFactory) {
 				String[] parentResult = beanNamesForTypeIncludingAncestors(

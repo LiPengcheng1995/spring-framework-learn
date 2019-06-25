@@ -65,16 +65,21 @@ public class BeanFactoryAdvisorRetrievalHelper {
 	 * @return the list of {@link org.springframework.aop.Advisor} beans
 	 * @see #isEligibleBean
 	 */
+	// 找到当前 BeanFactory 中所有的增强器
+	// TODO 注意，因为声明增强器的方法太多了，我们挑通用逻辑。不支持 FactoryBean 和正在实例化的bean？？
 	public List<Advisor> findAdvisorBeans() {
 		// Determine list of advisor bean names, if not cached already.
 		String[] advisorNames = this.cachedAdvisorBeanNames;
 		if (advisorNames == null) {
 			// Do not initialize FactoryBeans here: We need to leave all regular beans
 			// uninitialized to let the auto-proxy creator apply to them!
+			// 得到实现了 Advisor 接口的所有 beanId
+			// 注意，这里传了 false ，不会对 FactoryBean 进行初始化后再比
 			advisorNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 					this.beanFactory, Advisor.class, true, false);
 			this.cachedAdvisorBeanNames = advisorNames;
 		}
+		// 没有定义增强器，直接返回
 		if (advisorNames.length == 0) {
 			return new ArrayList<>();
 		}
@@ -82,12 +87,14 @@ public class BeanFactoryAdvisorRetrievalHelper {
 		List<Advisor> advisors = new ArrayList<>();
 		for (String name : advisorNames) {
 			if (isEligibleBean(name)) {
+				// TODO 正在创建的增强器会跳过可以理解，直接用可能会报错；但是从业务上说这样对吗？少增了一部分接口增强会出问题的吧
 				if (this.beanFactory.isCurrentlyInCreation(name)) {
 					if (logger.isDebugEnabled()) {
 						logger.debug("Skipping currently created advisor '" + name + "'");
 					}
 				} else {
 					try {
+						// 都是创建好的或者还没开始创建的，把他们实例化然后收集起来
 						advisors.add(this.beanFactory.getBean(name, Advisor.class));
 					} catch (BeanCreationException ex) {
 						Throwable rootCause = ex.getMostSpecificCause();
@@ -119,6 +126,7 @@ public class BeanFactoryAdvisorRetrievalHelper {
 	 * @param beanName the name of the aspect bean
 	 * @return whether the bean is eligible
 	 */
+	// 判断 beanName 是否是合格的增强器 id
 	protected boolean isEligibleBean(String beanName) {
 		return true;
 	}

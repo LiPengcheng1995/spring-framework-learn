@@ -73,7 +73,10 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	protected Object[] getAdvicesAndAdvisorsForBean(
 			Class<?> beanClass, String beanName, @Nullable TargetSource targetSource) {
 
+		// 继续委托
 		List<Advisor> advisors = findEligibleAdvisors(beanClass, beanName);
+		// 如果没查到就返回特定值，方便判断
+		// TODO 感觉这种设计方法还是不太好的，一个返回值有了多种解读语意，应该是 Spring 为了接口简洁做的一些妥协
 		if (advisors.isEmpty()) {
 			return DO_NOT_PROXY;
 		}
@@ -92,8 +95,11 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	 * @see #extendAdvisors
 	 */
 	protected List<Advisor> findEligibleAdvisors(Class<?> beanClass, String beanName) {
+		// 获得所有的增强器
 		List<Advisor> candidateAdvisors = findCandidateAdvisors();
+		// 找到这个 bean 可以用的增强
 		List<Advisor> eligibleAdvisors = findAdvisorsThatCanApply(candidateAdvisors, beanClass, beanName);
+		// TODO 扩展？？
 		extendAdvisors(eligibleAdvisors);
 		if (!eligibleAdvisors.isEmpty()) {
 			eligibleAdvisors = sortAdvisors(eligibleAdvisors);
@@ -106,8 +112,10 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	 *
 	 * @return the List of candidate Advisors
 	 */
+	// 返回 auto-proxy 中配置的所有的增强器
 	protected List<Advisor> findCandidateAdvisors() {
 		Assert.state(this.advisorRetrievalHelper != null, "No BeanFactoryAdvisorRetrievalHelper available");
+		// 委托给专门负责增强器检索的类
 		return this.advisorRetrievalHelper.findAdvisorBeans();
 	}
 
@@ -121,13 +129,16 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	 * @return the List of applicable Advisors
 	 * @see ProxyCreationContext#getCurrentProxiedBeanName()
 	 */
+	// 检索增强器列表，找出所有可以用于 bean 代理的增强器
 	protected List<Advisor> findAdvisorsThatCanApply(
 			List<Advisor> candidateAdvisors, Class<?> beanClass, String beanName) {
-
+		// 使用 ThreadLocal 保存此线程正在生成代理的目标 beanId ，应该是为了监控及防止死循环吧
 		ProxyCreationContext.setCurrentProxiedBeanName(beanName);
 		try {
+			// 老套路，处理完信息记录、条件验证之后，将要干的活委托给专门干这个活的人
 			return AopUtils.findAdvisorsThatCanApply(candidateAdvisors, beanClass);
 		} finally {
+			// 清除之前存储的 beanId
 			ProxyCreationContext.setCurrentProxiedBeanName(null);
 		}
 	}
