@@ -149,6 +149,7 @@ public class DefaultResourceLoader implements ResourceLoader {
 		Assert.notNull(location, "Location must not be null");
 
 		for (ProtocolResolver protocolResolver : this.protocolResolvers) {
+			// 这个 resolve 是如果不匹配就直接返回 null ， 匹配了就处理然后返回
 			Resource resource = protocolResolver.resolve(location, this);
 			if (resource != null) {
 				return resource;

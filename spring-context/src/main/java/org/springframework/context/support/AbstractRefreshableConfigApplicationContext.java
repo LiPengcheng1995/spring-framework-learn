@@ -95,7 +95,7 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 			Assert.noNullElements(locations, "Config locations must not be null");
 			this.configLocations = new String[locations.length];
 			for (int i = 0; i < locations.length; i++) {
-				this.configLocations[i] = resolvePath(locations[i]).trim();
+				this.configLocations[i] = resolvePath(locations[i]).trim();// 对path中的一些环境变量引用做替换
 			}
 		} else {
 			this.configLocations = null;
