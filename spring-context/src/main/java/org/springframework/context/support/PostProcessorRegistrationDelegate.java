@@ -38,14 +38,16 @@ import java.util.*;
  */
 final class PostProcessorRegistrationDelegate {
 
+	// 调用后处理器对 BeanFactory 进行处理
+	// 入参为额外的后处理器，要对 BeanFactory 进行处理。此函数也要对 BeanFactory 中合适的后处理器类型进行发现并调用
 	public static void invokeBeanFactoryPostProcessors(
 			ConfigurableListableBeanFactory beanFactory, List<BeanFactoryPostProcessor> beanFactoryPostProcessors) {
 
 		// Invoke BeanDefinitionRegistryPostProcessors first, if any.
 		Set<String> processedBeans = new HashSet<>();
 
-		// BeanDefinitionRegistry 类型的调用
-		if (beanFactory instanceof BeanDefinitionRegistry) {
+		// 先调用一下传进来的额外的 BeanFactory 后处理器
+		if (beanFactory instanceof BeanDefinitionRegistry) {		// BeanDefinitionRegistry 类型的调用
 			BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
 			// 通过硬编码注册的 BeanFactoryPostProcessor
 			List<BeanFactoryPostProcessor> regularPostProcessors = new ArrayList<>();
@@ -68,6 +70,7 @@ final class PostProcessorRegistrationDelegate {
 			// uninitialized to let the bean factory post-processors apply to them!
 			// Separate between BeanDefinitionRegistryPostProcessors that implement
 			// PriorityOrdered, Ordered, and the rest.
+			// 这里没有对 BeanFactory 中的普通 bean 进行实例化，这样注册后处理器后能对所有的普通 bean 生效
 			List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors = new ArrayList<>();
 
 			// First, invoke the BeanDefinitionRegistryPostProcessors that implement PriorityOrdered.
