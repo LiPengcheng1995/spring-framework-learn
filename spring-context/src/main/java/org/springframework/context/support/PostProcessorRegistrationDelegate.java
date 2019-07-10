@@ -85,13 +85,14 @@ final class PostProcessorRegistrationDelegate {
 				}
 			}
 			sortPostProcessors(currentRegistryProcessors, beanFactory);
-			registryProcessors.addAll(currentRegistryProcessors);// 存
+			registryProcessors.addAll(currentRegistryProcessors);
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
-			currentRegistryProcessors.clear();
+			currentRegistryProcessors.clear();//注意这里清空了
 
 			// Next, invoke the BeanDefinitionRegistryPostProcessors that implement Ordered.
 			// 从 BeanFactory 中取出所有的 BeanDefinitionRegistryPostProcessor ，并进行调用实现 Ordered
 			// 的后处理器
+			// TODO  此处存在重复调用的低效问题，你要是硬说上面的后处理器可能会注册新的后处理器 BD，这我没话说，但是这种应该是很不合规的，也不必为了某些不规范操作做过多的兼容。
 			postProcessorNames = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 			for (String ppName : postProcessorNames) {
 				if (!processedBeans.contains(ppName) && beanFactory.isTypeMatch(ppName, Ordered.class)) {
@@ -123,9 +124,11 @@ final class PostProcessorRegistrationDelegate {
 				invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
 				currentRegistryProcessors.clear();
 			}
-
+			// TODO 到这里，将所有的 BeanDefinitionRegistryPostProcessor 调用完了
 			// Now, invoke the postProcessBeanFactory callback of all processors handled so far.
+			// TODO 此处存在后处理器重复调用问题
 			invokeBeanFactoryPostProcessors(registryProcessors, beanFactory);
+			// 把没调用过的 BeanFactoryPostProcessor 调用一遍
 			invokeBeanFactoryPostProcessors(regularPostProcessors, beanFactory);
 		} else {
 			// BeanFactoryPostProcessor 类型的调用
@@ -134,6 +137,7 @@ final class PostProcessorRegistrationDelegate {
 			invokeBeanFactoryPostProcessors(beanFactoryPostProcessors, beanFactory);
 		}
 
+		// 到这里，我们把传进来的额外的后处理器调用完了，现在从 BeanFactory 中找找看有没有注册的还能调用的
 		// Do not initialize FactoryBeans here: We need to leave all regular beans
 		// uninitialized to let the bean factory post-processors apply to them!
 		String[] postProcessorNames =

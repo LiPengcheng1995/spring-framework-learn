@@ -540,11 +540,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				postProcessBeanFactory(beanFactory);
 
 				// Invoke factory processors registered as beans in the context.
-				// 调用用来处理 BeanFactory 的后处理器
+				// 调用 BeanFactory 的后处理器对其进行处理
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				// Register bean processors that intercept bean creation.
 				// 注册那些拦截 Bean 创建的后处理器
+				// 注意，上面 invokeBeanFactoryPostProcessors（） 各种实例化各种注册，操作的都是针对 factory 的后处理器。这里才是针对 bean
+				// 的后处理器
 				registerBeanPostProcessors(beanFactory);
 
 				// Initialize message source for this context.
@@ -765,12 +767,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	// 必须在单例初始化之前调用
 	protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
 		// 调用处理 BeanFactory 的后处理器
-		// 这里将上下文中注册的后处理器也穿进去，一起用。看看吧，这里应该会把 BeanFactory 中定义的 BeanFactoryPostProcessor 一起
-		// 找出来调用
+		// 这里将上下文中注册的后处理器也穿进去，一起用。
+		// 这里先调用穿进去的后处理器，然后会把 BeanFactory 中定义的 BeanFactoryPostProcessor 一起找出来调用
 		PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
 
 		// Detect a LoadTimeWeaver and prepare for weaving, if found in the meantime
 		// (e.g. through an @Bean method registered by ConfigurationClassPostProcessor)
+		// TODO 这里不清楚是干什么的
 		if (beanFactory.getTempClassLoader() == null && beanFactory.containsBean(LOAD_TIME_WEAVER_BEAN_NAME)) {
 			beanFactory.addBeanPostProcessor(new LoadTimeWeaverAwareProcessor(beanFactory));
 			beanFactory.setTempClassLoader(new ContextTypeMatchClassLoader(beanFactory.getBeanClassLoader()));
@@ -889,8 +892,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * Doesn't affect other listeners, which can be added without being beans.
 	 */
 	// 我们之前把对应的监听器都放到 applicationListeners ，这里注册成正经发挥总用的监听器
-	// 当然，我们创建的 BD 里面类型合适的，也一同完成注册
-	// 完成注册后将积压的那些时间散发出去。
+	// 当然，我们创建的 BD 里面类型合适的，也一同完成注册。完成注册后将积压的那些事件散发出去。
+	// 注意：对于在后面又增加的 BD ，context 增加了一个后处理器，发现是监听器的实例初始化了，也会自动给注册进去。
 	protected void registerListeners() {
 		// Register statically specified listeners first.
 		for (ApplicationListener<?> listener : getApplicationListeners()) {
@@ -941,7 +944,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 
 		// Initialize LoadTimeWeaverAware beans early to allow for registering their transformers early.
-		// 一个 aware ，用来获得项目启动时间的
+		// 一个 aware ，用来获得项目启动时间的，在项目启动时对其进行初始化
 		String[] weaverAwareNames = beanFactory.getBeanNamesForType(LoadTimeWeaverAware.class, false, false);
 		for (String weaverAwareName : weaverAwareNames) {
 			getBean(weaverAwareName);
