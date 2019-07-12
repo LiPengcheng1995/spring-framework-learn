@@ -1327,6 +1327,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		// 获得 mbd 配置的那些要注入的属性的 key-value
+		// TODO 这里应该是和我们的 @Resource,@Autowire,@Qualifier 有关的
 		PropertyValues pvs = (mbd.hasPropertyValues() ? mbd.getPropertyValues() : null);
 
 		// 根据对应的注入方法进行注入

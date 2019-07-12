@@ -694,6 +694,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// context 会自动发现 BeanFactory 中注册成 Bean 的后处理器并完成创建、注册。
 		// 【明确目的角色后，使用地点大概也能猜到了吧。。。】
 		// 【在进行 Bean 的实例化时，使用的是 BeanWrapper ，在初始化它时会调用将 BeanFactory 中的东西注册给它,后面它设置值时会自动进行合适的调用】
+		// 【这个 ResourceEditorRegistrar 应该是资源引用相关的，将对应的资源 url 转换成对应的 Resource】
 		beanFactory.addPropertyEditorRegistrar(new ResourceEditorRegistrar(this, getEnvironment()));
 
 		// Configure the bean factory with context callbacks.
@@ -765,6 +766,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	// 实例化并调用所有注册的后处理器 Bean 。如果定义调用顺序，就按定义的顺序来。
 	// 必须在单例初始化之前调用
+
+	// TODO 常用的 BeanFactory 后处理器有 PropertyPlaceholderConfigurer ，他可以读取指定的 *.properties文件，并
+	// 遍历 BeanFactory 中的所有 BD ，对其所有相关属性属性进行变量值替换
+
 	protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
 		// 调用处理 BeanFactory 的后处理器
 		// 这里将上下文中注册的后处理器也穿进去，一起用。
@@ -925,7 +930,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	// 完成剩余的非懒加载单例 Bean 的实例化
 	protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
 		// Initialize conversion service for this context.
-		// TODO 这个是做什么的？？ 在什么时候从 BeanFactory 中拉出来并发挥作用的？？？
 		// 从配置的 value 反序列化：
 		// 1. 使用我们上面的 PropertyEditorRegistrar 之类的来做
 		// 2. 使用 converter

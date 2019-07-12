@@ -49,7 +49,7 @@ final class PostProcessorRegistrationDelegate {
 		// 先调用一下传进来的额外的 BeanFactory 后处理器
 		if (beanFactory instanceof BeanDefinitionRegistry) {		// BeanDefinitionRegistry 类型的调用
 			BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
-			// 通过硬编码注册的 BeanFactoryPostProcessor
+			// 硬编码的 BeanFactoryPostProcessor
 			List<BeanFactoryPostProcessor> regularPostProcessors = new ArrayList<>();
 			// 所有的 BeanDefinitionRegistryPostProcessor
 			List<BeanDefinitionRegistryPostProcessor> registryProcessors = new ArrayList<>();
@@ -219,10 +219,12 @@ final class PostProcessorRegistrationDelegate {
 		}
 
 		// First, register the BeanPostProcessors that implement PriorityOrdered.
+		// 注册所有实现 PriorityOrdered 的
 		sortPostProcessors(priorityOrderedPostProcessors, beanFactory); // 对实现优先级的列表进行排序
 		registerBeanPostProcessors(beanFactory, priorityOrderedPostProcessors); // 排序之后按照顺序完成注册
 
 		// Next, register the BeanPostProcessors that implement Ordered.
+		// 注册所有实现 Ordered 的
 		List<BeanPostProcessor> orderedPostProcessors = new ArrayList<>();
 		for (String ppName : orderedPostProcessorNames) {
 			BeanPostProcessor pp = beanFactory.getBean(ppName, BeanPostProcessor.class);
@@ -236,6 +238,7 @@ final class PostProcessorRegistrationDelegate {
 		registerBeanPostProcessors(beanFactory, orderedPostProcessors);
 
 		// Now, register all regular BeanPostProcessors.
+		// 注册普通的
 		List<BeanPostProcessor> nonOrderedPostProcessors = new ArrayList<>();
 		for (String ppName : nonOrderedPostProcessorNames) {
 			BeanPostProcessor pp = beanFactory.getBean(ppName, BeanPostProcessor.class);
@@ -249,7 +252,7 @@ final class PostProcessorRegistrationDelegate {
 
 		// Finally, re-register all internal BeanPostProcessors.
 		// mbd 的后处理器再次进行注册
-		// 这里存在后处理器的重复注册问题，所有的 mbd 的后处理器都注册了两次。进去看会发现，底层进行了去重操作，
+		// 这里存在后处理器的重复注册问题，所有的 mbd 的后处理器都注册了两次。进去看会发现，底层进行了去重操作，【移除了旧的】
 		// TODO 上层代码这么搞可能是为了逻辑清晰吧，毕竟按这种写法后面可以抽离成子函数
 		sortPostProcessors(internalPostProcessors, beanFactory);
 		registerBeanPostProcessors(beanFactory, internalPostProcessors);
