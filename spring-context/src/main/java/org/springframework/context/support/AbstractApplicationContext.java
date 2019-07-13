@@ -700,7 +700,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// Configure the bean factory with context callbacks.
 		// 和 context 上下文相关的东西，通过这个后处理器来完成注入
 		beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
-		// 上面专门设置了后处理器来注入，这里就不用再自动注入了
+		// 虽然Spring会让用户尽可能灵活，但是不能违背接口的初衷，Aware是用来让框架自己往里丢东西的，不能用来注入
 		beanFactory.ignoreDependencyInterface(EnvironmentAware.class);
 		beanFactory.ignoreDependencyInterface(EmbeddedValueResolverAware.class);
 		beanFactory.ignoreDependencyInterface(ResourceLoaderAware.class);
@@ -711,7 +711,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// BeanFactory interface not registered as resolvable type in a plain factory.
 		// MessageSource registered (and found for autowiring) as a bean.
 		// 设置一些和上下文相关的可以注入的类型和要注入的值
-		// 这些不是 aware ，所以只能这么搞。算是定制依赖注入的某些项吧。
+		// 这些属性不仅可以通过aware进行获取，也可以直接通过依赖注入进行获取，方便用户灵活使用
 		beanFactory.registerResolvableDependency(BeanFactory.class, beanFactory);
 		beanFactory.registerResolvableDependency(ResourceLoader.class, this);
 		beanFactory.registerResolvableDependency(ApplicationEventPublisher.class, this);

@@ -92,7 +92,6 @@ final class PostProcessorRegistrationDelegate {
 			// Next, invoke the BeanDefinitionRegistryPostProcessors that implement Ordered.
 			// 从 BeanFactory 中取出所有的 BeanDefinitionRegistryPostProcessor ，并进行调用实现 Ordered
 			// 的后处理器
-			// TODO  此处存在重复调用的低效问题，你要是硬说上面的后处理器可能会注册新的后处理器 BD，这我没话说，但是这种应该是很不合规的，也不必为了某些不规范操作做过多的兼容。
 			postProcessorNames = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 			for (String ppName : postProcessorNames) {
 				if (!processedBeans.contains(ppName) && beanFactory.isTypeMatch(ppName, Ordered.class)) {
@@ -126,7 +125,8 @@ final class PostProcessorRegistrationDelegate {
 			}
 			// TODO 到这里，将所有的 BeanDefinitionRegistryPostProcessor 调用完了
 			// Now, invoke the postProcessBeanFactory callback of all processors handled so far.
-			// TODO 此处存在后处理器重复调用问题
+			// TODO 这里没有重复调用问题，原因自己想
+			// 此处不存在重复调用的低效问题，这两种后处理器不一样，BeanDefinitionRegistryPostProcessor 有两个方法可以调用
 			invokeBeanFactoryPostProcessors(registryProcessors, beanFactory);
 			// 把没调用过的 BeanFactoryPostProcessor 调用一遍
 			invokeBeanFactoryPostProcessors(regularPostProcessors, beanFactory);
