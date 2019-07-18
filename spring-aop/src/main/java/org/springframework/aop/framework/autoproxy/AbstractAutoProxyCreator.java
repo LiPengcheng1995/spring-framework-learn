@@ -109,12 +109,20 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 * Logger available to subclasses
 	 */
 	protected final Log logger = LogFactory.getLog(getClass());
+	// 这个里面存的是通过 TargetSourceCreator 创建的 Bean 实例，不走 Spring 的创建实例、填值、初始化、提前暴露啥的，直接
+	// 一步走到最后的调用初始化之后的后处理器
 	private final Set<String> targetSourcedBeans = Collections.newSetFromMap(new ConcurrentHashMap<>(16));
+	// 这个是配合 BeanFactory 进行解决循环依赖时提供的
+	// key: 计算得到的 cacheKey
+	// value: 是完成创建实例后得到的地址。还没进行填值、初始化啥的
 	private final Map<Object, Object> earlyProxyReferences = new ConcurrentHashMap<>(16);
+	// 这个是将已经完成代理创建的对象进行缓存
+	// key： 计算得到的cacheKey
+	// value: 代理之后得到的 Class
 	private final Map<Object, Class<?>> proxyTypes = new ConcurrentHashMap<>(16);
 	// 已经增强的 Bean 的 map ，key 是根据 beanName 生成的。 value 是这个 bean 已经增强的原因：
-	// False 表示此 bean 不需要增强。
-	// TODO True ？？
+	// False 表示经过之前的判断，此 Bean 不需要增强。
+	// True 表示经过之前的判断，此 Bean 需要增强
 	private final Map<Object, Boolean> advisedBeans = new ConcurrentHashMap<>(256);
 	/**
 	 * Default is global AdvisorAdapterRegistry
@@ -232,20 +240,25 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	@Override
 	public Object getEarlyBeanReference(Object bean, String beanName) throws BeansException {
 		Object cacheKey = getCacheKey(bean.getClass(), beanName);
-		this.earlyProxyReferences.put(cacheKey, bean);
+		this.earlyProxyReferences.put(cacheKey, bean); // 这里的 Bean 是完成创建实例后得到的地址。还没进行填值、初始化啥的
 		return wrapIfNecessary(bean, beanName, cacheKey);
 	}
 
+	// 这里如果返回的不是空，就不进行接下来的创建实例和初始化操作的钩子了
+	// 短路到 postProcessAfterInitialization ，即初始化完成之后的后处理器，那里是可能进行代理创建的
 	@Override
 	public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
 		Object cacheKey = getCacheKey(beanClass, beanName);
 
+		// TODO targetSourcedBeans 中没有针对这个 Bean 的缓存？？？？？？
 		if (!StringUtils.hasLength(beanName) || !this.targetSourcedBeans.contains(beanName)) {
-			if (this.advisedBeans.containsKey(cacheKey)) {
+			if (this.advisedBeans.containsKey(cacheKey)) {//TODO 之前对此类 Bean 做过判断
 				return null;
 			}
+			// 1. AOP配置的基础类【不需进行AOP】
+			// 2. 子类自行定义一个判断条件，将自己不想进行代理的类摘出去
 			if (isInfrastructureClass(beanClass) || shouldSkip(beanClass, beanName)) {
-				this.advisedBeans.put(cacheKey, Boolean.FALSE);
+				this.advisedBeans.put(cacheKey, Boolean.FALSE); // 将这次做的判断进行缓存，方便下次处理时判断
 				return null;
 			}
 		}
@@ -253,17 +266,23 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		// Create proxy here if we have a custom TargetSource.
 		// Suppresses unnecessary default instantiation of the target bean:
 		// The TargetSource will handle target instances in a custom fashion.
-		// TODO 获取目标源？后面看一下用法
+		// 这里看一下，我们是不是配置了对应的 TargetSourceCreator 来生成此类实例，如果配置了的话就直接走配置生成可用的目标实例
+		// 缓存创建的实例，然后在这里创建完成代理，不再走 Spring 的创建实例、属性填充、初始化啥的操作了
+		//
+		// 这里主要是提供给使用者一个短路 Spring 基础流程的机会，方便进行定制
 		TargetSource targetSource = getCustomTargetSource(beanClass, beanName);
 		if (targetSource != null) {
+			// 存起来，表示下次处理 beanName ，直接走  TargetSourceCreator 并创建代理
 			if (StringUtils.hasLength(beanName)) {
 				this.targetSourcedBeans.add(beanName);
 			}
+			// 得到我们配置的 Advisor
 			Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(beanClass, beanName, targetSource);
-			// 创建代理对象
+			// 根据我们配置的 Advisor 创建代理对象
 			Object proxy = createProxy(beanClass, beanName, specificInterceptors, targetSource);
+			// TODO 缓存一下我们创建的代理类【这里不清楚有啥用】
 			this.proxyTypes.put(cacheKey, proxy.getClass());
-			return proxy;
+			return proxy;// 短路
 		}
 
 		return null;
@@ -296,13 +315,20 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	//
 	// 注意，这里的用词是拦截器，因为是通过回调完成的调用。过滤器 Filter 是和 servlet 容器切合到一起的，
 	// 是 tomcat 的东西
+	//
+	// 这里是将通过 Spring 创建实例、完成添值、初始化完成的对象实例或者前面postProcessBeforeInstantiation()短路
+	// 得到的完善的实例，在这里将需要进行代理的进行创建代理
+	//
+	// 注意，这里需要判断是否已经代理过，别在 postProcessBeforeInstantiation() 创建一次代理，这里再创建一次
 	@Override
 	public Object postProcessAfterInitialization(@Nullable Object bean, String beanName) throws BeansException {
 		if (bean != null) {
 			// TODO 这里后面重新过一下 Spring 创建 Bean 实例的步骤，传进来的 beanName 是 alias 还是带 & 的还是单纯的 beanId
 			// TODO 如果不是单纯的 beanId ,这里可能会出错
 			Object cacheKey = getCacheKey(bean.getClass(), beanName);
-			// TODO 后续看一下这块缓存的存在意义
+			// 这里意味着前面通过这个提前拿到的地址。在调用 postProcessAfterInitialization() 包裹时发现传进来的
+			// 已经和最开始的不一样了。
+			// TODO 感觉这里没必要继续执行了，反正都和最开始的不一样了，估计解决循环依赖是否成功全都依赖于是否有 Bean 引用了提前包喽出去的Bean
 			if (this.earlyProxyReferences.remove(cacheKey) != bean) {
 				return wrapIfNecessary(bean, beanName, cacheKey);
 			}
@@ -343,8 +369,9 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 */
 	// 如果这个 Bean 需要被代理，就代理一下
 	protected Object wrapIfNecessary(Object bean, String beanName, Object cacheKey) {
-		// this.targetSourcedBeans.contains(beanName) 表示此 beanName 对应的 bean 已经被处理过
-		// TODO 这种 aop 是针对单例的吗？如果涉及原型或者定制生命周期需要重复创建的实例怎么办？后续看看这块缓存是什么时候写的
+		// this.targetSourcedBeans.contains(beanName) 表示此 beanName 对应的 bean 没有走正经 Spring 创建实例的过程
+		// 直接搞定了。
+		// TODO 这种创建方式貌似不走AOP的东西
 		if (StringUtils.hasLength(beanName) && this.targetSourcedBeans.contains(beanName)) {
 			return bean;
 		}

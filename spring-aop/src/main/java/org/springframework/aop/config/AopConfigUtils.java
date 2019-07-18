@@ -137,7 +137,6 @@ public abstract class AopConfigUtils {
 		}
 
 		// 还没创建过，注册 bean
-		// TODO 我们在解析框架中无法决定是先扫描到 <aop:auto-proxy> 还是你配置的 creator bd ，但是结果一样
 		// 都是保存高优先级的 bd ，这就行了
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(cls);
 		beanDefinition.setSource(source);

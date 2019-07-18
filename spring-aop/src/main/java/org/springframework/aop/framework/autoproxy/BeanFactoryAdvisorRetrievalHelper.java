@@ -66,7 +66,9 @@ public class BeanFactoryAdvisorRetrievalHelper {
 	 * @see #isEligibleBean
 	 */
 	// 找到当前 BeanFactory 中所有的增强器
-	// TODO 注意，因为声明增强器的方法太多了，我们挑通用逻辑。不支持 FactoryBean 和正在实例化的bean？？
+	// TODO 注意，因为声明增强器的方法太多了，我们挑通用逻辑。
+	// 不支持 FactoryBean。。。。正常人打@Aspect注解也不会专门搞个 FactoryBean ， 保持类的功能纯粹吧
+	// TODO 不支持正在实例化的bean。。。。这个再看
 	public List<Advisor> findAdvisorBeans() {
 		// Determine list of advisor bean names, if not cached already.
 		String[] advisorNames = this.cachedAdvisorBeanNames;

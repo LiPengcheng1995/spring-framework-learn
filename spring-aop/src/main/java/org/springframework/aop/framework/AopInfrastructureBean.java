@@ -26,6 +26,7 @@ package org.springframework.aop.framework;
  * @see org.springframework.aop.scope.ScopedProxyFactoryBean
  * @since 2.0.3
  */
+// 一个标记接口，表示类和Spring的aop有关。不管是否切合 AspectJ 的切面，都不对此实例做代理
 public interface AopInfrastructureBean {
 
 }

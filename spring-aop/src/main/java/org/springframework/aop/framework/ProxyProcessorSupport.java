@@ -43,6 +43,7 @@ public class ProxyProcessorSupport extends ProxyConfig implements Ordered, BeanC
 	 * This should run after all other processors, so that it can just add
 	 * an advisor to existing proxies rather than double-proxy.
 	 */
+	// 在完成对代理对象的所有包装后，再包一层用户定义的切面逻辑
 	private int order = Ordered.LOWEST_PRECEDENCE;
 
 	@Nullable

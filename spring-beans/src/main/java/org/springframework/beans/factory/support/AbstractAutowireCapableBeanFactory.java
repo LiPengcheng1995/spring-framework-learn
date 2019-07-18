@@ -544,6 +544,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			// 把找到的 bean 实例增加到缓存到 ObjectFactory 里去
 			// 注意，这里使用在本 Factory 中注册的 SmartInstantiationAwareBeanPostProcessor 的方法获得
 			// 对应的提前引用
+			//
+			// TODO 注意，AOP的操作会在这里做点东西，可能提前先包一层，防止代理后发现堆地址变了，解决循环依赖失败
 			addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
 		}
 

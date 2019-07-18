@@ -93,6 +93,8 @@ public abstract class AopNamespaceUtils {
 			if (exposeProxy) { // 如果设置了，就同步到对应的 BD 中
 				AopConfigUtils.forceAutoProxyCreatorToExposeProxy(registry);
 			}
+
+			// 我们此函数设置的 BD 和上面注册的 BD 是一个，这个 BD 后面会进行代码的扫描和Advisor的创建
 		}
 	}
 
