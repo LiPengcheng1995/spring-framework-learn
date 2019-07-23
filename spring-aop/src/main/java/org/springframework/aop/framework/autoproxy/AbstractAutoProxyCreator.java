@@ -136,8 +136,8 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	/**
 	 * Default is no common interceptors
 	 */
-	private String[] interceptorNames = new String[0];
-	private boolean applyCommonInterceptorsFirst = true;
+	private String[] interceptorNames = new String[0]; // 通用 Advisor
+	private boolean applyCommonInterceptorsFirst = true; // 上面的通用 Advisor 是否放到调用链的最外面
 	@Nullable
 	private TargetSourceCreator[] customTargetSourceCreators;
 	@Nullable
@@ -501,7 +501,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		ProxyFactory proxyFactory = new ProxyFactory(); // 创建 ProxyFactory ，后面将用此对象通过传进去的信息决定 JDK/CGLIB 的选择
 		proxyFactory.copyFrom(this);
 
-		if (!proxyFactory.isProxyTargetClass()) {
+		if (!proxyFactory.isProxyTargetClass()) { // 只有在没有设置必须使用 CGLib 时才根据什么 BD字段、BD指定Class的接口进行判断
 			if (shouldProxyTargetClass(beanClass, beanName)) {
 				proxyFactory.setProxyTargetClass(true);
 			} else {
@@ -564,6 +564,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 */
 	protected Advisor[] buildAdvisors(@Nullable String beanName, @Nullable Object[] specificInterceptors) {
 		// Handle prototypes correctly...
+		// 把这里配置的通用 Advisor 加进来（interceptorNames 对应的那些）
 		Advisor[] commonInterceptors = resolveInterceptorNames();
 
 		List<Object> allInterceptors = new ArrayList<>();
@@ -586,6 +587,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 
 		Advisor[] advisors = new Advisor[allInterceptors.size()];
 		for (int i = 0; i < allInterceptors.size(); i++) {
+			// 这里是把各种乱七八糟的切面统一包装成 Advisor【尤其是入参的 specificInterceptors 里的】
 			advisors[i] = this.advisorAdapterRegistry.wrap(allInterceptors.get(i));
 		}
 		return advisors;
