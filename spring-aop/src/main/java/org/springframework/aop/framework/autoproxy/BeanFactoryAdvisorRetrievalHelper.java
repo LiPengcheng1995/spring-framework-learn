@@ -89,7 +89,9 @@ public class BeanFactoryAdvisorRetrievalHelper {
 		List<Advisor> advisors = new ArrayList<>();
 		for (String name : advisorNames) {
 			if (isEligibleBean(name)) {
-				// TODO 正在创建的增强器会跳过可以理解，直接用可能会报错；但是从业务上说这样对吗？少增了一部分接口增强会出问题的吧
+				// 等等，这个注意了，不是还没初始化的 Bean ，是正在初始化的。想一下，有没有什么问题？
+				// TODO 是不是为了避免循环依赖？？？毕竟这里是配置类，如果配置类依赖了马上要代理的单例（或者其他）类，解决循环依赖肯定是要失败的吧
+				// 所以，这里快刀斩乱麻，直接把这种危险依赖过滤掉了。鸡贼啊
 				if (this.beanFactory.isCurrentlyInCreation(name)) {
 					if (logger.isDebugEnabled()) {
 						logger.debug("Skipping currently created advisor '" + name + "'");

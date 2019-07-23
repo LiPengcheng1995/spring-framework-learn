@@ -241,7 +241,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	public Object getEarlyBeanReference(Object bean, String beanName) throws BeansException {
 		Object cacheKey = getCacheKey(bean.getClass(), beanName);
 		this.earlyProxyReferences.put(cacheKey, bean); // 这里的 Bean 是完成创建实例后得到的地址。还没进行填值、初始化啥的
-		return wrapIfNecessary(bean, beanName, cacheKey);
+		return wrapIfNecessary(bean, beanName, cacheKey); //TODO 这里提前进行了包装，如果是jdk动态代理，后面在注入时怎么玩？？？？
 	}
 
 	// 这里如果返回的不是空，就不进行接下来的创建实例和初始化操作的钩子了
@@ -328,7 +328,10 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 			Object cacheKey = getCacheKey(bean.getClass(), beanName);
 			// 这里意味着前面通过这个提前拿到的地址。在调用 postProcessAfterInitialization() 包裹时发现传进来的
 			// 已经和最开始的不一样了。
-			// TODO 感觉这里没必要继续执行了，反正都和最开始的不一样了，估计解决循环依赖是否成功全都依赖于是否有 Bean 引用了提前包喽出去的Bean
+			// TODO 这里能看出来和最开始暴露出去的不一样了，估计解决循环依赖是否成功只有依赖一下两种情况是否恰好发生：
+			// 1. 没有任何 Bean 引用了提前暴露出去的Bean
+			// 2. 在后面的 getEarlyBeanReference() 的处理过程中有操作继续包裹导致这里的不一致
+			// TODO 其实这里想多了，上面的都是建立在假设 earlyProxyReferences 就是暴露出去的对象，但是这里可以把它理解成一个记录是否提前创建代理的记录
 			if (this.earlyProxyReferences.remove(cacheKey) != bean) {
 				return wrapIfNecessary(bean, beanName, cacheKey);
 			}
