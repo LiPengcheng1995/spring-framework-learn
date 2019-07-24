@@ -124,7 +124,9 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 		if (logger.isDebugEnabled()) {
 			logger.debug("Creating JDK dynamic proxy: target source is " + this.advised.getTargetSource());
 		}
+		// 找出 JDK 动态代理要代理的接口
 		Class<?>[] proxiedInterfaces = AopProxyUtils.completeProxiedInterfaces(this.advised, true);
+		// 看我们找出的对应的接口的方法中有没有对 hashCode(),equals() 这种基本方法的覆盖
 		findDefinedEqualsAndHashCodeMethods(proxiedInterfaces);
 		return Proxy.newProxyInstance(classLoader, proxiedInterfaces, this);
 	}
@@ -160,6 +162,8 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 	 */
 	@Override
 	@Nullable
+	// 根据JDK动态代理的依赖包，这里是调用被代理类的方法时实际调用的方法，Spring在这里进行了复杂的操作
+	// 包括对我们之前梳理出的 Advisor 的链式调用
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		MethodInvocation invocation;
 		Object oldProxy = null;
@@ -170,6 +174,7 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 
 		try {
 			// 对一些Object默认方法的处理，如果目标对象没有特别实现，就在代理对象中自行调用默认逻辑
+			// 不要细究，关注主干逻辑
 			if (!this.equalsDefined && AopUtils.isEqualsMethod(method)) { //equals（）
 				// The target does not implement the equals(Object) method itself.
 				return equals(args[0]);
@@ -187,7 +192,7 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 
 			Object retVal;
 
-			if (this.advised.exposeProxy) { // 把当前的代理对象暴露出去
+			if (this.advised.exposeProxy) { // 如果有配置，就把当前的代理对象暴露出去
 				// Make invocation available if necessary.
 				oldProxy = AopContext.setCurrentProxy(proxy);
 				setProxyContext = true;
@@ -203,7 +208,7 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 
 			// Check whether we have any advice. If we don't, we can fallback on direct
 			// reflective invocation of the target, and avoid creating a MethodInvocation.
-			if (chain.isEmpty()) {
+			if (chain.isEmpty()) { // 不要纠结分支逻辑，我们看正常情况下的
 				// We can skip creating a MethodInvocation: just invoke the target directly
 				// Note that the final invoker must be an InvokerInterceptor so we know it does
 				// nothing but a reflective operation on the target, and no hot swapping or fancy proxying.
