@@ -77,6 +77,7 @@ public class BeanFactoryAdvisorRetrievalHelper {
 			// uninitialized to let the auto-proxy creator apply to them!
 			// 得到实现了 Advisor 接口的所有 beanId
 			// 注意，这里传了 false ，不会对 FactoryBean 进行初始化后再比
+			// TODO  存疑，我们打的是 @Aspect 注解，什么时候转化成对应的 Advisor 类型的Bean了
 			advisorNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 					this.beanFactory, Advisor.class, true, false);
 			this.cachedAdvisorBeanNames = advisorNames;
