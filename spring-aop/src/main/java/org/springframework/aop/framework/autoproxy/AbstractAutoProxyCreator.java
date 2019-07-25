@@ -241,7 +241,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	public Object getEarlyBeanReference(Object bean, String beanName) throws BeansException {
 		Object cacheKey = getCacheKey(bean.getClass(), beanName);
 		this.earlyProxyReferences.put(cacheKey, bean); // 这里的 Bean 是完成创建实例后得到的地址。还没进行填值、初始化啥的
-		return wrapIfNecessary(bean, beanName, cacheKey); //TODO 这里提前进行了包装，如果是jdk动态代理，后面在注入时怎么玩？？？？
+		return wrapIfNecessary(bean, beanName, cacheKey); //TODO 这里提前进行了包装，如果是jdk动态代理，后面在注入时怎么玩？？？？,看看代理之后会不会影响 getter/setter函数
 	}
 
 	// 这里如果返回的不是空，就不进行接下来的创建实例和初始化操作的钩子了
@@ -327,7 +327,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 			// TODO 如果不是单纯的 beanId ,这里可能会出错
 			Object cacheKey = getCacheKey(bean.getClass(), beanName);
 			// 这里意味着前面通过这个提前拿到的地址。在调用 postProcessAfterInitialization() 包裹时发现传进来的
-			// 已经和最开始的不一样了。
+			// 已经和最开始的不一样了。那就重新根据情况看是否要创建代理
 			// TODO 这里能看出来和最开始暴露出去的不一样了，估计解决循环依赖是否成功只有依赖一下两种情况是否恰好发生：
 			// 1. 没有任何 Bean 引用了提前暴露出去的Bean
 			// 2. 在后面的 getEarlyBeanReference() 的处理过程中有操作继续包裹导致这里的不一致
