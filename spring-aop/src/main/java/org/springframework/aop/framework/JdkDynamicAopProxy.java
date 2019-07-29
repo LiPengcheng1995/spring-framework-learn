@@ -200,6 +200,7 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 
 			// Get as late as possible to minimize the time we "own" the target,
 			// in case it comes from a pool.
+			// 这里可能从对象池里取，所以懒加载防止对对象池造成较大的压力
 			target = targetSource.getTarget();
 			Class<?> targetClass = (target != null ? target.getClass() : null);
 
@@ -238,6 +239,7 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 		} finally {
 			if (target != null && !targetSource.isStatic()) {
 				// Must have come from TargetSource.
+				// 释放target对象，防止从对象池取
 				targetSource.releaseTarget(target);
 			}
 			if (setProxyContext) {
