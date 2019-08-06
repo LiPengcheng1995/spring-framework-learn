@@ -98,20 +98,25 @@ public abstract class DataSourceUtils {
 	public static Connection doGetConnection(DataSource dataSource) throws SQLException {
 		Assert.notNull(dataSource, "No DataSource specified");
 
+		// 获得一个链接，如果本线程保存的变量中有就返回
 		ConnectionHolder conHolder = (ConnectionHolder) TransactionSynchronizationManager.getResource(dataSource);
+		// 本线程占了一个 Connector，重入次数+1，然后返回
 		if (conHolder != null && (conHolder.hasConnection() || conHolder.isSynchronizedWithTransaction())) {
 			conHolder.requested();
 			if (!conHolder.hasConnection()) {
 				logger.debug("Fetching resumed JDBC Connection from DataSource");
+				// 如果holder中的不可用，就再拿一个
 				conHolder.setConnection(fetchConnection(dataSource));
 			}
 			return conHolder.getConnection();
 		}
 		// Else we either got no holder or an empty thread-bound holder here.
 
+		// 此线程没有占用过Connector，从ds拿一个
 		logger.debug("Fetching JDBC Connection from DataSource");
 		Connection con = fetchConnection(dataSource);
 
+		// TODO 当前线程是否配置了事务【同一事务为了回滚，会将所有的数据库操作放在同一个Connector中】
 		if (TransactionSynchronizationManager.isSynchronizationActive()) {
 			try {
 				// Use same Connection for further JDBC actions within the transaction.
@@ -122,15 +127,18 @@ public abstract class DataSourceUtils {
 				} else {
 					holderToUse.setConnection(con);
 				}
-				holderToUse.requested();
+				holderToUse.requested();// 重入+1
+				// TODO 这里后面看事务时可以关注一下
 				TransactionSynchronizationManager.registerSynchronization(
 						new ConnectionSynchronization(holderToUse, dataSource));
 				holderToUse.setSynchronizedWithTransaction(true);
 				if (holderToUse != conHolder) {
+					// 这里保存到线程
 					TransactionSynchronizationManager.bindResource(dataSource, holderToUse);
 				}
 			} catch (RuntimeException ex) {
 				// Unexpected exception from external delegation call -> close Connection and rethrow.
+				// 和主逻辑的释放一样
 				releaseConnection(con, dataSource);
 				throw ex;
 			}
@@ -335,6 +343,7 @@ public abstract class DataSourceUtils {
 			return;
 		}
 		if (dataSource != null) {
+			// TODO 事务相关的，后面同一看一下
 			ConnectionHolder conHolder = (ConnectionHolder) TransactionSynchronizationManager.getResource(dataSource);
 			if (conHolder != null && connectionEquals(conHolder, con)) {
 				// It's the transactional Connection: Don't close it.
@@ -342,6 +351,7 @@ public abstract class DataSourceUtils {
 				return;
 			}
 		}
+		// 非事务相关的，调用完成根据情况看是归还线程池还是关闭
 		doCloseConnection(con, dataSource);
 	}
 
