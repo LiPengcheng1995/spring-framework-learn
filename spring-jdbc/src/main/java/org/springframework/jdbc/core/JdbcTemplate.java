@@ -610,16 +610,21 @@ public class JdbcTemplate extends JdbcAccessor implements JdbcOperations {
 		Assert.notNull(psc, "PreparedStatementCreator must not be null");
 		Assert.notNull(action, "Callback object must not be null");
 		if (logger.isDebugEnabled()) {
-			String sql = getSql(psc);
+			String sql = getSql(psc); // 拿到sql，打印日志【注意，如果设置了占位符？的话，这里是不会显示替换之后的结果的】
 			logger.debug("Executing prepared SQL statement" + (sql != null ? " [" + sql + "]" : ""));
 		}
 
+		// 拿到 Connection
 		Connection con = DataSourceUtils.getConnection(obtainDataSource());
 		PreparedStatement ps = null;
 		try {
+			// 得到 PreparedStatement
 			ps = psc.createPreparedStatement(con);
+			// 防止取出过多数据引起的问题，设置一些边界值
 			applyStatementSettings(ps);
+			// 调用传入的回调函数，在这里会完成拼接入参、调用查询数据库、拼接出参
 			T result = action.doInPreparedStatement(ps);
+			// 处理报警
 			handleWarnings(ps);
 			return result;
 		} catch (SQLException ex) {
@@ -632,6 +637,7 @@ public class JdbcTemplate extends JdbcAccessor implements JdbcOperations {
 			psc = null;
 			JdbcUtils.closeStatement(ps);
 			ps = null;
+			// 关闭 Connection，此处和 conHolder.requested() 呼应，减到0之后就 关闭/放回连接池
 			DataSourceUtils.releaseConnection(con, getDataSource());
 			con = null;
 			throw translateException("PreparedStatementCallback", sql, ex);
@@ -639,6 +645,7 @@ public class JdbcTemplate extends JdbcAccessor implements JdbcOperations {
 			if (psc instanceof ParameterDisposer) {
 				((ParameterDisposer) psc).cleanupParameters();
 			}
+			// 关闭 Statement 【关闭后这个Statement查出的ResultSet就不能继续滚动了】
 			JdbcUtils.closeStatement(ps);
 			DataSourceUtils.releaseConnection(con, getDataSource());
 		}
