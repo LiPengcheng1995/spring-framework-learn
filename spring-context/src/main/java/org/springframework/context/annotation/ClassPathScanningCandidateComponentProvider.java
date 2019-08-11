@@ -300,6 +300,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	 * @return a corresponding Set of autodetected bean definitions
 	 */
 	public Set<BeanDefinition> findCandidateComponents(String basePackage) {
+		// TODO 这里不清楚是做什么的，看样子和资源加载差不多，这两个应该是根据配置的资源加载方式的不同用了不同的API，不影响主逻辑，先看下面的吧
 		if (this.componentsIndex != null && indexSupportsIncludeFilters()) {
 			return addCandidateComponentsFromIndex(this.componentsIndex, basePackage);
 		} else {
@@ -403,11 +404,14 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 		return candidates;
 	}
 
+	// 这里很好理解，我们在编译打包后，所有的类就按照所属的包路径来放置了
 	private Set<BeanDefinition> scanCandidateComponents(String basePackage) {
 		Set<BeanDefinition> candidates = new LinkedHashSet<>();
 		try {
+			// 拼接一下要加载的资源路径表达式， classpath*:包名/**/*.class
 			String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
 					resolveBasePackage(basePackage) + '/' + this.resourcePattern;
+			// 获得路径下的所有资源列表，这里一个 Resource 就是一个 class 文件加载生成的
 			Resource[] resources = getResourcePatternResolver().getResources(packageSearchPath);
 			boolean traceEnabled = logger.isTraceEnabled();
 			boolean debugEnabled = logger.isDebugEnabled();
@@ -415,13 +419,19 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 				if (traceEnabled) {
 					logger.trace("Scanning " + resource);
 				}
-				if (resource.isReadable()) {
+				if (resource.isReadable()) { // 可读就进行读取、判断
 					try {
 						MetadataReader metadataReader = getMetadataReaderFactory().getMetadataReader(resource);
+						// 判断此类是否合法【符合我们设置的类型过滤，且不在排除范围之内】
 						if (isCandidateComponent(metadataReader)) {
+							// 封装成BD
 							ScannedGenericBeanDefinition sbd = new ScannedGenericBeanDefinition(metadataReader);
 							sbd.setResource(resource);
 							sbd.setSource(resource);
+							// 此类是否可以注册BD
+							// 1. 此类独立【它的实例化不需要依赖别的类】【不是那种非静态的内部类】
+							// 2. 此类被标记为是具体的【不是接口/抽象类】或者此类虽然不具体，但是可以通过look-up通过Spring补全
+							// 以上两点二选一，核心思想是这个类独立，可以进行实例化。
 							if (isCandidateComponent(sbd)) {
 								if (debugEnabled) {
 									logger.debug("Identified candidate component class: " + resource);
@@ -475,12 +485,12 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	 * @return whether the class qualifies as a candidate component
 	 */
 	protected boolean isCandidateComponent(MetadataReader metadataReader) throws IOException {
-		for (TypeFilter tf : this.excludeFilters) {
+		for (TypeFilter tf : this.excludeFilters) { // 如果它正好符合排除过滤器的条件，就返回false
 			if (tf.match(metadataReader, getMetadataReaderFactory())) {
 				return false;
 			}
 		}
-		for (TypeFilter tf : this.includeFilters) {
+		for (TypeFilter tf : this.includeFilters) { // 如果它符合过滤器条件，就判断一下目前的condition是否允许它生效，并根据情况返回
 			if (tf.match(metadataReader, getMetadataReaderFactory())) {
 				return isConditionMatch(metadataReader);
 			}
@@ -500,6 +510,8 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 			this.conditionEvaluator =
 					new ConditionEvaluator(getRegistry(), this.environment, this.resourcePatternResolver);
 		}
+		// 评估当前环境是否允许它生效
+		// TODO 后面有需要再折腾吧
 		return !this.conditionEvaluator.shouldSkip(metadataReader.getAnnotationMetadata());
 	}
 
