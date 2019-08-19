@@ -35,6 +35,8 @@ abstract class TransactionAttributeSourcePointcut extends StaticMethodMatcherPoi
 
 	@Override
 	public boolean matches(Method method, @Nullable Class<?> targetClass) {
+		// 如果要校验的class是null就直接失败
+		// 如果已经创建过代理（或者不希望创建代理手动实现了TransactionalProxy接口），返回失败，不再做匹配
 		if (targetClass != null && TransactionalProxy.class.isAssignableFrom(targetClass)) {
 			return false;
 		}

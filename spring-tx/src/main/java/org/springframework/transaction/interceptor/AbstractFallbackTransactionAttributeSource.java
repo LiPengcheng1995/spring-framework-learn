@@ -90,6 +90,7 @@ public abstract class AbstractFallbackTransactionAttributeSource implements Tran
 	@Override
 	@Nullable
 	public TransactionAttribute getTransactionAttribute(Method method, @Nullable Class<?> targetClass) {
+		// Object 类的方法，放过
 		if (method.getDeclaringClass() == Object.class) {
 			return null;
 		}
@@ -155,20 +156,23 @@ public abstract class AbstractFallbackTransactionAttributeSource implements Tran
 
 		// The method may be on an interface, but we need attributes from the target class.
 		// If the target class is null, the method will be unchanged.
+		// 拨开AOP的代理，拿到我们写的最具体的方法【就是有逻辑、有实现的方法】
 		Method specificMethod = AopUtils.getMostSpecificMethod(method, targetClass);
 
 		// First try is the method in the target class.
+		// 拿到方法对应的打标属性
 		TransactionAttribute txAttr = findTransactionAttribute(specificMethod);
 		if (txAttr != null) {
 			return txAttr;
 		}
 
 		// Second try is the transaction attribute on the target class.
+		// 如果方法上没有，就从类上找
 		txAttr = findTransactionAttribute(specificMethod.getDeclaringClass());
 		if (txAttr != null && ClassUtils.isUserLevelMethod(method)) {
 			return txAttr;
 		}
-
+		// 我们拿到的方法具体实现是 specificMethod ，如果它们不相等，代表这个方法有对应的接口声明，就再上去找
 		if (specificMethod != method) {
 			// Fallback is to look at the original method.
 			txAttr = findTransactionAttribute(method);

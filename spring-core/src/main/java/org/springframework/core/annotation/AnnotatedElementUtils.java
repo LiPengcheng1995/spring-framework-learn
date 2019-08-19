@@ -614,8 +614,11 @@ public class AnnotatedElementUtils {
 	public static AnnotationAttributes findMergedAnnotationAttributes(AnnotatedElement element,
 																	  Class<? extends Annotation> annotationType, boolean classValuesAsString, boolean nestedAnnotationsAsMap) {
 
+		// 这里从传入的元素上找指定的打标属性
+		// TODO 在这里停一下吧
 		AnnotationAttributes attributes = searchWithFindSemantics(element, annotationType, null,
 				new MergedAnnotationAttributesProcessor(classValuesAsString, nestedAnnotationsAsMap));
+		// 对其中的变量引用啥的，替换一下
 		AnnotationUtils.postProcessAnnotationAttributes(element, attributes, classValuesAsString, nestedAnnotationsAsMap);
 		return attributes;
 	}
