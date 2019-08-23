@@ -118,6 +118,12 @@ public interface PlatformTransactionManager {
 	 * @throws IllegalTransactionStateException if the given transaction
 	 *                                          is already completed (that is, committed or rolled back)
 	 */
+	// 回滚事务，如果事务不是专门新创建的，只设置回滚标示，方便其他的事务执行逻辑继续操作。
+	// 如果前面有事务因此阻塞，唤醒之前久的事务
+	//
+	// 如果提交时抛出异常，不会调用回滚
+	//
+	// 如果在提交失败后调用回滚会抛出异常
 	void rollback(TransactionStatus status) throws TransactionException;
 
 }

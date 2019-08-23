@@ -843,21 +843,26 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 			boolean unexpectedRollback = unexpected;
 
 			try {
+				// 如果是新的同步的话，调用同步的钩子
 				triggerBeforeCompletion(status);
 
 				if (status.hasSavepoint()) {
+					// 如果有保存点，就回滚至保存点
 					if (status.isDebug()) {
 						logger.debug("Rolling back transaction to savepoint");
 					}
 					status.rollbackToHeldSavepoint();
 				} else if (status.isNewTransaction()) {
+					// 如果是新事务，直接回滚
 					if (status.isDebug()) {
 						logger.debug("Initiating transaction rollback");
 					}
 					doRollback(status);
 				} else {
 					// Participating in larger transaction
+					// 是更大事务的一部分【从逻辑上来说存在嵌套，但是不支持保存点和创建嵌套那种】
 					if (status.hasTransaction()) {
+						// status 设置了只设置回滚标志位 或者全局设置了只设置回滚标志位
 						if (status.isLocalRollbackOnly() || isGlobalRollbackOnParticipationFailure()) {
 							if (status.isDebug()) {
 								logger.debug("Participating transaction failed - marking existing transaction as rollback-only");
@@ -881,6 +886,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 				throw ex;
 			}
 
+			// 调用同步的结束后的钩子
 			triggerAfterCompletion(status, TransactionSynchronization.STATUS_ROLLED_BACK);
 
 			// Raise UnexpectedRollbackException if we had a global rollback-only marker
