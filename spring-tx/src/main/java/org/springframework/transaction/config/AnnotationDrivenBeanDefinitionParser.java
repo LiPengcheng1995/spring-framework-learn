@@ -107,6 +107,7 @@ class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 			// 如果没有手动注册或者扫描 TRANSACTION_ADVISOR_BEAN_NAME ，就在这里进行注册
 			// TODO 这里是进行对应元素解析时进行调用，后面可能会有 TRANSACTION_ADVISOR_BEAN_NAME 的声明
 			// 这里猜测应该对覆盖式声明有兼容，根据之前看的框架的东西，同id同类，应该没问题
+			// TODO 正常我们就不会对这个BD进行注册，基本就靠这里了
 			String txAdvisorBeanName = TransactionManagementConfigUtils.TRANSACTION_ADVISOR_BEAN_NAME;
 			if (!parserContext.getRegistry().containsBeanDefinition(txAdvisorBeanName)) {
 				// 对封装了事务逻辑的切面进行声明、注册

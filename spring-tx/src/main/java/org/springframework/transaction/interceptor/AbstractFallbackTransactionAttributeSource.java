@@ -109,8 +109,10 @@ public abstract class AbstractFallbackTransactionAttributeSource implements Tran
 		} else {
 			// We need to work it out.
 			TransactionAttribute txAttr = computeTransactionAttribute(method, targetClass);
+			// 将上面计算出的结果记录下来
 			// Put it in the cache.
 			if (txAttr == null) {
+				// 这个方法没有对应的打标属性
 				this.attributeCache.put(cacheKey, NULL_TRANSACTION_ATTRIBUTE);
 			} else {
 				String methodIdentification = ClassUtils.getQualifiedMethodName(method, targetClass);

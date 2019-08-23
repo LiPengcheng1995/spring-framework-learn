@@ -41,6 +41,8 @@ abstract class TransactionAttributeSourcePointcut extends StaticMethodMatcherPoi
 			return false;
 		}
 		TransactionAttributeSource tas = getTransactionAttributeSource();
+		// 这个当成使用 或操作 的短路去看吧，避免空指针
+		// 应该在后面的增强器中对空属性的情况做了剔除，但是还是觉得多此一举，直接把空属性的剔除掉，后面不就可以避免重复判断了？
 		return (tas == null || tas.getTransactionAttribute(method, targetClass) != null);
 	}
 
