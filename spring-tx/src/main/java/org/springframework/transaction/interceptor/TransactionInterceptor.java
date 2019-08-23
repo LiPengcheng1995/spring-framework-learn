@@ -94,6 +94,10 @@ public class TransactionInterceptor extends TransactionAspectSupport implements 
 		// Work out the target class: may be {@code null}.
 		// The TransactionAttributeSource should be passed the target class
 		// as well as the method, which may be from an interface.
+		// 根据当前情况得到道理的目标对象。
+
+		// 后面要根据当前情况获得该目标（方法级别）对应的事务配置（就是你的@Transactional中的属性）
+		// （事务配置的获得规则前面进行了获得并缓存）
 		Class<?> targetClass = (invocation.getThis() != null ? AopUtils.getTargetClass(invocation.getThis()) : null);
 
 		// Adapt to TransactionAspectSupport's invokeWithinTransaction...
