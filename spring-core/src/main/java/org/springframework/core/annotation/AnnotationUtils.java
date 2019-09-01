@@ -1150,12 +1150,15 @@ public abstract class AnnotationUtils {
 	 * @see #postProcessAnnotationAttributes
 	 * @since 4.2
 	 */
+	// 遍历返回对应注解中的属性。
+	// 默认值返回的是对值的引用，需要调用 postProcessAnnotationAttributes 后处理器来把那些引用替换成可用的值
 	static AnnotationAttributes retrieveAnnotationAttributes(@Nullable Object annotatedElement, Annotation annotation,
 															 boolean classValuesAsString, boolean nestedAnnotationsAsMap) {
 
 		Class<? extends Annotation> annotationType = annotation.annotationType();
 		AnnotationAttributes attributes = new AnnotationAttributes(annotationType);
 
+		// 这里是抽离出来的通用类，用反射调用注解中的方法，拿到值
 		for (Method method : getAttributeMethods(annotationType)) {
 			try {
 				Object attributeValue = method.invoke(annotation);

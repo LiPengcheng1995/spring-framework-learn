@@ -614,8 +614,11 @@ public class AnnotatedElementUtils {
 	public static AnnotationAttributes findMergedAnnotationAttributes(AnnotatedElement element,
 																	  Class<? extends Annotation> annotationType, boolean classValuesAsString, boolean nestedAnnotationsAsMap) {
 
+		// 这里从传入的元素上找指定的打标属性
+		// 看一下这里的搜索策略
 		AnnotationAttributes attributes = searchWithFindSemantics(element, annotationType, null,
 				new MergedAnnotationAttributesProcessor(classValuesAsString, nestedAnnotationsAsMap));
+		// 对其中的变量引用啥的，替换一下
 		AnnotationUtils.postProcessAnnotationAttributes(element, attributes, classValuesAsString, nestedAnnotationsAsMap);
 		return attributes;
 	}
@@ -1011,6 +1014,8 @@ public class AnnotatedElementUtils {
 	 * @return the result of the processor (potentially {@code null})
 	 * @since 4.3
 	 */
+	// 找出 annotationName 或者 annotationType 指定的注解
+	// 如果注释是可重复的（@Repeatable），就用 containerType 类型进行存储。如果传null就认为注解是不能重复的
 	@Nullable
 	private static <T> T searchWithFindSemantics(AnnotatedElement element,
 												 @Nullable Class<? extends Annotation> annotationType, @Nullable String annotationName,
@@ -1079,6 +1084,7 @@ public class AnnotatedElementUtils {
 								}
 							}
 							// Repeatable annotations in container?
+							// TODO 先不看那些可重复的，后面再完善
 							else if (currentAnnotationType == containerType) {
 								for (Annotation contained : getRawAnnotationsFromContainer(element, annotation)) {
 									T result = processor.process(element, contained, metaDepth);
@@ -1092,6 +1098,7 @@ public class AnnotatedElementUtils {
 						}
 					}
 
+					// TODO 先不看那些可重复的，后面再完善
 					// Recursively search in meta-annotations
 					for (Annotation annotation : annotations) {
 						Class<? extends Annotation> currentAnnotationType = annotation.annotationType();

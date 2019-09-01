@@ -35,10 +35,14 @@ abstract class TransactionAttributeSourcePointcut extends StaticMethodMatcherPoi
 
 	@Override
 	public boolean matches(Method method, @Nullable Class<?> targetClass) {
+		// 如果要校验的class是null就直接失败
+		// 如果已经创建过代理（或者不希望创建代理手动实现了TransactionalProxy接口），返回失败，不再做匹配
 		if (targetClass != null && TransactionalProxy.class.isAssignableFrom(targetClass)) {
 			return false;
 		}
 		TransactionAttributeSource tas = getTransactionAttributeSource();
+		// 这个当成使用 或操作 的短路去看吧，避免空指针
+		// 应该在后面的增强器中对空属性的情况做了剔除，但是还是觉得多此一举，直接把空属性的剔除掉，后面不就可以避免重复判断了？
 		return (tas == null || tas.getTransactionAttribute(method, targetClass) != null);
 	}
 
