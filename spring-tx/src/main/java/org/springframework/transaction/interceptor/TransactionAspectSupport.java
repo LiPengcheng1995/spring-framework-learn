@@ -463,7 +463,6 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 		// If no name specified, apply method identification as transaction name.
 		// 如果事务属性没有指定名称，就用前面生成的唯一标识
 		if (txAttr != null && txAttr.getName() == null) {
-			// TODO 这个是什么方法来着。。。。。
 			txAttr = new DelegatingTransactionAttribute(txAttr) {
 				@Override
 				public String getName() {
