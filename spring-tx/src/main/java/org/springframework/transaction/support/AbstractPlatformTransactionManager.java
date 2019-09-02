@@ -358,7 +358,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 		}
 
 		if (isExistingTransaction(transaction)) {
-			// 如果当前线程已经占有锁
+			// 如果当前线程已经占有事务
 			// Existing transaction found -> check propagation behavior to find out how to behave.
 			return handleExistingTransaction(definition, transaction, debugEnabled);
 		}
@@ -598,6 +598,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 					// 将阻塞事务
 					suspendedResources = doSuspend(transaction);
 				}
+				// 清理开启同步时设置的属性，并将其保存进阻塞链表的节点中，返回阻塞链表的头
 				String name = TransactionSynchronizationManager.getCurrentTransactionName();
 				TransactionSynchronizationManager.setCurrentTransactionName(null);
 				boolean readOnly = TransactionSynchronizationManager.isCurrentTransactionReadOnly();
@@ -615,7 +616,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 			}
 		} else if (transaction != null) {
 			// Transaction active but no synchronization active.
-			// 有事务存在，但是同步并不处于激活状态
+			// 有事务存在，但是同步并不处于激活状态，不用在专门刷同步的那些配置变量了，直接阻塞返回
 			// 阻塞事务
 			Object suspendedResources = doSuspend(transaction);
 			return new SuspendedResourcesHolder(suspendedResources);
