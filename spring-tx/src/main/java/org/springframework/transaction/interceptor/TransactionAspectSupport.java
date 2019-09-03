@@ -308,6 +308,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 				throw ex;
 			} finally {
 				// 清除 TransactionInfo 信息
+				// 感觉没啥必要，是为后面准备的扩展吗
 				cleanupTransactionInfo(txInfo);
 			}
 			// 提交 TransactionInfo 【事务】
@@ -558,7 +559,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 				logger.trace("Completing transaction for [" + txInfo.getJoinpointIdentification() +
 						"] after exception: " + ex);
 			}
-			// 如果事务属性配置了【事务存在】且表明事务要针对此异常回滚，就回滚
+			// 如果事务存在【事务属性配置了】且表明事务要针对此异常回滚，就回滚
 			if (txInfo.transactionAttribute != null && txInfo.transactionAttribute.rollbackOn(ex)) {
 				try {
 					txInfo.getTransactionManager().rollback(txInfo.getTransactionStatus());
