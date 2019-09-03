@@ -380,7 +380,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 				definition.getPropagationBehavior() == TransactionDefinition.PROPAGATION_NESTED) {
 			// 此类三种情况要求如果没有事务就新建事务
 
-			// 阻塞空事务（拿到一个阻塞的holder，方便后面拉链）
+			// 阻塞空事务（拿到一个阻塞的holder，后面用来唤醒）
 			SuspendedResourcesHolder suspendedResources = suspend(null);
 			if (debugEnabled) {
 				logger.debug("Creating new transaction with name [" + definition.getName() + "]: " + definition);
@@ -419,11 +419,12 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 			TransactionDefinition definition, Object transaction, boolean debugEnabled)
 			throws TransactionException {
 
+		// 不支持事务，有事务就抛出异常
 		if (definition.getPropagationBehavior() == TransactionDefinition.PROPAGATION_NEVER) {
 			throw new IllegalTransactionStateException(
 					"Existing transaction found for transaction marked with propagation 'never'");
 		}
-
+		// 不支持事务，有就阻塞
 		if (definition.getPropagationBehavior() == TransactionDefinition.PROPAGATION_NOT_SUPPORTED) {
 			if (debugEnabled) {
 				logger.debug("Suspending current transaction");
@@ -434,6 +435,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 					definition, null, false, newSynchronization, debugEnabled, suspendedResources);
 		}
 
+		// 必须新的，阻塞现有的
 		if (definition.getPropagationBehavior() == TransactionDefinition.PROPAGATION_REQUIRES_NEW) {
 			if (debugEnabled) {
 				logger.debug("Suspending current transaction, creating new transaction with name [" +
@@ -453,6 +455,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 			}
 		}
 
+		// 有就内嵌，没有就创建
 		if (definition.getPropagationBehavior() == TransactionDefinition.PROPAGATION_NESTED) {
 			if (!isNestedTransactionAllowed()) {
 				throw new NestedTransactionNotSupportedException(
@@ -462,6 +465,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 			if (debugEnabled) {
 				logger.debug("Creating nested transaction with name [" + definition.getName() + "]");
 			}
+			// 默认使用保存点
 			if (useSavepointForNestedTransaction()) {
 				// Create savepoint within existing Spring-managed transaction,
 				// through the SavepointManager API implemented by TransactionStatus.
@@ -471,6 +475,8 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 				status.createAndHoldSavepoint();
 				return status;
 			} else {
+				// 不支持保存点，就在不阻塞现有事务的基础上直接占用新的 Connection 进行事务，
+				// TODO  这里存在配置覆盖，原有事务、同步设置到 ThreadLocal 中的东西会被覆盖。
 				// Nested transaction through nested begin and commit/rollback calls.
 				// Usually only for JTA: Spring synchronization might get activated here
 				// in case of a pre-existing JTA transaction.
@@ -641,11 +647,12 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 	protected final void resume(@Nullable Object transaction, @Nullable SuspendedResourcesHolder resourcesHolder)
 			throws TransactionException {
 
-		if (resourcesHolder != null) {
+		if (resourcesHolder != null) { // 保存事务和同步信息的holder不为空
 			Object suspendedResources = resourcesHolder.suspendedResources;
-			if (suspendedResources != null) {
+			if (suspendedResources != null) { // 将事务的资源绑定到 ThreadLocal 中【这里就是数据源和 Connection 的映射关系】
 				doResume(transaction, suspendedResources);
 			}
+			// 把节点中存储的配置进行还原
 			List<TransactionSynchronization> suspendedSynchronizations = resourcesHolder.suspendedSynchronizations;
 			if (suspendedSynchronizations != null) {
 				TransactionSynchronizationManager.setActualTransactionActive(resourcesHolder.wasActive);
