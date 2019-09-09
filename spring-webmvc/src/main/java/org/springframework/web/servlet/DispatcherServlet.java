@@ -285,6 +285,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		// Load default strategy implementations from properties file.
 		// This is currently strictly internal and not meant to be customized
 		// by application developers.
+		// 从默认路径的配置文件中加载默认配置，兜底方案，老套路
 		try {
 			ClassPathResource resource = new ClassPathResource(DEFAULT_STRATEGIES_PATH, DispatcherServlet.class);
 			defaultStrategies = PropertiesLoaderUtils.loadProperties(resource);

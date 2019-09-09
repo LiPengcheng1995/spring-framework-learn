@@ -296,6 +296,7 @@ public class ContextLoader {
 		try {
 			// Store context in local instance variable, to guarantee that
 			// it is available on ServletContext shutdown.
+			// 拿到 Spring 的上下文
 			if (this.context == null) {
 				this.context = createWebApplicationContext(servletContext);
 			}
@@ -360,11 +361,13 @@ public class ContextLoader {
 	 * @see ConfigurableWebApplicationContext
 	 */
 	protected WebApplicationContext createWebApplicationContext(ServletContext sc) {
+		// 通过 web.xml 或者配置文件中的配置，得到要使用的 Spring 上下文 domain 的 Java 类型
 		Class<?> contextClass = determineContextClass(sc);
 		if (!ConfigurableWebApplicationContext.class.isAssignableFrom(contextClass)) {
 			throw new ApplicationContextException("Custom context class [" + contextClass.getName() +
 					"] is not of type [" + ConfigurableWebApplicationContext.class.getName() + "]");
 		}
+		// 实例化，使用 Spring 的工具方法，和我们之前的注册什么的无关
 		return (ConfigurableWebApplicationContext) BeanUtils.instantiateClass(contextClass);
 	}
 
@@ -430,9 +433,9 @@ public class ContextLoader {
 		if (env instanceof ConfigurableWebEnvironment) {
 			((ConfigurableWebEnvironment) env).initPropertySources(sc, null);
 		}
-		// 定制？
+		// 将 ServletContext 纳入 Spring 上下文的管理中，并对 Spring 上下文进行设置
 		customizeContext(sc, wac);
-		// 刷新
+		// 刷新【之前看过了】
 		wac.refresh();
 	}
 
@@ -476,6 +479,7 @@ public class ContextLoader {
 		}
 
 		AnnotationAwareOrderComparator.sort(this.contextInitializers);
+		// 这里直接将初始化的钩子调用了
 		for (ApplicationContextInitializer<ConfigurableApplicationContext> initializer : this.contextInitializers) {
 			initializer.initialize(wac);
 		}
@@ -488,6 +492,7 @@ public class ContextLoader {
 	 * @param servletContext current servlet context
 	 * @see #CONTEXT_INITIALIZER_CLASSES_PARAM
 	 */
+	// 根据 web.xml 中配置的属性拿到要调用的初始化钩子
 	protected List<Class<ApplicationContextInitializer<ConfigurableApplicationContext>>>
 	determineContextInitializerClasses(ServletContext servletContext) {
 
