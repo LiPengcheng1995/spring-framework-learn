@@ -946,6 +946,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	protected void doOptions(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
+		// 如果配置成对 OPTION 请求响应或者此请求从目前看是一个有效的跨域请求，就自己处理，否则走servlet的通用逻辑
 		if (this.dispatchOptionsRequest || CorsUtils.isPreFlightRequest(request)) {
 			processRequest(request, response);
 			if (response.containsHeader("Allow")) {
