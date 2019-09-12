@@ -136,6 +136,8 @@ public class HandlerExecutionChain {
 			for (int i = 0; i < interceptors.length; i++) {
 				HandlerInterceptor interceptor = interceptors[i];
 				if (!interceptor.preHandle(request, response, this.handler)) {
+					// 如果调用失败就返回，因为调用成功的下标记都被 interceptorIndex 记录了
+					// 所以直接按照前面成功的调用顺序，倒着调用回调函数即可
 					triggerAfterCompletion(request, response, null);
 					return false;
 				}
