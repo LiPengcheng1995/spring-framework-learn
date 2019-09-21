@@ -672,6 +672,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		return wac;
 	}
 
+	// 配置 Spring 上下文，和 ContextLoaderListener 不同，此处多了一些针对 Servlet 的配置项
 	protected void configureAndRefreshWebApplicationContext(ConfigurableWebApplicationContext wac) {
 		if (ObjectUtils.identityToString(wac).equals(wac.getId())) {
 			// The application context id is still set to its original default value
@@ -686,8 +687,12 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		}
 
 		wac.setServletContext(getServletContext());
+		// 把本 DispatcherServlet 的 ServletConfig 带进去了，直接纳入 Spring 的管理
+		// 当然，我们前面已经把 ServletConfig 里面的属性在本 Servlet 生成的 BeanWrapper 中配置了一遍
+		// 这里感觉不是特别必要
 		wac.setServletConfig(getServletConfig());
-		wac.setNamespace(getNamespace());
+		wac.setNamespace(getNamespace());// TODO 不清楚，感觉没啥用
+		// TODO 这里专门加了一个 Listener，看一下也许有什么特殊的逻辑在里面
 		wac.addApplicationListener(new SourceFilteringListener(wac, new ContextRefreshListener()));
 
 		// The wac environment's #initPropertySources will be called in any case when the context
@@ -843,8 +848,9 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	 *
 	 * @param event the incoming ApplicationContext event
 	 */
+	// 在有上下文刷新操作时，监听器会调用这个
 	public void onApplicationEvent(ContextRefreshedEvent event) {
-		this.refreshEventReceived = true;
+		this.refreshEventReceived = true;// TODO 这个标志位设置成 true ，后面就不用手动调用了【此处高亮】
 		synchronized (this.onRefreshMonitor) {
 			onRefresh(event.getApplicationContext());
 		}

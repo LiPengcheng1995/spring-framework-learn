@@ -34,6 +34,8 @@ import org.springframework.lang.Nullable;
  * @author Stephane Nicoll
  * @since 2.0.5
  */
+// 当收到事件时会进行判断，只有事件源恰好是设定的 source 时才会响应
+// 响应就是调用 delegate
 public class SourceFilteringListener implements GenericApplicationListener, SmartApplicationListener {
 
 	private final Object source;
