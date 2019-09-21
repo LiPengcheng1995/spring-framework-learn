@@ -147,13 +147,24 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 		}
 
 		// Set bean properties from init parameters.
+		// 从 servletConfig 中接管 servlet 属性存取的职能
 		PropertyValues pvs = new ServletConfigPropertyValues(getServletConfig(), this.requiredProperties);
+
 		if (!pvs.isEmpty()) {
 			try {
+				// 将此 servlet 包装成 BeanWrapper 方便进行进行 IOC
 				BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(this);
 				ResourceLoader resourceLoader = new ServletContextResourceLoader(getServletContext());
+				// 注册此 servlet 生成 bean 的定制化资源访问器【包括加载资源和读取环境变量】
 				bw.registerCustomEditor(Resource.class, new ResourceEditor(resourceLoader, getEnvironment()));
+
+				// 初始化 bw ，留给子类实现的钩子
+				// 此处支持定制化资源访问器，但是还没把 web 中的所有属性同步过去
+				// 仅用于此 servlet 不依赖 web 环境的、单独的初始化
 				initBeanWrapper(bw);
+
+				// 这里比较特殊，之前是根据 BeanWrapper 中包装的实例，需要啥 set 啥，这里是一股脑全 set 进去，方便
+				// DispatcherServlet 使用
 				bw.setPropertyValues(pvs, true);
 			} catch (BeansException ex) {
 				if (logger.isErrorEnabled()) {
@@ -164,6 +175,8 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 		}
 
 		// Let subclasses do whatever initialization they like.
+		// 一个钩子，留给子类实现
+		// 此处支持定制化资源访问器、支持访问 web 环境中的所有属性
 		initServletBean();
 
 		if (logger.isDebugEnabled()) {

@@ -516,7 +516,9 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		long startTime = System.currentTimeMillis();
 
 		try {
+			// 拿到合适的 Spring 上下文
 			this.webApplicationContext = initWebApplicationContext();
+			// 一个钩子，在完成上下文引用后使用
 			initFrameworkServlet();
 		} catch (ServletException | RuntimeException ex) {
 			logger.error("Context initialization failed", ex);
@@ -541,6 +543,8 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	 * @see #setContextConfigLocation
 	 */
 	protected WebApplicationContext initWebApplicationContext() {
+
+		// 如果它已经初始化好注册上去，就直接赋值，否则自己创建、初始化然后在赋值
 		WebApplicationContext rootContext =
 				WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		WebApplicationContext wac = null;
@@ -574,6 +578,9 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 			wac = createWebApplicationContext(rootContext);
 		}
 
+		// 到此已经拿到合适的上下文了
+		// 注意这里拿到的可能是在 ContexLoaderListener 中刷新好的，所以这里还没来得及注册监听事件
+		// 如果还没监听到消息，这里手动调用一下
 		if (!this.refreshEventReceived) {
 			// Either the context is not a ConfigurableApplicationContext with refresh
 			// support or the context injected at construction time had already been
@@ -583,6 +590,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 			}
 		}
 
+		// 如果配置了将本 DistapcherServlet 的 Spring 上下文暴露出去，就暴露到 ServletContext 中
 		if (this.publishContext) {
 			// Publish the context as a servlet context attribute.
 			String attrName = getServletContextAttributeName();
