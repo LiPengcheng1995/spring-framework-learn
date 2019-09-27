@@ -935,6 +935,10 @@ public class DispatcherServlet extends FrameworkServlet {
 			Enumeration<?> attrNames = request.getAttributeNames();
 			while (attrNames.hasMoreElements()) {
 				String attrName = (String) attrNames.nextElement();
+				// DispatcherServlet 的属性认为是系统属性，我们无法控制内部逻辑来修改这些属性，所以为了框架安全就需要
+				// 先做一个属性快照，在调用完内部逻辑后，对这些属性重新进行覆盖。
+				//
+				// 当然，如果你设置了"在执行完内部属性后对修改的变量进行清理"，就把所有的属性都做快照，在执行完后统一覆盖
 				if (this.cleanupAfterInclude || attrName.startsWith(DEFAULT_STRATEGIES_PREFIX)) {
 					attributesSnapshot.put(attrName, request.getAttribute(attrName));
 				}
@@ -942,11 +946,13 @@ public class DispatcherServlet extends FrameworkServlet {
 		}
 
 		// Make framework objects available to handlers and view objects.
+		// 把内部执行需要的一些工具方法放进去，方便内部逻辑根据情况自行使用
 		request.setAttribute(WEB_APPLICATION_CONTEXT_ATTRIBUTE, getWebApplicationContext());
 		request.setAttribute(LOCALE_RESOLVER_ATTRIBUTE, this.localeResolver);
 		request.setAttribute(THEME_RESOLVER_ATTRIBUTE, this.themeResolver);
 		request.setAttribute(THEME_SOURCE_ATTRIBUTE, getThemeSource());
 
+		//
 		if (this.flashMapManager != null) {
 			FlashMap inputFlashMap = this.flashMapManager.retrieveAndUpdate(request, response);
 			if (inputFlashMap != null) {
