@@ -42,6 +42,7 @@ import javax.servlet.ServletContext;
  * @see ServletContextAware#setServletContext
  * @since January 19, 2001
  */
+// 在 ApplicationContext 的基础上针对 Web 应用进行了扩充
 public interface WebApplicationContext extends ApplicationContext {
 
 	/**
@@ -53,8 +54,10 @@ public interface WebApplicationContext extends ApplicationContext {
 	 * @see org.springframework.web.context.support.WebApplicationContextUtils#getWebApplicationContext
 	 * @see org.springframework.web.context.support.WebApplicationContextUtils#getRequiredWebApplicationContext
 	 */
+	// 常量 ， WebApplicationContext 在 ServletContext 中保存的变量名称
 	String ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE = WebApplicationContext.class.getName() + ".ROOT";
 
+	// TODO 作用域了解一哈
 	/**
 	 * Scope identifier for request scope: "request".
 	 * Supported in addition to the standard scopes "singleton" and "prototype".
@@ -101,6 +104,7 @@ public interface WebApplicationContext extends ApplicationContext {
 	String CONTEXT_ATTRIBUTES_BEAN_NAME = "contextAttributes";
 
 
+	// 新增一个方法，支持将 ServletContext 纳入 Spring 的上下文管理中
 	/**
 	 * Return the standard Servlet API ServletContext for this application.
 	 */

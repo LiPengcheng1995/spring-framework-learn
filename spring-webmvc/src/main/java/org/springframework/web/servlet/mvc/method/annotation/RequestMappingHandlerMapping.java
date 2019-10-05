@@ -53,6 +53,7 @@ import java.util.Set;
  * @author Sam Brannen
  * @since 3.1
  */
+// Spring MVC 的一个默认使用的 HandlerMapping ，我们平时使用最多，用于实现 Controller 的相关功能
 public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMapping
 		implements MatchableHandlerMapping, EmbeddedValueResolverAware {
 
@@ -77,6 +78,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	 * <p>Also see {@link #setUseRegisteredSuffixPatternMatch(boolean)} for
 	 * more fine-grained control over specific suffixes to allow.
 	 */
+	// 这里的 . 不是通配符的意思，就是 . 。比如你写的 /user,但是 /user.do 也认
 	public void setUseSuffixPatternMatch(boolean useSuffixPatternMatch) {
 		this.useSuffixPatternMatch = useSuffixPatternMatch;
 	}
@@ -172,6 +174,8 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	 * <p>Expects a handler to have either a type-level @{@link Controller}
 	 * annotation or a type-level @{@link RequestMapping} annotation.
 	 */
+	// TODO 这里高亮！！！！！
+	// 如果打了 Controller 或者 RequestMapping 标记，就认为这个类里面有 HandlerMethod
 	@Override
 	protected boolean isHandler(Class<?> beanType) {
 		return (AnnotatedElementUtils.hasAnnotation(beanType, Controller.class) ||
@@ -187,12 +191,16 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	 * @see #getCustomMethodCondition(Method)
 	 * @see #getCustomTypeCondition(Class)
 	 */
+	// 根据传入的类、方法，读取打标信息
 	@Override
 	@Nullable
 	protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
+		// 先读方法的打标
 		RequestMappingInfo info = createRequestMappingInfo(method);
 		if (info != null) {
+			// 如果方法合格了，再读类上的打标
 			RequestMappingInfo typeInfo = createRequestMappingInfo(handlerType);
+			// 如果类上也有，就合并一下
 			if (typeInfo != null) {
 				info = typeInfo.combine(info);
 			}
@@ -259,6 +267,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	protected RequestMappingInfo createRequestMappingInfo(
 			RequestMapping requestMapping, @Nullable RequestCondition<?> customCondition) {
 
+		// TODO 这种 API 编写方式，在某些程度上可以借用，注意不要让这种 API 影响 getter/setter【一些序列化反序列化时可能根据这个整。Spring 的 DI 也靠这个】
 		RequestMappingInfo.Builder builder = RequestMappingInfo
 				.paths(resolveEmbeddedValuesInPatterns(requestMapping.path()))
 				.methods(requestMapping.method())
@@ -279,6 +288,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	 * @return a new array with updated patterns
 	 */
 	protected String[] resolveEmbeddedValuesInPatterns(String[] patterns) {
+		//TODO  这里，emmmm，不能直接用 Spring 的么？再了解一下
 		if (this.embeddedValueResolver == null) {
 			return patterns;
 		} else {
@@ -292,16 +302,21 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 
 	@Override
 	public RequestMatchResult match(HttpServletRequest request, String pattern) {
+		// 根据传入的 pattern 和本类的配置构建筛选条件
 		RequestMappingInfo info = RequestMappingInfo.paths(pattern).options(this.config).build();
+		// 通过条件筛选 request
 		RequestMappingInfo matchingInfo = info.getMatchingCondition(request);
 		if (matchingInfo == null) {
 			return null;
 		}
+		// 拿到筛选出的符合条件的url
 		Set<String> patterns = matchingInfo.getPatternsCondition().getPatterns();
 		String lookupPath = getUrlPathHelper().getLookupPathForRequest(request);
 		return new RequestMatchResult(patterns.iterator().next(), lookupPath, getPathMatcher());
 	}
 
+	// 读取 CrossOrigin 注解，然后用作此 HandlerMethod 的本地跨域配置
+	// 本地配置混合全局配置后，会被用作跨域的配置
 	@Override
 	protected CorsConfiguration initCorsConfiguration(Object handler, Method method, RequestMappingInfo mappingInfo) {
 		HandlerMethod handlerMethod = createHandlerMethod(handler, method);

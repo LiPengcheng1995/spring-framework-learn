@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author Arjen Poutsma
  * @since 3.1
  */
+//TODO  这个概念模型有点像 Java8 的流操作、函数式编程那种感觉。具体叫啥一下子想不出来
 public interface RequestCondition<T> {
 
 	/**
@@ -44,6 +45,7 @@ public interface RequestCondition<T> {
 	 * @return a request condition instance that is the result of combining
 	 * the two condition instances.
 	 */
+	// 和另外一个请求匹配条件合并，具体合并逻辑由实现类提供
 	T combine(T other);
 
 	/**
@@ -59,6 +61,12 @@ public interface RequestCondition<T> {
 	 *
 	 * @return a condition instance in case of a match or {@code null} otherwise.
 	 */
+	// 检查当前请求匹配条件和指定请求request是否匹配，如果不匹配返回null，
+	// 如果匹配，生成一个新的请求匹配条件，该新的请求匹配条件是当前请求匹配条件
+	// 针对指定请求request的剪裁。
+	// 举个例子来讲，如果当前请求匹配条件是一个路径匹配条件，包含多个路径匹配模板，
+	// 并且其中有些模板和指定请求request匹配，那么返回的新建的请求匹配条件将仅仅
+	// 包含和指定请求request匹配的那些路径模板。
 	@Nullable
 	T getMatchingCondition(HttpServletRequest request);
 
@@ -68,6 +76,11 @@ public interface RequestCondition<T> {
 	 * been obtained via {@link #getMatchingCondition(HttpServletRequest)}
 	 * to ensure they have content relevant to current request only.
 	 */
+	// 针对指定的请求对象request比较两个请求匹配条件。
+	// 该方法假定被比较的两个请求匹配条件都是针对该请求对象request调用了
+	// #getMatchingCondition方法得到的，这样才能确保对它们的比较
+	// 是针对同一个请求对象request，这样的比较才有意义(最终用来确定谁是
+	// 更匹配的条件)。
 	int compareTo(T other, HttpServletRequest request);
 
 }

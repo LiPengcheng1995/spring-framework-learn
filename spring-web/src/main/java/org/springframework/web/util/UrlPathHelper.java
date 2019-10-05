@@ -166,6 +166,7 @@ public class UrlPathHelper {
 	 */
 	public String getLookupPathForRequest(HttpServletRequest request) {
 		// Always use full path within current servlet context?
+		// TODO 打断点看看
 		if (this.alwaysUseFullPath) {
 			return getPathWithinApplication(request);
 		}
@@ -241,6 +242,7 @@ public class UrlPathHelper {
 	 * @see #getLookupPathForRequest
 	 */
 	public String getPathWithinApplication(HttpServletRequest request) {
+		// TODO 这里的操作感觉有点怪怪的，一会儿看一下 dispatcherServlet 有没有对相应的变量进行处理
 		String contextPath = getContextPath(request);
 		String requestUri = getRequestUri(request);
 		String path = getRemainingPath(requestUri, contextPath, true);

@@ -47,8 +47,11 @@ import java.util.*;
  * @author Rossen Stoyanchev
  * @since 3.1
  */
+// 父类 AbstractHandlerMethodMapping 支持了 T->HandlerMethod 的功能
+// 本类针对 T 为 RequestMappingInfo 时进行了一些基本功能的实现【主要是映射的一些钩子的细化】【handelMatch(),handelNoMatch()】
 public abstract class RequestMappingInfoHandlerMapping extends AbstractHandlerMethodMapping<RequestMappingInfo> {
 
+	// cors 预检请求的处理
 	private static final Method HTTP_OPTIONS_HANDLE_METHOD;
 
 	static {

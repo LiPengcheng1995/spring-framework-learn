@@ -45,6 +45,8 @@ import org.springframework.util.Assert;
  * @author Juergen Hoeller
  * @see org.springframework.web.context.support.WebApplicationObjectSupport
  */
+// 主要是对 ApplicationContextAware 进行了一些封装，新增了一些调用初始化的方法
+// TODO 感觉对日常编程没太大卵用，直接用 ApplicationContextAware 就行
 public abstract class ApplicationObjectSupport implements ApplicationContextAware {
 
 	/**

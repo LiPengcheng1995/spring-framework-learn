@@ -40,6 +40,8 @@ import java.io.File;
  * @see SpringBeanAutowiringSupport
  * @since 28.08.2003
  */
+// 针对 WebApplicationContext 相关的功能实现类进行了一些通用属性的封装
+// WebApplicationContext 除了多定义了一些常量也就增加了对 ServletContext 的支持，所以本类做的事也差不多就这些
 public abstract class WebApplicationObjectSupport extends ApplicationObjectSupport implements ServletContextAware {
 
 	@Nullable

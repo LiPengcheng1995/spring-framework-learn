@@ -60,6 +60,9 @@ import java.util.Map;
  * @see org.springframework.web.servlet.HandlerInterceptor
  * @since 07.04.2003
  */
+// 对 HandlerMapping 的基本实现，包括：
+// 1. 对 interceptor 的存储结构进行实现
+// 2. 对 handler 的一些通用操作进行了实现
 public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport implements HandlerMapping, Ordered {
 
 	private final List<Object> interceptors = new ArrayList<>();
@@ -171,6 +174,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	 * @see org.springframework.web.servlet.HandlerInterceptor
 	 * @see org.springframework.web.context.request.WebRequestInterceptor
 	 */
+	// TODO 看看是在哪set进去的
 	public void setInterceptors(Object... interceptors) {
 		this.interceptors.addAll(Arrays.asList(interceptors));
 	}
@@ -348,7 +352,10 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	@Override
 	@Nullable
 	public final HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
+		// 直接调用 getHandlerInternal() 拿到对应的 handler【此逻辑由子类定制】
+		// TODO 这里只匹配基本的 url， 不要把 OPTION 带进去，防止预检请求被丢掉
 		Object handler = getHandlerInternal(request);
+		// 如果没拿到就走默认的
 		if (handler == null) {
 			handler = getDefaultHandler();
 		}
@@ -356,16 +363,21 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 			return null;
 		}
 		// Bean name or resolved handler?
+		// 支持通过 id 从 Spring 上下文取
 		if (handler instanceof String) {
 			String handlerName = (String) handler;
 			handler = obtainApplicationContext().getBean(handlerName);
 		}
 
+		// 通过 request 拿到对应的 interceptor ，并和 handler 结合，构建成 HandlerExecutionChain
 		HandlerExecutionChain executionChain = getHandlerExecutionChain(handler, request);
+
+		// TODO 这里判断如果带 origin 字段，说明可能需要加上 cors 的功能，就根据配置加一个 Cors 的拦截器实现对应的功能。这里后面打断点看吧，
 		if (CorsUtils.isCorsRequest(request)) {
 			CorsConfiguration globalConfig = this.globalCorsConfigSource.getCorsConfiguration(request);
 			CorsConfiguration handlerConfig = getCorsConfiguration(handler, request);
 			CorsConfiguration config = (globalConfig != null ? globalConfig.combine(handlerConfig) : handlerConfig);
+			// 拿到了 cors 的配置，对 HandlerExecutionChain 进行增强
 			executionChain = getCorsHandlerExecutionChain(request, executionChain, config);
 		}
 		return executionChain;
@@ -417,6 +429,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 				(HandlerExecutionChain) handler : new HandlerExecutionChain(handler));
 
 		String lookupPath = this.urlPathHelper.getLookupPathForRequest(request);
+		// 遍历此 handlerMapping 所有匹配到的拦截器，将符合条件的加进去
 		for (HandlerInterceptor interceptor : this.adaptedInterceptors) {
 			if (interceptor instanceof MappedInterceptor) {
 				MappedInterceptor mappedInterceptor = (MappedInterceptor) interceptor;
@@ -466,10 +479,14 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	protected HandlerExecutionChain getCorsHandlerExecutionChain(HttpServletRequest request,
 																 HandlerExecutionChain chain, @Nullable CorsConfiguration config) {
 
+		// 如果是预检请求，就干掉前面的 handler ，用处理 cors 的 handler 做
+		// 预检请求的意思是，如果想对 /a/b/c 进行post，就先发过去一个 /a/b/c 的 option
+		// TODO 有问题，如果 /a/b/c 只接post，前面筛 handler 不就挂了？
 		if (CorsUtils.isPreFlightRequest(request)) {
 			HandlerInterceptor[] interceptors = chain.getInterceptors();
 			chain = new HandlerExecutionChain(new PreFlightHandler(config), interceptors);
 		} else {
+			// 是具体对业务请求，需要早原有的基础上进行增强
 			chain.addInterceptor(new CorsInterceptor(config));
 		}
 		return chain;

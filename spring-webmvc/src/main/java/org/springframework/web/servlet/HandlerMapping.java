@@ -53,6 +53,12 @@ import javax.servlet.http.HttpServletRequest;
  * @see org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping
  * @see org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
  */
+// 下面是用自己的话对上面对 JavaDoc 进行概述：
+// 1. 此类是用来将请求的 request 映射成处理请求的 handler 的
+// 2. 此类一般我们是不需要定制的，因为在 DispatcherServlet.properties 的默认策略中提供的
+//    BeanNameUrlHandlerMapping、RequestMappingHandlerMapping已经足够我们正常使用了
+// 3. 此接口返回的结果中往往不仅仅是 handler ，还带有可以处理此请求的一些 interceptor，用于功能增强
+// 4. 子类可以进行映射参数化定制，可以按照 session状态、cookie什么的进行映射，这个挺牛逼的
 public interface HandlerMapping {
 
 	/**
@@ -72,6 +78,7 @@ public interface HandlerMapping {
 	 * typically support it, but handlers should not necessarily expect
 	 * this request attribute to be present in all scenarios.
 	 */
+	// 如果是基于url的 handlerMapping 实现类会用
 	String PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE = HandlerMapping.class.getName() + ".pathWithinHandlerMapping";
 
 	/**
@@ -82,6 +89,7 @@ public interface HandlerMapping {
 	 * typically support it, but handlers should not necessarily expect
 	 * this request attribute to be present in all scenarios.
 	 */
+	// 如果是基于url的 handlerMapping 实现类会用
 	String BEST_MATCHING_PATTERN_ATTRIBUTE = HandlerMapping.class.getName() + ".bestMatchingPattern";
 
 	/**
@@ -137,6 +145,7 @@ public interface HandlerMapping {
 	 * any interceptors, or {@code null} if no mapping found
 	 * @throws Exception if there is an internal error
 	 */
+	// 根据请求找到此映射中存储的 interceptor 和 handler
 	@Nullable
 	HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception;
 
