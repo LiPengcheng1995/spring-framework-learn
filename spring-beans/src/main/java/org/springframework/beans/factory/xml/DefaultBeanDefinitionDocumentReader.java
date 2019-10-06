@@ -188,6 +188,8 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 				}
 			}
 		} else {
+			// TODO 这里会返回定制的解析器返回的 BD ，但是 Spring 没有进行任何操作，需要解析器自行进行 BD 的注册
+			// 将注册的自主权留给解析器，也不错，方便扩展
 			delegate.parseCustomElement(root);
 		}
 	}

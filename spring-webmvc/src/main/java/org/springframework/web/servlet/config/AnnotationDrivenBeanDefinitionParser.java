@@ -140,6 +140,13 @@ import java.util.Properties;
  * @author Agim Emruli
  * @since 3.0
  */
+// 其实这里针对 <mvc:annotation-driven /> 的解析和我想象中的思路不一样，我想的是使用 context 的扫描器，然后对指定包下的所有类进行扫描
+// 然后将打着 @Controller 或者 @RequestMapping 的类/方法整出来，然后注册一波 Bean。
+//
+// 但是这里其实不是这个思路，因为 @Controller、@RequestMapping 是在 HandlerMapping 的初始化时就行筛选出来的，也就是说只有先被注册到
+// Spring 上下文，@Controller 才能生效，这里也没有专门针对 Controller 做一些扫描注册的事情
+//
+// 看了一下 Controller 。发现里面有 @Component 注解，。。。。。。。。。。。。。。。傻了。
 class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 
 	public static final String HANDLER_MAPPING_BEAN_NAME = RequestMappingHandlerMapping.class.getName();
@@ -185,8 +192,10 @@ class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 		CompositeComponentDefinition compDefinition = new CompositeComponentDefinition(element.getTagName(), source);
 		context.pushContainingComponent(compDefinition);
 
+		// 这里先不管
 		RuntimeBeanReference contentNegotiationManager = getContentNegotiationManager(element, source, context);
 
+		// 定义了一个 RequestMappingHandlerMapping 这个是我们之前介绍的支持 @Controller 功能的 HandlerMapping
 		RootBeanDefinition handlerMappingDef = new RootBeanDefinition(RequestMappingHandlerMapping.class);
 		handlerMappingDef.setSource(source);
 		handlerMappingDef.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
@@ -200,14 +209,21 @@ class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 
 		configurePathMatchingProperties(handlerMappingDef, element, context);
 		readerContext.getRegistry().registerBeanDefinition(HANDLER_MAPPING_BEAN_NAME, handlerMappingDef);
-
+		//TODO 找到了，这里从context中找注册的跨域配置bean，并注入到 RequestMappingHandlerMapping ，如果是走默认的，没问题。
+		// 之前hqq自以为了解了一些，不管什么配置都往xml里贴，结果好多配置都没走进去，跨域时就他妈配置不生效
 		RuntimeBeanReference corsRef = MvcNamespaceUtils.registerCorsConfigurations(null, context, source);
 		handlerMappingDef.getPropertyValues().add("corsConfigurations", corsRef);
+
+
+
+
+
 
 		RuntimeBeanReference conversionService = getConversionService(element, source, context);
 		RuntimeBeanReference validator = getValidator(element, source, context);
 		RuntimeBeanReference messageCodesResolver = getMessageCodesResolver(element);
 
+		// TODO 看一下 ConfigurableWebBindingInitializer ，是 Spring MVC 对入参转化成 domain 的一个转化器
 		RootBeanDefinition bindingDef = new RootBeanDefinition(ConfigurableWebBindingInitializer.class);
 		bindingDef.setSource(source);
 		bindingDef.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
@@ -223,10 +239,12 @@ class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 		ManagedList<?> callableInterceptors = getCallableInterceptors(element, source, context);
 		ManagedList<?> deferredResultInterceptors = getDeferredResultInterceptors(element, source, context);
 
+		// 上面创建了 RequestMappingHandlerMapping ，这里创建对应的 RequestMappingHandlerAdapter
 		RootBeanDefinition handlerAdapterDef = new RootBeanDefinition(RequestMappingHandlerAdapter.class);
 		handlerAdapterDef.setSource(source);
 		handlerAdapterDef.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 		handlerAdapterDef.getPropertyValues().add("contentNegotiationManager", contentNegotiationManager);
+		//TODO 将 servlet 中的参数转化成我们 Controller 的处理请求方法中的入参
 		handlerAdapterDef.getPropertyValues().add("webBindingInitializer", bindingDef);
 		handlerAdapterDef.getPropertyValues().add("messageConverters", messageConverters);
 		addRequestBodyAdvice(handlerAdapterDef);
@@ -253,24 +271,36 @@ class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 		handlerAdapterDef.getPropertyValues().add("deferredResultInterceptors", deferredResultInterceptors);
 		readerContext.getRegistry().registerBeanDefinition(HANDLER_ADAPTER_BEAN_NAME, handlerAdapterDef);
 
+
+
+
+		// 这个应该没有实际作用，应该是为了获得相关配置专门注册的 bean
 		RootBeanDefinition uriContributorDef =
 				new RootBeanDefinition(CompositeUriComponentsContributorFactoryBean.class);
 		uriContributorDef.setSource(source);
+		// TODO 这里直接传 BeanDefinition 和传 RuntimeBeanReference 应该是不一样的吧。可能涉及重复创建，但是也看如何使用了
 		uriContributorDef.getPropertyValues().addPropertyValue("handlerAdapter", handlerAdapterDef);
 		uriContributorDef.getPropertyValues().addPropertyValue("conversionService", conversionService);
 		String uriContributorName = MvcUriComponentsBuilder.MVC_URI_COMPONENTS_CONTRIBUTOR_BEAN_NAME;
 		readerContext.getRegistry().registerBeanDefinition(uriContributorName, uriContributorDef);
 
+
+		// MappedInterceptor 感觉是包装了一层 ，ConversionServiceExposingInterceptor 里面是正经逻辑
+		// ConversionServiceExposingInterceptor 是对 conversionService 的包装，真正逻辑在 conversionService 中
+		// 就是一个转化的功能
 		RootBeanDefinition csInterceptorDef = new RootBeanDefinition(ConversionServiceExposingInterceptor.class);
 		csInterceptorDef.setSource(source);
 		csInterceptorDef.getConstructorArgumentValues().addIndexedArgumentValue(0, conversionService);
 		RootBeanDefinition mappedInterceptorDef = new RootBeanDefinition(MappedInterceptor.class);
 		mappedInterceptorDef.setSource(source);
 		mappedInterceptorDef.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-		mappedInterceptorDef.getConstructorArgumentValues().addIndexedArgumentValue(0, (Object) null);
+		mappedInterceptorDef.getConstructorArgumentValues().addIndexedArgumentValue(0, (Object) null);// 默认拦截所有请求
 		mappedInterceptorDef.getConstructorArgumentValues().addIndexedArgumentValue(1, csInterceptorDef);
 		String mappedInterceptorName = readerContext.registerWithGeneratedName(mappedInterceptorDef);
 
+
+		// 注册 ExceptionHandlerExceptionResolver ，用于处理抛出的异常。
+		// 用于支持 @ExceptionHandler
 		RootBeanDefinition methodExceptionResolver = new RootBeanDefinition(ExceptionHandlerExceptionResolver.class);
 		methodExceptionResolver.setSource(source);
 		methodExceptionResolver.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
@@ -286,12 +316,15 @@ class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 		}
 		String methodExResolverName = readerContext.registerWithGeneratedName(methodExceptionResolver);
 
+		// 注册 ResponseStatusExceptionResolver ，用于在抛出异常时将 ResponseStatus 状态码转化成对应的 HTTP 状态码
+		// 用于支持 @ResponseStatus
 		RootBeanDefinition statusExceptionResolver = new RootBeanDefinition(ResponseStatusExceptionResolver.class);
 		statusExceptionResolver.setSource(source);
 		statusExceptionResolver.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 		statusExceptionResolver.getPropertyValues().add("order", 1);
 		String statusExResolverName = readerContext.registerWithGeneratedName(statusExceptionResolver);
 
+		// 注册 DefaultHandlerExceptionResolver ，是默认的一个 HandlerExceptionResolver ，用于将一些通用的 4XX,5XX 之类的 HTTP 状态转换
 		RootBeanDefinition defaultExceptionResolver = new RootBeanDefinition(DefaultHandlerExceptionResolver.class);
 		defaultExceptionResolver.setSource(source);
 		defaultExceptionResolver.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
@@ -311,6 +344,8 @@ class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 
 		context.popAndRegisterContainingComponent();
 
+		// 该注册的注册了，这里直接返回 null 即可
+		// TODO 忘了调用定制解析器后有没有其他的钩子了
 		return null;
 	}
 

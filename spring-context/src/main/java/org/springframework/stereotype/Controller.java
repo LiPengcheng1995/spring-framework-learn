@@ -38,7 +38,7 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Component
+@Component // 打了 Controller 注解就可以被扫描注册进 Spring 的上下文
 public @interface Controller {
 
 	/**

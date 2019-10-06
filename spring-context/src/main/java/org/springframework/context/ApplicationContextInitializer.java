@@ -38,6 +38,7 @@ package org.springframework.context;
  * @see org.springframework.web.servlet.FrameworkServlet#applyInitializers
  * @since 3.1
  */
+// 初始化 ConfigurableApplicationContext 前的一个回调钩子，在调用refresh()前会被调用，可根据需求定制
 public interface ApplicationContextInitializer<C extends ConfigurableApplicationContext> {
 
 	/**
