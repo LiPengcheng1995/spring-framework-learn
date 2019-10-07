@@ -366,6 +366,9 @@ public abstract class WebUtils {
 	 * @see #SESSION_MUTEX_ATTRIBUTE
 	 * @see HttpSessionMutexListener
 	 */
+	// 通过 session 拿到 SESSION_MUTEX 【就是能保证同一个 session 内容对应的对象实例是同一个的，方便用来加锁】
+	// 一般情况下，同一个 session 内容对应的 HttpSession 本身就是唯一的，也可以用作 SESSION_MUTEX。但是还是保险一点吧。
+	// 需要 web.xml 配合，如有需求再百度用法
 	public static Object getSessionMutex(HttpSession session) {
 		Assert.notNull(session, "Session must not be null");
 		Object mutex = session.getAttribute(SESSION_MUTEX_ATTRIBUTE);

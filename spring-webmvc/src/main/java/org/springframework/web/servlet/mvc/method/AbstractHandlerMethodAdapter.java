@@ -33,8 +33,11 @@ import javax.servlet.http.HttpServletResponse;
  * @author Arjen Poutsma
  * @since 3.1
  */
+// HandlerAdapter 的一个基础实现类，将一些支持 HandlerMethod 的通用逻辑抽离到这里了
 public abstract class AbstractHandlerMethodAdapter extends WebContentGenerator implements HandlerAdapter, Ordered {
 
+	// 这是写成最低的优先级，方便定制的接口插队？
+	// 感觉还是写成0好，方便定制时往后排或者往前插，也还好，反正子类可以自行修改
 	private int order = Ordered.LOWEST_PRECEDENCE;
 
 
@@ -66,6 +69,8 @@ public abstract class AbstractHandlerMethodAdapter extends WebContentGenerator i
 	 */
 	@Override
 	public final boolean supports(Object handler) {
+		// 1. 类型匹配
+		// 2. 业务逻辑匹配【用于子类定制】
 		return (handler instanceof HandlerMethod && supportsInternal((HandlerMethod) handler));
 	}
 

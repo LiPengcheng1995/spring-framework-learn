@@ -141,7 +141,7 @@ import java.util.Properties;
  * @since 3.0
  */
 // 其实这里针对 <mvc:annotation-driven /> 的解析和我想象中的思路不一样，我想的是使用 context 的扫描器，然后对指定包下的所有类进行扫描
-// 然后将打着 @Controller 或者 @RequestMapping 的类/方法整出来，然后注册一波 Bean。
+// 然后将打着 @Controller 或者 @RequestMapping 的类/方法整出来，然后注册一波 Bean。【这也是之前的套路】
 //
 // 但是这里其实不是这个思路，因为 @Controller、@RequestMapping 是在 HandlerMapping 的初始化时就行筛选出来的，也就是说只有先被注册到
 // Spring 上下文，@Controller 才能生效，这里也没有专门针对 Controller 做一些扫描注册的事情

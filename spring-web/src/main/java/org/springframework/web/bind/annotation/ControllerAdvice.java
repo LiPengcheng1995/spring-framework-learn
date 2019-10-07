@@ -61,6 +61,9 @@ import java.lang.annotation.*;
  * @see RestControllerAdvice
  * @since 3.2
  */
+// 控制器增强，主要和 ExceptionHandler、InitBinder、ModelAttribute 三个注解配合使用
+// 可以对比我们学习 AOP 时接触的 Advice ，只不过这个是专门针对  Controller 的。
+// 这个用来找切点，剩下的三个标签用来构建切面
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

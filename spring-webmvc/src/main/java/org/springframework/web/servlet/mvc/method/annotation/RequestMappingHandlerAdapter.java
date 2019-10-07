@@ -82,9 +82,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * @see HandlerMethodReturnValueHandler
  * @since 3.1
  */
+// 和 RequestMappingHandlerMapping、@Controller、@RequestMapping 配套使用的 HandlerAdapter
+// 感觉功能应该是根据前面筛选出的 HandlerMethod ，把 request 中的参数拼装成入参给整上去
+
+// TODO 感觉支持的功能有点太多了，先缓一缓，主要看入参的构建吧，后面需要啥再看啥
 public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 		implements BeanFactoryAware, InitializingBean {
 
+	// 这两个方法过滤器是为 ControllerAdvice 准备的
 	/**
 	 * MethodFilter that matches {@link InitBinder @InitBinder} methods.
 	 */
@@ -101,6 +106,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	private final Map<Class<?>, Set<Method>> initBinderCache = new ConcurrentHashMap<>(64);
 	private final Map<ControllerAdviceBean, Set<Method>> initBinderAdviceCache = new LinkedHashMap<>();
 	private final Map<Class<?>, Set<Method>> modelAttributeCache = new ConcurrentHashMap<>(64);
+	// ModelAttribute 的增强方法
 	private final Map<ControllerAdviceBean, Set<Method>> modelAttributeAdviceCache = new LinkedHashMap<>();
 	@Nullable
 	private List<HandlerMethodArgumentResolver> customArgumentResolvers;
@@ -511,6 +517,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	@Override
 	public void afterPropertiesSet() {
 		// Do this first, it may add ResponseBody advice beans
+		// ControllerAdvice 的相关处理，把所有的配置都存起来，方便处理请求时随手调用
 		initControllerAdviceCache();
 
 		if (this.argumentResolvers == null) {
@@ -535,6 +542,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 			logger.info("Looking for @ControllerAdvice: " + getApplicationContext());
 		}
 
+		// 遍历 Spring 上下文，找到所有打着 @ControllerAdvice 标示的类实例
 		List<ControllerAdviceBean> adviceBeans = ControllerAdviceBean.findAnnotatedBeans(getApplicationContext());
 		AnnotationAwareOrderComparator.sort(adviceBeans);
 
@@ -545,6 +553,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 			if (beanType == null) {
 				throw new IllegalStateException("Unresolvable type for ControllerAdviceBean: " + adviceBean);
 			}
+			// 找出打 ModelAttribute 标签的
 			Set<Method> attrMethods = MethodIntrospector.selectMethods(beanType, MODEL_ATTRIBUTE_METHODS);
 			if (!attrMethods.isEmpty()) {
 				this.modelAttributeAdviceCache.put(adviceBean, attrMethods);
@@ -552,6 +561,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 					logger.info("Detected @ModelAttribute methods in " + adviceBean);
 				}
 			}
+			// 找出打 InitBinder 标签的
 			Set<Method> binderMethods = MethodIntrospector.selectMethods(beanType, INIT_BINDER_METHODS);
 			if (!binderMethods.isEmpty()) {
 				this.initBinderAdviceCache.put(adviceBean, binderMethods);
@@ -560,6 +570,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 				}
 			}
 
+			// 这个不太清楚干啥了
 			boolean isRequestBodyAdvice = RequestBodyAdvice.class.isAssignableFrom(beanType);
 			boolean isResponseBodyAdvice = ResponseBodyAdvice.class.isAssignableFrom(beanType);
 			if (isRequestBodyAdvice || isResponseBodyAdvice) {
@@ -572,6 +583,8 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 					}
 				}
 			}
+
+			// TODO 为什么没有 ExceptionHandler 的相关支持？？
 		}
 
 		if (!requestResponseBodyAdviceBeans.isEmpty()) {
@@ -723,10 +736,13 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 										  HttpServletResponse response, HandlerMethod handlerMethod) throws Exception {
 
 		ModelAndView mav;
+		// 检测 request 有没有不合法的地方
 		checkRequest(request);
 
 		// Execute invokeHandlerMethod in synchronized block if required.
+		// 如果要求 session 内异步，就加锁
 		if (this.synchronizeOnSession) {
+			//拿到 session ，因为是根据 request 整出来的，即使 session 一样 ，拿到的对象也不一样，所以直接加锁是行不通的
 			HttpSession session = request.getSession(false);
 			if (session != null) {
 				Object mutex = WebUtils.getSessionMutex(session);
@@ -790,19 +806,28 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	 * @see #createInvocableHandlerMethod(HandlerMethod)
 	 * @since 4.2
 	 */
+	// 这里是根据 request 封装 handler 入参，并进行调用的地方。
+	// 并将 handler 返回的结果封装至 ModelAndView ，返回。
+	// 这里基本就是彻彻底底的适配器的逻辑了
 	@Nullable
 	protected ModelAndView invokeHandlerMethod(HttpServletRequest request,
 											   HttpServletResponse response, HandlerMethod handlerMethod) throws Exception {
 
 		ServletWebRequest webRequest = new ServletWebRequest(request, response);
 		try {
+			// 找到 handlerMethod 对应的数据绑定的增强逻辑，并生成 WebDataBinderFactory
 			WebDataBinderFactory binderFactory = getDataBinderFactory(handlerMethod);
+			// 同上，不过这个是负责 ModelAndView 的
 			ModelFactory modelFactory = getModelFactory(handlerMethod, binderFactory);
 
+			// 对 handlerMethod 进行封装，将一些转换的逻辑传递进去，由 ServletInvocableHandlerMethod 进行控制调用
+			// TODO 有时间再看
 			ServletInvocableHandlerMethod invocableMethod = createInvocableHandlerMethod(handlerMethod);
+			// 参数读取？
 			if (this.argumentResolvers != null) {
 				invocableMethod.setHandlerMethodArgumentResolvers(this.argumentResolvers);
 			}
+			// 返回结果处理？
 			if (this.returnValueHandlers != null) {
 				invocableMethod.setHandlerMethodReturnValueHandlers(this.returnValueHandlers);
 			}
@@ -855,6 +880,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 		return new ServletInvocableHandlerMethod(handlerMethod);
 	}
 
+	// 同 getDataBinderFactory（）
 	private ModelFactory getModelFactory(HandlerMethod handlerMethod, WebDataBinderFactory binderFactory) {
 		SessionAttributesHandler sessionAttrHandler = getSessionAttributesHandler(handlerMethod);
 		Class<?> handlerType = handlerMethod.getBeanType();
@@ -892,14 +918,18 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 
 	private WebDataBinderFactory getDataBinderFactory(HandlerMethod handlerMethod) throws Exception {
 		Class<?> handlerType = handlerMethod.getBeanType();
+		// 拿到 initBinderCache 中缓存的 handlerMethod 对应的 Controller 类下所有打 @InitBinder 注解的方法
 		Set<Method> methods = this.initBinderCache.get(handlerType);
 		if (methods == null) {
+			// 如果没拿到，说明可能是第一次，就现场过滤找
 			methods = MethodIntrospector.selectMethods(handlerType, INIT_BINDER_METHODS);
 			this.initBinderCache.put(handlerType, methods);
 		}
 		List<InvocableHandlerMethod> initBinderMethods = new ArrayList<>();
 		// Global methods first
+		// 拿到我们之前从 ControllerAdvice 中筛出来的适合这个类的增强器，然后扔进去
 		this.initBinderAdviceCache.forEach((clazz, methodSet) -> {
+			// @ControllerAdvice 是可以指定作用范围的，所以这里要判断一哈
 			if (clazz.isApplicableToBeanType(handlerType)) {
 				Object bean = clazz.resolveBean();
 				for (Method method : methodSet) {
@@ -907,13 +937,16 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 				}
 			}
 		});
+		// 将本类对应的所有打 @InitBinder 注解的方法扔进去
 		for (Method method : methods) {
 			Object bean = handlerMethod.getBean();
 			initBinderMethods.add(createInitBinderMethod(bean, method));
 		}
+		// 我们的一大串 initBinderMethods ，应该就是进行数据绑定增强的核心逻辑了
 		return createDataBinderFactory(initBinderMethods);
 	}
 
+	// 将实例和实例中对应的方法封装成一个类，方便存储和调用
 	private InvocableHandlerMethod createInitBinderMethod(Object bean, Method method) {
 		InvocableHandlerMethod binderMethod = new InvocableHandlerMethod(bean, method);
 		if (this.initBinderArgumentResolvers != null) {

@@ -201,25 +201,29 @@ public class ControllerAdviceBean implements Ordered {
 	 * @since 4.0
 	 */
 	public boolean isApplicableToBeanType(@Nullable Class<?> beanType) {
-		if (!hasSelectors()) {
+		if (!hasSelectors()) {//如果没有限制，则默认表示适用于所有
 			return true;
 		} else if (beanType != null) {
+			// 通过包路径判断是否符合
 			for (String basePackage : this.basePackages) {
 				if (beanType.getName().startsWith(basePackage)) {
 					return true;
 				}
 			}
+			// 通过类型判断是否符合
 			for (Class<?> clazz : this.assignableTypes) {
 				if (ClassUtils.isAssignable(clazz, beanType)) {
 					return true;
 				}
 			}
+			// 通过注解判断是否符合
 			for (Class<? extends Annotation> annotationClass : this.annotations) {
 				if (AnnotationUtils.findAnnotation(beanType, annotationClass) != null) {
 					return true;
 				}
 			}
 		}
+		// 上面都没判断成，就失败了
 		return false;
 	}
 

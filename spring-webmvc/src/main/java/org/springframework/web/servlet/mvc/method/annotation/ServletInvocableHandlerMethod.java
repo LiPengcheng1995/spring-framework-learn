@@ -57,6 +57,7 @@ import java.util.concurrent.Callable;
  * @author Juergen Hoeller
  * @since 3.1
  */
+// 支持 @ResponseStatus 转船
 public class ServletInvocableHandlerMethod extends InvocableHandlerMethod {
 
 	private static final Method CALLABLE_METHOD = ClassUtils.getMethod(Callable.class, "call");

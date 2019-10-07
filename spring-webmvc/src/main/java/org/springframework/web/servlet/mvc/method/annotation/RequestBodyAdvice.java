@@ -37,6 +37,7 @@ import java.lang.reflect.Type;
  * @author Rossen Stoyanchev
  * @since 4.2
  */
+// 允许定制 request ，在将 request 里面的东西塞入 RequestBody 前，可以把里面的东西转化成一个 Object ，
 public interface RequestBodyAdvice {
 
 	/**

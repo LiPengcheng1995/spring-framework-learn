@@ -58,6 +58,8 @@ import java.util.concurrent.TimeUnit;
  * @see #setCacheControl
  * @see #setRequireSession
  */
+// 一个 web 的内容生成器。
+// 支持 HTTP 的缓存控制技术。【目前还没看出特别牛逼的地方，先放过】
 public abstract class WebContentGenerator extends WebApplicationObjectSupport {
 
 	/**
@@ -389,14 +391,19 @@ public abstract class WebContentGenerator extends WebApplicationObjectSupport {
 	 * @throws ServletException if the request cannot be handled because a check failed
 	 * @since 4.2
 	 */
+	// 判断此请求是否可以处理
 	protected final void checkRequest(HttpServletRequest request) throws ServletException {
 		// Check whether we should support the request method.
 		String method = request.getMethod();
+		// 如果对请求有限制，则判断请求是否是可处理的
+		// 一般不会进行限制
 		if (this.supportedMethods != null && !this.supportedMethods.contains(method)) {
 			throw new HttpRequestMethodNotSupportedException(method, this.supportedMethods);
 		}
 
 		// Check whether a session is required.
+		// 如果限制了需要session，判断请求是否漏了 session 标识
+		// 一般不会进行限制
 		if (this.requireSession && request.getSession(false) == null) {
 			throw new HttpSessionRequiredException("Pre-existing session required but none found");
 		}

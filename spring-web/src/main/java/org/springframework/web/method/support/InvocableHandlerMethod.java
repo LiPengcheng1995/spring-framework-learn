@@ -46,6 +46,8 @@ import java.util.Arrays;
  * @author Juergen Hoeller
  * @since 3.1
  */
+// 一个用来封装 HandlerMethod ，使其可以被通用逻辑调用的类。
+// TODO 具体逻辑不清楚，有需要时再看
 public class InvocableHandlerMethod extends HandlerMethod {
 
 	@Nullable
