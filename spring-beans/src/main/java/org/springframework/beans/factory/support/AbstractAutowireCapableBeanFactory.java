@@ -94,6 +94,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	/**
 	 * Cache of unfinished FactoryBean instances: FactoryBean name to BeanWrapper
 	 */
+	// 缓存的 Bean ，之前如果有一些类型检查或者什么的创建了一部分的 Bean ，就缓存在这里。如果又需要就直接从这里拿实例，然后就可以继续往下走了
+	// 目前我看这里就是进行 typeCheck 时把构建成的实例扔到这里
 	private final ConcurrentMap<String, BeanWrapper> factoryBeanInstanceCache = new ConcurrentHashMap<>(16);
 	/**
 	 * Cache of filtered PropertyDescriptors: bean Class to PropertyDescriptor array
@@ -503,7 +505,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Instantiate the bean.
 		BeanWrapper instanceWrapper = null;
 		if (mbd.isSingleton()) {
-			// TODO 此处存疑，需要专门看一下 factoryBeanInstanceCache 的作用及存取
+			// TODO 这里有问题，我们在创建实例前专门把 mbd 干掉了，就是刷新配置，方便按照最新的配置构建对象。但是这里还是取缓存，前后矛盾
+			// 当然，我们可以认为创建实例的套路不容易变。主要是往实例里填值的配置容易变，这样想容易凑合过去
 			instanceWrapper = this.factoryBeanInstanceCache.remove(beanName);
 		}
 		if (instanceWrapper == null) {
@@ -1091,7 +1094,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 					"Bean class isn't public, and non-public access not allowed: " + beanClass.getName());
 		}
 
-		Supplier<?> instanceSupplier = mbd.getInstanceSupplier(); // 应该是一个 factory method 吧
+		Supplier<?> instanceSupplier = mbd.getInstanceSupplier(); // 应该是一个 factory method 吧，正常使用时应该不会用到这个属性
 		if (instanceSupplier != null) {
 			// 直接从生产者方法调用
 			return obtainFromSupplier(instanceSupplier, beanName);
@@ -1112,17 +1115,17 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		boolean autowireNecessary = false;
 		if (args == null) {
 			synchronized (mbd.constructorArgumentLock) {
-				if (mbd.resolvedConstructorOrFactoryMethod != null) { // 缓存中有指定构造的方法【结合情景，这里应该是构造函数了】
+				if (mbd.resolvedConstructorOrFactoryMethod != null) { // 缓存中有存储构造的方法【结合情景，这里应该是构造函数了】
 					resolved = true;
 					autowireNecessary = mbd.constructorArgumentsResolved; // 构造的方法的入参可达
 				}
 			}
 		}
 		if (resolved) { // 说明是走缓存【使用默认参数、且有缓存】
-			// 结合上文，不是走的工厂方法，所以走的是构造函数【具体是默认构造函数还是啥的，再分析】
-			if (autowireNecessary) { // 已经得到默认入参，直接传空？？
+			// 结合上文，不是走的工厂方法，所以走的是构造函数
+			if (autowireNecessary) { // 构造函数的参数也都搞好了，直接走缓存就行，所以不用传了
 				return autowireConstructor(beanName, mbd, null, null);
-			} else { // 构造函数有配置，但是没得到默认入参，就用默认构造函数吧
+			} else { // 构造函数有配置，但是没得到默认入参，
 				return instantiateBean(beanName, mbd);
 			}
 		}

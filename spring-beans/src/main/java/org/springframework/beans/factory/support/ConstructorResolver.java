@@ -381,6 +381,7 @@ class ConstructorResolver {
 			// 1. 他是能生产 bean 的一个类，所以我们也叫他 factory
 			// 2. 他也是一个 bean
 			// 所以，他是一个 factoryBean ，不一定是 FactoryBean 类型的。
+			// 注意，生产这个 bean 的方法不能是这个 bean 的，可能考虑到创建这个 bean 时不好用注入【因为在创建啊】，所以不提倡
 			if (factoryBeanName.equals(beanName)) {
 				throw new BeanDefinitionStoreException(mbd.getResourceDescription(), beanName,
 						"factory-bean reference points back to the same bean definition");
@@ -414,11 +415,14 @@ class ConstructorResolver {
 		} else {
 			Object[] argsToResolve = null;
 			synchronized (mbd.constructorArgumentLock) {
+				// 注意了，我们 xml 中的 constructor-arg 指的是构建实例的入参，不区分 factoryMethod 、 constructor【毕竟默认的就是配置的构建方式唯一】
+				// 不要被 constructor-arg 的 constructor 迷惑
 				factoryMethodToUse = (Method) mbd.resolvedConstructorOrFactoryMethod;
-				if (factoryMethodToUse != null && mbd.constructorArgumentsResolved) {
+				if (factoryMethodToUse != null && mbd.constructorArgumentsResolved) { // 已经解析过 method 了，而且解析了 arg
 					// Found a cached factory method...
 					argsToUse = mbd.resolvedConstructorArguments;
 					if (argsToUse == null) {
+						// arg 还没彻底决定
 						argsToResolve = mbd.preparedConstructorArguments;
 					}
 				}
@@ -426,12 +430,14 @@ class ConstructorResolver {
 			if (argsToResolve != null) {
 				argsToUse = resolvePreparedArguments(beanName, mbd, bw, factoryMethodToUse, argsToResolve);
 			}
+			// TODO 这里没有缓存至 mbd.resolvedConstructorArguments ，每次都得新创建
 		}
 
-		// 第一个条件的意思：虽然我们拿到了要用方法的 String 的名称，但是没通过缓存拿到对应的方法，
-		// 需要自行根据入参筛选一下
-		//
-		// TODO 第二个条件情况不清楚
+		//	以下情况会进 if：
+		// 1. 传入了定制的参数
+		// 2. 没传入定制参数
+		// 		a). 但是之前没有解析过创建实例的方法
+		//		b). 之前解析过创建实例的方法，但是没存上参数？？？
 		if (factoryMethodToUse == null || argsToUse == null) {
 			// Need to determine the factory method...
 			// Try all methods with this name to see if they match the given arguments.
@@ -448,15 +454,16 @@ class ConstructorResolver {
 			}
 			Method[] candidates = candidateList.toArray(new Method[0]);
 			// 先根据函数作用域从大向小的排【public->protected->private】
-			// 同等作用域，根据入参数量从大到小排列
+			// 同等作用域，根据入参数量从大到小排列【因为给的参数比方法所需少，可以用null补；如果多，就丢数据了】
 			AutowireUtils.sortFactoryMethods(candidates);
 
 			ConstructorArgumentValues resolvedValues = null;
+			// 判断是否要在构造实例的方法中注入【只要能空入参构造实例就空入参，尽量不在这里折腾】
 			boolean autowiring = (mbd.getResolvedAutowireMode() == AutowireCapableBeanFactory.AUTOWIRE_CONSTRUCTOR);
 			int minTypeDiffWeight = Integer.MAX_VALUE;
 			Set<Method> ambiguousFactoryMethods = null;
 
-			int minNrOfArgs;
+			int minNrOfArgs;// 用来筛选创建实例方法的参数值数量下限
 			if (explicitArgs != null) {
 				minNrOfArgs = explicitArgs.length;
 			} else {//没有入参来确定数量，就根据BD中定下的构造函数入参数量来看
@@ -511,7 +518,11 @@ class ConstructorResolver {
 						}
 					}
 					// 根据是否是严格匹配模式
-					// 并此方法入参参算一下匹配程度
+					// 并此方法入参参算一下匹配程度【数值越小越匹配，应该叫差异程度更好】
+					//
+					// 匹配程度计算套路：
+					// 一个参数一个参数比，如果不能转换，直接 MAX
+					// 如果可以转换，说明至少入参类型和参数声明类型有父子关系，就顺着关系往上走，走一步+2，最后如果是接口再+1
 					int typeDiffWeight = (mbd.isLenientConstructorResolution() ?
 							argsHolder.getTypeDifferenceWeight(paramTypes) : argsHolder.getAssignabilityWeight(paramTypes));
 					// Choose this factory method if it represents the closest match.
@@ -590,8 +601,8 @@ class ConstructorResolver {
 			}
 
 			// 保存结果
-			// TODO : 注意了，因为我们通过各种对比确定实例化函数还是很耗费性能的，所以我们采用缓存机制，将我们计算出的结果缓存值 mbd ，下次就直接用了
-			// TODO : 注意啦，这里只有使用默认构建参数时才会走缓存防止你在getBean（）时瞎玩
+			// 注意了，因为我们通过各种对比确定实例化函数还是很耗费性能的，所以我们采用缓存机制，将我们计算出的结果缓存值 mbd ，下次就直接用了
+			// 注意啦，这里只有使用默认构建参数时才会走缓存防止你在getBean（）时瞎玩
 			if (explicitArgs == null && argsHolderToUse != null) {
 				argsHolderToUse.storeCache(mbd, factoryMethodToUse);
 			}
@@ -780,6 +791,7 @@ class ConstructorResolver {
 			String beanName, RootBeanDefinition mbd, BeanWrapper bw, Executable executable, Object[] argsToResolve) {
 
 		TypeConverter customConverter = this.beanFactory.getCustomTypeConverter();
+		// 如果 BeanFactory 有 TypeConverter，就用公共的，否则用自己的
 		TypeConverter converter = (customConverter != null ? customConverter : bw);
 		BeanDefinitionValueResolver valueResolver =
 				new BeanDefinitionValueResolver(this.beanFactory, beanName, mbd, converter);
@@ -789,17 +801,17 @@ class ConstructorResolver {
 		for (int argIndex = 0; argIndex < argsToResolve.length; argIndex++) {
 			Object argValue = argsToResolve[argIndex];
 			MethodParameter methodParam = MethodParameter.forExecutable(executable, argIndex); // 得到构造函数指定下标的参数类型
-			GenericTypeResolver.resolveParameterType(methodParam, executable.getDeclaringClass()); // TODO： 啥意思？？
-			if (argValue instanceof AutowiredArgumentMarker) { // 需要 autowire 的
+			GenericTypeResolver.resolveParameterType(methodParam, executable.getDeclaringClass()); // 根据配置的参数值和方法的参数类型，确定当前参数的类型
+			if (argValue instanceof AutowiredArgumentMarker) { // TODO 参数打标，需要 autowire 的
 				argValue = resolveAutowiredArgument(methodParam, beanName, null, converter);// TODO：从此工厂中解析指定的依赖
-			} else if (argValue instanceof BeanMetadataElement) { // bean 生成的源
+			} else if (argValue instanceof BeanMetadataElement) { // TODO 参数是一个具体的 bean 配置项
 				argValue = valueResolver.resolveValueIfNecessary("constructor argument", argValue); // TODO： 看一下
 			} else if (argValue instanceof String) {
 				argValue = this.beanFactory.evaluateBeanDefinitionString((String) argValue, mbd);// 解析一下可能存在的表达式，例如SpEL
 			}
 			Class<?> paramType = paramTypes[argIndex];
 			try {
-				resolvedArgs[argIndex] = converter.convertIfNecessary(argValue, paramType, methodParam);// TODO ：不知道是用的哪个实现
+				resolvedArgs[argIndex] = converter.convertIfNecessary(argValue, paramType, methodParam);// 将上面处理过的值转化成方法中对应位置要求的 Java 类型
 			} catch (TypeMismatchException ex) {
 				throw new UnsatisfiedDependencyException(
 						mbd.getResourceDescription(), beanName, new InjectionPoint(methodParam),

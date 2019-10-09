@@ -62,16 +62,19 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	/**
 	 * Cache of singleton objects: bean name --> bean instance
 	 */
+	// 正经的，创建好包装好的的单例
 	private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
 
 	/**
 	 * Cache of singleton factories: bean name --> ObjectFactory
 	 */
+	// 单例的实例创建好了，但是还没填充完值，就先通过闭包扔到这里了，方便用来解决循环依赖
 	private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(16);
 
 	/**
 	 * Cache of early singleton objects: bean name --> bean instance
 	 */
+	// 提前暴露的单例实例
 	private final Map<String, Object> earlySingletonObjects = new HashMap<>(16);
 
 	/**
@@ -420,6 +423,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 *
 	 * @param beanName          the name of the bean
 	 * @param dependentBeanName the name of the dependent bean
+	 *                          调用上下文 ，dependentBeanName 这里已经是id了，不带 & 的id
 	 */
 	public void registerDependentBean(String beanName, String dependentBeanName) {
 		String canonicalName = canonicalName(beanName);

@@ -83,23 +83,27 @@ public class MethodInvoker {
 	public static int getTypeDifferenceWeight(Class<?>[] paramTypes, Object[] args) {
 		int result = 0;
 		for (int i = 0; i < paramTypes.length; i++) {
+			// 如果类型不能转换，直接失败，返回 MAX
 			if (!ClassUtils.isAssignableValue(paramTypes[i], args[i])) {
 				return Integer.MAX_VALUE;
 			}
 			if (args[i] != null) {
+				// 类型可以互相转换，这里 paramTypes[i] 应该是 args[i] 同类型或者父类
+				// 接下来看看，继承关系到底有多远，越远就表示差异越大
 				Class<?> paramType = paramTypes[i];
 				Class<?> superClass = args[i].getClass().getSuperclass();
 				while (superClass != null) {
-					if (paramType.equals(superClass)) {
+					if (paramType.equals(superClass)) {// 父级就碰上了，OK，+2表示差一级，然后退出
 						result = result + 2;
 						superClass = null;
-					} else if (ClassUtils.isAssignable(paramType, superClass)) {
+					} else if (ClassUtils.isAssignable(paramType, superClass)) {// 没碰上，但是还可以往上走，就+2，继续
 						result = result + 2;
 						superClass = superClass.getSuperclass();
-					} else {
+					} else {// 没碰上，说明最开始就错了，不应该进循环，paramTypes[i] 和 args[i] 就是同一种类型
 						superClass = null;
 					}
 				}
+				// 当然，上面算完值了，这里如果声明的是接口类型的入参，就+1
 				if (paramType.isInterface()) {
 					result = result + 1;
 				}
