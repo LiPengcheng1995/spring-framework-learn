@@ -451,7 +451,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		try {
 			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
 			// 返回的 bean 实例不一定是目标的实例，可能是一层代理
-			// TODO： 这里是 AOP 的织入点，现在没看懂，后面可以继续看
+			// 这里是 AOP 的织入点
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
 				return bean;
@@ -515,6 +515,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 		final Object bean = instanceWrapper.getWrappedInstance();
 		Class<?> beanType = instanceWrapper.getWrappedClass();
+		// 根据构建出的实例补充以下 mbd
 		if (beanType != NullBean.class) {
 			mbd.resolvedTargetType = beanType;
 		}
@@ -537,6 +538,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// even when triggered by lifecycle interfaces like BeanFactoryAware.
 		// 如果要解决循环依赖问题，需要提前将实例引用暴露。
 		// 暴露出去之后慢慢再进行实例填值、初始化、后处理钩子调用
+		// 感觉 isSingletonCurrentlyInCreation（） 这个校验有点多余吧，但是反正也符合条件，不想太多
 		boolean earlySingletonExposure = (mbd.isSingleton() && this.allowCircularReferences &&
 				isSingletonCurrentlyInCreation(beanName));
 		if (earlySingletonExposure) {
@@ -555,7 +557,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Initialize the bean instance.
 		Object exposedObject = bean;
 		try {
-			// 填充一些 bean 的属性
+			// 填充 bean 的属性
 			populateBean(beanName, mbd, instanceWrapper);
 			// 初始化 bean
 			// 这里才叫初始化，初始化特指调用初始化和那些钩子方法，其他的包括填充属性，都叫创建实例
@@ -582,7 +584,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				} else if (!this.allowRawInjectionDespiteWrapping && hasDependentBean(beanName)) { // 我们的一通操作，改变了引用地址【出现了代理或者包裹】
 					// 1. 是否提前注入原始的 bean 实例来防止循环引用，即使最终这个 bean 会被包裹【否】
 					// 2. 这个提前暴露出去的 bean 已经被人依赖了
-					String[] dependentBeans = getDependentBeans(beanName); // 获得依赖这个 bean 的 bean 列表，一个一个修改
+					String[] dependentBeans = getDependentBeans(beanName); // 获得依赖这个 bean 的 bean 列表，一个一个试着删除
 					Set<String> actualDependentBeans = new LinkedHashSet<>(dependentBeans.length);
 					for (String dependentBean : dependentBeans) {
 						if (!removeSingletonIfCreatedForTypeCheckOnly(dependentBean)) { // 将还没有正式使用的 bean 实例删除
@@ -1356,6 +1358,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			pvs = newPvs;
 		}
 
+		// 到这里，我们在 @Resource,@Autowire,@Qualifier 相关注解的基础上把那些没有配置的复杂属性也补充了一波，现在是最全的属性注入了
+
 		// 根据情况看需不需要对即将填充进实例的属性进行处理
 		boolean hasInstAwareBpps = hasInstantiationAwareBeanPostProcessors(); //有注册的钩子可以用
 		boolean needsDepCheck = (mbd.getDependencyCheck() != AbstractBeanDefinition.DEPENDENCY_CHECK_NONE);// 设置了需要依赖检测
@@ -1370,10 +1374,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				pvs = mbd.getPropertyValues();
 			}
 			// 这个就不深入了，里面的东西还挺多的，根据上下文猜一下：
-			// 这个应该是根据 Bean 对应的 Class ，直接获得这个里面所有的属性
+			// 这个应该是根据 Bean 对应的 Class ，直接获得这个里面所有的需要进行依赖检测的属性【就是把 ExcludeXX 的干掉剩下的】
 			PropertyDescriptor[] filteredPds = filterPropertyDescriptorsForDependencyCheck(bw, mbd.allowCaching);
 
-			// 调用后处理器修饰
+			// 调用后处理器修饰我们需要进行依赖检测的属性
 			if (hasInstAwareBpps) {
 				for (BeanPostProcessor bp : getBeanPostProcessors()) {
 					if (bp instanceof InstantiationAwareBeanPostProcessor) {
@@ -1557,6 +1561,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @return the filtered PropertyDescriptors
 	 * @see #isExcludedFromDependencyCheck
 	 */
+	// 拿到 BeanWrapper 内类的所有属性【除去不需要依赖检测的】
 	protected PropertyDescriptor[] filterPropertyDescriptorsForDependencyCheck(BeanWrapper bw) {
 		List<PropertyDescriptor> pds = new ArrayList<>(Arrays.asList(bw.getPropertyDescriptors()));
 		pds.removeIf(this::isExcludedFromDependencyCheck);
@@ -1591,7 +1596,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @param pvs      the property values to be applied to the bean
 	 * @see #isExcludedFromDependencyCheck(java.beans.PropertyDescriptor)
 	 */
-	// 思路很简单：我们上面 filteredPds 拿到了所有的属性，也就是这里的 pds ，我们和处理后得到的属性集 pvs 一一比对
+	// 思路很简单：我们上面 filteredPds 拿到了所有的需要依赖检测的属性，也就是这里的 pds ，我们和处理后得到的属性集 pvs 一一比对
 	// 找出可设置但是没设置的属性，看看它是不是在我们的检查范围内，如果在就报错，如果不在就忽略。
 	protected void checkDependencies(
 			String beanName, AbstractBeanDefinition mbd, PropertyDescriptor[] pds, PropertyValues pvs)
@@ -1599,6 +1604,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		int dependencyCheck = mbd.getDependencyCheck(); // 获得我们配置的检测范围：所有/仅简单属性/仅复杂属性【对象引用】
 		for (PropertyDescriptor pd : pds) {
+			// 需要进行依赖检测的属性，但是 pvs 没有
 			if (pd.getWriteMethod() != null && !pvs.contains(pd.getName())) {
 				// 这个属性有，切可以设置，但是在处理后获得的要注入的属性中没有
 				boolean isSimple = BeanUtils.isSimpleProperty(pd.getPropertyType()); // 获得属性所属范围
@@ -1645,7 +1651,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			if (mpvs.isConverted()) {
 				// Shortcut: use the pre-converted values as-is.
 				try {
-					bw.setPropertyValues(mpvs);
+					bw.setPropertyValues(mpvs);// 直接 set 进去
 					return;
 				} catch (BeansException ex) {
 					throw new BeanCreationException(
@@ -1767,8 +1773,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		Object wrappedBean = bean;
-		// bean 是系统生成的，不是合成的，就调用工厂注册的那些在初始化之前要调用的钩子
-		// TODO mbd.isSynthetic() 这个一直有些懵逼
+		// bean 是系统生成的（人为定义的），还没进行合成（也就是还没进行增强的包装），就调用工厂注册的那些在初始化之前要调用的钩子
 		if (mbd == null || !mbd.isSynthetic()) { // 调用 Factory 中的那些个钩子
 			wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
 		}
@@ -1821,12 +1826,16 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	// 调用 bean 的初始化方法，初始化方法的指定有两种：
 	// 1. 用 init-method 指定【目前只关注了 xml 的配置，注解的那个我们后面再分析一遍】
 	// 2. bean 实现 InitializingBean 接口，直接调用接口下面的初始化方法
+	//
+	// TODO 注意：mbd.isExternallyManagedInitMethod 这个的设置和对应的使用后面可以瞅一下。看样子初始化方法还可以进行外部托管，也就是 Spring 不
+	// 进行调用，将功能操作下放？
 	protected void invokeInitMethods(String beanName, final Object bean, @Nullable RootBeanDefinition mbd)
 			throws Throwable {
 
 		boolean isInitializingBean = (bean instanceof InitializingBean);
+		// 如果实现了 InitializingBean 就调用 afterPropertiesSet（）
 		// mbs == null 用 或的短路去理解
-		// TODO ： mbd.isExternallyManagedInitMethod 这个的设置和对应的使用后面可以瞅一下
+		//
 		if (isInitializingBean && (mbd == null || !mbd.isExternallyManagedInitMethod("afterPropertiesSet"))) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Invoking afterPropertiesSet() on bean with name '" + beanName + "'");
@@ -1848,6 +1857,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}
 		}
 
+		// 拿到初始化方法，如果有配置就调用。当然防止 afterPropertiesSet（） 被重复调用
 		if (mbd != null && bean.getClass() != NullBean.class) {
 			String initMethodName = mbd.getInitMethodName();
 			// 1. 有配置对应的 initMethod，就继续调用

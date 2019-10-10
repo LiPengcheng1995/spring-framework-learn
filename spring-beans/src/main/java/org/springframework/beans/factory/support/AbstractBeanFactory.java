@@ -1183,8 +1183,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * @param bw the BeanWrapper to initialize
 	 */
 	protected void initBeanWrapper(BeanWrapper bw) {
+		// 把 BeanFactory 的 ConversionService 用于该 BeanWrapper
 		bw.setConversionService(getConversionService());
-		// TODO 什么意思？
+		// 把 BeanFactory 的 PropertyEditorRegistrar 都注册进该 BeanWrapper ， 后面进行值填充时如果需要接触一些资源都能拿到
 		registerCustomEditors(bw);
 	}
 

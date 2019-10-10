@@ -961,7 +961,8 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	 * Return whether this bean definition is 'synthetic', that is,
 	 * not defined by the application itself.
 	 */
-	// 如果是用户自己定义的就是 true
+	// 如果是用户自己定义的就是 false 【用户自己定义的 = application 中直接定义的 = 非合成的】
+	// 如果是在用户定义的基础上经过增强什么的操作，这个 BD 就说是"合成的"，是 true
 	public boolean isSynthetic() {
 		return this.synthetic;
 	}

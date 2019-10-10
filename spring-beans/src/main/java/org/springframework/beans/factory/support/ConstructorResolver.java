@@ -121,14 +121,12 @@ class ConstructorResolver {
 					// Found a cached constructor...
 					argsToUse = mbd.resolvedConstructorArguments;
 					if (argsToUse == null) {
-						// TODO preparedConstructorArguments 是干啥的,看着像是一个兜底方案
 						argsToResolve = mbd.preparedConstructorArguments;
 					}
 				}
 			}
 			if (argsToResolve != null) { // 只有从缓存中拿到的构造函数不为空才会去取缓存中的入参
 				// 能走这里说明构造函数、入参均取缓存中的默认值
-				// TODO 后面再细看吧
 				argsToUse = resolvePreparedArguments(beanName, mbd, bw, constructorToUse, argsToResolve);
 				// 得到了参数的真实值【或者是引用的实例或者是完成表达式解析的字符串】，接下来可以直接调用反射把值注进去了
 			}
@@ -150,6 +148,7 @@ class ConstructorResolver {
 			} else {
 				ConstructorArgumentValues cargs = mbd.getConstructorArgumentValues();
 				resolvedValues = new ConstructorArgumentValues();
+				// 这里和工厂构建不太一样，支持通过下标、名称来构建
 				minNrOfArgs = resolveConstructorArguments(beanName, mbd, bw, cargs, resolvedValues);
 			}
 
@@ -182,9 +181,9 @@ class ConstructorResolver {
 					// do not look any further, there are only less greedy constructors left.
 					break;
 				}
-				// TODO： minNrOfArgs 这个不知道干啥的
 				// 猜测是上一个等级作用域的过了一大半了，但是构造函数还没确定，反正是反射创建，就把 protected/private 也过一下，也许有合适的呢
 				// 所以 continue 快进了
+				// 这里直接跳过是因为此等级后面的构造函数入参都少于我们提供的，肯定不能走这些参数，所以直接跳过了
 				if (paramTypes.length < minNrOfArgs) {
 					continue;
 				}
@@ -192,6 +191,7 @@ class ConstructorResolver {
 				ArgumentsHolder argsHolder;
 				if (resolvedValues != null) {// 入参 value 已经确定
 					try {
+						// 这里相对从工厂方法确定参数名称，多了支持 ConstructorProperties 注解的功能，尽管我们还是不怎么用
 						String[] paramNames = ConstructorPropertiesChecker.evaluate(candidate, paramTypes.length); // 如果这个构造函数用 ConstructorProperties 规范的注解了，就根据注解找到了实例变量名称列表
 						if (paramNames == null) {
 							ParameterNameDiscoverer pnd = this.beanFactory.getParameterNameDiscoverer();
@@ -651,6 +651,7 @@ class ConstructorResolver {
 
 		int minNrOfArgs = cargs.getArgumentCount();
 
+		// 按照下标先丢进去
 		for (Map.Entry<Integer, ConstructorArgumentValues.ValueHolder> entry : cargs.getIndexedArgumentValues().entrySet()) {
 			int index = entry.getKey();
 			if (index < 0) {
@@ -673,6 +674,7 @@ class ConstructorResolver {
 			}
 		}
 
+		// 按照名称定义丢进去
 		for (ConstructorArgumentValues.ValueHolder valueHolder : cargs.getGenericArgumentValues()) {
 			if (valueHolder.isConverted()) {
 				resolvedValues.addGenericArgumentValue(valueHolder);
