@@ -1365,7 +1365,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	protected void checkMergedBeanDefinition(RootBeanDefinition mbd, String beanName, @Nullable Object[] args)
 			throws BeanDefinitionStoreException {
 
-		//TODO： 这里应该是映射到配置的 xml 中的 abstract 字段了，这么说来如果配置了那个字段就都不能实例化了？？？？
+		//TODO： 这里应该是映射到配置的 xml 中的 abstract 字段了，应该在拍扁时有处理，如果方法补全会摘掉这个标识
 		if (mbd.isAbstract()) {
 			throw new BeanIsAbstractException(beanName);
 		}

@@ -376,7 +376,8 @@ class ConstructorResolver {
 		boolean isStatic;
 
 		String factoryBeanName = mbd.getFactoryBeanName();
-		if (factoryBeanName != null) { // 根据约定走就行了
+		if (factoryBeanName != null) {
+			// 根据约定走就行了
 			// 注意了：
 			// 1. 他是能生产 bean 的一个类，所以我们也叫他 factory
 			// 2. 他也是一个 bean
@@ -390,6 +391,7 @@ class ConstructorResolver {
 			// 如果要通过工厂创建的 bean 是单例，且已经创建，直接报错，这说明前面的单例缓存被击穿。
 			// 如果是日常业务，最多也就是数据库压力变大，但是在这里，单例的重复创建会引起很大的问题，
 			// 例如之前为了解决循环依赖提前暴露的引用，可能就失效了。
+			// TODO  这里有问题，如果是通过工厂方法，单例不能通过定制参数继续重复创建了吗？
 			if (mbd.isSingleton() && this.beanFactory.containsSingleton(beanName)) {
 				throw new ImplicitlyAppearedSingletonException();
 			}
