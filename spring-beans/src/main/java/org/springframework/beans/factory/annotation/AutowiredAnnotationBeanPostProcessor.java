@@ -97,6 +97,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @see Value
  * @since 2.5
  */
+// TODO 这里看一下 @Value 、@Autowired 的相关处理
 public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBeanPostProcessorAdapter
 		implements MergedBeanDefinitionPostProcessor, PriorityOrdered, BeanFactoryAware {
 
