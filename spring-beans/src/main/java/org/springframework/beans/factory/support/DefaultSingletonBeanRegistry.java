@@ -80,7 +80,8 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	/**
 	 * Set of registered singletons, containing the bean names in registration order
 	 */
-	//TODO 没必要专门用个集合来存储，这样维护一致性要花费不少精力
+	// 注意，这里和 singletonObjects.keySet() 不一样，提前暴露的单例也会在这里标记
+	// 意思大概是这里标记了的一定是有的，或者是正经创建完的，或者是提前暴露的
 	private final Set<String> registeredSingletons = new LinkedHashSet<>(256);
 
 	/**
