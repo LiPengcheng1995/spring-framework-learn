@@ -93,7 +93,9 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 	 * @see org.springframework.beans.factory.FactoryBean#getObject()
 	 */
 	protected Object getObjectFromFactoryBean(FactoryBean<?> factory, String beanName, boolean shouldPostProcess) {
-		if (factory.isSingleton() && containsSingleton(beanName)) { // 这个beanName对应的是单例bean
+		// 这个beanName对应的是单例bean
+		// TODO 且走了缓存，没有定制构造参数！这个很重要，如果是传入构造参数那种，不走缓存，自然不用加锁啥的
+		if (factory.isSingleton() && containsSingleton(beanName)) {
 			synchronized (getSingletonMutex()) { // 防止并发造成的重复初始化
 				Object object = this.factoryBeanObjectCache.get(beanName);
 				if (object == null) { // 该beanName还没缓存到 cache 中，认为还没构造
@@ -114,6 +116,11 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 								return object;
 							}
 							// 准备调用后处理器的钩子，先把beanName放到正在创建到列表里
+							// TODO 这里传进来的是带 & 的，也就是我们的
+							// id --> 用来拿到实例的 FactoryBean
+							// &id --> 要拿到的实例
+							// 没办法，谁让 id 先把坑占了呢
+
 							beforeSingletonCreation(beanName);
 							try {
 								object = postProcessObjectFromFactoryBean(object, beanName);
