@@ -777,7 +777,9 @@ public abstract class ReflectionUtils {
 		Field[] result = declaredFieldsCache.get(clazz);
 		if (result == null) {
 			try {
+				// 拿到此类中定义的所有属性【不包括继承的属性】
 				result = clazz.getDeclaredFields();
+				// 反射效率低，缓存以提升速度
 				declaredFieldsCache.put(clazz, (result.length == 0 ? EMPTY_FIELD_ARRAY : result));
 			} catch (Throwable ex) {
 				throw new IllegalStateException("Failed to introspect Class [" + clazz.getName() +

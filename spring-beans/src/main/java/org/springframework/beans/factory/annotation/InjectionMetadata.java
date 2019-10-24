@@ -165,12 +165,13 @@ public class InjectionMetadata {
 		/**
 		 * Either this or {@link #getResourceToInject} needs to be overridden.
 		 */
+		// TODO 此处不走默认实现，看具体的实现类。好坑啊
 		protected void inject(Object target, @Nullable String requestingBeanName, @Nullable PropertyValues pvs)
 				throws Throwable {
 
 			if (this.isField) {
 				Field field = (Field) this.member;
-				ReflectionUtils.makeAccessible(field);
+				ReflectionUtils.makeAccessible(field);// 使 field 可接触
 				field.set(target, getResourceToInject(target, requestingBeanName));
 			} else {
 				if (checkPropertySkipping(pvs)) {

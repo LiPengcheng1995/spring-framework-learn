@@ -208,6 +208,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 		metadata.checkConfigMembers(beanDefinition);
 	}
 
+	// 先放过
 	@Override
 	@Nullable
 	public Constructor<?>[] determineCandidateConstructors(Class<?> beanClass, final String beanName)
@@ -331,8 +332,10 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 	public PropertyValues postProcessPropertyValues(
 			PropertyValues pvs, PropertyDescriptor[] pds, Object bean, String beanName) throws BeanCreationException {
 
+		// 拿到打注解的元数据【就是打注解的属性、方法】
 		InjectionMetadata metadata = findAutowiringMetadata(beanName, bean.getClass(), pvs);
 		try {
+			// TODO 注解相关的注入
 			metadata.inject(bean, beanName, pvs);
 		} catch (BeanCreationException ex) {
 			throw ex;
@@ -364,6 +367,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 
 
 	private InjectionMetadata findAutowiringMetadata(String beanName, Class<?> clazz, @Nullable PropertyValues pvs) {
+		// 尝试走缓存，缓存不行就现场扫描，扫完入缓存
 		// Fall back to class name as cache key, for backwards compatibility with custom callers.
 		String cacheKey = (StringUtils.hasLength(beanName) ? beanName : clazz.getName());
 		// Quick check on the concurrent map first, with minimal locking.
@@ -375,6 +379,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 					if (metadata != null) {
 						metadata.clear(pvs);
 					}
+					// 遍历此类，拿到打标的非静态属性、方法
 					metadata = buildAutowiringMetadata(clazz);
 					this.injectionMetadataCache.put(cacheKey, metadata);
 				}
@@ -390,20 +395,24 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 		do {
 			final List<InjectionMetadata.InjectedElement> currElements = new ArrayList<>();
 
+			// 拿到打 autowiredAnnotationTypes 中注解的非静态属性。放入 currElements
 			ReflectionUtils.doWithLocalFields(targetClass, field -> {
 				AnnotationAttributes ann = findAutowiredAnnotation(field);
 				if (ann != null) {
+					// TODO 如果是静态的属性，这里直接返回
 					if (Modifier.isStatic(field.getModifiers())) {
 						if (logger.isWarnEnabled()) {
 							logger.warn("Autowired annotation is not supported on static fields: " + field);
 						}
 						return;
 					}
+					// 拿到是否必须？
 					boolean required = determineRequiredStatus(ann);
 					currElements.add(new AutowiredFieldElement(field, required));
 				}
 			});
 
+			// 拿到打 autowiredAnnotationTypes 中注解的非静态方法。放入 currElements
 			ReflectionUtils.doWithLocalMethods(targetClass, method -> {
 				Method bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);
 				if (!BridgeMethodResolver.isVisibilityBridgeMethodPair(method, bridgedMethod)) {
@@ -429,10 +438,11 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 				}
 			});
 
+			// 把 currElements 中的数据放入 elements
 			elements.addAll(0, currElements);
 			targetClass = targetClass.getSuperclass();
 		}
-		while (targetClass != null && targetClass != Object.class);
+		while (targetClass != null && targetClass != Object.class);// 此处从下往上把这个类所有打标的非静态属性、方法全找出来
 
 		return new InjectionMetadata(clazz, elements);
 	}
@@ -440,10 +450,11 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 	@Nullable
 	private AnnotationAttributes findAutowiredAnnotation(AccessibleObject ao) {
 		if (ao.getAnnotations().length > 0) {  // autowiring annotations have to be local
+			// 按照之前我们存进去的注解类依次遍历，拿到注解对应的属性
 			for (Class<? extends Annotation> type : this.autowiredAnnotationTypes) {
 				AnnotationAttributes attributes = AnnotatedElementUtils.getMergedAnnotationAttributes(ao, type);
 				if (attributes != null) {
-					return attributes;
+					return attributes;// 拿到注解的第一个属性，也就是同时打多个注解，看排序了，如果没有排序就看脸了
 				}
 			}
 		}
@@ -553,7 +564,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 		protected void inject(Object bean, @Nullable String beanName, @Nullable PropertyValues pvs) throws Throwable {
 			Field field = (Field) this.member;
 			Object value;
-			if (this.cached) {
+			if (this.cached) {// 有缓存走缓存【默认为false】
 				value = resolvedCachedArgument(beanName, this.cachedFieldValue);
 			} else {
 				DependencyDescriptor desc = new DependencyDescriptor(field, this.required);
@@ -570,11 +581,14 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 					if (!this.cached) {
 						if (value != null || this.required) {
 							this.cachedFieldValue = desc;
+							// 注册依赖项
 							registerDependentBeans(beanName, autowiredBeanNames);
-							if (autowiredBeanNames.size() == 1) {
+							if (autowiredBeanNames.size() == 1) { // TODO 对于打到 List 上到注解是怎么走的？
+								// 如果拿到了唯一的合适的实例id
 								String autowiredBeanName = autowiredBeanNames.iterator().next();
 								if (beanFactory.containsBean(autowiredBeanName) &&
 										beanFactory.isTypeMatch(autowiredBeanName, field.getType())) {
+									//这里只是用来保存介绍，后面不动
 									this.cachedFieldValue = new ShortcutDependencyDescriptor(
 											desc, autowiredBeanName, field.getType());
 								}
@@ -586,6 +600,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 					}
 				}
 			}
+			// 这里是直接丢进去了
 			if (value != null) {
 				ReflectionUtils.makeAccessible(field);
 				field.set(bean, value);
@@ -610,6 +625,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 			this.required = required;
 		}
 
+		// 和属性的注入类似，循环往里扔就行，扔完了用反射调用一下
 		@Override
 		protected void inject(Object bean, @Nullable String beanName, @Nullable PropertyValues pvs) throws Throwable {
 			if (checkPropertySkipping(pvs)) {
