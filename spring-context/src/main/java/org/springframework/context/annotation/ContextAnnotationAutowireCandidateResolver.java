@@ -31,6 +31,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
 
+// TODO 用来根据属性类型得到所有可以注入的候选实例
+// 挺关键的，可以注意看一下
 /**
  * Complete implementation of the
  * {@link org.springframework.beans.factory.support.AutowireCandidateResolver} strategy

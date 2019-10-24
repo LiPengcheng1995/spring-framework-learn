@@ -204,7 +204,9 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 
 	@Override
 	public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
+		// 拿到打注解的
 		InjectionMetadata metadata = findAutowiringMetadata(beanName, beanType, null);
+		// 检查配置？
 		metadata.checkConfigMembers(beanDefinition);
 	}
 
@@ -583,8 +585,8 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 							this.cachedFieldValue = desc;
 							// 注册依赖项
 							registerDependentBeans(beanName, autowiredBeanNames);
-							if (autowiredBeanNames.size() == 1) { // TODO 对于打到 List 上到注解是怎么走的？
-								// 如果拿到了唯一的合适的实例id
+							if (autowiredBeanNames.size() == 1) { // TODO 对于打到 List 上到注解，这里会返回多个
+								// 如果拿到了唯一的合适的实例id，这里是做了一个缓存
 								String autowiredBeanName = autowiredBeanNames.iterator().next();
 								if (beanFactory.containsBean(autowiredBeanName) &&
 										beanFactory.isTypeMatch(autowiredBeanName, field.getType())) {
@@ -600,6 +602,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 					}
 				}
 			}
+			// 上面带出的 autowiredBeanNames 不管有几个，这里都会给塞进去，没区别
 			// 这里是直接丢进去了
 			if (value != null) {
 				ReflectionUtils.makeAccessible(field);
