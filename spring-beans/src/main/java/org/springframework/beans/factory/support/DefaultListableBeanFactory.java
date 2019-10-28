@@ -1331,7 +1331,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		if (primaryCandidate != null) {
 			return primaryCandidate;
 		}
-		// TODO 这里是根据 OrderUtils.getPriority() 计算值计算出来的，感觉 @Autowire 的先按照
+		// TODO 这里是根据 OrderUtils.getPriority() 计算值计算出来的，感觉目前还没有地方用到，先不管
 		String priorityCandidate = determineHighestPriorityCandidate(candidates, requiredType);
 		if (priorityCandidate != null) {
 			return priorityCandidate;
@@ -1340,7 +1340,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		for (Map.Entry<String, Object> entry : candidates.entrySet()) {
 			String candidateName = entry.getKey();
 			Object beanInstance = entry.getValue();
-			//TODO 这个看着像是根据名称匹配【名称=id】
+			//TODO 根据名称匹配【名称=id】
 			if ((beanInstance != null && this.resolvableDependencies.containsValue(beanInstance)) ||
 					matchesBeanName(candidateName, descriptor.getDependencyName())) {
 				return candidateName;
