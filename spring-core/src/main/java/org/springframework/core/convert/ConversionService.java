@@ -26,6 +26,7 @@ import org.springframework.lang.Nullable;
  * @author Phillip Webb
  * @since 3.0
  */
+// 类型转换的基础类，一般我们进行类型转换都是调用这个
 public interface ConversionService {
 
 	/**

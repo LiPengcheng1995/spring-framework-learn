@@ -69,6 +69,13 @@ import java.util.Map;
  * @see org.springframework.context.ConfigurableApplicationContext#getEnvironment
  * @since 3.1
  */
+
+/*
+本接口综合了 Environment 、ConfigurablePropertyResolver 的功能：
+1. 在 profile 方面，新增了对当前激活的 profile 和默认的 profile 的设置功能
+2. 在属性方面，前面都是讲的怎么取，顺带着提供了一些功能。这里提供了属性的设置相关功能
+ */
+
 public interface ConfigurableEnvironment extends Environment, ConfigurablePropertyResolver {
 
 	/**

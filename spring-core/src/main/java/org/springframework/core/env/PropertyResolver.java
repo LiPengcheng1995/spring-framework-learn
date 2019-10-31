@@ -27,6 +27,18 @@ import org.springframework.lang.Nullable;
  * @see PropertySourcesPropertyResolver
  * @since 3.1
  */
+// 从程序外部拿属性时都从这里走，可能从配置文件、环境变量、网络或者其他地方拿
+// 本接口主要是提供了一些属性的
+// 1. 判断存在
+// 2. 通过各种花样获得属性
+//		a). 带默认值
+//		b). 通过范型指定出参类型，自带转换
+//		c). 拿不到抛异常
+// 3. 根据给定的占位符、分隔符，对 String 中的属性进行替换
+//
+// 基本就是一些特别简单、通用的接口。其实主要功能可以分成两个方便：
+// 1. 拿到属性
+// 2. 类型转换
 public interface PropertyResolver {
 
 	/**

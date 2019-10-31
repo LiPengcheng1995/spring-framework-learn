@@ -84,6 +84,8 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 *
 	 * @see ConfigurableEnvironment#setDefaultProfiles
 	 */
+	//comma：逗号
+	//period：句号/点号
 	public static final String DEFAULT_PROFILES_PROPERTY_NAME = "spring.profiles.default";
 
 	/**
@@ -202,6 +204,10 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	 * @see MutablePropertySources
 	 * @see PropertySourcesPropertyResolver
 	 * @see org.springframework.context.ApplicationContextInitializer
+	 */
+	/*
+	定制 propertySources。
+	TODO 注意实例变量初始化时间和构造函数的调用先后关系，别一不小心整出来空指针
 	 */
 	protected void customizePropertySources(MutablePropertySources propertySources) {
 	}
@@ -452,6 +458,8 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 
 	@Override
 	public void merge(ConfigurableEnvironment parent) {
+		// 这里的属性合并只会将不冲突的加进来
+		// 生效属性是从下往上找的，和继承的属性寻找关系一样
 		for (PropertySource<?> ps : parent.getPropertySources()) {
 			if (!this.propertySources.contains(ps.getName())) {
 				this.propertySources.addLast(ps);

@@ -68,6 +68,13 @@ package org.springframework.core.env;
  * @see org.springframework.context.support.AbstractApplicationContext#createEnvironment
  * @since 3.1
  */
+/*
+Environment 是我们在接触 Spring 中最常使用的接口，他有两方面功能：
+1. 属性相关操作【PropertyResolver 的功能】
+2. profile 相关操作
+	我们在注册 bean 、获得属性时一般都会根据当前环境的 profile 选择指定的分组。
+	我们可以通过 EnvironmentAware 接口或者使用自动注入从 Spring 上下文拿到 Environment。
+ */
 public interface Environment extends PropertyResolver {
 
 	/**

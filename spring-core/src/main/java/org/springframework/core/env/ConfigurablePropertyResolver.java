@@ -28,6 +28,22 @@ import org.springframework.lang.Nullable;
  * @author Chris Beams
  * @since 3.1
  */
+/*
+ 这个接口在父类的基础上提供了更多的功能，主要是两个方面：
+ 1. 对父类功能的增强，主要体现在支持功能的定制化、配置化上
+	 我们说了 PropertyResolver 主要有两个核心功能：
+	 1. 拿到属性
+	 2. 类型转换
+
+	 此类提供的功能配置主要如下：
+	 1. 类型转换
+	 		a). 类型转换类的存取【定制类型转换策略】
+	 2. 拿到属性
+			a). String 属性替换时允许定制占位符、分隔符【定制变量替换策略】
+ 2. 新增功能
+ 	此类新提供了"必要参数验证"功能，可以指定必须定义的参数，并调用验证方法看是否符合要求。
+*/
+
 public interface ConfigurablePropertyResolver extends PropertyResolver {
 
 	/**
