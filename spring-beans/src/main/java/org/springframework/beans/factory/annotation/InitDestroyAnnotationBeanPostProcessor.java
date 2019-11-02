@@ -113,7 +113,9 @@ public class InitDestroyAnnotationBeanPostProcessor
 
 	@Override
 	public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
+		// 扫描类注解，拿到 打PostConstruct、PreDestroy 的钩子
 		LifecycleMetadata metadata = findLifecycleMetadata(beanType);
+		// 把拿到的钩子注册进初始化、销毁钩子，复用他们的功能来实现
 		metadata.checkConfigMembers(beanDefinition);
 	}
 

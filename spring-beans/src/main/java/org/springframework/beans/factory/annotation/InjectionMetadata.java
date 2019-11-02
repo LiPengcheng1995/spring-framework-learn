@@ -166,7 +166,8 @@ public class InjectionMetadata {
 		/**
 		 * Either this or {@link #getResourceToInject} needs to be overridden.
 		 */
-		// TODO 此处不走默认实现，看具体的实现类。好坑啊
+		// Autowire 自行实现了 inject 的思路
+		// Resource 使用的这里的思路，只是对调用的子方法进行了重写
 		protected void inject(Object target, @Nullable String requestingBeanName, @Nullable PropertyValues pvs)
 				throws Throwable {
 

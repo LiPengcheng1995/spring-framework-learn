@@ -272,8 +272,11 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 
 	@Override
 	public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
+		// 调用父类的方法，把 PostConstruct、PreDestroy 的功能先搞一下
 		super.postProcessMergedBeanDefinition(beanDefinition, beanType, beanName);
+		// 把 Resource 打标的搞一下
 		InjectionMetadata metadata = findResourceMetadata(beanName, beanType, null);
+		// 把 Resource 打标的丢到 mbd 的 externallyManagedConfigMembers 中
 		metadata.checkConfigMembers(beanDefinition);
 	}
 
@@ -291,8 +294,10 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 	public PropertyValues postProcessPropertyValues(
 			PropertyValues pvs, PropertyDescriptor[] pds, Object bean, String beanName) {
 
+		// 拿到缓存好的要注入的东西
 		InjectionMetadata metadata = findResourceMetadata(beanName, bean.getClass(), pvs);
 		try {
+			// 注入
 			metadata.inject(bean, beanName, pvs);
 		} catch (Throwable ex) {
 			throw new BeanCreationException(beanName, "Injection of resource dependencies failed", ex);
@@ -480,19 +485,25 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 		Set<String> autowiredBeanNames;
 		String name = element.name;
 
+		// 如果根据 属性/方法第一个入参 拿到的名称，就以名称为 id 或者别名尝试获得实例
 		if (this.fallbackToDefaultTypeMatch && element.isDefaultName &&
 				factory instanceof AutowireCapableBeanFactory && !factory.containsBean(name)) {
 			autowiredBeanNames = new LinkedHashSet<>();
+			// 调用现成的工具函数即可
+			// 通过属性拉一个实例出来，如果有多个，就通过 DependencyDescriptor 拿到名称进行判断
 			resource = ((AutowireCapableBeanFactory) factory).resolveDependency(
 					element.getDependencyDescriptor(), requestingBeanName, autowiredBeanNames, null);
 			if (resource == null) {
 				throw new NoSuchBeanDefinitionException(element.getLookupType(), "No resolvable resource object");
 			}
 		} else {
+			// 通过 name 拿到实例
+			// TODO 这里应该就是网上说的区别了吧，所以网上说的是不靠谱的。这里详细剖析以下
 			resource = factory.getBean(name, element.lookupType);
 			autowiredBeanNames = Collections.singleton(name);
 		}
 
+		// 注册依赖关系
 		if (factory instanceof ConfigurableBeanFactory) {
 			ConfigurableBeanFactory beanFactory = (ConfigurableBeanFactory) factory;
 			for (String autowiredBeanName : autowiredBeanNames) {
@@ -535,10 +546,12 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 	 */
 	protected abstract class LookupElement extends InjectionMetadata.InjectedElement {
 
+		// 名称
 		protected String name = "";
 
 		protected boolean isDefaultName = false;
 
+		// 类型
 		protected Class<?> lookupType = Object.class;
 
 		@Nullable
@@ -587,6 +600,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 			Resource resource = ae.getAnnotation(Resource.class);
 			String resourceName = resource.name();
 			Class<?> resourceType = resource.type();
+			// 如果没有配置，就根据打标的 属性/方法 名来
 			this.isDefaultName = !StringUtils.hasLength(resourceName);
 			if (this.isDefaultName) {
 				resourceName = this.member.getName();
@@ -596,11 +610,11 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 			} else if (embeddedValueResolver != null) {
 				resourceName = embeddedValueResolver.resolveStringValue(resourceName);
 			}
-			if (Object.class != resourceType) {
+			if (Object.class != resourceType) { // 有配置类型
 				checkResourceType(resourceType);
 			} else {
 				// No resource type specified... check field/method.
-				resourceType = getResourceType();
+				resourceType = getResourceType();// 否则根据打标的 属性/方法第一个入参属性 来
 			}
 			this.name = (resourceName != null ? resourceName : "");
 			this.lookupType = resourceType;
