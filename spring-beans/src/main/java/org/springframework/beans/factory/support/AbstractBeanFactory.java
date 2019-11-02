@@ -329,6 +329,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 									"Circular depends-on relationship between '" + beanName + "' and '" + dep + "'");
 						}
 						// 注册依赖关系： beanName 对应的 bean 依赖 dep bean
+						// TODO 这里必须先做，因为调用 getBean（） 涉及递归，如果先 getBean（） 就递归没完了，没法检测循环依赖了
 						registerDependentBean(dep, beanName);
 						try {
 							// 将 beanName 依赖的 bean 都初始化了
