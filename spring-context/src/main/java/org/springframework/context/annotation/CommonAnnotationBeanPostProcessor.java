@@ -485,9 +485,9 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 		Set<String> autowiredBeanNames;
 		String name = element.name;
 
-		// 如果根据 属性/方法第一个入参 拿到的名称，就以名称为 id 或者别名尝试获得实例
 		if (this.fallbackToDefaultTypeMatch && element.isDefaultName &&
 				factory instanceof AutowireCapableBeanFactory && !factory.containsBean(name)) {
+			// 如果是走的默认属性，就和 Autowire 一样调用 resolveDependency()
 			autowiredBeanNames = new LinkedHashSet<>();
 			// 调用现成的工具函数即可
 			// 通过属性拉一个实例出来，如果有多个，就通过 DependencyDescriptor 拿到名称进行判断
@@ -497,7 +497,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 				throw new NoSuchBeanDefinitionException(element.getLookupType(), "No resolvable resource object");
 			}
 		} else {
-			// 通过 name 拿到实例
+			// 如果是 @Resource 指定的 name ，就以 name 为 id 取
 			// TODO 这里应该就是网上说的区别了吧，所以网上说的是不靠谱的。这里详细剖析以下
 			resource = factory.getBean(name, element.lookupType);
 			autowiredBeanNames = Collections.singleton(name);
