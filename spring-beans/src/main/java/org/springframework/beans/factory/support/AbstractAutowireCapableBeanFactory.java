@@ -526,6 +526,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			if (!mbd.postProcessed) {
 				try {
 					// TODO @Resource,@Autowire,@Value
+					// 从类上拿到相应的注解，并设置进 mbd 的属性中
 					applyMergedBeanDefinitionPostProcessors(mbd, beanType, beanName);
 				} catch (Throwable ex) {
 					throw new BeanCreationException(mbd.getResourceDescription(), beanName,
@@ -1318,6 +1319,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		// mbd 不是合成的 ，而且有 InstantiationAwareBeanPostProcessor 来修饰属性，那就搞起
 		// TODO 这个需要参考后处理器那些东西，专门统一的梳理一下那些后处理器
+		// 这里 @Resource 、 @Autowire 、 @Value 都没有在这里加逻辑
 		if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
 			for (BeanPostProcessor bp : getBeanPostProcessors()) {
 				if (bp instanceof InstantiationAwareBeanPostProcessor) {
@@ -1335,15 +1337,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		// 获得 mbd 配置的那些要注入的属性的 key-value
-		// TODO 这里应该是和我们的 @Resource,@Autowire,@Qualifier 有关的
+		// TODO 前面后处理 mbd 时已经将 @Resource,@Autowire,@Qualifier 有关的属性塞进去了，这里直接拿出来即可
 		PropertyValues pvs = (mbd.hasPropertyValues() ? mbd.getPropertyValues() : null);
 
-		// 根据对应的注入方法进行注入
 		// TODO 注意了，这个注入并不是我们熟悉的，想象中的那种注入
+		// 如果有配置注入的补充逻辑，就根据对应的注入方法进行注入
 		// 这里的注入主要是针对我们没配置的那些属性，作一些在此实例层面统一标准的注入。【极少使用】
-		//
-		// 我们在创建 BD 时写的属性，比如你在每个属性上打的@Resource/@Autowire标记；
-		// 或者用 xml，在 Bean 标签下面的 property 标签。这些东西都是在最后面 applyPropertyValues 实现注入的
 		if (mbd.getResolvedAutowireMode() == AUTOWIRE_BY_NAME || mbd.getResolvedAutowireMode() == AUTOWIRE_BY_TYPE) {
 			MutablePropertyValues newPvs = new MutablePropertyValues(pvs);
 			// Add property values based on autowire by name if applicable.
@@ -1397,7 +1396,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}
 		}
 
-		// 默认属性写入，配置属性注入
+		// 属性写入
 		if (pvs != null) {
 			applyPropertyValues(beanName, mbd, bw, pvs);
 		}
@@ -1479,11 +1478,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 					// Do not allow eager init for type matching in case of a prioritized post-processor.
 					boolean eager = !PriorityOrdered.class.isInstance(bw.getWrappedInstance());
 					DependencyDescriptor desc = new AutowireByTypeDependencyDescriptor(methodParam, eager);
-					// TODO 这里后面再看，有点深了
+					// 调用 Spring 的通用 Util ，通过类型拿到候选类
 					Object autowiredArgument = resolveDependency(desc, beanName, autowiredBeanNames, converter);
 					if (autowiredArgument != null) {
 						pvs.add(propertyName, autowiredArgument);
 					}
+					// 注册依赖
 					for (String autowiredBeanName : autowiredBeanNames) {
 						registerDependentBean(autowiredBeanName, beanName);
 						if (logger.isDebugEnabled()) {

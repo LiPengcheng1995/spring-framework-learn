@@ -803,11 +803,11 @@ class ConstructorResolver {
 			Object argValue = argsToResolve[argIndex];
 			MethodParameter methodParam = MethodParameter.forExecutable(executable, argIndex); // 得到构造函数指定下标的参数类型
 			GenericTypeResolver.resolveParameterType(methodParam, executable.getDeclaringClass()); // 根据配置的参数值和方法的参数类型，确定当前参数的类型
-			if (argValue instanceof AutowiredArgumentMarker) { // TODO 参数打标，需要 autowire 的
+			if (argValue instanceof AutowiredArgumentMarker) { // TODO 参数打标，需要进行注入【不知道怎么用的】
 				argValue = resolveAutowiredArgument(methodParam, beanName, null, converter);// TODO：从此工厂中解析指定的依赖
 			} else if (argValue instanceof BeanMetadataElement) { // TODO 参数是一个具体的 bean 配置项
 				argValue = valueResolver.resolveValueIfNecessary("constructor argument", argValue); // TODO： 看一下
-			} else if (argValue instanceof String) {
+			} else if (argValue instanceof String) {// 参数是一个 String ，这里进行解析
 				argValue = this.beanFactory.evaluateBeanDefinitionString((String) argValue, mbd);// 解析一下可能存在的表达式，例如SpEL
 			}
 			Class<?> paramType = paramTypes[argIndex];
