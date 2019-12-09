@@ -16,5 +16,6 @@ public class MyTest {
 	public static void main(String[] args){
 		XmlBeanFactory beanFactory = new XmlBeanFactory(new ClassPathResource(""));
 		beanFactory.getBean("");
+		beanFactory.autowireBean();
 	}
 }
