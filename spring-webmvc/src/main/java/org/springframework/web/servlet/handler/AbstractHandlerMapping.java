@@ -479,9 +479,9 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	protected HandlerExecutionChain getCorsHandlerExecutionChain(HttpServletRequest request,
 																 HandlerExecutionChain chain, @Nullable CorsConfiguration config) {
 
-		// 如果是预检请求，就干掉前面的 handler ，用处理 cors 的 handler 做
-		// 预检请求的意思是，如果想对 /a/b/c 进行post，就先发过去一个 /a/b/c 的 option
-		// TODO 有问题，如果 /a/b/c 只接post，前面筛 handler 不就挂了？
+		// 如果是 OPTION 预检请求，就抛弃原有 handler ，用自己的 cors handler。
+		// 如果不是，那就通过 interceptor 增强
+		// TODO 这里有问题，如果我的 Controller 就是接收 OPTION 请求的，会不会丢东西？
 		if (CorsUtils.isPreFlightRequest(request)) {
 			HandlerInterceptor[] interceptors = chain.getInterceptors();
 			chain = new HandlerExecutionChain(new PreFlightHandler(config), interceptors);

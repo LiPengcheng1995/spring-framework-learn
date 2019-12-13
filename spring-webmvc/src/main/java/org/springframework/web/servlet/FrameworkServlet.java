@@ -544,11 +544,13 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	 */
 	protected WebApplicationContext initWebApplicationContext() {
 
+		// TODO 这里一般是我们在 ContextLoaderListener 塞进去的
 		// 如果它已经初始化好注册上去，就直接赋值，否则自己创建、初始化然后在赋值
 		WebApplicationContext rootContext =
 				WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		WebApplicationContext wac = null;
 
+		// TODO 这个哪里走到？
 		if (this.webApplicationContext != null) {
 			// A context instance was injected at construction time -> use it
 			wac = this.webApplicationContext;
@@ -692,8 +694,11 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		// 这里感觉不是特别必要
 		wac.setServletConfig(getServletConfig());
 		wac.setNamespace(getNamespace());// TODO 不清楚，感觉没啥用
-		// TODO 这里专门加了一个 Listener，看一下也许有什么特殊的逻辑在里面
+		// TODO 这里专门加了一个 Listener，在收到 wac 的刷新事件时调用 ContextRefreshListener 的刷新操作
+		// TODO 针对 mvc 的那些 bean 的拉取
 		wac.addApplicationListener(new SourceFilteringListener(wac, new ContextRefreshListener()));
+
+		// 这里将 ServletContext， ServletConfig 相关的变量引用更新
 
 		// The wac environment's #initPropertySources will be called in any case when the context
 		// is refreshed; do it eagerly here to ensure servlet property sources are in place for
@@ -1014,10 +1019,10 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		long startTime = System.currentTimeMillis();
 		Throwable failureCause = null;
 
-		// 此处和session相关，后面可以结合材料深入阅读
+		// TODO 此处和session相关，后面可以结合材料深入阅读
+		// 保留前面的 context
 		LocaleContext previousLocaleContext = LocaleContextHolder.getLocaleContext();
 		LocaleContext localeContext = buildLocaleContext(request);
-
 		RequestAttributes previousAttributes = RequestContextHolder.getRequestAttributes();
 		ServletRequestAttributes requestAttributes = buildRequestAttributes(request, response, previousAttributes);
 

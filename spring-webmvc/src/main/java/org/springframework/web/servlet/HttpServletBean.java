@@ -153,6 +153,8 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 		if (!pvs.isEmpty()) {
 			try {
 				// 将此 servlet 包装成 BeanWrapper 方便进行进行 IOC
+				// TODO 这个用法可以了解，一般我们不会用这个，因为我们一般不会自行指定参数往里塞
+				// TODO 之前维总说的 autowireBean() 可以用来进行 Spring 上下文自动注入，是对 populate() 的封装
 				BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(this);
 				ResourceLoader resourceLoader = new ServletContextResourceLoader(getServletContext());
 				// 注册此 servlet 生成 bean 的定制化资源访问器【包括加载资源和读取环境变量】
