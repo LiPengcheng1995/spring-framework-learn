@@ -341,7 +341,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 					logger.debug("Did not find handler method for [" + lookupPath + "]");
 				}
 			}
-			// TODO 此处构造了一个新的实例用于向外传递，方便调用，但是这里也保存了原始的 handlerMethod 的引用，方便后续以它为key继续使用映射
+			// TODO 此处构造了一个新的包装实例用于向外传递，方便调用，但是这里也保存了原始的 handlerMethod 的引用，方便后续以它为key继续使用映射
 			return (handlerMethod != null ? handlerMethod.createWithResolvedBean() : null);
 		} finally {
 			this.mappingRegistry.releaseReadLock();
@@ -396,7 +396,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 			}
 			// 将匹配到的最合适的 HandlerMethod 保存到 request 中
 			request.setAttribute(BEST_MATCHING_HANDLER_ATTRIBUTE, bestMatch.handlerMethod);
-			//TODO 调用匹配到的钩子，这里主要是对 url 的一些处理
+			//匹配到后，将匹配到的 request 的 path 存起来，后面如果转发，收到的人可以通过这个拿到原始的 path
 			handleMatch(bestMatch.mapping, lookupPath, request);
 			return bestMatch.handlerMethod;
 		} else {
@@ -406,6 +406,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
 	private void addMatchingMappings(Collection<T> mappings, List<Match> matches, HttpServletRequest request) {
 		for (T mapping : mappings) {
+			// 在 RequestMappingHandlerMapping 中，会根据 request 中拿到的 path 做匹配，匹配到了就浅拷贝返回
 			T match = getMatchingMapping(mapping, request);
 			if (match != null) {
 				matches.add(new Match(match, this.mappingRegistry.getMappings().get(mapping)));
@@ -571,6 +572,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 		private final Map<T, HandlerMethod> mappingLookup = new LinkedHashMap<>();
 
 		// request 的 url 映射到 T
+		// TODO 这个给我的感觉更像是一个别名短路操作，提高操作速度的那种
 		private final MultiValueMap<String, T> urlLookup = new LinkedMultiValueMap<>();
 
 		// HandlerMethod 生成的 name 到 HandlerMethod  映射
