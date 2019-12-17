@@ -90,6 +90,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	 * {@inheritDoc}
 	 * Expects a handler to have a type-level @{@link Controller} annotation.
 	 */
+	// 看类上是否有 Controller/RequestMapping 注解
 	@Override
 	protected boolean isHandler(Class<?> beanType) {
 		return (AnnotatedElementUtils.hasAnnotation(beanType, Controller.class) ||
@@ -127,7 +128,9 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	 */
 	@Nullable
 	private RequestMappingInfo createRequestMappingInfo(AnnotatedElement element) {
+		// 拿到 RequestMapping 打标
 		RequestMapping requestMapping = AnnotatedElementUtils.findMergedAnnotation(element, RequestMapping.class);
+		// 两个空实现，分别是针对类/方法的，方便子类扩展
 		RequestCondition<?> condition = (element instanceof Class ?
 				getCustomTypeCondition((Class<?>) element) : getCustomMethodCondition((Method) element));
 		return (requestMapping != null ? createRequestMappingInfo(requestMapping, condition) : null);

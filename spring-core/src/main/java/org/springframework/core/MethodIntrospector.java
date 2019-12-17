@@ -68,8 +68,14 @@ public abstract class MethodIntrospector {
 
 			ReflectionUtils.doWithMethods(currentHandlerType, method -> {
 				Method specificMethod = ClassUtils.getMostSpecificMethod(method, targetClass);
+				// 调用函数，如果拿到的结果不为空，就：
+				// 以实例方法为 key
+				// 以结果为 value
+				// 存到 Map 返回
 				T result = metadataLookup.inspect(specificMethod);
 				if (result != null) {
+					// TODO 这里和范型有关，有面有时间再深究
+					// https://www.jianshu.com/p/250030ea9b28
 					Method bridgedMethod = BridgeMethodResolver.findBridgedMethod(specificMethod);
 					if (bridgedMethod == specificMethod || metadataLookup.inspect(bridgedMethod) == null) {
 						methodMap.put(specificMethod, result);

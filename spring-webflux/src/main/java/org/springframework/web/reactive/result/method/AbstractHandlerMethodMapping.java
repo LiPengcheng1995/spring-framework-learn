@@ -134,6 +134,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 */
 	@Override
 	public void afterPropertiesSet() {
+		// TODO 此处从上下文进行所有 BeanDefinition 的扫描，找到符合条件的 Handler 存起来，方便后面映射调用
 		initHandlerMethods();
 	}
 
@@ -161,7 +162,9 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 						logger.debug("Could not resolve target class for bean with name '" + beanName + "'", ex);
 					}
 				}
+				// 根据类型判断是否OK
 				if (beanType != null && isHandler(beanType)) {
+					// 如果 OK ，就根据 beanName 把这个 beanName 能代表的所有 Handler 带进去
 					detectHandlerMethods(beanName);
 				}
 			}
@@ -179,7 +182,10 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 				obtainApplicationContext().getType((String) handler) : handler.getClass());
 
 		if (handlerType != null) {
+			// 去代理
 			final Class<?> userType = ClassUtils.getUserClass(handlerType);
+
+			//
 			Map<Method, T> methods = MethodIntrospector.selectMethods(userType,
 					(MethodIntrospector.MetadataLookup<T>) method -> getMappingForMethod(method, userType));
 			if (logger.isDebugEnabled()) {
