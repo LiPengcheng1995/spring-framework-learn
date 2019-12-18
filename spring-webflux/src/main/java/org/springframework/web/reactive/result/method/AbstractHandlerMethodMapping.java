@@ -185,7 +185,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 			// 去代理
 			final Class<?> userType = ClassUtils.getUserClass(handlerType);
 
-			//
+			//拿到 method -> RequestMappingInfo 的映射
 			Map<Method, T> methods = MethodIntrospector.selectMethods(userType,
 					(MethodIntrospector.MetadataLookup<T>) method -> getMappingForMethod(method, userType));
 			if (logger.isDebugEnabled()) {

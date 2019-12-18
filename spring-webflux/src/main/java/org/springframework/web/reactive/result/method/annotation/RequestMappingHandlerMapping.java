@@ -108,13 +108,16 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	 */
 	@Override
 	protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
+		// 创建个 Method 的
 		RequestMappingInfo info = createRequestMappingInfo(method);
 		if (info != null) {
+			// 创建个 Class 的
 			RequestMappingInfo typeInfo = createRequestMappingInfo(handlerType);
 			if (typeInfo != null) {
-				info = typeInfo.combine(info);
+				info = typeInfo.combine(info);// 条件 &&
 			}
 		}
+		// 返回
 		return info;
 	}
 
@@ -186,16 +189,24 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 			RequestMapping requestMapping, @Nullable RequestCondition<?> customCondition) {
 
 		RequestMappingInfo.Builder builder = RequestMappingInfo
+				// 设置注解中的 path 限制（先把 Spring 变量替换掉然后再设置进来）
 				.paths(resolveEmbeddedValuesInPatterns(requestMapping.path()))
+				// 设置注解中的 http 方法名称限制
 				.methods(requestMapping.method())
+				// 设置注解中配置的参数限制（参数值设置/参数是否必传/参数是否必不传）
 				.params(requestMapping.params())
+				// 设置注解中配置的 header 限制
 				.headers(requestMapping.headers())
+				// 设置注解中配置的可消费请求类型限制
 				.consumes(requestMapping.consumes())
+				// 设置注解中配置的返回类型限制
 				.produces(requestMapping.produces())
+				// 设个名字呗
 				.mappingName(requestMapping.name());
-		if (customCondition != null) {
+		if (customCondition != null) {// 这里一般都是 null，先不管
 			builder.customCondition(customCondition);
 		}
+		// TODO 看看 RequestMappingInfo 的相关业务逻辑吧
 		return builder.options(this.config).build();
 	}
 
