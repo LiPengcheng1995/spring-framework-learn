@@ -193,6 +193,9 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 			}
 			methods.forEach((key, mapping) -> {
 				Method invocableMethod = AopUtils.selectInvocableMethod(key, userType);
+				// mapping:RequestMappingInfo 用来匹配请求
+				// handler:要调用的对象实例
+				// invocableMethod:要调用的对象方法
 				registerHandlerMethod(handler, invocableMethod, mapping);
 			});
 		}
@@ -497,6 +500,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 		public void register(T mapping, Object handler, Method method) {
 			this.readWriteLock.writeLock().lock();
 			try {
+				// 调用的封装
 				HandlerMethod handlerMethod = createHandlerMethod(handler, method);
 				assertUniqueMethodMapping(handlerMethod, mapping);
 

@@ -278,6 +278,7 @@ public final class RequestMappingInfo implements RequestCondition<RequestMapping
 		return 0;
 	}
 
+	// 用作 key 时一定要覆盖掉这两个方法
 	@Override
 	public boolean equals(Object other) {
 		if (this == other) {
