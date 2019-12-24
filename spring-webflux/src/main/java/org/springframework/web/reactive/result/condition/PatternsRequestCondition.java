@@ -82,6 +82,7 @@ public final class PatternsRequestCondition extends AbstractRequestCondition<Pat
 	 * <li>If neither instance has patterns, use an empty String (i.e. "").
 	 * </ul>
 	 */
+	// 本身的至少要满足一个，下面的也要至少满足一个
 	@Override
 	public PatternsRequestCondition combine(PatternsRequestCondition other) {
 		List<PathPattern> combined = new ArrayList<>();
