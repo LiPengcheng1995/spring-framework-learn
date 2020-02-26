@@ -147,7 +147,7 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 		}
 
 		// Set bean properties from init parameters.
-		// 从 servletConfig 中接管 servlet 属性存取的职能
+		//把 servletConfig 中配置的 key-value 在 PropertyValues 里拷贝一份，方便后面调用 Spring 的接口直接灌进 DispatcherServlet 中
 		PropertyValues pvs = new ServletConfigPropertyValues(getServletConfig(), this.requiredProperties);
 
 		if (!pvs.isEmpty()) {
@@ -157,7 +157,7 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 				// TODO 之前维总说的 autowireBean() 可以用来进行 Spring 上下文自动注入，是对 populate() 的封装
 				BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(this);
 				ResourceLoader resourceLoader = new ServletContextResourceLoader(getServletContext());
-				// 注册此 servlet 生成 bean 的定制化资源访问器【包括加载资源和读取环境变量】
+				// 注册此 servlet 对应的 bean 的定制化资源访问器【包括加载资源和读取环境变量】【这里将 servletContext 中的变量也列入候选，方便进行注入】
 				bw.registerCustomEditor(Resource.class, new ResourceEditor(resourceLoader, getEnvironment()));
 
 				// 初始化 bw ，留给子类实现的钩子
@@ -165,8 +165,8 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 				// 仅用于此 servlet 不依赖 web 环境的、单独的初始化
 				initBeanWrapper(bw);
 
-				// 这里比较特殊，之前是根据 BeanWrapper 中包装的实例，需要啥 set 啥，这里是一股脑全 set 进去，方便
-				// DispatcherServlet 使用
+				// 这里比较特殊，之前进行 bean 的属性填充，是根据 BeanWrapper 中包装的实例合并对应的配置，需要啥 set 啥就传啥，这里是
+				// 一股脑全 set 进去，方便 DispatcherServlet 使用
 				bw.setPropertyValues(pvs, true);
 			} catch (BeansException ex) {
 				if (logger.isErrorEnabled()) {

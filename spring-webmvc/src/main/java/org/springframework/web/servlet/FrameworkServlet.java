@@ -550,7 +550,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 				WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		WebApplicationContext wac = null;
 
-		// TODO 这个哪里走到？
+		// 如果 webApplicationContext 是通过构造函数弄进来的，这里就得走一下
 		if (this.webApplicationContext != null) {
 			// A context instance was injected at construction time -> use it
 			wac = this.webApplicationContext;
@@ -568,6 +568,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 				}
 			}
 		}
+		// 上面发现没有从构造函数拿到，尝试从上下文取一下
 		if (wac == null) {
 			// No context instance was injected at construction time -> see if one
 			// has been registered in the servlet context. If one exists, it is assumed
@@ -575,14 +576,20 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 			// user has performed any initialization such as setting the context id
 			wac = findWebApplicationContext();
 		}
+		// 上下文也没拿到，尝试创建一个新的实例
 		if (wac == null) {
 			// No context instance is defined for this servlet -> create a local one
 			wac = createWebApplicationContext(rootContext);
 		}
 
 		// 到此已经拿到合适的上下文了
-		// 注意这里拿到的可能是在 ContexLoaderListener 中刷新好的，所以这里还没来得及注册监听事件
-		// 如果还没监听到消息，这里手动调用一下
+		// 注意这里拿到的可能是之前通过构造函数传入或者 ServletContext 拿到的刷新好的上下文，
+		// 还没来得及注册监听事件那种
+		//
+		// 如果是上面两种情况，这里是没有标记收到启动消息的。如果是我们在本线程中允许完成创建、注册监听、刷新（或者拿到未刷新的，然后
+		// 在本线程中注册监听、刷新）后走到这里，我们是已经完成刷新的，refreshEventReceived 会标记为已经收到消息。
+		//
+		// 所以，这里只需要判断 refreshEventReceived 如果还没监听到消息，这里手动调用一下
 		if (!this.refreshEventReceived) {
 			// Either the context is not a ConfigurableApplicationContext with refresh
 			// support or the context injected at construction time had already been
@@ -698,7 +705,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		// TODO 针对 mvc 的那些 bean 的拉取
 		wac.addApplicationListener(new SourceFilteringListener(wac, new ContextRefreshListener()));
 
-		// 这里将 ServletContext， ServletConfig 相关的变量引用更新
+		// 这里将 ServletContext， ServletConfig 相关的变量更新同步至 Spring 的 env
 
 		// The wac environment's #initPropertySources will be called in any case when the context
 		// is refreshed; do it eagerly here to ensure servlet property sources are in place for
