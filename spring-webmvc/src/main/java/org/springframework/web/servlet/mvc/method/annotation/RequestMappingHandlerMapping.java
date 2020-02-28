@@ -288,7 +288,6 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	 * @return a new array with updated patterns
 	 */
 	protected String[] resolveEmbeddedValuesInPatterns(String[] patterns) {
-		//TODO  这里，emmmm，不能直接用 Spring 的么？再了解一下
 		if (this.embeddedValueResolver == null) {
 			return patterns;
 		} else {
