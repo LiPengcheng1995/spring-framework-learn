@@ -137,8 +137,11 @@ public abstract class AbstractHandlerMapping extends ApplicationObjectSupport im
 		this.order = order;
 	}
 
+	// 一个只包含一个元素的异步队列，我觉着有点像是 java 8 的 Optional ，先不深究吧
 	@Override
 	public Mono<Object> getHandler(ServerWebExchange exchange) {
+		// 先通过 getHandlerInternal() 拿到 handler，
+		// 如果有结果的话，这里再进行一下跨域的加工
 		return getHandlerInternal(exchange).map(handler -> {
 			if (CorsUtils.isCorsRequest(exchange.getRequest())) {
 				CorsConfiguration configA = this.globalCorsConfigSource.getCorsConfiguration(exchange);
