@@ -157,7 +157,7 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 				// TODO 之前维总说的 autowireBean() 可以用来进行 Spring 上下文自动注入，是对 populate() 的封装
 				BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(this);
 				ResourceLoader resourceLoader = new ServletContextResourceLoader(getServletContext());
-				// 注册此 servlet 对应的 bean 的定制化资源访问器【包括加载资源和读取环境变量】【这里将 servletContext 中的变量也列入候选，方便进行注入】
+				// 注册此 servlet 对应的 bean 的定制化资源访问器【包括加载资源和读取环境变量】【这里将 servletContext 中的类加载器设置进来，方便后面从 Web 的类路径加载资源】
 				bw.registerCustomEditor(Resource.class, new ResourceEditor(resourceLoader, getEnvironment()));
 
 				// 初始化 bw ，留给子类实现的钩子
