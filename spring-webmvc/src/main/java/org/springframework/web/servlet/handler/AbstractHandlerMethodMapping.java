@@ -205,7 +205,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 				obtainApplicationContext().getBeanNamesForType(Object.class));
 
 		for (String beanName : beanNames) {
-			// 如果以 scopedTarget. 开头，就进行判断
+			// 如果不是以 scopedTarget. 开头，就进行判断
 			if (!beanName.startsWith(SCOPED_TARGET_NAME_PREFIX)) {
 				Class<?> beanType = null;
 				try {
@@ -259,9 +259,11 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 			// 将上面筛选出的结果进行注册保存
 			methods.forEach((method, mapping) -> {
 				// JDK 动态代理应该没区别，不管是那种方法都能定位
-				// TODO 如果是 CGLib 动态代理，就要防止父类拿到的方法是个 private 或者不可达的
+				// 找到切实可直接调用的方法
+				// 1. 找到该方法对应的最具体的类，有一些情况，比如打标记的是某个父类的方法，但是子类没有覆盖，总之就是拿到此方法对应的就行。
+				// 2. 这里应该和方法作用域有关 public/private/protected。必须要可见才能调用
 				Method invocableMethod = AopUtils.selectInvocableMethod(method, userType);
-				// TODO 此处存疑， CGLib 动态代理，我们拿到的 method 指向夫类，在调用时注意要调用外层的，否则 aop 不生效
+				//TODO 注册 invocableMethod 和 mapping 、实例 handler
 				registerHandlerMethod(handler, invocableMethod, mapping);
 			});
 		}
@@ -341,7 +343,8 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 					logger.debug("Did not find handler method for [" + lookupPath + "]");
 				}
 			}
-			// TODO 此处构造了一个新的包装实例用于向外传递，方便调用，但是这里也保存了原始的 handlerMethod 的引用，方便后续以它为key继续使用映射
+			// 因为 handlerMethod 存储在数据结构中并会重复使用，为保证不会被恶意更改，此处构造了一个新的包装实例用于向外传递
+			// 但是这里也保存了原始的 handlerMethod 的引用，方便后续以它为key继续使用映射
 			return (handlerMethod != null ? handlerMethod.createWithResolvedBean() : null);
 		} finally {
 			this.mappingRegistry.releaseReadLock();
@@ -572,7 +575,6 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 		private final Map<T, HandlerMethod> mappingLookup = new LinkedHashMap<>();
 
 		// request 的 url 映射到 T
-		// TODO 这个给我的感觉更像是一个别名短路操作，提高操作速度的那种
 		private final MultiValueMap<String, T> urlLookup = new LinkedMultiValueMap<>();
 
 		// HandlerMethod 生成的 name 到 HandlerMethod  映射

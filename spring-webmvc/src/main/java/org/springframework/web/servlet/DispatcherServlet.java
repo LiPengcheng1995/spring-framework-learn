@@ -1003,6 +1003,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				processedRequest = checkMultipart(request);
 				multipartRequestParsed = (processedRequest != request);
 
+				// 通过 request ，拿到对应的 HandlerExecutionChain
 				// Determine handler for the current request.
 				mappedHandler = getHandler(processedRequest);
 				if (mappedHandler == null) {
@@ -1010,6 +1011,7 @@ public class DispatcherServlet extends FrameworkServlet {
 					return;
 				}
 
+				// 根据拿到的 Handler ，拿到可以处理此 Handler 的 HandlerAdapter
 				// Determine handler adapter for the current request.
 				HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
 
@@ -1027,10 +1029,13 @@ public class DispatcherServlet extends FrameworkServlet {
 					}
 				}
 
+				// 前面拿到的 HandlerExecutionChain 里面有匹配到的拦截器，顺序调用拦截器的 preHandle()，
+				// 如果有失败的，会在调用前面拦截器的 afterCompletion() 后返回 false
 				if (!mappedHandler.applyPreHandle(processedRequest, response)) {
 					return;
 				}
 
+				// 通过 HandlerAdapter 调用前面拿到的 Handler
 				// Actually invoke the handler.
 				mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
 
@@ -1038,7 +1043,9 @@ public class DispatcherServlet extends FrameworkServlet {
 					return;
 				}
 
+				// 进行页面分发
 				applyDefaultViewName(processedRequest, mv);
+				// 依次倒着调用拦截器的 afterCompletion()
 				mappedHandler.applyPostHandle(processedRequest, response, mv);
 			} catch (Exception ex) {
 				dispatchException = ex;
