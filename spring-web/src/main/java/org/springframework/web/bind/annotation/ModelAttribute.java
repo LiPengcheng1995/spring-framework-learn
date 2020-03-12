@@ -49,6 +49,8 @@ import java.lang.annotation.*;
  * @author Rossen Stoyanchev
  * @since 2.5
  */
+// 在 @ControllerAdvice 注解的类中的方法打标
+// 在进行 handler 的调用时，此标签可用于配置将指定的数据塞入到指定的属性中【对出入参均有效】（可通过方法的返回值塞）
 @Target({ElementType.PARAMETER, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
@@ -82,6 +84,7 @@ public @interface ModelAttribute {
 	 *
 	 * @since 4.3
 	 */
+	// 设置成 false ，会禁用上面配置的绑定
 	boolean binding() default true;
 
 }

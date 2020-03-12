@@ -38,6 +38,9 @@ import java.lang.annotation.*;
  * @see org.springframework.web.context.request.WebRequest
  * @since 2.5
  */
+// 这个打标的方法入参为 WebDataBinder ，这个方法会向 WebDataBinder 中新增数据绑定的binder
+// 如果这个打标的方法在 Controller 内，那么只对这个 Controller 的数据绑定生效
+// 如果打标的方法在通用的 ControllerAdvice 内，那么对所有的 Controller 生效
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

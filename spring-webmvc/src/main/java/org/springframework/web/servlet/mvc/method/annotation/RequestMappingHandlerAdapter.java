@@ -553,7 +553,9 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 			if (beanType == null) {
 				throw new IllegalStateException("Unresolvable type for ControllerAdviceBean: " + adviceBean);
 			}
-			// 找出打 ModelAttribute 标签的
+			// 找出打 ModelAttribute 标签的(同时没有打 RequestMapping 标签的)
+			// （这两个标签同时用，表示使用填充好的值；这里只是把填充值的配置方法取出来存好）
+			// TODO 后续结合实际使用看看吧，我也不太确定
 			Set<Method> attrMethods = MethodIntrospector.selectMethods(beanType, MODEL_ATTRIBUTE_METHODS);
 			if (!attrMethods.isEmpty()) {
 				this.modelAttributeAdviceCache.put(adviceBean, attrMethods);
@@ -740,7 +742,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 		checkRequest(request);
 
 		// Execute invokeHandlerMethod in synchronized block if required.
-		// 如果要求 session 内异步，就加锁
+		// 如果要求 session 内同步，就加锁
 		if (this.synchronizeOnSession) {
 			//拿到 session ，因为是根据 request 整出来的，即使 session 一样 ，拿到的对象也不一样，所以直接加锁是行不通的
 			HttpSession session = request.getSession(false);
