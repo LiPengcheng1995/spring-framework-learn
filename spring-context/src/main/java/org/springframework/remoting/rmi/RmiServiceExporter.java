@@ -70,8 +70,20 @@ public class RmiServiceExporter extends RmiBasedExporter implements Initializing
 
 	private int servicePort = 0;  // anonymous port
 
+	/**
+	 * 用来获得和远程的 socket 连接
+	 * 1. server 配置这个，和暴露的远程对象绑定
+	 * 2. 要调用的消费者下下来暴露的远程对象，然后拿到这个东西，用这个东西创建和远程的 socket 连接
+	 *
+	 * 注意： 这个实现类要实现 Serializable (因为要和暴露的远程对象一样扔出去)
+	 */
 	private RMIClientSocketFactory clientSocketFactory;
 
+	/**
+	 * 用来获得和远程的 socket 连接
+	 * 1. server 配置这个，和暴露的远程对象绑定
+	 * 2. server 通过这个拿到和客户端的 socket 连接
+	 */
 	private RMIServerSocketFactory serverSocketFactory;
 
 	private Registry registry;
