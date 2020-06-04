@@ -82,7 +82,7 @@ public class RmiServiceExporter extends RmiBasedExporter implements Initializing
 	/**
 	 * 用来获得和远程的 socket 连接
 	 * 1. server 配置这个，和暴露的远程对象绑定
-	 * 2. server 通过这个拿到和客户端的 socket 连接
+	 * 2. server【本机】 通过这个拿到和客户端的 socket 连接
 	 */
 	private RMIServerSocketFactory serverSocketFactory;
 
@@ -92,8 +92,16 @@ public class RmiServiceExporter extends RmiBasedExporter implements Initializing
 
 	private int registryPort = Registry.REGISTRY_PORT;
 
+	/**
+	 * 这个类型的介绍和上面的一样。
+	 * 这里前缀带上了 registry ，应该是用于调用者和注册中心的交互
+	 */
 	private RMIClientSocketFactory registryClientSocketFactory;
 
+	/**
+	 * 这个类型的介绍和上面的一样。
+	 * 这里前缀带上了 registry ，应该是用于提供者【本机】和注册中心的交互
+	 */
 	private RMIServerSocketFactory registryServerSocketFactory;
 
 	private boolean alwaysCreateRegistry = false;
