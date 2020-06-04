@@ -38,6 +38,8 @@ import java.rmi.server.UnicastRemoteObject;
  * level, needing only one stub for any service. Service interfaces do not have to
  * extend {@code java.rmi.Remote} or throw {@code java.rmi.RemoteException}
  * on all methods, but in and out parameters have to be serializable.
+ * 这里虽然可以通过代理封装，使接口简化，但是出入参数还得按照正常的规定实现 serializable 。
+ * 毕竟是 JDK 自己的序列化、反序列化策略。
  *
  * <p>The major advantage of RMI, compared to Hessian, is serialization.
  * Effectively, any serializable Java object can be transported without hassle.
@@ -238,9 +240,13 @@ public class RmiServiceExporter extends RmiBasedExporter implements Initializing
 	 *
 	 * @throws RemoteException if service registration failed
 	 */
+	// 初始化本实例，把传进来的功能逻辑注册成 RMI 的实例
+	// 注册时，如果要注册的端口没有注册中心，就创建一个注册中心
 	public void prepare() throws RemoteException {
+		// 确保传进来了功能逻辑
 		checkService();
 
+		// 确保传进来了功能逻辑对应的注册别名【我这么叫】
 		if (this.serviceName == null) {
 			throw new IllegalArgumentException("Property 'serviceName' is required");
 		}
