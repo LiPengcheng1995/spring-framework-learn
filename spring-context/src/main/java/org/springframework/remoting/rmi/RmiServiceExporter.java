@@ -94,16 +94,19 @@ public class RmiServiceExporter extends RmiBasedExporter implements Initializing
 
 	/**
 	 * 这个类型的介绍和上面的一样。
-	 * 这里前缀带上了 registry ，应该是用于调用者和注册中心的交互
+	 * 这里前缀带上了 registry ，是创造注册中心用的
+	 * 所以这里的 client ，是要连接注册中心的角色用的
 	 */
 	private RMIClientSocketFactory registryClientSocketFactory;
 
 	/**
 	 * 这个类型的介绍和上面的一样。
-	 * 这里前缀带上了 registry ，应该是用于提供者【本机】和注册中心的交互
+	 * 这里前缀带上了 registry ，是创造注册中心用的
+	 * 所以这里的 server ，注册中心处理外面请求的连接时用的
 	 */
 	private RMIServerSocketFactory registryServerSocketFactory;
 
+	// 如果本实例的 registry 没有缓存到注册中心，是否每次都直接新建 注册中心 ，不走 jdk 的缓存列表
 	private boolean alwaysCreateRegistry = false;
 
 	private boolean replaceExistingBinding = true;
@@ -354,6 +357,8 @@ public class RmiServiceExporter extends RmiBasedExporter implements Initializing
 			if (logger.isInfoEnabled()) {
 				logger.info("Looking for RMI registry at port '" + registryPort + "' of host [" + registryHost + "]");
 			}
+			// 这里指定了 registryHost ，是从远程拉取，拉不上就报错，不能直接创建，毕竟不是本地的注册中心
+			// 本地没有所有权
 			Registry reg = LocateRegistry.getRegistry(registryHost, registryPort, clientSocketFactory);
 			testRegistry(reg);
 			return reg;
@@ -377,7 +382,7 @@ public class RmiServiceExporter extends RmiBasedExporter implements Initializing
 
 		if (clientSocketFactory != null) {
 			if (this.alwaysCreateRegistry) {
-				logger.info("Creating new RMI registry");
+				logger.info("Creating new RMI registry"); // 是走一下 jdk 缓存还是每次都创建
 				return LocateRegistry.createRegistry(registryPort, clientSocketFactory, serverSocketFactory);
 			}
 			if (logger.isInfoEnabled()) {
@@ -386,6 +391,7 @@ public class RmiServiceExporter extends RmiBasedExporter implements Initializing
 			synchronized (LocateRegistry.class) {
 				try {
 					// Retrieve existing registry.
+					// TODO 后面有精力可以探究一下底层实现
 					Registry reg = LocateRegistry.getRegistry(null, registryPort, clientSocketFactory);
 					testRegistry(reg);
 					return reg;
@@ -408,10 +414,11 @@ public class RmiServiceExporter extends RmiBasedExporter implements Initializing
 	 * @return the RMI registry
 	 * @throws RemoteException if the registry couldn't be located or created
 	 */
+	// 本地创建注册中心
 	protected Registry getRegistry(int registryPort) throws RemoteException {
-		if (this.alwaysCreateRegistry) {
+		if (this.alwaysCreateRegistry) {// 不缓存，每次创建新的
 			logger.info("Creating new RMI registry");
-			return LocateRegistry.createRegistry(registryPort);
+			return LocateRegistry.createRegistry(registryPort);// 直接创建
 		}
 		if (logger.isInfoEnabled()) {
 			logger.info("Looking for RMI registry at port '" + registryPort + "'");
