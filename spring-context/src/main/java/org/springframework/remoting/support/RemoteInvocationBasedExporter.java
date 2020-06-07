@@ -74,6 +74,7 @@ public abstract class RemoteInvocationBasedExporter extends RemoteExporter {
 			logger.trace("Executing " + invocation);
 		}
 		try {
+			// 这里，TMD 好像又把 封装入参的 invocation 还有逻辑实现的 targetObject 一起丢给了一个调用器
 			return getRemoteInvocationExecutor().invoke(invocation, targetObject);
 		} catch (NoSuchMethodException ex) {
 			if (logger.isDebugEnabled()) {

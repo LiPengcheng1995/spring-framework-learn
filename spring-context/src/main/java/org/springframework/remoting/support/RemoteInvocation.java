@@ -213,6 +213,7 @@ public class RemoteInvocation implements Serializable {
 	 * @throws InvocationTargetException if the method invocation resulted in an exception
 	 * @see java.lang.reflect.Method#invoke
 	 */
+	// targetObject： method所属的对象实例
 	public Object invoke(Object targetObject)
 			throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 

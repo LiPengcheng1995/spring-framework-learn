@@ -58,16 +58,36 @@ import org.springframework.util.Assert;
  * @see org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean
  * @since 13.05.2003
  */
+// 这个类是 RMI consumer 用来提供服务提供者实例的。
+// 这里提供的实例，可以和 RMI 那些必须实现的接口/类说拜拜，因为 Spring 会帮助我们进行封装，将对应的接口实现
+// 并将那些必须捕获的声明式异常转化成 Spring 的运行时异常。
+//
+// RMI 相对于 Hessian 的优点是 Java 的序列化，【可以双向带值、可以带 Class】，可以用 Http 但是可能会慢
+// 但是 Hessian 也有起优点，它用 http ，更容易构建。
 public class RmiProxyFactoryBean extends RmiClientInterceptor implements FactoryBean<Object>, BeanClassLoaderAware {
 
 	private Object serviceProxy;
 
 
+	// 这里是：
+	// 1. 先调用父类的钩子，把所有东西弄好
+	// 2. 创建一层增强，把自己当作一个拦截器丢进去
 	@Override
 	public void afterPropertiesSet() {
 		super.afterPropertiesSet();
 		Class<?> ifc = getServiceInterface();
 		Assert.notNull(ifc, "Property 'serviceInterface' is required");
+		// TODO 这里很重要 ，这里 ProxyFactory 里面只加入了本拦截器，这层代理的拦截器调用链只有本类
+		// TODO 然后本类在 invoke 里面实现了远程对象的调用【更直白一些，这里的代理并不像我们之前理解的 AOP 那样有个被代理的对象】
+		//
+		// TODO 为什么要在拦截器中实现这个呢？
+		// 因为这是一个通用方法封装，用反射的那种（兼容 Spring 那个 RmiInvocationHandler ），所以这里必须得通用化，只能用反射进行调用
+		// 传递。如果你把本类设置成 TargetSource ，就没法做通用化编码了。
+		//
+		// TODO 这个代理好怪
+		// 理论上，真正的代理，或者说增强，只是创建出一个糅合了 目标实例功能、拦截器功能 的新实例。具体要糅什么，根据需求而定。
+		//
+		// TODO 来认识一个新的工具类 ProxyFactory ，后面有需要，可以自己塞拦截器，定制代理
 		this.serviceProxy = new ProxyFactory(ifc, this).getProxy(getBeanClassLoader());
 	}
 

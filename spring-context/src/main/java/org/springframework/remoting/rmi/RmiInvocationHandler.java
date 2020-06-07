@@ -57,6 +57,7 @@ public interface RmiInvocationHandler extends Remote {
 	 * @throws IllegalAccessException    if the method could not be accessed
 	 * @throws InvocationTargetException if the method invocation resulted in an exception
 	 */
+	// invocation：这是 AOP 代理调用的封装，这里当然也封装了调用的入参
 	@Nullable
 	public Object invoke(RemoteInvocation invocation)
 			throws RemoteException, NoSuchMethodException, IllegalAccessException, InvocationTargetException;

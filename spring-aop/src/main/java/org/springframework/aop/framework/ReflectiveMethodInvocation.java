@@ -178,6 +178,8 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 				return proceed();
 			}
 		} else {
+			// TODO  注意啦，所有的 invoke 调用都穿进去了 this ，
+			// TODO 也就是说切面在做了自己的逻辑之后，调用的 target.proceed(),就是又递归调了回来，所以就能循环把拦截器调用链调一遍
 			// 仅对类进行匹配，所以直接调用即可
 			// It's an interceptor, so we just invoke it: The pointcut will have
 			// been evaluated statically before this object was constructed.

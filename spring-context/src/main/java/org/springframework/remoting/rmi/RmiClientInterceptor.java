@@ -129,6 +129,7 @@ public class RmiClientInterceptor extends RemoteInvocationBasedAccessor
 
 	@Override
 	public void afterPropertiesSet() {
+		// check 注册中心的 url 是否有效
 		super.afterPropertiesSet();
 		prepare();
 	}
@@ -142,7 +143,9 @@ public class RmiClientInterceptor extends RemoteInvocationBasedAccessor
 	 */
 	public void prepare() throws RemoteLookupFailureException {
 		// Cache RMI stub on initialization?
+		// 如果配制成初始化时就直接链接，就开始搞起
 		if (this.lookupStubOnStartup) {
+			// 拿到远程实现对象
 			Remote remoteObj = lookupStub();
 			if (logger.isDebugEnabled()) {
 				if (remoteObj instanceof RmiInvocationHandler) {
@@ -154,6 +157,7 @@ public class RmiClientInterceptor extends RemoteInvocationBasedAccessor
 							(!isImpl ? "not " : "") + "directly implemented");
 				}
 			}
+			// 然后存上
 			if (this.cacheStub) {
 				this.cachedStub = remoteObj;
 			}
@@ -175,6 +179,7 @@ public class RmiClientInterceptor extends RemoteInvocationBasedAccessor
 	protected Remote lookupStub() throws RemoteLookupFailureException {
 		try {
 			Remote stub = null;
+			// 如果有定制的链接注册中心的 socket 客户端
 			if (this.registryClientSocketFactory != null) {
 				// RMIClientSocketFactory specified for registry access.
 				// Unfortunately, due to RMI API limitations, this means
@@ -182,6 +187,7 @@ public class RmiClientInterceptor extends RemoteInvocationBasedAccessor
 				// straight LocateRegistry.getRegistry/Registry.lookup calls.
 				URL url = new URL(null, getServiceUrl(), new DummyURLStreamHandler());
 				String protocol = url.getProtocol();
+				// 只支持 rmi 协议
 				if (protocol != null && !"rmi".equals(protocol)) {
 					throw new MalformedURLException("Invalid URL scheme '" + protocol + "'");
 				}
@@ -194,6 +200,7 @@ public class RmiClientInterceptor extends RemoteInvocationBasedAccessor
 				Registry registry = LocateRegistry.getRegistry(host, port, this.registryClientSocketFactory);
 				stub = registry.lookup(name);
 			} else {
+				// 没有指明定制的客户端，就直接调用， Naming.lookup() 有封装，就直接调用吧
 				// Can proceed with standard RMI lookup API...
 				stub = Naming.lookup(getServiceUrl());
 			}
@@ -251,6 +258,14 @@ public class RmiClientInterceptor extends RemoteInvocationBasedAccessor
 	 */
 	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable {
+		// 一般拦截器都是：
+		// 1. 先做自己的事情
+		// 2. invocation.proceed(); 往下调
+		// 3. 继续做自己的事情
+		//
+		// 这里就优点区别了，因为这个拦截器里面有关于最终调用实例的封装
+		// TODO 这 TMD 就尴尬了，这说明调用的拦截器链必须只有这一个拦截器，或者保证这个拦截器在所有的
+
 		Remote stub = getStub();
 		try {
 			return doInvoke(invocation, stub);
@@ -335,8 +350,11 @@ public class RmiClientInterceptor extends RemoteInvocationBasedAccessor
 	 * @return the invocation result, if any
 	 * @throws Throwable in case of invocation failure
 	 */
+	// invocation ： 调用到这里的代理封装
 	@Nullable
 	protected Object doInvoke(MethodInvocation invocation, Remote stub) throws Throwable {
+		// 如果是 Spring 针对 rmi 封装的那一层，说明原本的实现没有实现 Remote 类，就委托进行调用
+		// 委托调用就是用调用 RmiInvocationHandler 的invoke ，说明白要调哪个方法，服务端自行根据反射调用
 		if (stub instanceof RmiInvocationHandler) {
 			// RMI invoker
 			try {
@@ -354,6 +372,7 @@ public class RmiClientInterceptor extends RemoteInvocationBasedAccessor
 			}
 		} else {
 			// traditional RMI stub
+			// 如果不是 Spring 封装了一层，就直接通过反射调用 Remote 实现类的方法
 			try {
 				return RmiClientInterceptorUtils.invokeRemoteMethod(invocation, stub);
 			} catch (InvocationTargetException ex) {
@@ -389,7 +408,7 @@ public class RmiClientInterceptor extends RemoteInvocationBasedAccessor
 		if (AopUtils.isToStringMethod(methodInvocation.getMethod())) {
 			return "RMI invoker proxy for service URL [" + getServiceUrl() + "]";
 		}
-
+		// 把 aop 的方法封装一下,丢给 server 跑
 		return invocationHandler.invoke(createRemoteInvocation(methodInvocation));
 	}
 
