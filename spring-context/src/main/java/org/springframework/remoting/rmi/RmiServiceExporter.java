@@ -68,6 +68,7 @@ public class RmiServiceExporter extends RmiBasedExporter implements Initializing
 
 	private String serviceName;
 
+	// 本地暴露服务用的端口
 	private int servicePort = 0;  // anonymous port
 
 	/**
@@ -88,8 +89,10 @@ public class RmiServiceExporter extends RmiBasedExporter implements Initializing
 
 	private Registry registry;
 
+	// 注册中心所在的 host【ip】，如果是空，表示在本地启
 	private String registryHost;
 
+	// 注册中心的端口
 	private int registryPort = Registry.REGISTRY_PORT;
 
 	/**
@@ -109,6 +112,7 @@ public class RmiServiceExporter extends RmiBasedExporter implements Initializing
 	// 如果本实例的 registry 没有缓存到注册中心，是否每次都直接新建 注册中心 ，不走 jdk 的缓存列表
 	private boolean alwaysCreateRegistry = false;
 
+	// 是否做覆盖注册
 	private boolean replaceExistingBinding = true;
 
 	private Remote exportedObject;

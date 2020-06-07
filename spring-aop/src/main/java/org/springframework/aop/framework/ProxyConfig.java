@@ -102,6 +102,7 @@ public class ProxyConfig implements Serializable {
 	 * <p>Default is "false", meaning that any AOP proxy can be cast to
 	 * {@link Advised}.
 	 */
+	// 设置成不透明的，指不能转化成 Advised ，不能被通用的切面逻辑使用
 	public void setOpaque(boolean opaque) {
 		this.opaque = opaque;
 	}

@@ -42,6 +42,7 @@ import java.lang.reflect.Method;
  * @see RemoteExporter#getProxyForService
  * @since 1.2
  */
+// 一个 RMI 打印出入日志的切面
 public class RemoteInvocationTraceInterceptor implements MethodInterceptor {
 
 	protected static final Log logger = LogFactory.getLog(RemoteInvocationTraceInterceptor.class);
