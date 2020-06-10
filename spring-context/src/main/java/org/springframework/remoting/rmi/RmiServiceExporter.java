@@ -380,6 +380,7 @@ public class RmiServiceExporter extends RmiBasedExporter implements Initializing
 	 * @return the RMI registry
 	 * @throws RemoteException if the registry couldn't be located or created
 	 */
+	// 本地创建注册中心
 	protected Registry getRegistry(int registryPort,
 								   @Nullable RMIClientSocketFactory clientSocketFactory, @Nullable RMIServerSocketFactory serverSocketFactory)
 			throws RemoteException {
@@ -418,7 +419,7 @@ public class RmiServiceExporter extends RmiBasedExporter implements Initializing
 	 * @return the RMI registry
 	 * @throws RemoteException if the registry couldn't be located or created
 	 */
-	// 本地创建注册中心
+	// 本地创建注册中心,无定制
 	protected Registry getRegistry(int registryPort) throws RemoteException {
 		if (this.alwaysCreateRegistry) {// 不缓存，每次创建新的
 			logger.info("Creating new RMI registry");
