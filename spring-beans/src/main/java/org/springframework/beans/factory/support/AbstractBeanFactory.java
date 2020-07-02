@@ -78,6 +78,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	/**
 	 * String resolvers to apply e.g. to annotation attribute values
 	 */
+	// TODO  这里用来存储Spring 内部的变量解析器，以支持 ${} 的变量替换
 	private final List<StringValueResolver> embeddedValueResolvers = new CopyOnWriteArrayList<>();
 	/**
 	 * BeanPostProcessors to apply in createBean
