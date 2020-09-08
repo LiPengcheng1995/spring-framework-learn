@@ -82,6 +82,7 @@ public class InjectionMetadata {
 	}
 
 	public void inject(Object target, @Nullable String beanName, @Nullable PropertyValues pvs) throws Throwable {
+		// 在之前调用过 checkConfigMembers（），就会把 injectedElements 的东西判断，然后放入 checkedElements
 		Collection<InjectedElement> checkedElements = this.checkedElements;
 		Collection<InjectedElement> elementsToIterate =
 				(checkedElements != null ? checkedElements : this.injectedElements);

@@ -190,6 +190,7 @@ public class InitDestroyAnnotationBeanPostProcessor
 			final List<LifecycleElement> currInitMethods = new ArrayList<>();
 			final List<LifecycleElement> currDestroyMethods = new ArrayList<>();
 
+			// 遍历当前实现类的方法，如果有 initAnnotationType/destroyAnnotationType 打标，就给塞到对应的list
 			ReflectionUtils.doWithLocalMethods(targetClass, method -> {
 				if (this.initAnnotationType != null && method.isAnnotationPresent(this.initAnnotationType)) {
 					LifecycleElement element = new LifecycleElement(method);
@@ -206,12 +207,14 @@ public class InitDestroyAnnotationBeanPostProcessor
 				}
 			});
 
+			// 把当前实现类找到的打标方法放到总的list中
 			initMethods.addAll(0, currInitMethods);
 			destroyMethods.addAll(currDestroyMethods);
-			targetClass = targetClass.getSuperclass();
+			targetClass = targetClass.getSuperclass();// 从类的继承树一层一层向上遍历打标
 		}
 		while (targetClass != null && targetClass != Object.class);
 
+		// 遍历完了，弄好包装成一个 LifecycleMetadata
 		return new LifecycleMetadata(clazz, initMethods, destroyMethods);
 	}
 

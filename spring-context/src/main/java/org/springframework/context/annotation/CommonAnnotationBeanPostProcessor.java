@@ -332,7 +332,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 
 		do {
 			final List<InjectionMetadata.InjectedElement> currElements = new ArrayList<>();
-
+			// 遍历属性，拿到打 webServiceRefClass、ejbRefClass、Resource 注解的属性
 			ReflectionUtils.doWithLocalFields(targetClass, field -> {
 				if (webServiceRefClass != null && field.isAnnotationPresent(webServiceRefClass)) {
 					if (Modifier.isStatic(field.getModifiers())) {
@@ -353,7 +353,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 					}
 				}
 			});
-
+			// 遍历方法，拿到打 webServiceRefClass、ejbRefClass、Resource 注解的方法
 			ReflectionUtils.doWithLocalMethods(targetClass, method -> {
 				Method bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);
 				if (!BridgeMethodResolver.isVisibilityBridgeMethodPair(method, bridgedMethod)) {
@@ -387,14 +387,16 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 							throw new IllegalStateException("@Resource annotation requires a single-arg method: " + method);
 						}
 						if (!this.ignoredResourceTypes.contains(paramTypes[0].getName())) {
+							// 拿到打注解方法对应的属性
 							PropertyDescriptor pd = BeanUtils.findPropertyForMethod(bridgedMethod, clazz);
 							currElements.add(new ResourceElement(method, bridgedMethod, pd));
 						}
 					}
 				}
 			});
-
+			// 将遍历属性、方法的结果统一起来
 			elements.addAll(0, currElements);
+			// 继续向上层遍历
 			targetClass = targetClass.getSuperclass();
 		}
 		while (targetClass != null && targetClass != Object.class);
@@ -465,6 +467,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 			throw new NoSuchBeanDefinitionException(element.lookupType,
 					"No resource factory configured - specify the 'resourceFactory' property");
 		}
+		// 上面乱七八糟的先忽略，打断点看的话，是从这里进去
 		return autowireResource(this.resourceFactory, element, requestingBeanName);
 	}
 
@@ -484,7 +487,12 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 		Object resource;
 		Set<String> autowiredBeanNames;
 		String name = element.name;
-
+		// fallbackToDefaultTypeMatch 默认是 true，不会直接降级用type匹配
+		// factory 我们正常用的上下文肯定符合要求
+		// element.isDefaultName 表明我们没有设置@Resource(name=)
+		// !factory.containsBean(name) 表明 name 在 Spring 上下文没有
+		//
+		// 合并起来，这里的意思是你没有指定 name，且根据属性名/方法拿到的 name 在 Spring 上下文没有
 		if (this.fallbackToDefaultTypeMatch && element.isDefaultName &&
 				factory instanceof AutowireCapableBeanFactory && !factory.containsBean(name)) {
 			// 如果是走的默认属性，就和 Autowire 一样调用 resolveDependency()
@@ -497,8 +505,10 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 				throw new NoSuchBeanDefinitionException(element.getLookupType(), "No resolvable resource object");
 			}
 		} else {
-			// 如果是 @Resource 指定的 name ，就以 name 为 id 取
-			// TODO 这里应该就是网上说的区别了吧，所以网上说的是不靠谱的。这里详细剖析以下
+			// 这里指代的情况是：
+			// 1. @Resource 指定了 name
+			// 2. @Resource 没指定 name ，但是根据默认取到的 name 可以直接确定 Bean 实例
+			// 就以 name 为 id 取
 			resource = factory.getBean(name, element.lookupType);
 			autowiredBeanNames = Collections.singleton(name);
 		}
@@ -595,23 +605,30 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 
 		private final boolean lazyLookup;
 
+		/**
+		 * TODO 前俩参数是有区别的，但是没看那么全面，先姑且认为一样吧，后面有需要再深入
+		 * @param member 被注解的方法/属性
+		 * @param ae 被注解的方法/属性
+		 * @param pd 方法依赖的属性描述
+		 */
 		public ResourceElement(Member member, AnnotatedElement ae, @Nullable PropertyDescriptor pd) {
-			super(member, pd);
+			super(member, pd);// 设置member、isField、pd
 			Resource resource = ae.getAnnotation(Resource.class);
-			String resourceName = resource.name();
-			Class<?> resourceType = resource.type();
+			String resourceName = resource.name();//拿到 @Resource(name="")
+			Class<?> resourceType = resource.type();//拿到 @Resource(type="")
 			// 如果没有配置，就根据打标的 属性/方法 名来
 			this.isDefaultName = !StringUtils.hasLength(resourceName);
-			if (this.isDefaultName) {
+			if (this.isDefaultName) {// 没有配置name，就根据属性/方法自行生成
 				resourceName = this.member.getName();
 				if (this.member instanceof Method && resourceName.startsWith("set") && resourceName.length() > 3) {
 					resourceName = Introspector.decapitalize(resourceName.substring(3));
 				}
-			} else if (embeddedValueResolver != null) {
+			} else if (embeddedValueResolver != null) {//有配置name，就对其中的 Spring 变量引用进行替换
+				// embeddedValueResolver 是从 Spring 上下文拿到的，可以将变量引用替换成值
 				resourceName = embeddedValueResolver.resolveStringValue(resourceName);
 			}
-			if (Object.class != resourceType) { // 有配置类型
-				checkResourceType(resourceType);
+			if (Object.class != resourceType) { // 配置类型有效
+				checkResourceType(resourceType);// 保证你指定的属性必须是本身属性的子类，避免转型错误
 			} else {
 				// No resource type specified... check field/method.
 				resourceType = getResourceType();// 否则根据打标的 属性/方法第一个入参属性 来
