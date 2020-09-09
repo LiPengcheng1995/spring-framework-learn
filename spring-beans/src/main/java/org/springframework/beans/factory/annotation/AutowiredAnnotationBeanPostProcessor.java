@@ -204,9 +204,9 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 
 	@Override
 	public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
-		// 拿到打注解的
+		// 根据打注解的情况，生成这个 beanId 注解配置类
 		InjectionMetadata metadata = findAutowiringMetadata(beanName, beanType, null);
-		// 检查配置？
+		// 根据 BD 整理一下配置类
 		metadata.checkConfigMembers(beanDefinition);
 	}
 
