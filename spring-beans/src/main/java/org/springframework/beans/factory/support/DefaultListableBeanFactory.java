@@ -1046,6 +1046,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 				return shortcut;
 			}
 
+			// TODO 这一块先忽略吧
 			// 拿到依赖的类型
 			Class<?> type = descriptor.getDependencyType();
 			// 尝试根据条件拿到默认值
@@ -1367,6 +1368,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			if (isPrimary(candidateBeanName, beanInstance)) {
 				// 拿到 Primary 不要立刻返回，继续遍历【这里其实更多的是检测，防止有多个被打 @Primary】
 				if (primaryBeanName != null) {
+					// 确认一下这两个被打 @Primary 的 BD 都存在
 					boolean candidateLocal = containsBeanDefinition(candidateBeanName);
 					boolean primaryLocal = containsBeanDefinition(primaryBeanName);
 					if (candidateLocal && primaryLocal) {
