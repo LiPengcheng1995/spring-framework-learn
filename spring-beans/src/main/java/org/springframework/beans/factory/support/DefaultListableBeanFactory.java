@@ -1046,13 +1046,12 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 				return shortcut;
 			}
 
-			// TODO 这一块先忽略吧
-			// 拿到依赖的类型
 			Class<?> type = descriptor.getDependencyType();
-			// 尝试根据条件拿到默认值
+			// 这里没走那么深，通过打断点发现这里是对@Value的支持，先拿到的 value 是@Value()中的${}变量引用
 			Object value = getAutowireCandidateResolver().getSuggestedValue(descriptor);
 			if (value != null) {
 				if (value instanceof String) {
+					// 这里将变量引用替换成具体的值
 					String strVal = resolveEmbeddedValue((String) value);
 					BeanDefinition bd = (beanName != null && containsBean(beanName) ? getMergedBeanDefinition(beanName) : null);
 					value = evaluateBeanDefinitionString(strVal, bd);
