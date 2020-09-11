@@ -527,7 +527,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			if (!mbd.postProcessed) {
 				try {
 					// TODO @Resource,@Autowire,@Value
-					// 从类上拿到相应的注解，并设置进 mbd 的属性中
+					// 从类上拿到相应的注解，并缓存
 					applyMergedBeanDefinitionPostProcessors(mbd, beanType, beanName);
 				} catch (Throwable ex) {
 					throw new BeanCreationException(mbd.getResourceDescription(), beanName,
@@ -1338,7 +1338,6 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		// 获得 mbd 配置的那些要注入的属性的 key-value
-		// TODO 前面后处理 mbd 时已经将 @Resource,@Autowire,@Qualifier 有关的属性塞进去了，这里直接拿出来即可
 		PropertyValues pvs = (mbd.hasPropertyValues() ? mbd.getPropertyValues() : null);
 
 		// TODO 注意了，这个注入并不是我们熟悉的，想象中的那种注入
@@ -1359,7 +1358,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			pvs = newPvs;
 		}
 
-		// 到这里，我们在 @Resource,@Autowire,@Qualifier 相关注解的基础上把那些没有配置的复杂属性也补充了一波，现在是最全的属性注入了
+		// 到这里，Spring 注入的属性集就确定了，但是这里没有 @Resource 那一类的属性
 
 		// 根据情况看需不需要对即将填充进实例的属性进行处理
 		boolean hasInstAwareBpps = hasInstantiationAwareBeanPostProcessors(); //有注册的钩子可以用

@@ -1270,6 +1270,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			//
 			// isAutowireCandidate(candidate, descriptor) 判断 candidate 这个 id 是否能注入 descriptor，估计是实例化后拿到
 			// candidate ，然后跟 descriptor 对比一下看是不是符合吧
+			// TODO 这里支持了 @Qualifier【不过只是根据传入的方法/属性拿，不会引申】【如果传入的方法，打在属性上的就不管用了】
 			if (!isSelfReference(beanName, candidate) && isAutowireCandidate(candidate, descriptor)) {
 				addCandidateEntry(result, candidate, descriptor, requiredType);
 			}
