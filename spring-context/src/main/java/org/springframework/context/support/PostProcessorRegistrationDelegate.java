@@ -59,6 +59,9 @@ final class PostProcessorRegistrationDelegate {
 				if (postProcessor instanceof BeanDefinitionRegistryPostProcessor) {
 					BeanDefinitionRegistryPostProcessor registryProcessor =
 							(BeanDefinitionRegistryPostProcessor) postProcessor;
+					// TODO 此处有处理 PropertySourcesPlaceholderConfigurer 来支持变量注入的预处理
+					// TODO 参见 PropertyResourceConfigurer 打个断点看看
+					// https://blog.csdn.net/liujie379908/article/details/102591275
 					registryProcessor.postProcessBeanDefinitionRegistry(registry);
 					registryProcessors.add(registryProcessor);
 				} else {
