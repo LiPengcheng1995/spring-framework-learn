@@ -1,10 +1,11 @@
 buildscript {
     repositories {
-        maven { url "https://repo.spring.io/plugins-release" }
+        maven { url "https://repo.spring.io/plugins-snapshot" }
+        maven { url "https://maven.aliyun.com/repository/gradle-plugin" }
     }
     dependencies {
-        classpath("io.spring.gradle:propdeps-plugin:0.0.8")
-        classpath("io.spring.gradle:docbook-reference-plugin:0.3.1")
+        classpath("io.spring.gradle:propdeps-plugin:0.0.8-SNAPSHOT")
+//        classpath("io.spring.gradle:docbook-reference-plugin:0.3.1")
         classpath("org.asciidoctor:asciidoctorj-pdf:1.5.0-alpha.16")
         classpath("org.asciidoctor:asciidoctorj-epub3:1.5.0-alpha.7")
     }
@@ -151,7 +152,8 @@ configure(allprojects) { project ->
     }
 
     repositories {
-        maven { url "https://repo.spring.io/libs-release" }
+//        maven { url "https://repo.spring.io/libs-snapshot" }
+        maven { url "https://maven.aliyun.com/repository/public" }
     }
 
     dependencies {
